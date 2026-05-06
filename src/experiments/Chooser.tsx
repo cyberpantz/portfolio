@@ -353,6 +353,16 @@ export default function Chooser() {
                   this is you
                 </span>
               </motion.div>
+              {assessment && (
+                <motion.p
+                  initial={{ opacity: 0, y: 6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 1.8 }}
+                  className="font-mono text-[12px] text-fg-muted/70 tracking-[0.06em] text-center max-w-xs leading-relaxed"
+                >
+                  {assessment}
+                </motion.p>
+              )}
               <motion.button
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
