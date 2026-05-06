@@ -6,8 +6,8 @@ interface Props {
   onImageChange: (idx: number) => void;
 }
 
-function Placeholder({ color, label }: { color: string; label: string }) {
-  const safeId = label.replace(/\W+/g, '-');
+function Placeholder({ color, label, uid }: { color: string; label: string; uid: string }) {
+  const safeId = `${uid}-${label.replace(/\W+/g, '-')}`;
   return (
     <div
       className="w-full h-full flex items-center justify-center relative overflow-hidden"
@@ -37,6 +37,7 @@ function Placeholder({ color, label }: { color: string; label: string }) {
 export default function ProjectGallery({ project, imageIdx, onImageChange }: Props) {
   const images = project.images ?? [];
   const hasMultiple = images.length > 1;
+  const safeIdx = images.length > 0 ? Math.min(Math.max(imageIdx, 0), images.length - 1) : 0;
 
   return (
     <div className="w-full h-full flex flex-col">
@@ -44,18 +45,18 @@ export default function ProjectGallery({ project, imageIdx, onImageChange }: Pro
       <div className="relative flex-1 overflow-hidden bg-ink-surface">
         {images.length > 0 ? (
           <img
-            key={`${project.id}-${imageIdx}`}
-            src={images[imageIdx]}
-            alt={`${project.name} screenshot ${imageIdx + 1}`}
+            key={`${project.id}-${safeIdx}`}
+            src={images[safeIdx]}
+            alt={`${project.name} screenshot ${safeIdx + 1}`}
             className="w-full h-full object-cover animate-gallery-in"
           />
         ) : (
-          <Placeholder color={project.color} label="screenshot" />
+          <Placeholder color={project.color} label="screenshot" uid={project.id} />
         )}
 
         {hasMultiple && (
-          <div className="absolute bottom-4 left-4 font-mono text-[10px] text-white/30 tracking-[0.1em]">
-            {String(imageIdx + 1).padStart(2, '0')} / {String(images.length).padStart(2, '0')}
+          <div aria-hidden="true" className="absolute bottom-4 left-4 font-mono text-[10px] text-white/30 tracking-[0.1em]">
+            {String(safeIdx + 1).padStart(2, '0')} / {String(images.length).padStart(2, '0')}
           </div>
         )}
       </div>
@@ -65,15 +66,17 @@ export default function ProjectGallery({ project, imageIdx, onImageChange }: Pro
         <div className="flex border-t border-rule flex-shrink-0" style={{ height: 48 }}>
           {images.map((src, i) => (
             <button
-              key={src}
+              key={i}
               type="button"
+              aria-label={`View screenshot ${i + 1}`}
+              aria-pressed={i === safeIdx}
               onClick={() => onImageChange(i)}
               className={`relative flex-1 overflow-hidden cursor-pointer transition-opacity
                           ${i < images.length - 1 ? 'border-r border-rule' : ''}
-                          ${i === imageIdx ? 'opacity-100' : 'opacity-40 hover:opacity-80'}`}
+                          ${i === safeIdx ? 'opacity-100' : 'opacity-40 hover:opacity-80'}`}
             >
               <img src={src} alt="" className="w-full h-full object-cover" />
-              {i === imageIdx && (
+              {i === safeIdx && (
                 <div className="absolute inset-x-0 bottom-0 h-0.5 bg-accent" />
               )}
             </button>
