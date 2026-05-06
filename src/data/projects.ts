@@ -21,36 +21,25 @@ export const PROJECTS: Project[] = [
     tags: ['LLM', 'Vision API', 'React', 'Node'],
     year: '2024',
     description:
-      'Photograph your loaf, get an AI diagnosis of the crumb structure, and learn exactly what to adjust on the next bake. Built with a vision LLM, React frontend, and Node backend. Solves a real problem I had — sourdough is finicky and the feedback loop is slow.',
+      'A playful baking site where you can photograph your bread and get an AI diagnosis of the crumb structure, get feedback on all things baking, and learn exactly what to adjust on the next bake. Built with a vision LLM, React frontend, and Node backend. Solves a real problem I had as a beginner. I needed suggestions on how to improve my sourdough technique — sourdough is finicky and the feedback loop is slow via traditional methods. r/breadit or r/sourdough on Reddit are great communities, but it can be hard to get specific feedback on your technique and how to improve sometimes. The Crumb is a fun way to get that feedback in seconds, and track your progress over time.',
     color: '#8b5e3c',
     images: [
       '/projects/thecrumb/thecrumb-1.png',
+      '/projects/thecrumb/thecrumb-5.png',
       '/projects/thecrumb/thecrumb-2.png',
       '/projects/thecrumb/thecrumb-3.png',
       '/projects/thecrumb/thecrumb-4.png',
-      '/projects/thecrumb/thecrumb-5.png',
     ],
   },
   {
-    id: 'fleet-monitor',
-    name: 'Fleet Monitor',
-    tagline: 'Real-time EV charging dashboard concept',
-    url: null,
-    tags: ['React', 'WebSocket', 'D3', 'TypeScript'],
-    year: '2023',
-    description:
-      'Personal exploration of real-time fleet data visualization patterns developed alongside my work at ChargePoint. Experiments in dense data tables, live status indicators, and constraint-aware scheduling UI.',
-    color: '#2a4a7a',
-  },
-  {
     id: 'type-specimen',
-    name: 'Type Specimen',
-    tagline: 'Interactive typography explorer',
+    name: 'Mealtrip',
+    tagline: 'Meal planning and recipe management app',
     url: null,
     tags: ['Vanilla JS', 'CSS', 'Typography'],
     year: '2023',
     description:
-      'A personal tool for exploring typeface pairings and optical sizing. Drag sliders, compare specimens, export CSS variables. Built in a weekend to scratch my own itch.',
-    color: '#3a3a3a',
+      'A personal project that started me down the path of AI driven development. It started without a clear vision and ended up as a meal planning and recipe management and several half baked or totally unnecessary features. It was super fun to build and go down the rabbit hole of all the features I could add without justification. That said, I\'m current working on refining and streamlining the concept into a proper MVP that can actaully be shipped, not just iterated on endlessly',
+       color: '#8b5e3c',
   },
 ];

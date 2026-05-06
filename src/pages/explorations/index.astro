@@ -1,0 +1,78 @@
+---
+import Base from '../../layouts/Base.astro';
+import { EXPLORATIONS } from '../../data/explorations';
+---
+<Base title="Explorations — Frank Young" description="Side projects, experiments, and games.">
+  <div class="min-h-screen bg-ink flex flex-col">
+    <div class="flex items-center justify-between px-6 py-4 border-b border-rule flex-shrink-0">
+      <a href="/" class="font-mono text-[11px] text-fg-muted tracking-[0.08em] hover:text-fg transition-colors">
+        ← back to portfolio
+      </a>
+      <span class="font-mono text-[11px] text-fg-muted tracking-[0.08em] uppercase">Explorations</span>
+    </div>
+
+    <div class="flex-1 px-6 py-12 max-w-[900px] mx-auto w-full">
+      <h2 class="font-serif font-normal text-fg mb-3 leading-[1.1]"
+          style="font-size: clamp(28px, 4vw, 44px);">
+        Things built<br />
+        <span class="text-accent italic">for fun.</span>
+      </h2>
+      <p class="text-sm text-fg-muted mb-10 leading-[1.7]">
+        No clients, no briefs — just making things.
+      </p>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-px bg-rule border border-rule rounded overflow-hidden">
+        {EXPLORATIONS.map((exp) => (
+          <a href={exp.url ?? '#'}
+             class="bg-ink-surface px-6 py-7 flex flex-col gap-3 cursor-pointer group
+                    transition-all duration-200 hover:bg-ink-surface2 no-underline">
+            <div class="flex items-center justify-between">
+              <span class="text-[22px]">{exp.icon}</span>
+              <span class="font-mono text-[9px] text-fg-muted tracking-[0.12em] uppercase">
+                {exp.type}
+              </span>
+            </div>
+            <div>
+              <div class="font-serif text-lg text-[#bbb] group-hover:text-fg transition-colors mb-1.5">
+                {exp.name}
+              </div>
+              <div class="text-[13px] text-fg-muted leading-[1.65]">{exp.desc}</div>
+            </div>
+            <div class="flex gap-1 flex-wrap mt-auto">
+              {exp.tags.map((t) => (
+                <span class="font-mono text-[9px] text-fg-muted tracking-[0.06em] px-1.5 py-0.5
+                             border border-rule-strong rounded-sm">
+                  {t}
+                </span>
+              ))}
+            </div>
+            <div class="font-mono text-[10px] text-accent tracking-[0.06em] opacity-0
+                        group-hover:opacity-100 transition-opacity">
+              view →
+            </div>
+          </a>
+        ))}
+
+        {/* Teaser card */}
+        <div class="bg-ink-surface px-6 py-7 flex flex-col gap-3">
+          <div class="flex items-center justify-between">
+            <span class="text-[22px]">📦</span>
+            <span class="font-mono text-[9px] text-fg-muted tracking-[0.12em] uppercase">Archives</span>
+          </div>
+          <div>
+            <div class="font-serif text-lg text-fg mb-1.5">More on the way</div>
+            <div class="text-[13px] text-fg-muted leading-[1.65]">
+              Digging through the archives to resurrect old experiments. A few things worth saving are getting dusted off.
+            </div>
+          </div>
+          <div class="mt-auto">
+            <span class="font-mono text-[9px] text-fg-muted tracking-[0.06em] px-1.5 py-0.5
+                         border border-rule-strong rounded-sm italic">
+              coming soon
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</Base>

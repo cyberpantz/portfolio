@@ -1,0 +1,39 @@
+---
+import { SKILLS } from '../data/skills';
+import SectionLabel from './ui/SectionLabel.astro';
+---
+
+<section id="skills" class="px-12 py-24 border-b border-rule max-w-[900px] mx-auto">
+  <SectionLabel>Skills</SectionLabel>
+  <h2 class="font-serif font-normal text-fg mb-14 leading-[1.1]"
+      style="font-size: clamp(28px, 3.5vw, 42px);">
+    The <span class="text-accent italic">toolkit.</span>
+  </h2>
+
+  <div class="grid grid-cols-2 border border-rule rounded overflow-hidden bg-rule">
+    {SKILLS.map((g, i) => (
+      <div class={`bg-ink-surface px-7 py-6 ${i % 2 === 0 ? 'border-r border-rule' : ''} ${i < 4 ? 'border-b border-rule' : ''}`}>
+        <div class="font-mono text-[10px] text-accent tracking-[0.14em] uppercase mb-3.5">
+          {g.cat}
+        </div>
+        <div class="flex flex-col gap-2">
+          {g.items.map((item) => (
+            <div class="flex items-center gap-2.5">
+              <span class="w-[3px] h-[3px] rounded-full bg-fg-muted flex-shrink-0" />
+              <span class="text-sm text-fg-sub">{item}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    ))}
+    <div class="bg-ink-surface px-7 py-6">
+      <div class="font-mono text-[10px] text-fg-muted tracking-[0.14em] uppercase mb-3.5">
+        Education
+      </div>
+      <div class="text-sm text-fg-sub leading-[1.75]">
+        Humboldt State University<br />
+        <span class="text-fg-muted text-[13px]">B.A. Geography / GIS</span>
+      </div>
+    </div>
+  </div>
+</section>

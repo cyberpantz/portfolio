@@ -42,7 +42,7 @@ export default function Projects() {
     <section id="projects" className="py-24 border-b border-rule">
       <div className="px-12 max-w-[900px] mx-auto">
         <div className="font-mono text-[11px] tracking-[0.14em] text-fg-muted mb-8 uppercase">
-          Projects
+          Personal Projects
         </div>
         <h2
           className="font-serif font-normal text-fg mb-14 leading-[1.1]"

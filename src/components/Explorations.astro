@@ -1,0 +1,50 @@
+---
+import { EXPLORATIONS } from '../data/explorations';
+import SectionLabel from './ui/SectionLabel.astro';
+---
+
+<section id="explorations" class="px-12 py-24 border-b border-rule max-w-[900px] mx-auto">
+  <SectionLabel>Explorations</SectionLabel>
+  <h2 class="font-serif font-normal text-fg mb-4 leading-[1.1]"
+      style="font-size: clamp(32px, 4vw, 48px);">
+     Things built<br />
+    <span class="text-accent italic">for fun.</span>
+  </h2>
+  <p class="text-sm text-fg-muted mb-14 leading-[1.7]">
+   No clients, no briefs — just making things.
+  </p>
+
+  <div class="grid grid-cols-3 gap-px bg-rule border border-rule rounded overflow-hidden">
+    {EXPLORATIONS.map((exp) => (
+      <a href={exp.url ?? '#'}
+         class="bg-ink-surface px-6 py-7 flex flex-col gap-3 cursor-pointer group
+                transition-all duration-200 hover:bg-ink-surface2 hover:-translate-y-1
+                hover:shadow-[0_12px_40px_rgba(0,0,0,0.5)] no-underline">
+        <div class="flex items-center justify-between">
+          <span class="text-[22px]">{exp.icon}</span>
+          <span class="font-mono text-[9px] text-fg-muted tracking-[0.12em] uppercase">
+            {exp.type}
+          </span>
+        </div>
+        <div>
+          <div class="font-serif text-lg text-[#bbb] group-hover:text-fg transition-colors mb-1.5">
+            {exp.name}
+          </div>
+          <div class="text-[13px] text-fg-muted leading-[1.65]">{exp.desc}</div>
+        </div>
+        <div class="flex gap-1 flex-wrap mt-auto">
+          {exp.tags.map((t) => (
+            <span class="font-mono text-[9px] text-fg-muted tracking-[0.06em] px-1.5 py-0.5
+                         border border-rule-strong rounded-sm">
+              {t}
+            </span>
+          ))}
+        </div>
+        <div class="font-mono text-[10px] text-accent tracking-[0.06em] opacity-0
+                    group-hover:opacity-100 transition-opacity">
+          view →
+        </div>
+      </a>
+    ))}
+  </div>
+</section>

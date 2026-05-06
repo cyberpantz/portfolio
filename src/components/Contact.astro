@@ -1,0 +1,33 @@
+---
+import SectionLabel from './ui/SectionLabel.astro';
+
+const CONTACTS = [
+  { label: 'Email',    value: 'phranque.y@gmail.com',                         href: 'mailto:phranque.y@gmail.com' },
+  { label: 'LinkedIn', value: 'linkedin.com/in/frank-young-a77a152',         href: 'https://linkedin.com/in/frank-young-a77a152' },
+];
+---
+
+<section id="contact" class="px-12 pt-24 pb-30 max-w-[900px] mx-auto" style="padding-bottom: 120px;">
+  <SectionLabel>Contact</SectionLabel>
+  <h2 class="font-serif font-normal text-fg mb-6 leading-[1.05]"
+      style="font-size: clamp(36px, 5vw, 64px);">
+    Let's talk about<br />
+    <span class="text-accent italic">what you're building.</span>
+  </h2>
+  <p class="text-[15px] text-fg-sub max-w-[440px] leading-[1.75] mb-12">
+    I'm currently open to interesting new opportunities. <br />SF Bay Area, open to remote.
+  </p>
+  <div class="flex flex-col gap-3.5">
+    {CONTACTS.map((c) => (
+      <div class="flex gap-6 items-baseline">
+        <span class="font-mono text-[10px] text-fg-muted tracking-[0.12em] uppercase min-w-[60px]">
+          {c.label}
+        </span>
+        <a href={c.href}
+           class="text-[15px] text-fg-sub no-underline transition-colors hover:text-fg">
+          {c.value} ↗
+        </a>
+      </div>
+    ))}
+  </div>
+</section>

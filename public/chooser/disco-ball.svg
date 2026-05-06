@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" fill="none">
+  <defs>
+    <clipPath id="ball">
+      <circle cx="200" cy="228" r="150"/>
+    </clipPath>
+    <pattern id="tiles" x="0" y="0" width="30" height="25" patternUnits="userSpaceOnUse">
+      <rect width="30" height="25" fill="#111"/>
+      <rect x="2" y="2" width="26" height="21" fill="#4d4d4d" rx="1"/>
+    </pattern>
+    <radialGradient id="shade" cx="34%" cy="27%" r="72%">
+      <stop offset="0%" stop-color="white" stop-opacity="0.06"/>
+      <stop offset="48%" stop-color="white" stop-opacity="0"/>
+      <stop offset="100%" stop-color="black" stop-opacity="0.52"/>
+    </radialGradient>
+  </defs>
+
+  <!-- suspension wire -->
+  <line x1="200" y1="8" x2="200" y2="72" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- bracket -->
+  <rect x="184" y="70" width="32" height="10" rx="2" fill="#111" stroke="white" stroke-width="2"/>
+
+  <!-- ball body -->
+  <circle cx="200" cy="228" r="150" fill="#111"/>
+  <!-- mirror tiles -->
+  <rect x="20" y="50" width="360" height="390" fill="url(#tiles)" clip-path="url(#ball)"/>
+  <!-- sphere shading -->
+  <circle cx="200" cy="228" r="150" fill="url(#shade)"/>
+
+  <!-- glare highlight -->
+  <ellipse cx="152" cy="170" rx="27" ry="16" fill="white" opacity="0.32"
+           transform="rotate(-28 152 170)" clip-path="url(#ball)"/>
+  <ellipse cx="147" cy="165" rx="10" ry="6" fill="white" opacity="0.6"
+           transform="rotate(-28 147 165)" clip-path="url(#ball)"/>
+
+  <!-- outline -->
+  <circle cx="200" cy="228" r="150" stroke="white" stroke-width="3"/>
+
+  <!-- sparkle: top-left, large -->
+  <g transform="translate(42 100)">
+    <line x1="0" y1="-20" x2="0" y2="20" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="-20" y1="0" x2="20" y2="0" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="-12" y1="-12" x2="12" y2="12" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="12" y1="-12" x2="-12" y2="12" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+  </g>
+  <!-- sparkle: right, medium -->
+  <g transform="translate(372 192)">
+    <line x1="0" y1="-15" x2="0" y2="15" stroke="white" stroke-width="2" stroke-linecap="round"/>
+    <line x1="-15" y1="0" x2="15" y2="0" stroke="white" stroke-width="2" stroke-linecap="round"/>
+    <line x1="-9" y1="-9" x2="9" y2="9" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="9" y1="-9" x2="-9" y2="9" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+  </g>
+  <!-- sparkle: bottom-right, medium -->
+  <g transform="translate(336 356)">
+    <line x1="0" y1="-13" x2="0" y2="13" stroke="white" stroke-width="2" stroke-linecap="round"/>
+    <line x1="-13" y1="0" x2="13" y2="0" stroke="white" stroke-width="2" stroke-linecap="round"/>
+    <line x1="-8" y1="-8" x2="8" y2="8" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="8" y1="-8" x2="-8" y2="8" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+  </g>
+  <!-- sparkle: top-right, small -->
+  <g transform="translate(358 76)">
+    <line x1="0" y1="-9" x2="0" y2="9" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="-9" y1="0" x2="9" y2="0" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+  </g>
+  <!-- sparkle: bottom-left, tiny -->
+  <g transform="translate(66 355)">
+    <line x1="0" y1="-8" x2="0" y2="8" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="-8" y1="0" x2="8" y2="0" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+  </g>
+</svg>

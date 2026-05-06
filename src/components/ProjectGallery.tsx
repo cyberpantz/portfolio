@@ -54,33 +54,37 @@ export default function ProjectGallery({ project, imageIdx, onImageChange }: Pro
           <Placeholder color={project.color} label="screenshot" uid={project.id} />
         )}
 
-        {hasMultiple && (
-          <div aria-hidden="true" className="absolute bottom-4 left-4 font-mono text-[10px] text-white/30 tracking-[0.1em]">
-            {String(safeIdx + 1).padStart(2, '0')} / {String(images.length).padStart(2, '0')}
-          </div>
-        )}
       </div>
 
-      {/* Thumbnail strip — only when >1 image */}
+      {/* Arrow nav — only when >1 image */}
       {hasMultiple && (
-        <div className="flex border-t border-rule flex-shrink-0" style={{ height: 48 }}>
-          {images.map((src, i) => (
-            <button
-              key={i}
-              type="button"
-              aria-label={`View screenshot ${i + 1}`}
-              aria-pressed={i === safeIdx}
-              onClick={() => onImageChange(i)}
-              className={`relative flex-1 overflow-hidden cursor-pointer transition-opacity
-                          ${i < images.length - 1 ? 'border-r border-rule' : ''}
-                          ${i === safeIdx ? 'opacity-100' : 'opacity-40 hover:opacity-80'}`}
-            >
-              <img src={src} alt="" className="w-full h-full object-cover" />
-              {i === safeIdx && (
-                <div className="absolute inset-x-0 bottom-0 h-0.5 bg-accent" />
-              )}
-            </button>
-          ))}
+        <div className="flex items-center justify-between border-t border-rule flex-shrink-0 px-4"
+             style={{ height: 44 }}>
+          <button
+            type="button"
+            aria-label="Previous image"
+            onClick={() => onImageChange(Math.max(safeIdx - 1, 0))}
+            disabled={safeIdx === 0}
+            className="font-mono text-sm text-fg-muted transition-colors
+                       hover:text-fg disabled:opacity-20 disabled:cursor-not-allowed"
+          >
+            ←
+          </button>
+
+          <span aria-hidden="true" className="font-mono text-[10px] text-fg-muted tracking-[0.12em]">
+            {String(safeIdx + 1).padStart(2, '0')} / {String(images.length).padStart(2, '0')}
+          </span>
+
+          <button
+            type="button"
+            aria-label="Next image"
+            onClick={() => onImageChange(Math.min(safeIdx + 1, images.length - 1))}
+            disabled={safeIdx === images.length - 1}
+            className="font-mono text-sm text-fg-muted transition-colors
+                       hover:text-fg disabled:opacity-20 disabled:cursor-not-allowed"
+          >
+            →
+          </button>
         </div>
       )}
     </div>

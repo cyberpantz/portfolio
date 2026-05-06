@@ -16,7 +16,7 @@ export default {
         fg: {
           DEFAULT: '#e2e2e2',
           sub: '#888888',
-          muted: '#444444',
+          muted: '#666666',
         },
         accent: {
           DEFAULT: 'rgb(var(--accent) / <alpha-value>)',
