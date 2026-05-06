@@ -8,5 +8,5 @@
       "@/*": ["src/*"]
     }
   },
-  "exclude": ["netlify"]
+  "exclude": ["netlify", "dist"]
 }

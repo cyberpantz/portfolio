@@ -306,22 +306,6 @@ export default function SimonSays({
     }
   }, [defaultDifficulty, gameState, startGame]);
 
-  // Get color classes based on color name
-  const getColorClasses = (color: string) => {
-    const colorMap: Record<string, string> = {
-      purple:
-        'hover:border-purple-500 hover:bg-purple-50 dark:hover:bg-purple-500/10',
-      blue: 'hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-500/10',
-      pink: 'hover:border-pink-500 hover:bg-pink-50 dark:hover:bg-pink-500/10',
-      emerald:
-        'hover:border-emerald-500 hover:bg-emerald-50 dark:hover:bg-emerald-500/10',
-      orange:
-        'hover:border-orange-500 hover:bg-orange-50 dark:hover:bg-orange-500/10',
-      rose: 'hover:border-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10',
-    };
-    return colorMap[color] || colorMap.purple;
-  };
-
   // DIFFICULTY SELECTION SCREEN
   if (gameState === 'difficulty-select') {
     return (
