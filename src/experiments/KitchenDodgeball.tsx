@@ -686,7 +686,7 @@ export default function KitchenDodgeball({
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.6 }}
-                className="relative px-16 py-5 bg-gradient-to-b from-pink-500 to-purple-600 text-white text-2xl font-black uppercase border-4 border-pink-300 rounded-lg shadow-[0_0_30px_rgba(236,72,153,0.6)] hover:shadow-[0_0_50px_rgba(236,72,153,0.8)]"
+                className="relative px-8 sm:px-16 py-5 bg-gradient-to-b from-pink-500 to-purple-600 text-white text-2xl font-black uppercase border-4 border-pink-300 rounded-lg shadow-[0_0_30px_rgba(236,72,153,0.6)] hover:shadow-[0_0_50px_rgba(236,72,153,0.8)]"
                 style={{
                   textShadow: '3px 3px 0 rgba(0,0,0,0.5)',
                   fontFamily: 'system-ui, -apple-system, sans-serif',

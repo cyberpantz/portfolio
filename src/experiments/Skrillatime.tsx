@@ -245,7 +245,7 @@ function EarningsChart({ elapsed, wage }: { elapsed: number; wage: number }) {
     <div className="flex flex-col flex-1 min-h-0 gap-4">
 
       {/* Stat cards */}
-      <div className="grid grid-cols-4 gap-3 flex-shrink-0">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 flex-shrink-0">
         {stats.map(s => (
           <div key={s.label}
             className="border p-3 rounded-sm"
@@ -505,10 +505,10 @@ export default function Skrillatime() {
 
       {/* ── Body ── */}
       {view === 'counter' ? (
-        <div className="flex flex-1">
+        <div className="flex flex-col sm:flex-row flex-1 min-h-0">
 
           {/* Left: your counter */}
-          <div className="w-[44%] flex flex-col items-center justify-center gap-8 p-12 border-r border-white/10">
+          <div className="sm:w-[44%] flex flex-col items-center justify-center gap-8 p-6 sm:p-12 border-b sm:border-b-0 sm:border-r border-white/10">
             <p className="font-mono uppercase tracking-[0.3em] text-white/35" style={{ fontSize: 'clamp(0.5rem, 0.85vw, 0.8rem)' }}>
               you've earned
             </p>
@@ -544,7 +544,7 @@ export default function Skrillatime() {
           </div>
 
           {/* Right: comparisons */}
-          <div className="flex-1 flex flex-col justify-center px-12 py-10 gap-8">
+          <div className="flex-1 flex flex-col justify-center px-6 py-6 sm:px-12 sm:py-10 gap-8 overflow-y-auto">
 
             {/* Context blurb */}
             <p className="font-mono text-white/30 leading-relaxed max-w-sm" style={{ fontSize: 'clamp(0.55rem, 0.85vw, 0.8rem)' }}>

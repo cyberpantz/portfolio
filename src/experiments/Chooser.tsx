@@ -111,7 +111,7 @@ function Stage({ pair, direction, onAudioStarted, onChosen, autoStart }: StagePr
       transition={SLIDE}
       onClick={handleStageClick}
     >
-      <div className="flex items-center justify-center gap-40">
+      <div className="flex items-center justify-center gap-16 sm:gap-40">
         {/* Left */}
         <div
           className="flex flex-col items-center gap-5 cursor-pointer"
@@ -119,7 +119,7 @@ function Stage({ pair, direction, onAudioStarted, onChosen, autoStart }: StagePr
         >
           <div
             ref={leftRef}
-            className="w-52 h-52 rounded-full overflow-hidden"
+            className="w-36 h-36 sm:w-52 sm:h-52 rounded-full overflow-hidden"
             style={{ transformOrigin: 'center center', willChange: 'transform' }}
           >
             <img
@@ -141,7 +141,7 @@ function Stage({ pair, direction, onAudioStarted, onChosen, autoStart }: StagePr
         >
           <div
             ref={rightRef}
-            className="w-52 h-52 rounded-full overflow-hidden"
+            className="w-36 h-36 sm:w-52 sm:h-52 rounded-full overflow-hidden"
             style={{ transformOrigin: 'center center', willChange: 'transform' }}
           >
             <img
