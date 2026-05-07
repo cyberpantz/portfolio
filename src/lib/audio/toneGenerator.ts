@@ -8,20 +8,22 @@ import { getVolumeEnabled } from './volumeControl';
 
 let audioContext: AudioContext | null = null;
 
-// Initialize audio context lazily (only on desktop)
 function getAudioContext(): AudioContext | null {
-  // Skip on mobile devices
-  if (typeof window !== 'undefined' && /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-    return null;
-  }
-
-  if (!audioContext && typeof window !== 'undefined') {
+  if (typeof window === 'undefined') return null;
+  if (!audioContext) {
     const AudioContextClass = window.AudioContext || (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
-    if (AudioContextClass) {
-      audioContext = new AudioContextClass();
-    }
+    if (AudioContextClass) audioContext = new AudioContextClass();
   }
   return audioContext;
+}
+
+/**
+ * Resume the AudioContext — call synchronously inside a user gesture (tap/click).
+ * Required on iOS before any tones will play; safe to call multiple times.
+ */
+export function resumeAudioContext(): void {
+  const ctx = getAudioContext();
+  if (ctx && ctx.state === 'suspended') ctx.resume().catch(() => {});
 }
 
 /**

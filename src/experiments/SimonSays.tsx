@@ -2,7 +2,7 @@ import { RotateCcw, Frown, PartyPopper, Sparkles, Crown } from 'lucide-react';
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import confetti from 'canvas-confetti';
-import { playNote, MUSICAL_NOTES } from '@/lib/audio/toneGenerator';
+import { playNote, MUSICAL_NOTES, resumeAudioContext } from '@/lib/audio/toneGenerator';
 import { getVolumeEnabled } from '@/lib/audio/volumeControl';
 
 interface SimonSaysProps {
@@ -115,6 +115,7 @@ export default function SimonSays({
 
   // Start game with selected difficulty
   const startGame = useCallback((selectedDifficulty: Difficulty) => {
+    resumeAudioContext(); // unlock Web Audio on iOS — must be inside a user gesture
     setDifficulty(selectedDifficulty);
     setGameState('playing');
     setRound(1);
