@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { PROJECTS } from '../data/projects';
 import { Tag } from './ui/Tag';
 import ProjectGallery from './ProjectGallery';
@@ -6,6 +6,7 @@ import ProjectGallery from './ProjectGallery';
 export default function Projects() {
   const [activeProject, setActiveProject] = useState(0);
   const [activeImage, setActiveImage] = useState(0);
+  const touchStartX = useRef<number | null>(null);
 
   // Reset to first image when project changes
   useEffect(() => {
@@ -54,7 +55,24 @@ export default function Projects() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 border-y border-rule">
         {/* Left: gallery */}
-        <div className="h-64 sm:h-auto border-b sm:border-b-0 sm:border-r border-rule bg-ink-surface overflow-hidden">
+        <div
+          className="h-64 sm:h-auto border-b sm:border-b-0 sm:border-r border-rule bg-ink-surface overflow-hidden"
+          onTouchStart={e => { touchStartX.current = e.touches[0].clientX; }}
+          onTouchEnd={e => {
+            if (touchStartX.current === null) return;
+            const dx = e.changedTouches[0].clientX - touchStartX.current;
+            touchStartX.current = null;
+            if (Math.abs(dx) < 40) return;
+            const imageCount = PROJECTS[activeProject]?.images?.length ?? 0;
+            if (dx < 0) {
+              if (imageCount > 1 && activeImage < imageCount - 1) setActiveImage(i => i + 1);
+              else setActiveProject(i => (i + 1) % PROJECTS.length);
+            } else {
+              if (imageCount > 1 && activeImage > 0) setActiveImage(i => i - 1);
+              else setActiveProject(i => (i - 1 + PROJECTS.length) % PROJECTS.length);
+            }
+          }}
+        >
           <ProjectGallery
             project={proj}
             imageIdx={activeImage}
@@ -96,7 +114,7 @@ export default function Projects() {
       </div>
 
       {/* Project selector strip */}
-      <div className="flex px-4 sm:px-12 border-b border-rule">
+      <div className="flex overflow-x-auto px-4 sm:px-12 border-b border-rule scrollbar-none">
         {PROJECTS.map((p, i) => (
           <button
             type="button"
