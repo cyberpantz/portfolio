@@ -6,7 +6,7 @@ interface NavProps {
   showAvailability?: boolean;
 }
 
-export default function Nav({ showAvailability = true }: NavProps) {
+export default function Nav({ showAvailability = false }: NavProps) {
   const active = useActiveSection(['about','work','projects','skills','contact']);
 
   const scrollTo = (id: string) => {
