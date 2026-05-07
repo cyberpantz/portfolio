@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { useRef, useEffect } from 'react';
 import type { Project } from '../data/projects';
 
 interface Props {
@@ -39,6 +40,15 @@ export default function ProjectGallery({ project, imageIdx, onImageChange }: Pro
   const images = project.images ?? [];
   const hasMultiple = images.length > 1;
   const safeIdx = images.length > 0 ? Math.min(Math.max(imageIdx, 0), images.length - 1) : 0;
+  const imgRef = useRef<HTMLImageElement>(null);
+
+  useEffect(() => {
+    const el = imgRef.current;
+    if (!el) return;
+    el.classList.remove('animate-gallery-in');
+    void el.offsetWidth; // force reflow to restart animation
+    el.classList.add('animate-gallery-in');
+  }, [safeIdx]);
 
   const canPrev = safeIdx > 0;
   const canNext = safeIdx < images.length - 1;
@@ -61,7 +71,7 @@ export default function ProjectGallery({ project, imageIdx, onImageChange }: Pro
       >
         {images.length > 0 ? (
           <img
-            key={`${project.id}-${safeIdx}`}
+            ref={imgRef}
             src={images[safeIdx]}
             alt={`${project.name} screenshot ${safeIdx + 1}`}
             draggable={false}
