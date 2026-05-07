@@ -39,7 +39,7 @@ export const PROJECTS: Project[] = [
     tags: ['React','NextJS', 'Tailwind', 'Vercel', 'Claude Code'],
     year: '2025',
     description:
-      'A personal project that started me down the path of AI driven development. It started with a simple concept "I really dislike dealing with these messy spreadsheets for these group camping trips". What ended up happening was a classic AI newbie move falling down the rabbithole into endless feature development and no clear MVP. It was super fun to build and build all the features I could add without justification. That said, I\'m current working on refining and streamlining the concept into a proper MVP that can actaully be shipped, not just iterated on endlessly ad nauseum.',
+      'A personal project that started me down the path of AI driven development. It started with a simple concept "I really dislike dealing with these messy spreadsheets for these group camping trips, I can build something fun to use and better!". What ended up happening was a classic AI newbie move falling down the rabbithole into endless feature development and no clear MVP. It was super fun to build and build all the features I could add without justification. That said, I\'m current working on refining and streamlining the concept into a proper MVP that can actaully be shipped, not just iterated on endlessly ad nauseum.',
        color: '#8b5e3c',
      images: ['/projects/mealtrip/mealtrip-1.png', 
       '/projects/mealtrip/mealtrip-2.png', 
