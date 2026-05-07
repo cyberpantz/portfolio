@@ -349,7 +349,7 @@ export default function SimonSays({
           <div className="text-xs uppercase tracking-[0.2em] text-white/40 mb-5 text-center font-mono">
             Select Difficulty
           </div>
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             {([
               { id: 'easy' as const,       emoji: '🧠', label: 'Easy',   sub: '4-card sequence', glow: 'rgba(34,197,94,0.5)',  border: '#22c55e', bg: 'rgba(34,197,94,0.12)'  },
               { id: 'hard' as const,       emoji: '🔥', label: 'Hard',   sub: '6-card sequence', glow: 'rgba(234,179,8,0.5)', border: '#eab308', bg: 'rgba(234,179,8,0.12)'  },

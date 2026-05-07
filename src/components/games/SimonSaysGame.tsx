@@ -16,7 +16,7 @@ export default function SimonSaysGame() {
       </div>
 
       <div className="flex-1 flex items-center justify-center p-4">
-        <div className="w-full" style={{ minWidth: 800, maxWidth: 1200 }}>
+        <div className="w-full" style={{ maxWidth: 1200 }}>
           {screen === 'playing' && (
             <SimonSays
               onWin={() => setScreen('win')}
