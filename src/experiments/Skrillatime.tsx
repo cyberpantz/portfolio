@@ -538,7 +538,8 @@ export default function Skrillatime() {
               </button>
             </div>
 
-            <p className="font-mono text-white/20 tabular-nums" style={{ fontSize: 'clamp(0.5rem, 0.85vw, 0.8rem)' }}>
+            <p className="font-mono text-white/20 tabular-nums flex items-center gap-2" style={{ fontSize: 'clamp(0.5rem, 0.85vw, 0.8rem)' }}>
+              <span className="uppercase tracking-[0.15em] text-white/15">elapsed</span>
               {fmtElapsed(elapsed)}
             </p>
           </div>
