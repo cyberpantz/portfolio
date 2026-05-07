@@ -8,13 +8,13 @@ export interface Exploration {
 }
 
 export const EXPLORATIONS: Exploration[] = [
-  { id: 'pattern-match',     name: 'Pattern Match',    type: 'Game',        tags: ['Game','Audio','React'],
+  { id: 'pattern-match',     name: 'Pattern Match',    type: 'Game',        tags: ['Game','AudioContext','React'],
     url: '/explorations/pattern-match',
-    desc: 'Color sequence memory game inspired by the 1980s Simon. Three difficulty levels with audio feedback.' },
+    desc: 'Color and sound sequence memory game inspired by the 1980s Simon. Uses the AudioContext API to generate sounds for each color.' },
   // { id: 'kitchen-dodgeball', name: 'Kitchen Dodgeball', type: 'Game',     tags: ['Game','Canvas','React'],
   //   url: '/explorations/kitchen-dodgeball',
   //   desc: 'Dodge falling kitchen chaos as a chef avatar. Progressively harder waves with boss items.' },
-  { id: 'skrillatime',       name: 'Skrillatime',      type: 'Interactive', tags: ['Audio','React'],
+  { id: 'skrillatime',       name: '$krillatime',      type: 'Interactive', tags: ['Audio','React'],
     url: '/explorations/skrillatime',
     desc: 'Enter your hourly rate and watch the money stack up in real time. A cash register rings every dollar.' },
   // { id: 'chooser',           name: 'The Chooser',      type: 'Interactive', tags: ['Audio','React','Generative'],
