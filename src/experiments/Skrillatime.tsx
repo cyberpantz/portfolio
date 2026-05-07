@@ -26,10 +26,22 @@ function playRegister(ctx: AudioContext, buffer: AudioBuffer) {
 
 // ---------- FlipDigit ----------
 
-const CELL_W = 80;
-const CELL_H = 116;
+const CELL_W_MAX = 80;
+const CELL_H_MAX = 116;
 
-function FlipDigit({ value }: { value: string }) {
+// 5 digit cells + $ sep + . sep + gaps, approximated at cellW=1
+// cellW * (5 + 0.54 + 0.54) + 24 = available  →  cellW = (available - 24) / 6.08
+const DISPLAY_DIVISOR = 6.08;
+const DISPLAY_MARGIN  = 24;
+
+function computeCellW(availablePx: number) {
+  return Math.max(30, Math.min(CELL_W_MAX, Math.floor((availablePx - DISPLAY_MARGIN) / DISPLAY_DIVISOR)));
+}
+
+function FlipDigit({ value, cellW }: { value: string; cellW: number }) {
+  const cellH    = Math.round(cellW * (CELL_H_MAX / CELL_W_MAX));
+  const fontSize = Math.round(cellW * (72 / CELL_W_MAX));
+
   const num = parseInt(value, 10);
   const prevNum = useRef(num);
   const [pos, setPos] = useState(num);
@@ -57,14 +69,14 @@ function FlipDigit({ value }: { value: string }) {
   return (
     <div
       className="relative overflow-hidden rounded-sm border border-white/10"
-      style={{ width: CELL_W, height: CELL_H, background: 'rgba(255,255,255,0.04)' }}
+      style={{ width: cellW, height: cellH, background: 'rgba(255,255,255,0.04)' }}
     >
       <div className="absolute inset-x-0 top-0 h-1/2 bg-gradient-to-b from-white/5 to-transparent pointer-events-none z-10" />
       <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/30 to-transparent pointer-events-none z-10" />
       <div className="absolute inset-x-0 top-1/2 h-px bg-white/8 pointer-events-none z-10" />
       <motion.div
         className="absolute inset-x-0 top-0"
-        animate={{ y: -pos * CELL_H }}
+        animate={{ y: -pos * cellH }}
         transition={
           instant.current
             ? { duration: 0 }
@@ -72,8 +84,8 @@ function FlipDigit({ value }: { value: string }) {
         }
       >
         {strip.map((d, i) => (
-          <div key={i} className="flex items-center justify-center" style={{ height: CELL_H }}>
-            <span className="font-mono font-bold text-exp-bright select-none tabular-nums" style={{ fontSize: 72 }}>
+          <div key={i} className="flex items-center justify-center" style={{ height: cellH }}>
+            <span className="font-mono font-bold text-exp-bright select-none tabular-nums" style={{ fontSize }}>
               {d}
             </span>
           </div>
@@ -84,19 +96,37 @@ function FlipDigit({ value }: { value: string }) {
 }
 
 function EarningsDisplay({ earnings }: { earnings: number }) {
+  const [cellW, setCellW] = useState(() =>
+    typeof window !== 'undefined' ? computeCellW(window.innerWidth - 48) : CELL_W_MAX
+  );
+
+  useEffect(() => {
+    const update = () => setCellW(computeCellW(window.innerWidth - 48));
+    window.addEventListener('resize', update);
+    return () => window.removeEventListener('resize', update);
+  }, []);
+
+  const cellH         = Math.round(cellW * (CELL_H_MAX / CELL_W_MAX));
+  const separatorSize = Math.round(cellW * (76 / CELL_W_MAX));
+  const outerGap      = Math.max(2, Math.round(cellW * (6 / CELL_W_MAX)));
+  const innerGap      = Math.max(1, Math.round(cellW * (3 / CELL_W_MAX)));
+
   const str = earnings.toFixed(2);
   const [rawInt, frac] = str.split('.');
   const intDigits = rawInt.padStart(3, '0').split('');
   const fracDigits = frac.split('');
+
   return (
-    <div className="flex items-center" style={{ gap: 6 }}>
-      <span className="font-mono font-bold text-exp-base select-none" style={{ fontSize: 76, lineHeight: `${CELL_H}px` }}>$</span>
-      <div className="flex" style={{ gap: 3 }}>
-        {intDigits.map((d, i) => <FlipDigit key={`i${i}`} value={d} />)}
-      </div>
-      <span className="font-mono font-bold text-exp-base select-none" style={{ fontSize: 76, lineHeight: `${CELL_H}px` }}>.</span>
-      <div className="flex" style={{ gap: 3 }}>
-        {fracDigits.map((d, i) => <FlipDigit key={`f${i}`} value={d} />)}
+    <div className="flex justify-center">
+      <div className="flex items-center" style={{ gap: outerGap }}>
+        <span className="font-mono font-bold text-exp-base select-none" style={{ fontSize: separatorSize, lineHeight: `${cellH}px` }}>$</span>
+        <div className="flex" style={{ gap: innerGap }}>
+          {intDigits.map((d, i) => <FlipDigit key={`i${i}`} value={d} cellW={cellW} />)}
+        </div>
+        <span className="font-mono font-bold text-exp-base select-none" style={{ fontSize: separatorSize, lineHeight: `${cellH}px` }}>.</span>
+        <div className="flex" style={{ gap: innerGap }}>
+          {fracDigits.map((d, i) => <FlipDigit key={`f${i}`} value={d} cellW={cellW} />)}
+        </div>
       </div>
     </div>
   );
@@ -382,16 +412,16 @@ function AffordTable({ wage }: { wage: number }) {
   ];
 
   return (
-    <div className="flex-1 overflow-y-auto px-6 py-8 sm:px-12">
-      <div className="max-w-3xl mx-auto">
+    <div className="flex-1 overflow-y-auto px-4 py-8 sm:px-12">
+      <div className="max-w-3xl mx-auto overflow-x-auto">
         <table className="w-full border-collapse">
           <thead>
             <tr className="border-b border-white/10">
-              <th className="text-left pb-4 pr-8 font-mono text-exp-note text-exp-dim uppercase tracking-wider">
+              <th className="sticky left-0 bg-black text-left pb-4 pr-4 sm:pr-8 font-mono text-exp-note text-exp-dim uppercase tracking-wider">
                 item
               </th>
               {columns.map(col => (
-                <th key={col.name} className="text-right pb-4 pl-8 min-w-[5rem]">
+                <th key={col.name} className="text-right pb-4 pl-4 sm:pl-8 min-w-[4rem]">
                   <div className={`font-mono text-exp-label uppercase tracking-wider ${col.highlight ? 'text-exp-bright' : 'text-exp-base'}`}>
                     {col.name}
                   </div>
@@ -403,14 +433,14 @@ function AffordTable({ wage }: { wage: number }) {
           <tbody>
             {AFFORD_ITEMS.map((item, i) => (
               <tr key={item.label} className={i < AFFORD_ITEMS.length - 1 ? 'border-b border-white/5' : ''}>
-                <td className="py-3.5 pr-8">
+                <td className="sticky left-0 bg-black py-3.5 pr-4 sm:pr-8">
                   <div className="font-mono text-exp-label text-exp-base">{item.label}</div>
                   <div className="font-mono text-exp-note text-exp-dim">${item.price.toLocaleString()}</div>
                 </td>
                 {columns.map(col => {
                   const { text, cls } = fmtWorkTime(item.price, col.rate);
                   return (
-                    <td key={col.name} className={`py-3.5 pl-8 text-right font-mono tabular-nums text-exp-label ${cls}`}>
+                    <td key={col.name} className={`py-3.5 pl-4 sm:pl-8 text-right font-mono tabular-nums text-exp-label ${cls}`}>
                       {text}
                     </td>
                   );
@@ -566,28 +596,42 @@ export default function Skrillatime() {
       onClick={initAudio}
     >
       {/* ── Header ── */}
-      <div className="relative flex items-center justify-between px-6 py-4 border-b border-white/10 flex-shrink-0">
-        <a
-          href="/explorations"
-          className="font-mono text-exp-label text-exp-muted tracking-[0.08em] hover:text-exp-bright transition-colors"
-          onClick={e => e.stopPropagation()}
-        >
-          ← back
-        </a>
-        <span className="font-mono text-exp-label text-exp-muted tracking-[0.08em] uppercase absolute left-1/2 -translate-x-1/2">
-          Skrillatime
-        </span>
-        <div className="flex items-center gap-5" onClick={e => e.stopPropagation()}>
+      <div className="border-b border-white/10 flex-shrink-0">
+        {/* Row 1: back + title */}
+        <div className="relative flex items-center px-6 py-3 sm:py-4 sm:justify-between">
+          <a
+            href="/explorations"
+            className="font-mono text-exp-label text-exp-muted tracking-[0.08em] hover:text-exp-bright transition-colors"
+            onClick={e => e.stopPropagation()}
+          >
+            ← back
+          </a>
+          {/* Mobile: title centered between back and right edge */}
+          <span className="sm:hidden flex-1 text-center font-mono text-exp-label text-exp-muted tracking-[0.08em] uppercase">
+            Skrillatime
+          </span>
+          {/* Desktop: title absolutely centered, tabs on right */}
+          <span className="hidden sm:block font-mono text-exp-label text-exp-muted tracking-[0.08em] uppercase absolute left-1/2 -translate-x-1/2">
+            Skrillatime
+          </span>
+          <div className="hidden sm:flex items-center gap-5" onClick={e => e.stopPropagation()}>
+            {(['counter', 'chart', 'afford'] as const).map(v => (
+              <button key={v} onClick={() => setView(v)}
+                className={`font-mono text-exp-label tracking-[0.08em] uppercase transition-colors cursor-pointer ${
+                  view === v ? 'text-exp-bright' : 'text-exp-muted hover:text-exp-base'
+                }`}
+              >{v}</button>
+            ))}
+          </div>
+        </div>
+        {/* Row 2 (mobile only): tabs */}
+        <div className="sm:hidden flex items-center justify-center gap-8 pb-3" onClick={e => e.stopPropagation()}>
           {(['counter', 'chart', 'afford'] as const).map(v => (
-            <button
-              key={v}
-              onClick={() => setView(v)}
+            <button key={v} onClick={() => setView(v)}
               className={`font-mono text-exp-label tracking-[0.08em] uppercase transition-colors cursor-pointer ${
                 view === v ? 'text-exp-bright' : 'text-exp-muted hover:text-exp-base'
               }`}
-            >
-              {v}
-            </button>
+            >{v}</button>
           ))}
         </div>
       </div>
@@ -638,7 +682,8 @@ export default function Skrillatime() {
 
             {/* Context blurb */}
             <p className="font-mono text-exp-body text-exp-muted leading-relaxed max-w-sm">
-              While you work, so does everyone else — from the minimum wage worker to the world's wealthiest person. These counters all started at the same moment. The federal minimum wage hasn't changed since 2009. Billionaire wealth has grown by trillions. This is not an accident.
+              While you work, so does everyone else — from the minimum wage worker to the world's wealthiest person. These counters are synchronized and expose the wealth gap in a dramatic way.
+              The federal minimum wage hasn't changed since 2009. Billionaire wealth has grown by trillions. This is not an accident.
             </p>
 
             <div className="border-t border-white/10" />
