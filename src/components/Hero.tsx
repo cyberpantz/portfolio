@@ -24,7 +24,7 @@ export default function Hero() {
   return (
     <section
       id="about"
-      className="min-h-screen flex flex-col justify-end px-12 pb-18
+      className="min-h-screen flex flex-col justify-end px-6 sm:px-12 pb-18
                  border-b border-rule relative"
       style={{ paddingBottom: 72 }}
     >
@@ -60,6 +60,7 @@ export default function Hero() {
           </a>
           <a
             href="#work"
+            onClick={e => { e.preventDefault(); document.getElementById('work')?.scrollIntoView({ behavior: 'smooth' }); }}
             className="inline-flex px-5 py-2.5 rounded-sm border border-rule-strong text-fg-sub
                        font-mono text-xs tracking-[0.06em]
                        transition-colors hover:text-fg hover:border-fg-sub"
@@ -70,7 +71,7 @@ export default function Hero() {
       </div>
 
       {/* Decorative skill column */}
-      <div className="absolute right-12 bottom-18 flex flex-col gap-0.5 opacity-15"
+      <div className="hidden sm:flex absolute right-12 bottom-18 flex-col gap-0.5 opacity-15"
            style={{ bottom: 72 }}>
         {['React','TypeScript','Node.js','Microfrontends','LLMs','WCAG'].map((s) => (
           <div key={s} className="font-mono text-[10px] text-fg tracking-[0.08em] text-right">

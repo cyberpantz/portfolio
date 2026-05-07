@@ -1,3 +1,4 @@
+import { motion } from 'framer-motion';
 import type { Project } from '../data/projects';
 
 interface Props {
@@ -10,7 +11,7 @@ function Placeholder({ color, label, uid }: { color: string; label: string; uid:
   const safeId = `${uid}-${label.replace(/\W+/g, '-')}`;
   return (
     <div
-      className="w-full h-full flex items-center justify-center relative overflow-hidden"
+      className="w-full aspect-video flex items-center justify-center relative overflow-hidden"
       style={{ background: color }}
     >
       <svg className="absolute inset-0 w-full h-full opacity-[0.12]">
@@ -39,22 +40,37 @@ export default function ProjectGallery({ project, imageIdx, onImageChange }: Pro
   const hasMultiple = images.length > 1;
   const safeIdx = images.length > 0 ? Math.min(Math.max(imageIdx, 0), images.length - 1) : 0;
 
+  const canPrev = safeIdx > 0;
+  const canNext = safeIdx < images.length - 1;
+
   return (
-    <div className="w-full h-full flex flex-col">
-      {/* Main image */}
-      <div className="relative flex-1 overflow-hidden bg-ink-surface">
+    <div className="w-full flex flex-col">
+      {/* Main image — draggable horizontally */}
+      <motion.div
+        className="relative overflow-hidden bg-ink-surface cursor-grab active:cursor-grabbing"
+        drag={hasMultiple ? 'x' : false}
+        dragConstraints={{ left: 0, right: 0 }}
+        dragElastic={{ left: canNext ? 0.3 : 0.05, right: canPrev ? 0.3 : 0.05 }}
+        onDragEnd={(_e, info) => {
+          const { offset, velocity } = info;
+          const swipe = Math.abs(offset.x) > 50 || Math.abs(velocity.x) > 400;
+          if (!swipe) return;
+          if (offset.x < 0 && canNext) onImageChange(safeIdx + 1);
+          else if (offset.x > 0 && canPrev) onImageChange(safeIdx - 1);
+        }}
+      >
         {images.length > 0 ? (
           <img
             key={`${project.id}-${safeIdx}`}
             src={images[safeIdx]}
             alt={`${project.name} screenshot ${safeIdx + 1}`}
-            className="w-full h-full object-cover animate-gallery-in"
+            draggable={false}
+            className="w-full h-auto block animate-gallery-in select-none pointer-events-none"
           />
         ) : (
           <Placeholder color={project.color} label="screenshot" uid={project.id} />
         )}
-
-      </div>
+      </motion.div>
 
       {/* Arrow nav — only when >1 image */}
       {hasMultiple && (
@@ -64,7 +80,7 @@ export default function ProjectGallery({ project, imageIdx, onImageChange }: Pro
             type="button"
             aria-label="Previous image"
             onClick={() => onImageChange(Math.max(safeIdx - 1, 0))}
-            disabled={safeIdx === 0}
+            disabled={!canPrev}
             className="font-mono text-sm text-fg-muted transition-colors
                        hover:text-fg disabled:opacity-20 disabled:cursor-not-allowed"
           >
@@ -79,7 +95,7 @@ export default function ProjectGallery({ project, imageIdx, onImageChange }: Pro
             type="button"
             aria-label="Next image"
             onClick={() => onImageChange(Math.min(safeIdx + 1, images.length - 1))}
-            disabled={safeIdx === images.length - 1}
+            disabled={!canNext}
             className="font-mono text-sm text-fg-muted transition-colors
                        hover:text-fg disabled:opacity-20 disabled:cursor-not-allowed"
           >

@@ -21,7 +21,7 @@ function WorkRow({ item, defaultOpen }: { item: Role; defaultOpen?: boolean }) {
         />
 
         <div className="flex-1">
-          <div className="flex items-baseline gap-3 mb-1">
+          <div className="flex flex-col sm:flex-row sm:items-baseline gap-0.5 sm:gap-3 mb-1">
             <span className={`font-serif text-xl transition-colors ${open ? 'text-fg' : 'text-[#aaa]'}`}>
               {item.co}
             </span>
@@ -61,7 +61,7 @@ function WorkRow({ item, defaultOpen }: { item: Role; defaultOpen?: boolean }) {
 
 export default function Work() {
   return (
-    <section id="work" className="px-12 py-24 border-b border-rule max-w-[900px] mx-auto">
+    <section id="work" className="px-6 sm:px-12 py-24 border-b border-rule max-w-[900px] mx-auto">
       <div className="font-mono text-[11px] tracking-[0.14em] text-fg-muted mb-8 uppercase">
         Work History
       </div>

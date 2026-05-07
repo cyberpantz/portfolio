@@ -8,8 +8,6 @@ import ProjectGallery from './ProjectGallery';
 export default function Projects() {
   const [selected, setSelected] = useState<number | null>(null);
   const [activeImage, setActiveImage] = useState(0);
-  const touchStartX = useRef<number | null>(null);
-
   const proj = selected !== null ? PROJECTS[selected]! : null;
 
   const open = (i: number) => { setSelected(i); setActiveImage(0); };
@@ -59,7 +57,7 @@ export default function Projects() {
                     key={p.id}
                     type="button"
                     onClick={() => open(i)}
-                    className="group w-[350px] cursor-pointer text-left"
+                    className="group w-full sm:w-[350px] cursor-pointer text-left"
                   >
                     <div className="h-48 rounded-sm overflow-hidden border border-rule group-hover:border-rule-strong transition-colors">
                       {p.images?.[0] ? (
@@ -110,17 +108,7 @@ export default function Projects() {
               <div className="grid grid-cols-1 sm:grid-cols-2">
                 {/* Left: gallery */}
                 <div
-                  className="relative h-64 sm:h-auto border-b sm:border-b-0 sm:border-r border-rule bg-ink-surface overflow-hidden group"
-                  onTouchStart={e => { touchStartX.current = e.touches[0].clientX; }}
-                  onTouchEnd={e => {
-                    if (touchStartX.current === null) return;
-                    const dx = e.changedTouches[0].clientX - touchStartX.current;
-                    touchStartX.current = null;
-                    if (Math.abs(dx) < 40) return;
-                    const count = proj!.images?.length ?? 0;
-                    if (dx < 0 && activeImage < count - 1) setActiveImage(i => i + 1);
-                    if (dx > 0 && activeImage > 0)         setActiveImage(i => i - 1);
-                  }}
+                  className="relative border-b sm:border-b-0 sm:border-r border-rule bg-ink-surface overflow-hidden group"
                 >
                   <ProjectGallery project={proj!} imageIdx={activeImage} onImageChange={setActiveImage} />
 
