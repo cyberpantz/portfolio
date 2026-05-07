@@ -575,7 +575,7 @@ export default function Skrillatime() {
                 </span>
               </div>
               <span className="font-mono text-white/25" style={{ fontSize: 'clamp(0.5rem, 0.85vw, 0.8rem)' }}>
-                earns {fmtMultiplier(ELON_RATE / wage)} your hourly rate
+                earns {Math.round(ELON_RATE / wage).toLocaleString()}× your hourly rate
               </span>
               <AnimatePresence>
                 {showElonInfo && (
