@@ -15,7 +15,7 @@ export default function Nav({ showAvailability = false }: NavProps) {
   };
 
   return (
-    <nav className="fixed inset-x-0 top-0 z-50 h-13 px-12 flex items-center
+    <nav className="fixed inset-x-0 top-0 z-50 h-13 px-6 sm:px-12 flex items-center
                     bg-ink/[0.88] backdrop-blur-md border-b border-rule"
          style={{ height: 52 }}>
       <button
@@ -37,7 +37,7 @@ export default function Nav({ showAvailability = false }: NavProps) {
         </div>
       )}
 
-      <div className="flex gap-7">
+      <div className="hidden sm:flex gap-7">
         {SECTIONS.map((s) =>
           s === 'explorations' ? (
             <a
