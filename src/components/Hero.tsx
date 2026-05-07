@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 export default function Hero() {
   const [typed, setTyped] = useState('');
   const full = 'making complex things usable.';
+  const mailRef = useRef<HTMLAnchorElement>(null);
 
   useEffect(() => {
     let i = 0;
@@ -12,6 +13,12 @@ export default function Hero() {
       if (i >= full.length) window.clearInterval(t);
     }, 38);
     return () => window.clearInterval(t);
+  }, []);
+
+  useEffect(() => {
+    if (mailRef.current) {
+      mailRef.current.href = `mailto:phranque.y${String.fromCharCode(64)}gmail.com`;
+    }
   }, []);
 
   return (
@@ -43,7 +50,8 @@ export default function Hero() {
 
         <div className="flex flex-wrap gap-4">
           <a
-            href={`mailto:${'phranque.y'}@${'gmail'}.com`}
+            ref={mailRef}
+            href="#"
             className="inline-flex px-5 py-2.5 rounded-sm bg-accent text-ink
                        font-mono text-xs font-medium tracking-[0.06em]
                        transition-opacity hover:opacity-85"

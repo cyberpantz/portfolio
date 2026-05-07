@@ -1,8 +1,5 @@
 export default function MailtoLink() {
-  const u = 'phranque.y';
-  const d = 'gmail';
-  const t = 'com';
-  const email = `${u}@${d}.${t}`;
+  const email = `phranque.y${String.fromCharCode(64)}gmail.com`;
   return (
     <a
       href={`mailto:${email}`}
