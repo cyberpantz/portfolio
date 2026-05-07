@@ -1,6 +1,7 @@
 ---
 import { EXPLORATIONS } from '../data/explorations';
 import SectionLabel from './ui/SectionLabel.astro';
+import { ExplorationIcon } from './ExplorationIcon';
 ---
 
 <section id="explorations" class="px-12 py-24 border-b border-rule max-w-[900px] mx-auto">
@@ -14,14 +15,14 @@ import SectionLabel from './ui/SectionLabel.astro';
    No clients, no briefs — just making things.
   </p>
 
-  <div class="grid grid-cols-3 gap-px bg-rule border border-rule rounded overflow-hidden">
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-px bg-rule border border-rule rounded overflow-hidden">
     {EXPLORATIONS.map((exp) => (
       <a href={exp.url ?? '#'}
          class="bg-ink-surface px-6 py-7 flex flex-col gap-3 cursor-pointer group
                 transition-all duration-200 hover:bg-ink-surface2 hover:-translate-y-1
                 hover:shadow-[0_12px_40px_rgba(0,0,0,0.5)] no-underline">
         <div class="flex items-center justify-between">
-          <span class="text-[22px]">{exp.icon}</span>
+          <ExplorationIcon id={exp.id} size={20} />
           <span class="font-mono text-[9px] text-fg-muted tracking-[0.12em] uppercase">
             {exp.type}
           </span>

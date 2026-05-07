@@ -1,6 +1,7 @@
 ---
 import Base from '../../layouts/Base.astro';
 import { EXPLORATIONS } from '../../data/explorations';
+import { ExplorationIcon } from '../../components/ExplorationIcon';
 ---
 <Base title="Explorations — Frank Young" description="Side projects, experiments, and games.">
   <div class="min-h-screen bg-ink flex flex-col">
@@ -17,8 +18,11 @@ import { EXPLORATIONS } from '../../data/explorations';
         Things built<br />
         <span class="text-accent italic">for fun.</span>
       </h2>
-      <p class="text-sm text-fg-muted mb-10 leading-[1.7]">
+      <p class="text-sm text-fg-muted mb-6 leading-[1.7]">
         No clients, no briefs — just making things.
+      </p>
+      <p class="sm:hidden font-mono text-[11px] text-fg-muted/50 tracking-[0.08em] mb-10">
+        ⚠ these work best on a larger screen
       </p>
 
       <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-px bg-rule border border-rule rounded overflow-hidden">
@@ -27,7 +31,7 @@ import { EXPLORATIONS } from '../../data/explorations';
              class="bg-ink-surface px-6 py-7 flex flex-col gap-3 cursor-pointer group
                     transition-all duration-200 hover:bg-ink-surface2 no-underline">
             <div class="flex items-center justify-between">
-              <span class="text-[22px]">{exp.icon}</span>
+              <ExplorationIcon id={exp.id} size={20} />
               <span class="font-mono text-[9px] text-fg-muted tracking-[0.12em] uppercase">
                 {exp.type}
               </span>
@@ -56,7 +60,6 @@ import { EXPLORATIONS } from '../../data/explorations';
         {/* Teaser card */}
         <div class="bg-ink-surface px-6 py-7 flex flex-col gap-3">
           <div class="flex items-center justify-between">
-            <span class="text-[22px]">📦</span>
             <span class="font-mono text-[9px] text-fg-muted tracking-[0.12em] uppercase">Archives</span>
           </div>
           <div>
