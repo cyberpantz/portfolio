@@ -40,7 +40,7 @@ export default function Projects() {
 
   return (
     <section id="projects" className="py-24 border-b border-rule">
-      <div className="px-12 max-w-[900px] mx-auto">
+      <div className="px-6 sm:px-12 max-w-[900px] mx-auto">
         <div className="font-mono text-[11px] tracking-[0.14em] text-fg-muted mb-8 uppercase">
           Personal Projects
         </div>
@@ -52,9 +52,9 @@ export default function Projects() {
         </h2>
       </div>
 
-      <div className="grid grid-cols-2 border-y border-rule" style={{ minHeight: 440 }}>
+      <div className="grid grid-cols-1 sm:grid-cols-2 border-y border-rule">
         {/* Left: gallery */}
-        <div className="border-r border-rule bg-ink-surface overflow-hidden">
+        <div className="h-64 sm:h-auto border-b sm:border-b-0 sm:border-r border-rule bg-ink-surface overflow-hidden">
           <ProjectGallery
             project={proj}
             imageIdx={activeImage}
@@ -63,7 +63,7 @@ export default function Projects() {
         </div>
 
         {/* Right: project detail */}
-        <div className="px-12 py-10 flex flex-col justify-between">
+        <div className="px-6 py-6 sm:px-12 sm:py-10 flex flex-col justify-between">
           <div>
             <div className="font-mono text-[10px] text-accent tracking-[0.14em] mb-4 uppercase">
               {proj.year}
@@ -96,7 +96,7 @@ export default function Projects() {
       </div>
 
       {/* Project selector strip */}
-      <div className="flex px-12 border-b border-rule">
+      <div className="flex px-4 sm:px-12 border-b border-rule">
         {PROJECTS.map((p, i) => (
           <button
             type="button"
@@ -120,7 +120,7 @@ export default function Projects() {
             )}
           </button>
         ))}
-        <div className="flex items-center pl-5 font-mono text-[10px] text-fg-muted tracking-[0.06em] gap-1.5 flex-shrink-0">
+        <div className="hidden sm:flex items-center pl-5 font-mono text-[10px] text-fg-muted tracking-[0.06em] gap-1.5 flex-shrink-0">
           <span>← →</span>
           <span>navigate</span>
         </div>
