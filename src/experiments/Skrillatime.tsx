@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Pencil, Pause, Play } from 'lucide-react';
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid,
   Tooltip, ResponsiveContainer,
@@ -72,7 +73,7 @@ function FlipDigit({ value }: { value: string }) {
       >
         {strip.map((d, i) => (
           <div key={i} className="flex items-center justify-center" style={{ height: CELL_H }}>
-            <span className="font-mono font-bold text-white select-none tabular-nums" style={{ fontSize: 72 }}>
+            <span className="font-mono font-bold text-exp-bright select-none tabular-nums" style={{ fontSize: 72 }}>
               {d}
             </span>
           </div>
@@ -146,6 +147,36 @@ function fmtMultiplier(ratio: number) {
   if (ratio >= 1_000)  return `${(ratio / 1000).toFixed(1)}k×`;
   return `${ratio.toFixed(1)}×`;
 }
+
+function fmtHourly(rate: number): string {
+  if (rate >= 1_000_000) return `$${(rate / 1_000_000).toFixed(1)}M/hr`;
+  if (rate >= 1_000)     return `$${(rate / 1_000).toFixed(1)}k/hr`;
+  return `$${rate.toFixed(2)}/hr`;
+}
+
+function fmtWorkTime(price: number, rate: number): { text: string; cls: string } {
+  const secs = (price / rate) * 3600;
+  if (secs < 60)   return { text: secs < 1 ? `${secs.toFixed(2)}s` : `${Math.round(secs)}s`, cls: 'text-exp-dim'    };
+  if (secs < 3600) return { text: `${Math.round(secs / 60)}m`,                               cls: 'text-exp-muted'  };
+  const hrs = secs / 3600;
+  if (hrs < 24)    return { text: `${hrs.toFixed(1)}h`,                                       cls: 'text-exp-base'   };
+  const days = secs / 86400;
+  if (days < 30)   return { text: `${Math.round(days)}d`,                                     cls: 'text-exp-bright' };
+  const months = days / 30.44;
+  if (months < 24) return { text: `${Math.round(months)} mo`,                                 cls: 'text-fg'         };
+  return             { text: `${(days / 365.25).toFixed(1)} yr`,                              cls: 'text-fg'         };
+}
+
+const AFFORD_ITEMS = [
+  { label: 'cup of coffee',     price: 6        },
+  { label: 'week of groceries', price: 200      },
+  { label: "month's rent",      price: 1_750    },
+  { label: 'emergency room',    price: 3_000    },
+  { label: 'used car',          price: 15_000   },
+  { label: 'new car',           price: 40_000   },
+  { label: 'college (4 yr)',    price: 220_000  },
+  { label: 'median home',       price: 420_000  },
+] as const;
 
 function fmtElapsed(secs: number) {
   return [
@@ -225,13 +256,13 @@ function EarningsChart({ elapsed, wage }: { elapsed: number; wage: number }) {
         padding: '10px 14px',
         fontFamily: 'monospace',
       }}>
-        <p style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, marginBottom: 8 }}>
+        <p style={{ color: 'rgba(255,255,255,0.35)', fontSize: 13, marginBottom: 8 }}>
           {fmtX(label ?? 0)}
         </p>
         {payload.map(entry => (
           <div key={entry.dataKey} style={{
             display: 'flex', justifyContent: 'space-between', gap: 24,
-            fontSize: 12, color: entry.stroke, marginBottom: 3,
+            fontSize: 13, color: entry.stroke, marginBottom: 3,
           }}>
             <span style={{ opacity: 0.8 }}>{entry.name}</span>
             <span>{fmtMoney(entry.value ?? 0)}</span>
@@ -252,7 +283,7 @@ function EarningsChart({ elapsed, wage }: { elapsed: number; wage: number }) {
             style={{ borderColor: 'rgba(255,255,255,0.08)', background: 'rgba(255,255,255,0.02)' }}
           >
             <p className="font-mono uppercase tracking-widest mb-1"
-              style={{ color: s.color, opacity: 0.5, fontSize: 10 }}>
+              style={{ color: s.color, opacity: 0.5, fontSize: 11 }}>
               {s.label}
             </p>
             <p className="font-mono tabular-nums" style={{ color: s.color, fontSize: 18 }}>
@@ -273,23 +304,23 @@ function EarningsChart({ elapsed, wage }: { elapsed: number; wage: number }) {
             type="number"
             domain={[CHART_EPS, maxTime]}
             tickFormatter={fmtX}
-            tick={{ fill: 'rgba(255,255,255,0.25)', fontSize: 11, fontFamily: 'monospace' }}
+            tick={{ fill: 'rgba(255,255,255,0.25)', fontSize: 12, fontFamily: 'monospace' }}
             axisLine={{ stroke: 'rgba(255,255,255,0.1)' }}
             tickLine={{ stroke: 'rgba(255,255,255,0.1)' }}
             label={{ value: 'time elapsed', position: 'insideBottom', offset: -16,
-              style: { fill: 'rgba(255,255,255,0.18)', fontSize: 11, fontFamily: 'monospace' } }}
+              style: { fill: 'rgba(255,255,255,0.18)', fontSize: 12, fontFamily: 'monospace' } }}
           />
           <YAxis
             scale="log"
             domain={[0.001, (ELON_RATE / 3600) * maxTime * 1.5]}
             ticks={yTicks}
             tickFormatter={fmtY}
-            tick={{ fill: 'rgba(255,255,255,0.25)', fontSize: 11, fontFamily: 'monospace' }}
+            tick={{ fill: 'rgba(255,255,255,0.25)', fontSize: 12, fontFamily: 'monospace' }}
             axisLine={{ stroke: 'rgba(255,255,255,0.1)' }}
             tickLine={{ stroke: 'rgba(255,255,255,0.1)' }}
             allowDataOverflow
             label={{ value: 'earnings (log scale)', angle: -90, position: 'insideLeft', offset: -55,
-              style: { fill: 'rgba(255,255,255,0.18)', fontSize: 11, fontFamily: 'monospace' } }}
+              style: { fill: 'rgba(255,255,255,0.18)', fontSize: 12, fontFamily: 'monospace' } }}
           />
           <Tooltip
             content={<CustomTooltip />}
@@ -322,7 +353,7 @@ function EarningsChart({ elapsed, wage }: { elapsed: number; wage: number }) {
                 stroke={l.stroke} strokeWidth={l.width}
                 strokeDasharray={l.dash} strokeLinecap="round" />
             </svg>
-            <span className="font-mono text-[11px] tracking-wider" style={{ color: l.stroke }}>
+            <span className="font-mono text-exp-note tracking-wider" style={{ color: l.stroke }}>
               {l.name}
             </span>
           </div>
@@ -330,13 +361,68 @@ function EarningsChart({ elapsed, wage }: { elapsed: number; wage: number }) {
       </div>
 
       {/* Log scale explainer */}
-      <p className="font-mono text-center text-exp-muted leading-relaxed pb-4 flex-shrink-0 max-w-2xl mx-auto"
-        style={{ fontSize: 'clamp(0.45rem, 0.75vw, 0.7rem)' }}>
+      <p className="font-mono text-exp-note text-center text-exp-muted leading-relaxed pb-4 flex-shrink-0 max-w-2xl mx-auto">
         This chart uses a logarithmic scale — each step up the Y-axis represents a 10× increase, not a fixed dollar amount.
         On a standard linear scale, Elon's line would shoot off the top of the screen within seconds,
         compressing every other worker into an invisible flat line at the bottom.
         The fact that we needed a log scale to make this readable is itself the point.
       </p>
+    </div>
+  );
+}
+
+// ---------- AffordTable ----------
+
+function AffordTable({ wage }: { wage: number }) {
+  const columns = [
+    { name: 'You',      rate: wage,        highlight: true  },
+    { name: 'Median',   rate: MEDIAN_WAGE, highlight: false },
+    { name: 'Min Wage', rate: MIN_WAGE,    highlight: false },
+    { name: 'Elon',     rate: ELON_RATE,   highlight: false },
+  ];
+
+  return (
+    <div className="flex-1 overflow-y-auto px-6 py-8 sm:px-12">
+      <div className="max-w-3xl mx-auto">
+        <table className="w-full border-collapse">
+          <thead>
+            <tr className="border-b border-white/10">
+              <th className="text-left pb-4 pr-8 font-mono text-exp-note text-exp-dim uppercase tracking-wider">
+                item
+              </th>
+              {columns.map(col => (
+                <th key={col.name} className="text-right pb-4 pl-8 min-w-[5rem]">
+                  <div className={`font-mono text-exp-label uppercase tracking-wider ${col.highlight ? 'text-exp-bright' : 'text-exp-base'}`}>
+                    {col.name}
+                  </div>
+                  <div className="font-mono text-exp-note text-exp-dim">{fmtHourly(col.rate)}</div>
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {AFFORD_ITEMS.map((item, i) => (
+              <tr key={item.label} className={i < AFFORD_ITEMS.length - 1 ? 'border-b border-white/5' : ''}>
+                <td className="py-3.5 pr-8">
+                  <div className="font-mono text-exp-label text-exp-base">{item.label}</div>
+                  <div className="font-mono text-exp-note text-exp-dim">${item.price.toLocaleString()}</div>
+                </td>
+                {columns.map(col => {
+                  const { text, cls } = fmtWorkTime(item.price, col.rate);
+                  return (
+                    <td key={col.name} className={`py-3.5 pl-8 text-right font-mono tabular-nums text-exp-label ${cls}`}>
+                      {text}
+                    </td>
+                  );
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <p className="font-mono text-exp-micro text-exp-dim mt-8 leading-relaxed">
+          prices are US averages · assumes continuous work · wages: BLS 2024, Elon: Bloomberg 2024
+        </p>
+      </div>
     </div>
   );
 }
@@ -362,7 +448,7 @@ export default function Skrillatime() {
   const [earnings, setEarnings] = useState(0);
   const [elapsed, setElapsed] = useState(0);
   const [coins, setCoins] = useState<Coin[]>([]);
-  const [view, setView] = useState<'counter' | 'chart'>('counter');
+  const [view, setView] = useState<'counter' | 'chart' | 'afford'>('counter');
   const [paused, setPaused] = useState(false);
   const [showElonInfo, setShowElonInfo] = useState(false);
 
@@ -476,24 +562,27 @@ export default function Skrillatime() {
 
   return (
     <div
-      className="min-h-screen bg-black text-white flex flex-col overflow-hidden"
+      className="min-h-screen bg-black text-exp-base flex flex-col overflow-hidden"
       onClick={initAudio}
     >
       {/* ── Header ── */}
-      <div className="flex items-center justify-between px-6 py-4 border-b border-white/10 flex-shrink-0">
+      <div className="relative flex items-center justify-between px-6 py-4 border-b border-white/10 flex-shrink-0">
         <a
           href="/explorations"
-          className="font-mono text-[11px] text-exp-muted tracking-[0.08em] hover:text-exp-bright transition-colors"
+          className="font-mono text-exp-label text-exp-muted tracking-[0.08em] hover:text-exp-bright transition-colors"
           onClick={e => e.stopPropagation()}
         >
           ← back
         </a>
+        <span className="font-mono text-exp-label text-exp-muted tracking-[0.08em] uppercase absolute left-1/2 -translate-x-1/2">
+          Skrillatime
+        </span>
         <div className="flex items-center gap-5" onClick={e => e.stopPropagation()}>
-          {(['counter', 'chart'] as const).map(v => (
+          {(['counter', 'chart', 'afford'] as const).map(v => (
             <button
               key={v}
               onClick={() => setView(v)}
-              className={`font-mono text-[11px] tracking-[0.08em] uppercase transition-colors cursor-pointer ${
+              className={`font-mono text-exp-label tracking-[0.08em] uppercase transition-colors cursor-pointer ${
                 view === v ? 'text-exp-bright' : 'text-exp-muted hover:text-exp-base'
               }`}
             >
@@ -509,7 +598,7 @@ export default function Skrillatime() {
 
           {/* Left: your counter */}
           <div className="sm:w-[44%] flex flex-col items-center justify-center gap-8 p-6 sm:p-12 border-b sm:border-b-0 sm:border-r border-white/10">
-            <p className="font-mono uppercase tracking-[0.3em] text-exp-muted" style={{ fontSize: 'clamp(0.5rem, 0.85vw, 0.8rem)' }}>
+            <p className="font-mono text-exp-label uppercase tracking-[0.3em] text-exp-muted">
               you've earned
             </p>
 
@@ -520,26 +609,26 @@ export default function Skrillatime() {
               </div>
             </div>
 
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
               <button
                 onClick={e => { e.stopPropagation(); setInputWage(wage.toFixed(2)); setEditingWage(true); }}
-                className="font-mono text-exp-muted hover:text-exp-bright transition-colors cursor-pointer"
-                style={{ fontSize: 'clamp(0.55rem, 0.9vw, 0.85rem)' }}
+                className="flex items-center gap-1.5 border border-white/15 rounded px-2.5 py-1.5 text-exp-muted hover:text-exp-bright hover:border-white/30 transition-colors cursor-pointer"
               >
-                @ ${wage.toFixed(2)} / hr · change
+                <Pencil size={12} strokeWidth={1.5} />
+                <span className="font-mono text-exp-label tracking-[0.06em]">${wage.toFixed(2)}/hr</span>
               </button>
-              <span className="font-mono text-exp-dim" style={{ fontSize: 'clamp(0.55rem, 0.9vw, 0.85rem)' }}>·</span>
               <button
                 onClick={e => { e.stopPropagation(); togglePause(); }}
-                className="font-mono text-exp-muted hover:text-exp-bright transition-colors cursor-pointer"
-                style={{ fontSize: 'clamp(0.55rem, 0.9vw, 0.85rem)' }}
+                className="flex items-center gap-1.5 border border-white/15 rounded px-2.5 py-1.5 text-exp-muted hover:text-exp-bright hover:border-white/30 transition-colors cursor-pointer"
+                title={paused ? 'Resume' : 'Pause'}
               >
-                {paused ? 'resume' : 'pause'}
+                {paused ? <Play size={12} strokeWidth={1.5} /> : <Pause size={12} strokeWidth={1.5} />}
+                <span className="font-mono text-exp-label tracking-[0.06em]">{paused ? 'resume' : 'pause'}</span>
               </button>
             </div>
 
-            <p className="font-mono text-exp-dim tabular-nums flex items-center gap-2" style={{ fontSize: 'clamp(0.5rem, 0.85vw, 0.8rem)' }}>
-              <span className="uppercase tracking-[0.15em] text-exp-dim">elapsed</span>
+            <p className="font-mono text-exp-label text-exp-muted tabular-nums flex items-center gap-2">
+              <span className="uppercase tracking-[0.15em] text-exp-muted">elapsed</span>
               {fmtElapsed(elapsed)}
             </p>
           </div>
@@ -548,7 +637,7 @@ export default function Skrillatime() {
           <div className="flex-1 flex flex-col justify-center px-6 py-6 sm:px-12 sm:py-10 gap-8 overflow-y-auto">
 
             {/* Context blurb */}
-            <p className="font-mono text-exp-muted leading-relaxed max-w-sm" style={{ fontSize: 'clamp(0.55rem, 0.85vw, 0.8rem)' }}>
+            <p className="font-mono text-exp-body text-exp-muted leading-relaxed max-w-sm">
               While you work, so does everyone else — from the minimum wage worker to the world's wealthiest person. These counters all started at the same moment. The federal minimum wage hasn't changed since 2009. Billionaire wealth has grown by trillions. This is not an accident.
             </p>
 
@@ -557,25 +646,24 @@ export default function Skrillatime() {
             {/* Elon */}
             <div className="flex flex-col gap-2">
               <div className="flex items-center gap-2">
-                <span className="font-mono uppercase tracking-wider text-exp-base" style={{ fontSize: 'clamp(0.55rem, 1vw, 0.95rem)' }}>
+                <span className="font-mono text-exp-label uppercase tracking-wider text-exp-base">
                   Elon Musk
                 </span>
                 <button
                   onClick={e => { e.stopPropagation(); setShowElonInfo(v => !v); }}
-                  className="font-mono text-exp-muted hover:text-exp-bright transition-colors cursor-pointer leading-none"
-                  style={{ fontSize: 'clamp(0.55rem, 1vw, 0.95rem)' }}
+                  className="font-mono text-exp-label text-exp-muted hover:text-exp-bright transition-colors cursor-pointer leading-none"
                   title="How was this calculated?"
                 >
                   ⓘ
                 </button>
               </div>
               <div className="flex items-baseline gap-4">
-                <span className="font-mono text-white tabular-nums" style={{ fontSize: 'clamp(1.8rem, 3.5vw, 3.2rem)' }}>
+                <span className="font-mono text-exp-bright tabular-nums" style={{ fontSize: 'clamp(1.8rem, 3.5vw, 3.2rem)' }}>
                   {fmtMoney((ELON_RATE / 3600) * elapsed)}
                 </span>
               </div>
-              <span className="font-mono text-exp-muted" style={{ fontSize: 'clamp(0.5rem, 0.85vw, 0.8rem)' }}>
-                earns {Math.round(ELON_RATE / wage).toLocaleString()}× your hourly rate
+              <span className="font-mono text-exp-note text-exp-muted">
+                earns {Math.round(ELON_RATE / wage).toLocaleString()} times your hourly rate
               </span>
               <AnimatePresence>
                 {showElonInfo && (
@@ -585,10 +673,10 @@ export default function Skrillatime() {
                     exit={{ opacity: 0, y: -4 }}
                     transition={{ duration: 0.15 }}
                     className="border border-white/10 rounded-sm p-4 mt-1"
-                    style={{ background: 'rgba(255,255,255,0.03)', fontSize: 'clamp(0.48rem, 0.78vw, 0.72rem)' }}
+                    style={{ background: 'rgba(255,255,255,0.03)' }}
                     onClick={e => e.stopPropagation()}
                   >
-                    <p className="font-mono text-exp-bright font-bold uppercase tracking-widest mb-3" style={{ fontSize: 'clamp(0.42rem, 0.68vw, 0.62rem)' }}>
+                    <p className="font-mono text-exp-note text-exp-bright font-bold uppercase tracking-widest mb-3">
                       How was this calculated?
                     </p>
                     <p className="font-mono text-exp-base leading-relaxed mb-2">
@@ -615,7 +703,7 @@ export default function Skrillatime() {
               const youEarnMore = wage >= MEDIAN_WAGE;
               return (
                 <div className="flex flex-col gap-2">
-                  <span className="font-mono uppercase tracking-wider text-exp-muted" style={{ fontSize: 'clamp(0.55rem, 1vw, 0.95rem)' }}>
+                  <span className="font-mono text-exp-label uppercase tracking-wider text-exp-muted">
                     {MEDIAN_LABEL}
                   </span>
                   <div className="flex items-baseline gap-4">
@@ -623,7 +711,7 @@ export default function Skrillatime() {
                       {fmtMoney(medianEarned)}
                     </span>
                   </div>
-                  <span className="font-mono text-exp-dim" style={{ fontSize: 'clamp(0.5rem, 0.85vw, 0.8rem)' }}>
+                  <span className="font-mono text-exp-note text-exp-dim">
                     {youEarnMore
                       ? `you earn ${fmtMultiplier(ratio)} the median wage`
                       : `earns ${fmtMultiplier(ratio)} your hourly rate`}
@@ -639,7 +727,7 @@ export default function Skrillatime() {
               const youEarnMore = wage >= MIN_WAGE;
               return (
                 <div className="flex flex-col gap-2">
-                  <span className="font-mono uppercase tracking-wider text-exp-dim" style={{ fontSize: 'clamp(0.55rem, 1vw, 0.95rem)' }}>
+                  <span className="font-mono text-exp-label uppercase tracking-wider text-exp-dim">
                     Federal Min. Wage
                   </span>
                   <div className="flex items-baseline gap-4">
@@ -647,7 +735,7 @@ export default function Skrillatime() {
                       {fmtMoney(minEarned)}
                     </span>
                   </div>
-                  <span className="font-mono text-exp-dim" style={{ fontSize: 'clamp(0.5rem, 0.85vw, 0.8rem)' }}>
+                  <span className="font-mono text-exp-note text-exp-dim">
                     {youEarnMore
                       ? `you earn ${fmtMultiplier(ratio)} federal minimum wage`
                       : `earns ${fmtMultiplier(ratio)} your hourly rate`}
@@ -657,7 +745,7 @@ export default function Skrillatime() {
             })()}
 
             {/* Sources */}
-            <div className="flex items-center gap-3 mt-2" style={{ fontSize: 'clamp(0.4rem, 0.7vw, 0.65rem)' }}>
+            <div className="flex items-center gap-3 mt-2 text-exp-micro">
               <span className="font-mono text-exp-dim">est. 2024 ·</span>
               <a href="https://www.bloomberg.com/billionaires/" target="_blank" rel="noopener noreferrer"
                 className="font-mono text-exp-muted hover:text-exp-base transition-colors" onClick={e => e.stopPropagation()}>
@@ -677,10 +765,12 @@ export default function Skrillatime() {
           </div>
 
         </div>
-      ) : (
+      ) : view === 'chart' ? (
         <div className="flex-1 flex flex-col min-h-0 px-8 py-6">
           <EarningsChart elapsed={elapsed} wage={wage} />
         </div>
+      ) : (
+        <AffordTable wage={wage} />
       )}
 
       {/* ── Wage overlay ── */}
@@ -705,21 +795,21 @@ export default function Skrillatime() {
                 your hourly rate
               </p>
               <div className="flex items-baseline gap-3">
-                <span className="font-mono text-white" style={{ fontSize: 'clamp(2rem, 5vw, 4rem)' }}>$</span>
+                <span className="font-mono text-exp-bright" style={{ fontSize: 'clamp(2rem, 5vw, 4rem)' }}>$</span>
                 <input
                   type="number"
                   value={inputWage}
                   onChange={e => setInputWage(e.target.value)}
                   onKeyDown={e => e.key === 'Enter' && applyWage()}
                   autoFocus
-                  className="font-mono text-white bg-transparent border-b border-white/30 focus:outline-none focus:border-white [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                  className="font-mono text-exp-bright bg-transparent border-b border-white/30 focus:outline-none focus:border-white [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                   style={{ fontSize: 'clamp(2rem, 5vw, 4rem)', width: '5ch' }}
                 />
                 <span className="font-mono text-exp-base" style={{ fontSize: 'clamp(1rem, 2vw, 1.5rem)' }}>/ hr</span>
               </div>
               <button
                 onClick={applyWage}
-                className="font-mono text-sm tracking-[0.2em] uppercase border border-white/30 px-8 py-3 text-white hover:border-white transition-colors cursor-pointer"
+                className="font-mono text-sm tracking-[0.2em] uppercase border border-white/30 px-8 py-3 text-exp-base hover:text-exp-bright hover:border-white/60 transition-colors cursor-pointer"
               >
                 set wage
               </button>

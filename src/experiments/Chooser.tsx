@@ -254,25 +254,30 @@ export default function Chooser() {
         </AnimatePresence>
 
         {/* Prompt — centered just above the chooser items */}
-        <AnimatePresence>
-          {!audioStarted && !badge && !done && (
-            <motion.div
-              key="prompt"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="absolute left-0 right-0 flex flex-col items-center gap-2 pointer-events-none"
-              style={{ top: '22%' }}
-            >
-              <span className="font-mono text-2xl text-fg tracking-[0.15em] uppercase animate-pulse">
-                who are you today?
-              </span>
-              <span className="font-mono text-[11px] text-fg-muted/50 tracking-[0.12em]">
-                click anywhere to hear the audio · then choose
-              </span>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        {/* Persistent title */}
+        {!badge && !done && (
+          <div
+            className="absolute left-0 right-0 flex flex-col items-center gap-2 pointer-events-none"
+            style={{ top: '22%' }}
+          >
+            <span className="font-mono text-2xl text-fg tracking-[0.15em] uppercase">
+              who are you today?
+            </span>
+            <AnimatePresence>
+              {!hasEverStarted && (
+                <motion.span
+                  key="hint"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="font-mono text-[11px] text-fg-muted/50 tracking-[0.12em]"
+                >
+                  click anywhere to hear the audio · then choose
+                </motion.span>
+              )}
+            </AnimatePresence>
+          </div>
+        )}
 
         {/* Choices tracker — hidden once done (layoutId takes over) */}
         <AnimatePresence>

@@ -17,7 +17,7 @@ export const EXPLORATIONS: Exploration[] = [
   { id: 'skrillatime',       name: 'Skrillatime',      type: 'Interactive', tags: ['Audio','React'],
     url: '/explorations/skrillatime',
     desc: 'Enter your hourly rate and watch the money stack up in real time. A cash register rings every dollar.' },
-  { id: 'chooser',           name: 'The Chooser',      type: 'Interactive', tags: ['Audio','React','Generative'],
-    url: '/explorations/chooser',
-    desc: 'Five choices. Each one has a soundtrack. Pick your vibe — the result tells you who you are today.' }
+  // { id: 'chooser',           name: 'The Chooser',      type: 'Interactive', tags: ['Audio','React','Generative'],
+  //   url: '/explorations/chooser',
+  //   desc: 'Five choices. Each one has a soundtrack. Pick your vibe — the result tells you who you are today.' }
 ];

@@ -19,16 +19,22 @@ export default {
           muted: '#808080',
         },
         exp: {
-          bright: 'rgba(255,255,255,0.80)',
-          base:   'rgba(255,255,255,0.60)',
-          muted:  'rgba(255,255,255,0.45)',
-          dim:    'rgba(255,255,255,0.30)',
+          bright: '#c8c8c8',
+          base:   '#999999',
+          muted:  '#757575',
+          dim:    '#444444',
         },
         accent: {
           DEFAULT: 'rgb(var(--accent) / <alpha-value>)',
           soft: 'rgb(var(--accent) / 0.1)',
           ring: 'rgb(var(--accent) / 0.3)',
         },
+      },
+      fontSize: {
+        'exp-micro': ['11px', { lineHeight: '1.4' }],
+        'exp-note':  ['12px', { lineHeight: '1.5' }],
+        'exp-label': ['13px', { lineHeight: '1.5' }],
+        'exp-body':  ['14px', { lineHeight: '1.65' }],
       },
       fontFamily: {
         serif: ['"DM Serif Display"', 'serif'],

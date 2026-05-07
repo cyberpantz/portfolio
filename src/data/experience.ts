@@ -59,9 +59,8 @@ export const EXPERIENCE: Role[] = [
     yr: '2008–2011',
     tags: ['Flex', 'Backbone', 'Bootstrap' ,'UX', 'Data Viz'],
     bullets: [
-      'Built data visualization tools using Adobe Flex and Backbone',
-      'Small company, so I split role as UX designer and information architect', 
-      'Early work on energy data dashboards and reporting tools',
+      'Built data visualizations for customer soloar and wind installations using Adobe Flex, Flash, and later HTML5/CSS3',
+      'Small company, so I split role as UX designer and applications developer'
     ],
   },
   {
