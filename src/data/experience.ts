@@ -24,10 +24,10 @@ export const EXPERIENCE: Role[] = [
     co: 'Kaiser Permanente',
     role: 'UI Architect',
     yr: '2020–2021',
-    tags: ['Greenfield', 'React', 'TypeScript', 'Node'],
+    tags: ['React', 'TypeScript', 'Node', 'UX Design'],
     bullets: [
-      'Sole frontend engineer on a greenfield healthcare application',
-      'Defined architecture, delivered wireframes, mockups, and full React/TypeScript implementation with Node backend',
+      'Sole frontend engineer on a greenfield inventory application to keep track of touchscreen devices in use throughout Kaiser medical centers, which became critical during the covid-19 pandemic for telehealth and remote patient monitoring',
+      'Defined UX, delivered wireframes, mockups, and full React/TypeScript implementation with Node backend',
       'This was a short-term contract role during the covid-19 pandemic (I had an entire office floor to myself! That was a first!)',
     ],
   },

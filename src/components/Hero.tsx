@@ -43,7 +43,7 @@ export default function Hero() {
 
         <div className="flex flex-wrap gap-4">
           <a
-            href="mailto:phranque.y@gmail.com"
+            href={`mailto:${'phranque.y'}@${'gmail'}.com`}
             className="inline-flex px-5 py-2.5 rounded-sm bg-accent text-ink
                        font-mono text-xs font-medium tracking-[0.06em]
                        transition-opacity hover:opacity-85"

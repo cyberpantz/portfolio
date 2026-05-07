@@ -1,9 +1,9 @@
 ---
 import SectionLabel from './ui/SectionLabel.astro';
+import MailtoLink from './MailtoLink';
 
 const CONTACTS = [
-  // { label: 'Email',    value: 'phranque.y@gmail.com',                         href: 'mailto:phranque.y@gmail.com' },
-  { label: 'LinkedIn', value: 'linkedin.com/in/frank-young-a77a152',         href: 'https://linkedin.com/in/frank-young-a77a152' },
+  { label: 'LinkedIn', value: 'linkedin.com/in/frank-young-a77a152', href: 'https://linkedin.com/in/frank-young-a77a152' },
 ];
 ---
 
@@ -18,6 +18,12 @@ const CONTACTS = [
     I'm currently open to interesting new opportunities. <br />SF Bay Area, open to remote.
   </p>
   <div class="flex flex-col gap-3.5">
+    <div class="flex gap-6 items-baseline">
+      <span class="font-mono text-[10px] text-fg-muted tracking-[0.12em] uppercase min-w-[60px]">
+        Email
+      </span>
+      <MailtoLink client:only="react" />
+    </div>
     {CONTACTS.map((c) => (
       <div class="flex gap-6 items-baseline">
         <span class="font-mono text-[10px] text-fg-muted tracking-[0.12em] uppercase min-w-[60px]">
