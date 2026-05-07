@@ -335,7 +335,7 @@ export default function SimonSays({
           PATTERN MATCH
         </h3>
 
-        <p className="text-white/50 text-sm tracking-widest font-mono uppercase mb-10">
+        <p className="text-exp-base text-sm tracking-widest font-mono uppercase mb-10">
           Remember the sequence
         </p>
 
@@ -346,7 +346,7 @@ export default function SimonSays({
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.2, duration: 0.5 }}
         >
-          <div className="text-xs uppercase tracking-[0.2em] text-white/40 mb-5 text-center font-mono">
+          <div className="text-xs uppercase tracking-[0.2em] text-exp-base mb-5 text-center font-mono">
             Select Difficulty
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -465,7 +465,7 @@ export default function SimonSays({
                 onClick={() => setGameState('difficulty-select')}
                 whileHover={{ scale: 1.04 }}
                 whileTap={{ scale: 0.97 }}
-                className="px-6 py-3 border-2 border-white/20 text-white/70 font-mono text-sm uppercase tracking-wider rounded-lg hover:border-white/40 hover:text-white transition-colors"
+                className="px-6 py-3 border-2 border-white/20 text-exp-bright font-mono text-sm uppercase tracking-wider rounded-lg hover:border-white/40 hover:text-white transition-colors"
               >
                 Change Difficulty
               </motion.button>

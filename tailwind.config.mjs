@@ -18,6 +18,12 @@ export default {
           sub: '#999999',
           muted: '#808080',
         },
+        exp: {
+          bright: 'rgba(255,255,255,0.80)',
+          base:   'rgba(255,255,255,0.60)',
+          muted:  'rgba(255,255,255,0.45)',
+          dim:    'rgba(255,255,255,0.30)',
+        },
         accent: {
           DEFAULT: 'rgb(var(--accent) / <alpha-value>)',
           soft: 'rgb(var(--accent) / 0.1)',

@@ -89,11 +89,11 @@ function EarningsDisplay({ earnings }: { earnings: number }) {
   const fracDigits = frac.split('');
   return (
     <div className="flex items-center" style={{ gap: 6 }}>
-      <span className="font-mono font-bold text-white/40 select-none" style={{ fontSize: 76, lineHeight: `${CELL_H}px` }}>$</span>
+      <span className="font-mono font-bold text-exp-base select-none" style={{ fontSize: 76, lineHeight: `${CELL_H}px` }}>$</span>
       <div className="flex" style={{ gap: 3 }}>
         {intDigits.map((d, i) => <FlipDigit key={`i${i}`} value={d} />)}
       </div>
-      <span className="font-mono font-bold text-white/40 select-none" style={{ fontSize: 76, lineHeight: `${CELL_H}px` }}>.</span>
+      <span className="font-mono font-bold text-exp-base select-none" style={{ fontSize: 76, lineHeight: `${CELL_H}px` }}>.</span>
       <div className="flex" style={{ gap: 3 }}>
         {fracDigits.map((d, i) => <FlipDigit key={`f${i}`} value={d} />)}
       </div>
@@ -330,7 +330,7 @@ function EarningsChart({ elapsed, wage }: { elapsed: number; wage: number }) {
       </div>
 
       {/* Log scale explainer */}
-      <p className="font-mono text-center text-white/25 leading-relaxed pb-4 flex-shrink-0 max-w-2xl mx-auto"
+      <p className="font-mono text-center text-exp-muted leading-relaxed pb-4 flex-shrink-0 max-w-2xl mx-auto"
         style={{ fontSize: 'clamp(0.45rem, 0.75vw, 0.7rem)' }}>
         This chart uses a logarithmic scale — each step up the Y-axis represents a 10× increase, not a fixed dollar amount.
         On a standard linear scale, Elon's line would shoot off the top of the screen within seconds,
@@ -483,7 +483,7 @@ export default function Skrillatime() {
       <div className="flex items-center justify-between px-6 py-4 border-b border-white/10 flex-shrink-0">
         <a
           href="/explorations"
-          className="font-mono text-[11px] text-white/30 tracking-[0.08em] hover:text-white/60 transition-colors"
+          className="font-mono text-[11px] text-exp-muted tracking-[0.08em] hover:text-exp-bright transition-colors"
           onClick={e => e.stopPropagation()}
         >
           ← back
@@ -494,7 +494,7 @@ export default function Skrillatime() {
               key={v}
               onClick={() => setView(v)}
               className={`font-mono text-[11px] tracking-[0.08em] uppercase transition-colors cursor-pointer ${
-                view === v ? 'text-white/70' : 'text-white/25 hover:text-white/45'
+                view === v ? 'text-exp-bright' : 'text-exp-muted hover:text-exp-base'
               }`}
             >
               {v}
@@ -509,7 +509,7 @@ export default function Skrillatime() {
 
           {/* Left: your counter */}
           <div className="sm:w-[44%] flex flex-col items-center justify-center gap-8 p-6 sm:p-12 border-b sm:border-b-0 sm:border-r border-white/10">
-            <p className="font-mono uppercase tracking-[0.3em] text-white/35" style={{ fontSize: 'clamp(0.5rem, 0.85vw, 0.8rem)' }}>
+            <p className="font-mono uppercase tracking-[0.3em] text-exp-muted" style={{ fontSize: 'clamp(0.5rem, 0.85vw, 0.8rem)' }}>
               you've earned
             </p>
 
@@ -523,23 +523,23 @@ export default function Skrillatime() {
             <div className="flex items-center gap-4">
               <button
                 onClick={e => { e.stopPropagation(); setInputWage(wage.toFixed(2)); setEditingWage(true); }}
-                className="font-mono text-white/35 hover:text-white/60 transition-colors cursor-pointer"
+                className="font-mono text-exp-muted hover:text-exp-bright transition-colors cursor-pointer"
                 style={{ fontSize: 'clamp(0.55rem, 0.9vw, 0.85rem)' }}
               >
                 @ ${wage.toFixed(2)} / hr · change
               </button>
-              <span className="font-mono text-white/15" style={{ fontSize: 'clamp(0.55rem, 0.9vw, 0.85rem)' }}>·</span>
+              <span className="font-mono text-exp-dim" style={{ fontSize: 'clamp(0.55rem, 0.9vw, 0.85rem)' }}>·</span>
               <button
                 onClick={e => { e.stopPropagation(); togglePause(); }}
-                className="font-mono text-white/35 hover:text-white/60 transition-colors cursor-pointer"
+                className="font-mono text-exp-muted hover:text-exp-bright transition-colors cursor-pointer"
                 style={{ fontSize: 'clamp(0.55rem, 0.9vw, 0.85rem)' }}
               >
                 {paused ? 'resume' : 'pause'}
               </button>
             </div>
 
-            <p className="font-mono text-white/20 tabular-nums flex items-center gap-2" style={{ fontSize: 'clamp(0.5rem, 0.85vw, 0.8rem)' }}>
-              <span className="uppercase tracking-[0.15em] text-white/15">elapsed</span>
+            <p className="font-mono text-exp-dim tabular-nums flex items-center gap-2" style={{ fontSize: 'clamp(0.5rem, 0.85vw, 0.8rem)' }}>
+              <span className="uppercase tracking-[0.15em] text-exp-dim">elapsed</span>
               {fmtElapsed(elapsed)}
             </p>
           </div>
@@ -548,7 +548,7 @@ export default function Skrillatime() {
           <div className="flex-1 flex flex-col justify-center px-6 py-6 sm:px-12 sm:py-10 gap-8 overflow-y-auto">
 
             {/* Context blurb */}
-            <p className="font-mono text-white/30 leading-relaxed max-w-sm" style={{ fontSize: 'clamp(0.55rem, 0.85vw, 0.8rem)' }}>
+            <p className="font-mono text-exp-muted leading-relaxed max-w-sm" style={{ fontSize: 'clamp(0.55rem, 0.85vw, 0.8rem)' }}>
               While you work, so does everyone else — from the minimum wage worker to the world's wealthiest person. These counters all started at the same moment. The federal minimum wage hasn't changed since 2009. Billionaire wealth has grown by trillions. This is not an accident.
             </p>
 
@@ -557,12 +557,12 @@ export default function Skrillatime() {
             {/* Elon */}
             <div className="flex flex-col gap-2">
               <div className="flex items-center gap-2">
-                <span className="font-mono uppercase tracking-wider text-white/40" style={{ fontSize: 'clamp(0.55rem, 1vw, 0.95rem)' }}>
+                <span className="font-mono uppercase tracking-wider text-exp-base" style={{ fontSize: 'clamp(0.55rem, 1vw, 0.95rem)' }}>
                   Elon Musk
                 </span>
                 <button
                   onClick={e => { e.stopPropagation(); setShowElonInfo(v => !v); }}
-                  className="font-mono text-white/25 hover:text-white/60 transition-colors cursor-pointer leading-none"
+                  className="font-mono text-exp-muted hover:text-exp-bright transition-colors cursor-pointer leading-none"
                   style={{ fontSize: 'clamp(0.55rem, 1vw, 0.95rem)' }}
                   title="How was this calculated?"
                 >
@@ -574,7 +574,7 @@ export default function Skrillatime() {
                   {fmtMoney((ELON_RATE / 3600) * elapsed)}
                 </span>
               </div>
-              <span className="font-mono text-white/25" style={{ fontSize: 'clamp(0.5rem, 0.85vw, 0.8rem)' }}>
+              <span className="font-mono text-exp-muted" style={{ fontSize: 'clamp(0.5rem, 0.85vw, 0.8rem)' }}>
                 earns {Math.round(ELON_RATE / wage).toLocaleString()}× your hourly rate
               </span>
               <AnimatePresence>
@@ -588,16 +588,16 @@ export default function Skrillatime() {
                     style={{ background: 'rgba(255,255,255,0.03)', fontSize: 'clamp(0.48rem, 0.78vw, 0.72rem)' }}
                     onClick={e => e.stopPropagation()}
                   >
-                    <p className="font-mono text-white/60 font-bold uppercase tracking-widest mb-3" style={{ fontSize: 'clamp(0.42rem, 0.68vw, 0.62rem)' }}>
+                    <p className="font-mono text-exp-bright font-bold uppercase tracking-widest mb-3" style={{ fontSize: 'clamp(0.42rem, 0.68vw, 0.62rem)' }}>
                       How was this calculated?
                     </p>
-                    <p className="font-mono text-white/40 leading-relaxed mb-2">
+                    <p className="font-mono text-exp-base leading-relaxed mb-2">
                       Based on Elon Musk's 2024 net worth increase of ~$63 billion (Bloomberg Billionaires Index):
                     </p>
-                    <p className="font-mono text-white/55 mb-2">
-                      $63,000,000,000 ÷ 365 ÷ 24 = <span className="text-white/75">$7,191,780 / hr</span>
+                    <p className="font-mono text-exp-base mb-2">
+                      $63,000,000,000 ÷ 365 ÷ 24 = <span className="text-exp-bright">$7,191,780 / hr</span>
                     </p>
-                    <p className="font-mono text-white/30 leading-relaxed">
+                    <p className="font-mono text-exp-muted leading-relaxed">
                       Unrealized stock gains, not a paycheck — his net worth fell ~$200B in 2022.
                       The year varies. The scale does not.
                     </p>
@@ -615,15 +615,15 @@ export default function Skrillatime() {
               const youEarnMore = wage >= MEDIAN_WAGE;
               return (
                 <div className="flex flex-col gap-2">
-                  <span className="font-mono uppercase tracking-wider text-white/30" style={{ fontSize: 'clamp(0.55rem, 1vw, 0.95rem)' }}>
+                  <span className="font-mono uppercase tracking-wider text-exp-muted" style={{ fontSize: 'clamp(0.55rem, 1vw, 0.95rem)' }}>
                     {MEDIAN_LABEL}
                   </span>
                   <div className="flex items-baseline gap-4">
-                    <span className="font-mono text-white/55 tabular-nums" style={{ fontSize: 'clamp(1.4rem, 2.8vw, 2.6rem)' }}>
+                    <span className="font-mono text-exp-base tabular-nums" style={{ fontSize: 'clamp(1.4rem, 2.8vw, 2.6rem)' }}>
                       {fmtMoney(medianEarned)}
                     </span>
                   </div>
-                  <span className="font-mono text-white/20" style={{ fontSize: 'clamp(0.5rem, 0.85vw, 0.8rem)' }}>
+                  <span className="font-mono text-exp-dim" style={{ fontSize: 'clamp(0.5rem, 0.85vw, 0.8rem)' }}>
                     {youEarnMore
                       ? `you earn ${fmtMultiplier(ratio)} the median wage`
                       : `earns ${fmtMultiplier(ratio)} your hourly rate`}
@@ -639,15 +639,15 @@ export default function Skrillatime() {
               const youEarnMore = wage >= MIN_WAGE;
               return (
                 <div className="flex flex-col gap-2">
-                  <span className="font-mono uppercase tracking-wider text-white/20" style={{ fontSize: 'clamp(0.55rem, 1vw, 0.95rem)' }}>
+                  <span className="font-mono uppercase tracking-wider text-exp-dim" style={{ fontSize: 'clamp(0.55rem, 1vw, 0.95rem)' }}>
                     Federal Min. Wage
                   </span>
                   <div className="flex items-baseline gap-4">
-                    <span className="font-mono text-white/35 tabular-nums" style={{ fontSize: 'clamp(1.1rem, 2.2vw, 2rem)' }}>
+                    <span className="font-mono text-exp-muted tabular-nums" style={{ fontSize: 'clamp(1.1rem, 2.2vw, 2rem)' }}>
                       {fmtMoney(minEarned)}
                     </span>
                   </div>
-                  <span className="font-mono text-white/15" style={{ fontSize: 'clamp(0.5rem, 0.85vw, 0.8rem)' }}>
+                  <span className="font-mono text-exp-dim" style={{ fontSize: 'clamp(0.5rem, 0.85vw, 0.8rem)' }}>
                     {youEarnMore
                       ? `you earn ${fmtMultiplier(ratio)} federal minimum wage`
                       : `earns ${fmtMultiplier(ratio)} your hourly rate`}
@@ -658,19 +658,19 @@ export default function Skrillatime() {
 
             {/* Sources */}
             <div className="flex items-center gap-3 mt-2" style={{ fontSize: 'clamp(0.4rem, 0.7vw, 0.65rem)' }}>
-              <span className="font-mono text-white/15">est. 2024 ·</span>
+              <span className="font-mono text-exp-dim">est. 2024 ·</span>
               <a href="https://www.bloomberg.com/billionaires/" target="_blank" rel="noopener noreferrer"
-                className="font-mono text-white/25 hover:text-white/50 transition-colors" onClick={e => e.stopPropagation()}>
+                className="font-mono text-exp-muted hover:text-exp-base transition-colors" onClick={e => e.stopPropagation()}>
                 bloomberg billionaires
               </a>
-              <span className="font-mono text-white/15">·</span>
+              <span className="font-mono text-exp-dim">·</span>
               <a href="https://www.bls.gov" target="_blank" rel="noopener noreferrer"
-                className="font-mono text-white/25 hover:text-white/50 transition-colors" onClick={e => e.stopPropagation()}>
+                className="font-mono text-exp-muted hover:text-exp-base transition-colors" onClick={e => e.stopPropagation()}>
                 bls.gov
               </a>
-              <span className="font-mono text-white/15">·</span>
+              <span className="font-mono text-exp-dim">·</span>
               <a href="https://www.dol.gov/agencies/whd/minimum-wage" target="_blank" rel="noopener noreferrer"
-                className="font-mono text-white/25 hover:text-white/50 transition-colors" onClick={e => e.stopPropagation()}>
+                className="font-mono text-exp-muted hover:text-exp-base transition-colors" onClick={e => e.stopPropagation()}>
                 dol.gov
               </a>
             </div>
@@ -701,7 +701,7 @@ export default function Skrillatime() {
               className="flex flex-col items-center gap-10"
               onClick={e => e.stopPropagation()}
             >
-              <p className="font-mono uppercase tracking-[0.3em] text-white/40 text-sm">
+              <p className="font-mono uppercase tracking-[0.3em] text-exp-base text-sm">
                 your hourly rate
               </p>
               <div className="flex items-baseline gap-3">
@@ -715,7 +715,7 @@ export default function Skrillatime() {
                   className="font-mono text-white bg-transparent border-b border-white/30 focus:outline-none focus:border-white [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                   style={{ fontSize: 'clamp(2rem, 5vw, 4rem)', width: '5ch' }}
                 />
-                <span className="font-mono text-white/40" style={{ fontSize: 'clamp(1rem, 2vw, 1.5rem)' }}>/ hr</span>
+                <span className="font-mono text-exp-base" style={{ fontSize: 'clamp(1rem, 2vw, 1.5rem)' }}>/ hr</span>
               </div>
               <button
                 onClick={applyWage}
@@ -723,7 +723,7 @@ export default function Skrillatime() {
               >
                 set wage
               </button>
-              <p className="font-mono text-white/25 text-xs tracking-wider">
+              <p className="font-mono text-exp-muted text-xs tracking-wider">
                 default: ${MEDIAN_WAGE} / hr · US median (BLS 2024)
               </p>
             </motion.div>
