@@ -5,4 +5,7 @@ import tailwind from '@astrojs/tailwind';
 export default defineConfig({
   integrations: [react(), tailwind({ applyBaseStyles: false })],
   site: 'https://frankyoung.dev',
+  vite: {
+    assetsInclude: ['**/*.glsl'],
+  },
 });
