@@ -1,6 +1,10 @@
 import { useState } from 'react';
-import { EXPERIENCE, type Role } from '../data/experience';
+import { EXPERIENCE, type Role, type Bullet } from '../data/experience';
 import { Tag } from './ui/Tag';
+
+function normalizeBullet(b: string | Bullet): Bullet {
+  return typeof b === 'string' ? { text: b } : b;
+}
 
 function WorkRow({ item, defaultOpen }: { item: Role; defaultOpen?: boolean }) {
   const [open, setOpen] = useState(!!defaultOpen);
@@ -47,12 +51,23 @@ function WorkRow({ item, defaultOpen }: { item: Role; defaultOpen?: boolean }) {
 
       <div className={open ? 'expand-open' : 'expand-closed'}>
         <div className="pl-6 pb-5">
-          {item.bullets.map((b, i) => (
-            <div key={i} className="flex gap-3 items-start mb-2.5">
-              <span className="w-1 h-1 rounded-full bg-accent flex-shrink-0 mt-[7px]" />
-              <span className="text-sm text-fg-sub leading-[1.65]">{b}</span>
-            </div>
-          ))}
+          {item.blurb && (
+            <p className="text-sm text-fg-sub leading-[1.65] mb-4">{item.blurb}</p>
+          )}
+          {item.bullets.map((raw, i) => {
+            const { text, dates } = normalizeBullet(raw);
+            return (
+              <div key={i} className="flex gap-3 items-start mb-2.5">
+                <span className="w-1 h-1 rounded-full bg-accent flex-shrink-0 mt-[7px]" />
+                <span className="text-sm text-fg-sub leading-[1.65] flex-1">{text}</span>
+                {dates && (
+                  <span className="font-mono text-[10px] text-fg-muted tracking-[0.06em] flex-shrink-0 mt-[5px]">
+                    {dates}
+                  </span>
+                )}
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>

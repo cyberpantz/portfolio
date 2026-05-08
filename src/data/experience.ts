@@ -1,9 +1,15 @@
+export interface Bullet {
+  text: string;
+  dates?: string;
+}
+
 export interface Role {
   co: string;
   role: string;
   yr: string;
   tags: string[];
-  bullets: string[];
+  blurb?: string;
+  bullets: (string | Bullet)[];
 }
 
 export const EXPERIENCE: Role[] = [
@@ -11,13 +17,12 @@ export const EXPERIENCE: Role[] = [
     co: 'ChargePoint',
     role: 'Staff Frontend Engineer',
     yr: '2021–2026',
-    tags: ['Microfrontends', 'React', 'TypeScript', 'Tailwind', 'Fleet'],
+    tags: ['Microfrontends', 'Websockets', 'React', 'TypeScript', 'Tailwind', 'React-Query', 'WCAG/ADA', 'CI/CD'],
     bullets: [
       'Led frontend architecture for fleet EV charging platform',
       'Built real-time fleet monitoring and analytics interfaces',
       'Developed schema-driven UI systems and complex data tables',
-      'Mentored engineers, worked closely with product and design',
-      'Drove WCAG/ADA accessibility initiatives',
+      'Mentored engineers, worked closely with product and design'
     ],
   },
   {
@@ -35,7 +40,7 @@ export const EXPERIENCE: Role[] = [
     co: 'Tesla',
     role: 'Senior Applications Developer',
     yr: '2015–2019',
-    tags: ['Configurator', 'React', 'Redux', 'i18n', 'Node'],
+    tags: [ 'React', 'Redux', 'NodeJS/ExpressJS/PHP','CI/CD'],
     bullets: [
       "One of the tech leads for Tesla's vehicle configurator — consumer-facing, 40+ markets",
       'Frontend polish, NodeJS services, unit testing, deployment pipelines',
@@ -57,23 +62,24 @@ export const EXPERIENCE: Role[] = [
     co: 'Fat Spaniel',
     role: 'Web Application Engineer',
     yr: '2008–2011',
-    tags: ['Flex', 'Backbone', 'Bootstrap' ,'UX', 'Data Viz'],
+    tags: ['Adobe Flex', 'Bootstrap' ,'Backbone', 'UX', 'Data Viz'],
     bullets: [
       'Built data visualizations for customer soloar and wind installations using Adobe Flex, Flash, and later HTML5/CSS3',
-      'Small company, so I split role as UX designer and applications developer'
+      'Small company: I split my role between UX designer and applications developer'
     ],
   },
   {
     co: 'Earlier Career',
     role: 'Various Roles',
-    yr: '2000–2008',
+    yr: '2002–2008',
     tags: ['Full-Stack', 'Education', 'Government', 'Advertising'],
+    blurb: 'Early career focused on full-stack web development, interactive kiosks, working in advertising, government and education.',
     bullets: [
-      'Partner at Protrigga Design — interactive advertising',
-      'Senior Developer at CaratFusion',
-      'Instructional Designer at Academy of Art',
-      'Senior Applications Developer at County of Humboldt',
-      'Associate Faculty at College of the Redwoods',
+      { text: 'Protrigga Design — Partner · Interactive advertising & Flash production', dates: '2005–2009' },
+      { text: 'CaratFusion — Senior Developer · Digital media & campaign tooling', dates: 'Nov 2005–Jun 2006' },
+      { text: 'Academy of Art University — Instructional Designer · Online course curriculum', dates: 'Jun 2004–Mar 2005' },
+      { text: 'County of Humboldt — Senior Applications Developer · Government web apps', dates: 'Jan 2002–Dec 2004' },
+      { text: 'College of the Redwoods — Associate Faculty · Taught web design & development', dates: 'Jun 2002–Jun 2003' },
     ],
   },
 ];

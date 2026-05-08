@@ -43,8 +43,7 @@ export const PROJECTS: Project[] = [
        color: '#8b5e3c',
      images: ['/projects/mealtrip/mealtrip-1.png', 
       '/projects/mealtrip/mealtrip-7.png', 
-      '/projects/mealtrip/mealtrip-3.png', 
-      '/projects/mealtrip/mealtrip-4.png', 
+      '/projects/mealtrip/mealtrip-5.png', 
       '/projects/mealtrip/mealtrip-8.png',
       '/projects/mealtrip/mealtrip-9.png'
 

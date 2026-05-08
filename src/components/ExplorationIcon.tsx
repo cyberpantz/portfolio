@@ -3,7 +3,7 @@ import { Gamepad2, ChefHat, TrendingUp, Shuffle, type LucideIcon } from 'lucide-
 const ICONS: Record<string, LucideIcon> = {
   'pattern-match':      Gamepad2,
   'kitchen-dodgeball':  ChefHat,
-  'skrillatime':        TrendingUp,
+  'wage-gap':        TrendingUp,
   'chooser':            Shuffle,
 };
 

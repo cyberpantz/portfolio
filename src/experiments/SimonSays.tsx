@@ -1,4 +1,4 @@
-import { RotateCcw, Frown, PartyPopper, Sparkles, Crown } from 'lucide-react';
+import { RotateCcw, Frown, PartyPopper, Sparkles, Crown, LogOut } from 'lucide-react';
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import confetti from 'canvas-confetti';
@@ -389,9 +389,10 @@ export default function SimonSays({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.6 }}
-            className="px-6 py-2 text-sm text-gray-400 hover:text-red-400 font-mono uppercase tracking-wider transition-colors"
+            className="flex items-center gap-1.5 border border-white/15 rounded px-2.5 py-1.5 text-white/40 hover:text-white/80 hover:border-white/30 transition-colors font-mono text-[11px] tracking-[0.06em] cursor-pointer"
           >
-            [ ESC - CANCEL ]
+            <LogOut size={12} strokeWidth={1.5} />
+            quit
           </motion.button>
         )}
       </motion.div>
@@ -448,7 +449,7 @@ export default function SimonSays({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.5 }}
-              className="text-lg font-bold text-gray-700 dark:text-neutral-300"
+              className="text-lg font-bold text-white/80"
             >
               {difficulty === 'easy' ? 'Easy' : difficulty === 'hard' ? 'Hard' : 'Insane'} Mode Conquered!
             </motion.p>
@@ -491,21 +492,21 @@ export default function SimonSays({
       <div className="pt-6">
         <div className="text-center space-y-6">
           <div className="flex justify-center">
-            <Frown className="w-16 h-16 text-red-600 dark:text-red-400" />
+            <Frown className="w-16 h-16 text-red-400" />
           </div>
           <div>
-            <h3 className="text-2xl font-bold text-red-600 dark:text-red-400 mb-2">
+            <h3 className="text-2xl font-bold text-red-400 mb-2">
               Game Over
             </h3>
-            <p className="text-gray-700 dark:text-neutral-300">
+            <p className="font-mono text-sm text-white/60 tracking-wider">
               You reached Round {round} of {difficulty && getMaxRounds(difficulty)}
             </p>
           </div>
 
-          <div className="space-y-3">
+          <div className="flex flex-col items-center gap-3">
             <button
               onClick={() => setGameState('difficulty-select')}
-              className="w-full px-6 py-3 rounded-xl border-2 border-purple-300 dark:border-purple-500/50 bg-purple-50 dark:bg-purple-500/10 hover:border-purple-500 hover:bg-purple-100 dark:hover:bg-purple-500/20 transition-all text-purple-700 dark:text-purple-300 font-semibold flex items-center justify-center gap-2"
+              className="flex items-center gap-2 px-8 py-3 rounded-lg border-2 border-purple-500/50 bg-purple-500/10 hover:border-purple-400 hover:bg-purple-500/20 transition-all text-purple-300 font-mono text-sm uppercase tracking-wider"
             >
               <RotateCcw className="w-4 h-4" />
               Try Again
@@ -513,9 +514,10 @@ export default function SimonSays({
             {onCancel && (
               <button
                 onClick={onCancel}
-                className="w-full px-6 py-3 rounded-xl border-2 border-gray-300 dark:border-zinc-700 bg-gray-50 dark:bg-zinc-800/50 hover:border-gray-400 dark:hover:border-zinc-600 transition-all text-gray-700 dark:text-neutral-300 font-semibold"
+                className="flex items-center gap-1.5 border border-white/15 rounded px-2.5 py-1.5 text-white/40 hover:text-white/80 hover:border-white/30 transition-colors font-mono text-[11px] tracking-[0.06em] cursor-pointer"
               >
-                Close
+                <LogOut size={12} strokeWidth={1.5} />
+                quit
               </button>
             )}
           </div>
@@ -538,36 +540,47 @@ export default function SimonSays({
         transition={{ duration: 0.4 }}
         className="mb-4"
       >
-        <div className="flex items-center justify-between mb-2">
-          <div className="flex-1">
-            <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
-              Round {round} of {difficulty && getMaxRounds(difficulty)}
-            </h3>
-            <p className="text-xs text-gray-600 dark:text-neutral-400">
-              {gamePhase === 'simon-turn' && 'Watch the pattern...'}
-              {gamePhase === 'player-turn' && 'Your turn! Repeat the pattern'}
-              {gamePhase === 'between-rounds' && 'Get ready...'}
-            </p>
-          </div>
-          <div className="text-center">
-            <div className="text-xs text-gray-500 dark:text-neutral-500">Sequence</div>
-            <div className="text-lg font-bold text-purple-600 dark:text-purple-400">
-              {simonSequence.length} cards
-            </div>
-          </div>
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="font-mono text-sm font-bold text-white tracking-widest uppercase">
+            Round {round} of {difficulty && getMaxRounds(difficulty)}
+          </h3>
+          <p className="font-mono text-xs tracking-widest uppercase"
+            style={{ color: gamePhase === 'player-turn' ? '#a855f7' : 'rgba(255,255,255,0.4)' }}>
+            {gamePhase === 'simon-turn' && 'watch...'}
+            {gamePhase === 'player-turn' && 'your turn'}
+            {gamePhase === 'between-rounds' && 'get ready...'}
+          </p>
         </div>
 
-        {/* Progress bar */}
-        <div className="w-full bg-gray-200 dark:bg-zinc-700 rounded-full h-2">
-          <motion.div
-            initial={{ width: 0 }}
-            animate={{
-              width: `${(round / (difficulty ? getMaxRounds(difficulty) : 1)) * 100}%`,
-            }}
-            transition={{ duration: 0.5 }}
-            className="bg-purple-600 dark:bg-purple-500 h-2 rounded-full"
-          />
-        </div>
+        {/* Pip dots — one per round */}
+        {(() => {
+          const maxRounds = difficulty ? getMaxRounds(difficulty) : 1;
+          return (
+            <div className="flex items-center gap-2">
+              {Array.from({ length: maxRounds }, (_, i) => {
+                const done    = i < round - 1;
+                const current = i === round - 1;
+                return (
+                  <motion.div
+                    key={i}
+                    className="rounded-full flex-1"
+                    style={{ height: 6 }}
+                    animate={{
+                      backgroundColor: done
+                        ? '#a855f7'
+                        : current
+                          ? '#a855f7'
+                          : 'rgba(255,255,255,0.12)',
+                      opacity: done ? 0.6 : 1,
+                      boxShadow: current ? '0 0 8px 2px rgba(168,85,247,0.7)' : 'none',
+                    }}
+                    transition={{ duration: 0.3 }}
+                  />
+                );
+              })}
+            </div>
+          );
+        })()}
       </motion.div>
 
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3 mb-4">
@@ -660,12 +673,13 @@ export default function SimonSays({
       </div>
 
       {/* Cancel game button */}
-      <div className="text-center mt-3">
+      <div className="flex justify-center mt-3">
         <button
           onClick={onCancel || (() => setGameState('difficulty-select'))}
-          className="text-xs text-gray-500 dark:text-neutral-500 hover:text-red-600 dark:hover:text-red-400 transition-colors underline"
+          className="flex items-center gap-1.5 border border-white/15 rounded px-2.5 py-1.5 text-white/40 hover:text-white/80 hover:border-white/30 transition-colors font-mono text-[11px] tracking-[0.06em] cursor-pointer"
         >
-          Cancel Game
+          <LogOut size={12} strokeWidth={1.5} />
+          quit
         </button>
       </div>
     </motion.div>

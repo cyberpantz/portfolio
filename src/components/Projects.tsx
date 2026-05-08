@@ -105,7 +105,7 @@ export default function Projects() {
                 </button>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2">
+              <div className="grid grid-cols-1 sm:grid-cols-[2fr_1fr]">
                 {/* Left: gallery */}
                 <div
                   className="relative border-b sm:border-b-0 sm:border-r border-rule bg-ink-surface overflow-hidden group"
