@@ -97,8 +97,12 @@ function Fireflies() {
 export default function ClearNight() {
   const groupRef = useRef<Group>(null);
 
-  useFrame((_, delta) => {
+  useFrame((state, delta) => {
     if (groupRef.current) groupRef.current.rotation.y += delta * 0.0026;
+    const t = state.clock.getElapsedTime();
+    state.camera.position.x = Math.sin(t * 0.05) * 1.4;
+    state.camera.position.y = Math.sin(t * 0.08) * 0.6;
+    state.camera.rotation.z = Math.sin(t * 0.04) * 0.008;
   });
 
   return (

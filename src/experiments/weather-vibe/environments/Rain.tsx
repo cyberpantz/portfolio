@@ -90,8 +90,11 @@ export default function Rain() {
     uMask: { value: maskTex },
   }), [worldFBO, maskTex]);
 
-  useFrame(({ clock }) => {
+  useFrame(({ clock, camera }) => {
     if (glassMat.current) glassMat.current.uniforms.uTime.value = clock.getElapsedTime();
+    const t = clock.getElapsedTime();
+    camera.position.x = Math.sin(t * 0.22) * 0.5 + Math.sin(t * 0.37) * 0.2;
+    camera.position.y = Math.sin(t * 0.18) * 0.3;
 
     let dirty = false;
     for (let i = 0; i < maskData.length; i += 4) {

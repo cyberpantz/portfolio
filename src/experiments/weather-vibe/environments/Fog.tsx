@@ -35,8 +35,10 @@ export default function Fog() {
   useFrame(({ clock, camera }) => {
     if (matRef.current) matRef.current.uniforms.uTime.value = clock.getElapsedTime();
     const t = clock.getElapsedTime();
-    camera.position.z = -t * 0.3;
-    camera.position.y = 0.8 + Math.sin(t * 1.2) * 0.012;
+    camera.position.x = Math.sin(t * 0.09) * 1.0;
+    camera.position.z = -t * 0.35;
+    camera.position.y = 0.8 + Math.sin(t * 0.5) * 0.18 + Math.sin(t * 1.2) * 0.06;
+    camera.rotation.z = Math.sin(t * 0.07) * 0.008;
   });
 
   const trees = useMemo(() =>

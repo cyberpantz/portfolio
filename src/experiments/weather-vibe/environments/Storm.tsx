@@ -101,9 +101,13 @@ export default function Storm() {
     };
   }, []);
 
-  useFrame(({ clock }, delta) => {
+  useFrame(({ clock, camera }, delta) => {
     const t = clock.getElapsedTime();
     if (glassMat.current) glassMat.current.uniforms.uTime.value = t;
+    // Multi-frequency shake — feels like wind gusts
+    camera.position.x = Math.sin(t * 1.7) * 0.35 + Math.sin(t * 2.9) * 0.15 + Math.sin(t * 0.4) * 0.6;
+    camera.position.y = Math.sin(t * 2.1) * 0.2 + Math.sin(t * 0.6) * 0.3;
+    camera.rotation.z = Math.sin(t * 1.3) * 0.012;
 
     // Condensation refill — same 10s rate as Rain
     let dirty = false;

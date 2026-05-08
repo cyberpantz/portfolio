@@ -40,6 +40,8 @@ export default function Snow() {
       }
     }
     pointsRef.current.geometry.attributes.position.needsUpdate = true;
+    camera.position.x = Math.sin(t * 0.12) * 0.8;
+    camera.position.y = Math.sin(t * 0.09) * 0.4;
     camera.position.z -= 0.008;
     camera.rotation.x = -0.08;
   });
