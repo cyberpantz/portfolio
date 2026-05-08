@@ -12,11 +12,11 @@ export default function KitchenDodgeballGame() {
         <a href="/explorations" className="font-mono text-[11px] text-fg-muted tracking-[0.08em] hover:text-fg transition-colors">
           ← back
         </a>
-        <span className="font-mono text-[11px] text-fg-muted tracking-[0.08em] uppercase">Kitchen Dodgeball</span>
+        <span className="font-mono text-[11px] text-fg-muted tracking-[0.08em] uppercase">Fowl Play</span>
       </div>
 
-      <div className="flex-1 flex items-center justify-center p-4">
-        <div className="w-full" style={{ minWidth: 800 }}>
+      <div className="flex-1 flex items-start justify-center px-4 pt-6 pb-0">
+        <div className="w-full h-full" style={{ minWidth: 800 }}>
           {screen === 'playing' && (
             <KitchenDodgeball
               onWin={() => setScreen('win')}
@@ -26,7 +26,7 @@ export default function KitchenDodgeballGame() {
           )}
 
           {screen === 'win' && (
-            <div className="text-center">
+            <div className="h-full flex flex-col items-center justify-center text-center">
               <div className="font-serif text-4xl text-fg mb-4">You survived! 🍳</div>
               <div className="flex gap-4 justify-center">
                 <button
@@ -44,7 +44,7 @@ export default function KitchenDodgeballGame() {
           )}
 
           {screen === 'lose' && (
-            <div className="text-center">
+            <div className="h-full flex flex-col items-center justify-center text-center">
               <div className="font-serif text-4xl text-fg mb-4">You got hit! 💥</div>
               <div className="flex gap-4 justify-center">
                 <button

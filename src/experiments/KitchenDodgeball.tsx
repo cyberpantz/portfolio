@@ -25,6 +25,13 @@ interface FallingItem {
   speed: number; // pixels per frame
   isBoss?: boolean; // Boss items are bigger and scarier
   floatsUp?: boolean; // Some bosses float up from bottom instead of falling
+  sinuous?: boolean; // Chicken boss occasionally sweeps side to side
+  sinuousPhase?: number; // Per-item phase offset for sin wave
+  sinuousFreq?: number; // Per-item frequency for variation
+  fakeout?: boolean; // Chicken boss drifts toward player then darts away at mid-screen
+  horizontal?: boolean; // Chicken boss runs across the screen dropping eggs
+  horizontalDir?: 1 | -1; // Direction of horizontal run
+  lastEggX?: number; // x where last egg was dropped
 }
 
 const FOOD_EMOJIS = ['🍅', '🥚', '🥔', '🧅', '🌽', '🥕', '🍋', '🥒', '🍆', '🥑', '🍑'];
@@ -95,6 +102,7 @@ export default function KitchenDodgeball({
   const animationFrameRef = useRef<number | undefined>(undefined);
   const invulnerabilityRef = useRef(false); // Track invulnerability immediately without waiting for state update
   const lastBossPulseRef = useRef<number>(0); // Track last time boss sound played
+  const activeHorizontalRef = useRef(false); // Only one horizontal chicken at a time
   const gameTimeRef = useRef<number>(0); // Track game time for boss floating animation
   const jumpVelocityRef = useRef<number>(0); // Jump velocity
   const playerXRef = useRef<number>(50); // Track current player X position for spawn calculations
@@ -248,8 +256,8 @@ export default function KitchenDodgeball({
     if (gameState !== 'playing') return;
 
     const spawnInterval = setInterval(() => {
-      // 12% chance to spawn a BOSS (scary and intimidating!)
-      const isBoss = Math.random() < 0.12;
+      // 15% chance to spawn a BOSS
+      const isBoss = Math.random() < 0.15;
       // 20% of bosses float up from bottom instead of falling (reduced from 50% so more traverse full screen)
       const floatsUp = isBoss && Math.random() < 0.2;
 
@@ -257,10 +265,24 @@ export default function KitchenDodgeball({
         ? BOSS_EMOJIS[Math.floor(Math.random() * BOSS_EMOJIS.length)]
         : '';
 
-      // Bosses need wider margins due to text-7xl size (vs text-4xl for regular items)
-      const spawnX = isBoss
-        ? Math.max(12, Math.min(88, getWeightedSpawnX(playerXRef.current))) // Bosses: 12-88% to prevent edge clipping
-        : getWeightedSpawnX(playerXRef.current); // Regular items: 5-95% is fine
+      // Chicken boss behaviour: sinuous (15%) / fakeout (35%) / horizontal (50%), one horizontal at a time
+      const isChickenBoss = isBoss && bossEmoji === '🐓' && !floatsUp;
+      const behaviourRoll = Math.random();
+      const sinuous    = isChickenBoss && behaviourRoll < 0.23;
+      const fakeout    = isChickenBoss && !sinuous && behaviourRoll < 0.50;
+      const horizontal = isChickenBoss && !sinuous && !fakeout && !activeHorizontalRef.current;
+
+      if (horizontal) activeHorizontalRef.current = true;
+
+      // Horizontal chickens enter from one edge; sinuous starts center; others weighted spawn
+      const horizontalDir: 1 | -1 = Math.random() < 0.5 ? 1 : -1;
+      const spawnX = horizontal
+        ? (horizontalDir === 1 ? -8 : 108)
+        : sinuous
+          ? 50
+          : isBoss
+            ? Math.max(12, Math.min(88, getWeightedSpawnX(playerXRef.current)))
+            : getWeightedSpawnX(playerXRef.current);
 
       const newItem: FallingItem & { y?: number } = {
         id: `${Date.now()}-${Math.random()}`,
@@ -273,7 +295,14 @@ export default function KitchenDodgeball({
           : settings.baseSpeed + Math.random() * settings.speedVariance,
         isBoss,
         floatsUp,
-        y: floatsUp ? 100 : 0, // Floating bosses start at bottom, others at top
+        sinuous,
+        sinuousPhase: sinuous ? Math.random() * Math.PI * 2 : 0,
+        sinuousFreq: sinuous ? 0.8 + Math.random() * 0.7 : 1, // 0.8–1.5 for variety
+        fakeout,
+        horizontal,
+        horizontalDir: horizontal ? horizontalDir : undefined,
+        lastEggX: horizontal ? spawnX : undefined,
+        y: horizontal ? (12 + Math.random() * 12) : floatsUp ? 100 : 0,
       };
 
       // Play chicken sound when chicken boss spawns
@@ -315,13 +344,34 @@ export default function KitchenDodgeball({
       }
 
       setFallingItems(prev => {
+        const droppedEggs: (FallingItem & { y?: number })[] = [];
+
         const updated = prev.map(item => {
           const currentY = (item as FallingItem & { y?: number }).y !== undefined
             ? (item as FallingItem & { y: number }).y
             : 0;
 
           let newY;
-          if (item.isBoss) {
+          let newX = item.x;
+          let newLastEggX = item.lastEggX;
+
+          if (item.horizontal) {
+            // Horizontal chicken: runs across the screen at fixed y, drops eggs
+            newY = currentY; // y stays fixed
+            newX = item.x + (item.horizontalDir ?? 1) * 1.8;
+
+            // Drop an egg every ~22% of horizontal travel
+            if (newLastEggX === undefined || Math.abs(newX - newLastEggX) >= 22) {
+              droppedEggs.push({
+                id: `egg-${Date.now()}-${Math.random()}`,
+                emoji: '🥚',
+                x: newX,
+                speed: 1.2 + Math.random() * 0.6,
+                y: currentY + 4,
+              });
+              newLastEggX = newX;
+            }
+          } else if (item.isBoss) {
             // Bosses: less affected by speed increase, with floating bob effect
             const bossSpeedMultiplier = 0.7 + (gameProgress * 0.5); // Only 0.7x to 1.2x instead of 0.5x to 2x
             let baseMovement = item.speed * bossSpeedMultiplier;
@@ -334,6 +384,24 @@ export default function KitchenDodgeball({
             // Add strong floating bob: sin wave for eerie floating effect
             const floatOffset = Math.sin(gameTimeRef.current * 0.8 + item.x * 0.1) * 1.5;
             newY = currentY + baseMovement + floatOffset;
+
+            // Sinuous chickens sweep dramatically side to side
+            if (item.sinuous) {
+              newX = 50 + Math.sin(gameTimeRef.current * (item.sinuousFreq ?? 1) + (item.sinuousPhase ?? 0)) * 38;
+            }
+
+            // Fakeout: lazy wobbling approach toward player, then sudden dart away at mid-screen
+            if (item.fakeout) {
+              if (currentY < 48) {
+                // Approach phase: slow lazy drift toward player + gentle wobble
+                const wobble = Math.sin(gameTimeRef.current * 1.8 + (item.sinuousPhase ?? 0)) * 2.5;
+                newX = item.x + (playerXRef.current - item.x) * 0.025 + wobble;
+              } else {
+                // Dart phase: shoot away from the player's current position
+                const awayDir = item.x <= playerXRef.current ? -1 : 1;
+                newX = Math.max(8, Math.min(92, item.x + awayDir * 3.2));
+              }
+            }
           } else {
             // Regular items: normal speed progression
             newY = currentY + (item.speed * speedMultiplier);
@@ -341,14 +409,21 @@ export default function KitchenDodgeball({
 
           return {
             ...item,
+            x: newX,
             y: newY,
+            lastEggX: newLastEggX,
           };
         });
 
-        // Remove items that went off screen (top or bottom)
-        const filtered = updated.filter(item => {
+        // Remove items that went off screen (top, bottom, or sides for horizontal)
+        const withEggs = [...updated, ...droppedEggs];
+        const filtered = withEggs.filter(item => {
           const y = (item as FallingItem & { y?: number }).y || 0;
-          // Remove if went past bottom (y > 100) OR past top (y < -5)
+          if (item.horizontal) {
+            const onScreen = item.x >= -12 && item.x <= 112;
+            if (!onScreen) activeHorizontalRef.current = false; // free slot for next chicken
+            return onScreen;
+          }
           return y >= -5 && y <= 100;
         });
 
@@ -476,8 +551,8 @@ export default function KitchenDodgeball({
       {/* Game Area */}
       <div
         ref={gameAreaRef}
-        className="relative w-full aspect-[16/10] min-h-[500px] max-h-[700px] bg-black rounded-xl border border-white/10 overflow-hidden select-none"
-        style={{ height: 'calc(100vh - 300px)' }}
+        className="relative w-full aspect-[16/10] min-h-[662px] max-h-[862px] bg-black rounded-xl border border-white/10 overflow-hidden select-none"
+        style={{ height: 'calc(100vh - 118px)' }}
       >
         {/* Timer and Lives */}
         {gameState === 'playing' && (
@@ -522,12 +597,16 @@ export default function KitchenDodgeball({
             return (
               <motion.div
                 key={item.id}
-                className={`absolute ${item.isBoss ? 'text-7xl' : 'text-4xl'}`}
+                className={`absolute ${item.isBoss || item.horizontal ? 'text-7xl' : 'text-4xl'}`}
                 style={{
                   left: `${item.x}%`,
                   top: `${itemWithY.y || 0}%`,
-                  filter: item.isBoss ? 'drop-shadow(0 0 8px rgba(220, 38, 38, 0.6))' : 'none',
-                  transform: item.floatsUp ? 'scaleY(-1)' : 'none', // Flip upward-floating bosses upside down
+                  filter: item.isBoss || item.horizontal ? 'drop-shadow(0 0 8px rgba(220, 38, 38, 0.6))' : 'none',
+                  transform: item.floatsUp
+                    ? 'scaleY(-1)'
+                    : item.horizontal
+                      ? `scaleX(${item.horizontalDir === -1 ? -1 : 1})`
+                      : 'none',
                 }}
                 initial={{ opacity: 0, scale: 0.5 * bossGrowthScale }}
                 animate={item.isBoss ? {
@@ -603,7 +682,9 @@ export default function KitchenDodgeball({
                   transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
                 >
                   <span className="text-5xl">🍕</span>
+                  <span className="text-5xl">🐓</span>
                   <span className="text-5xl">🍔</span>
+                  <span className="text-5xl">🦆</span>
                   <span className="text-5xl">🌮</span>
                 </motion.div>
 
@@ -616,7 +697,7 @@ export default function KitchenDodgeball({
                     letterSpacing: '0.05em',
                   }}
                 >
-                  KITCHEN DODGEBALL
+                  FOWL PLAY
                 </h3>
 
                 <p className="text-exp-base text-sm tracking-widest font-mono uppercase">
@@ -749,7 +830,7 @@ export default function KitchenDodgeball({
               CHEF OF THE YEAR
             </h3>
             <p className="text-exp-base text-sm font-mono uppercase tracking-widest mb-8">
-              Kitchen survived — nothing hit you!
+              The chickens didn't get you!
             </p>
             <div className="flex gap-3">
               <motion.button
@@ -787,10 +868,10 @@ export default function KitchenDodgeball({
               className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-pink-500 mb-2"
               style={{ textShadow: '0 0 30px rgba(239,68,68,0.6)' }}
             >
-              FOOD FIGHT LOST
+              FOWL PLAY
             </h3>
             <p className="text-exp-base text-sm font-mono uppercase tracking-widest mb-8">
-              The kitchen won this round
+              The chickens won this round
             </p>
             <div className="flex gap-3">
               <motion.button
@@ -809,35 +890,6 @@ export default function KitchenDodgeball({
               >
                 Try Again
               </motion.button>
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Instructions */}
-      <div className="mt-4 text-center text-sm text-secondary">
-        {gameState === 'ready' && (
-          <div className="flex flex-col items-center gap-2">
-            <div className="flex items-center gap-2">
-              <span>💡 Desktop:</span>
-              <kbd className="px-2 py-1 bg-white dark:bg-zinc-800 border border-gray-300 dark:border-zinc-600 rounded text-xs font-mono shadow-sm">
-                ←
-              </kbd>
-              <kbd className="px-2 py-1 bg-white dark:bg-zinc-800 border border-gray-300 dark:border-zinc-600 rounded text-xs font-mono shadow-sm">
-                →
-              </kbd>
-              <span>to move,</span>
-              <kbd className="px-2 py-1 bg-white dark:bg-zinc-800 border border-gray-300 dark:border-zinc-600 rounded text-xs font-mono shadow-sm">
-                ↑
-              </kbd>
-              <span>or</span>
-              <kbd className="px-2 py-1 bg-white dark:bg-zinc-800 border border-gray-300 dark:border-zinc-600 rounded text-xs font-mono shadow-sm">
-                Space
-              </kbd>
-              <span>to jump</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span>📱 Mobile: Touch screen to move, tap to jump</span>
             </div>
           </div>
         )}
