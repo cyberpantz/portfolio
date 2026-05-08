@@ -44,8 +44,9 @@ export default function Hero() {
 
         <p className="text-base text-fg-sub max-w-[520px] leading-[1.75] mb-10">
           I build the interfaces complexity hides behind —
-          real-time fleet dashboards, vehicle configurators, healthcare tools.
-          React, TypeScript, and an obsession with getting the details right.
+          real-time fleet dashboards, vehicle configurators, healthcare tools, 
+          multi-step ecommerce flows, and more. Creative, thoughtful, and pragmatic, 
+          I turn ideas into reality and have an obsession with getting the details right.
         </p>
 
         <div className="flex flex-wrap gap-4">
