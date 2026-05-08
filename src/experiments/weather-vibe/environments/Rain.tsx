@@ -1,6 +1,5 @@
 import { useRef, useMemo, useEffect, useCallback } from 'react';
-import { useFrame, useThree } from '@react-three/fiber';
-import { useFBO } from '@react-three/drei';
+import { useFrame } from '@react-three/fiber';
 import {
   ShaderMaterial,
   DataTexture, RGBAFormat, UnsignedByteType,
@@ -18,7 +17,7 @@ function RainWorld() {
   const pointsRef = useRef<any>(null);
 
   const { positions, velocities } = useMemo(() => {
-    const positions = new Float32Array(particleCount * 3);
+    const positions  = new Float32Array(particleCount * 3);
     const velocities = new Float32Array(particleCount);
     for (let i = 0; i < particleCount; i++) {
       positions[i * 3]     = (Math.random() - 0.5) * 80;
@@ -73,11 +72,8 @@ function RainWorld() {
 }
 
 export default function Rain() {
-  const { size } = useThree();
-  const worldFBO = useFBO(size.width, size.height);
-
   const maskData = useMemo(() => new Uint8Array(MASK_SIZE * MASK_SIZE * 4).fill(255), []);
-  const maskTex = useMemo(() => {
+  const maskTex  = useMemo(() => {
     const tex = new DataTexture(maskData, MASK_SIZE, MASK_SIZE, RGBAFormat, UnsignedByteType);
     tex.needsUpdate = true;
     return tex;
@@ -86,9 +82,8 @@ export default function Rain() {
   const glassMat = useRef<ShaderMaterial>(null);
   const uniforms = useMemo(() => ({
     uTime: { value: 0 },
-    uWorld: { value: worldFBO.texture },
     uMask: { value: maskTex },
-  }), [worldFBO, maskTex]);
+  }), [maskTex]);
 
   useFrame(({ clock, camera }) => {
     if (glassMat.current) glassMat.current.uniforms.uTime.value = clock.getElapsedTime();
@@ -96,6 +91,7 @@ export default function Rain() {
     camera.position.x = Math.sin(t * 0.22) * 0.5 + Math.sin(t * 0.37) * 0.2;
     camera.position.y = Math.sin(t * 0.18) * 0.3;
 
+    // Condensation refill
     let dirty = false;
     for (let i = 0; i < maskData.length; i += 4) {
       if (maskData[i] < 255) {
@@ -114,8 +110,8 @@ export default function Rain() {
 
   const clearAt = useCallback((clientX: number, clientY: number) => {
     lastInteraction.current = Date.now();
-    const u = clientX / window.innerWidth;
-    const v = 1 - clientY / window.innerHeight;
+    const u  = clientX / window.innerWidth;
+    const v  = 1 - clientY / window.innerHeight;
     const px = Math.floor(u * MASK_SIZE);
     const py = Math.floor(v * MASK_SIZE);
     const radius = 40;
@@ -123,13 +119,12 @@ export default function Rain() {
       for (let dx = -radius; dx <= radius; dx++) {
         const dist = Math.sqrt(dx * dx + dy * dy);
         if (dist > radius) continue;
-        const nx = px + dx;
-        const ny = py + dy;
+        const nx = px + dx, ny = py + dy;
         if (nx < 0 || nx >= MASK_SIZE || ny < 0 || ny >= MASK_SIZE) continue;
-        const idx = (ny * MASK_SIZE + nx) * 4;
-        const sigma = radius * 0.4;
-        const gaussian = Math.exp(-(dist * dist) / (2 * sigma * sigma));
-        maskData[idx] = Math.max(0, maskData[idx] - gaussian * 255);
+        const idx    = (ny * MASK_SIZE + nx) * 4;
+        const sigma  = radius * 0.4;
+        const gauss  = Math.exp(-(dist * dist) / (2 * sigma * sigma));
+        maskData[idx]     = Math.max(0, maskData[idx] - gauss * 255);
         maskData[idx + 1] = maskData[idx];
         maskData[idx + 2] = maskData[idx];
         maskData[idx + 3] = 255;
@@ -142,22 +137,20 @@ export default function Rain() {
     const onDown  = () => { clearing.current = true; };
     const onUp    = () => { clearing.current = false; };
     const onMove  = (e: MouseEvent) => { if (clearing.current) clearAt(e.clientX, e.clientY); };
-    const onTouch = (e: TouchEvent) => {
-      Array.from(e.touches).forEach(t => clearAt(t.clientX, t.clientY));
-    };
-    window.addEventListener('mousedown', onDown);
-    window.addEventListener('mouseup', onUp);
-    window.addEventListener('mousemove', onMove);
-    window.addEventListener('touchmove', onTouch, { passive: true });
+    const onTouch = (e: TouchEvent) => { Array.from(e.touches).forEach(t => clearAt(t.clientX, t.clientY)); };
+    window.addEventListener('mousedown',  onDown);
+    window.addEventListener('mouseup',    onUp);
+    window.addEventListener('mousemove',  onMove);
+    window.addEventListener('touchmove',  onTouch, { passive: true });
     return () => {
-      window.removeEventListener('mousedown', onDown);
-      window.removeEventListener('mouseup', onUp);
-      window.removeEventListener('mousemove', onMove);
-      window.removeEventListener('touchmove', onTouch);
+      window.removeEventListener('mousedown',  onDown);
+      window.removeEventListener('mouseup',    onUp);
+      window.removeEventListener('mousemove',  onMove);
+      window.removeEventListener('touchmove',  onTouch);
     };
   }, [clearAt]);
 
-  // Hint animation — single automated smear after 8s of no interaction
+  // Automated hint swipe after 8 s of no interaction
   const hintPlayed = useRef(false);
   useEffect(() => {
     const id = setInterval(() => {
@@ -165,12 +158,7 @@ export default function Rain() {
       if (Date.now() - lastInteraction.current > 8000) {
         hintPlayed.current = true;
         let x = 80, y = window.innerHeight - 120;
-        const animate = () => {
-          clearAt(x, y);
-          x += 2;
-          y -= 1;
-          if (x < 180) requestAnimationFrame(animate);
-        };
+        const animate = () => { clearAt(x, y); x += 2; y -= 1; if (x < 180) requestAnimationFrame(animate); };
         animate();
       }
     }, 1000);
@@ -180,13 +168,17 @@ export default function Rain() {
   return (
     <>
       <RainWorld />
-      <mesh position={[0, 0, -0.5]}>
+      {/* Full-screen glass overlay — clip-space vertex shader + transparent alpha */}
+      <mesh renderOrder={100}>
         <planeGeometry args={[2, 2]} />
         <shaderMaterial
           ref={glassMat}
           vertexShader={glassVert}
           fragmentShader={glassFrag}
           uniforms={uniforms}
+          transparent={true}
+          depthTest={false}
+          depthWrite={false}
         />
       </mesh>
     </>

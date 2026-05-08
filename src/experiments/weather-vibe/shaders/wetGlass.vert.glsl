@@ -1,5 +1,7 @@
 varying vec2 vUv;
 void main() {
   vUv = uv;
-  gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+  // Clip-space full-screen quad — bypasses MVP so the plane always covers
+  // the entire viewport regardless of camera position or FOV.
+  gl_Position = vec4(position.xy, 0.0, 1.0);
 }

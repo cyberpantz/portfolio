@@ -1,6 +1,5 @@
 import { useRef, useMemo, useEffect } from 'react';
-import { useFrame, useThree } from '@react-three/fiber';
-import { useFBO } from '@react-three/drei';
+import { useFrame } from '@react-three/fiber';
 import {
   ShaderMaterial, DataTexture, RGBAFormat, UnsignedByteType,
   AdditiveBlending, BufferGeometry, BufferAttribute,
@@ -14,11 +13,8 @@ import glassVert from '../shaders/wetGlass.vert.glsl?raw';
 const MASK_SIZE = 512;
 
 export default function Storm() {
-  const { size } = useThree();
-  const worldFBO = useFBO(size.width, size.height);
-
   const maskData = useMemo(() => new Uint8Array(MASK_SIZE * MASK_SIZE * 4).fill(255), []);
-  const maskTex = useMemo(() => {
+  const maskTex  = useMemo(() => {
     const tex = new DataTexture(maskData, MASK_SIZE, MASK_SIZE, RGBAFormat, UnsignedByteType);
     tex.needsUpdate = true;
     return tex;
@@ -27,9 +23,8 @@ export default function Storm() {
   const glassMat = useRef<ShaderMaterial>(null);
   const uniforms = useMemo(() => ({
     uTime: { value: 0 },
-    uWorld: { value: worldFBO.texture },
     uMask: { value: maskTex },
-  }), [worldFBO, maskTex]);
+  }), [maskTex]);
 
   // Lightning state
   const lightning = useRef({ nextIn: 15 + Math.random() * 15 });
@@ -166,13 +161,16 @@ export default function Storm() {
           depthWrite={false}
         />
       </points>
-      <mesh position={[0, 0, -0.5]}>
+      <mesh renderOrder={100}>
         <planeGeometry args={[2, 2]} />
         <shaderMaterial
           ref={glassMat}
           vertexShader={glassVert}
           fragmentShader={glassFrag}
           uniforms={uniforms}
+          transparent={true}
+          depthTest={false}
+          depthWrite={false}
         />
       </mesh>
     </>
