@@ -18,6 +18,7 @@ export interface WeatherData {
   latitude: number;
   longitude: number;
   city?: string;
+  urbanDensity?: 'urban' | 'rural';
 }
 
 export function degreesToCompass(deg: number): string {

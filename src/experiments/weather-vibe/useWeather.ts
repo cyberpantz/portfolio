@@ -57,20 +57,16 @@ async function fetchWeatherData(
   longitude: number,
   existingCity?: string,
 ): Promise<WeatherData> {
-  const requests: Promise<Response>[] = [
+  // Always fetch BigDataCloud so urbanDensity is always fresh (geo.city = urban area)
+  const [weatherRes, geoRes] = await Promise.all([
     fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true&timezone=auto`),
-  ];
-  if (!existingCity) {
-    requests.push(
-      fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`),
-    );
-  }
-
-  const [weatherRes, geoRes] = await Promise.all(requests);
+    fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`),
+  ]);
   const data = await weatherRes.json();
   const cw = data.current_weather;
-  const geo = geoRes ? await geoRes.json().catch(() => ({})) : {};
+  const geo = await geoRes.json().catch(() => ({}));
   const city = existingCity ?? geo.city ?? geo.locality ?? undefined;
+  const urbanDensity: WeatherData['urbanDensity'] = geo.city ? 'urban' : 'rural';
 
   return {
     state: wmoToState(cw.weathercode, cw.is_day === 1),
@@ -80,6 +76,7 @@ async function fetchWeatherData(
     latitude,
     longitude,
     city,
+    urbanDensity,
   };
 }
 

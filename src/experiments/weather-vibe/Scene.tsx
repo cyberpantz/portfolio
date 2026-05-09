@@ -2,7 +2,7 @@ import { Canvas } from '@react-three/fiber';
 import { EffectComposer, Vignette, Noise, ChromaticAberration, Bloom } from '@react-three/postprocessing';
 import { BlendFunction } from 'postprocessing';
 import { Vector2 } from 'three';
-import type { WeatherData } from './conditions';
+import { type WeatherData, type WeatherState, PALETTES } from './conditions';
 import { usePan } from './usePan';
 import ClearNight from './environments/ClearNight';
 import ClearDay from './environments/ClearDay';
@@ -14,6 +14,7 @@ import Storm from './environments/Storm';
 import PartlyCloudy from './environments/PartlyCloudy';
 import PartlyCloudyNight from './environments/PartlyCloudyNight';
 import Overcast from './environments/Overcast';
+import CityScape from './environments/CityScape';
 
 interface SceneProps {
   weather: WeatherData;
@@ -32,21 +33,50 @@ const FX: Record<string, { bloom: number; vignette: number; ca: number; noise: n
   'storm':         { bloom: 0.3, vignette: 0.9, ca: 0.004, noise: 0.05 },
 };
 
+// Ground Y per weather state — buildings base-align to each scene's floor
+const GROUND_Y: Record<WeatherState, number> = {
+  'clear-day':           0,
+  'clear-night':        -5,
+  'partly-cloudy':      -5,
+  'partly-cloudy-night':-5,
+  'overcast':            0,
+  'fog':                -2,
+  'fog-night':          -2,
+  'rain':               -2,
+  'snow':               -2,
+  'storm':              -2,
+};
+
 function Environment({ weather }: SceneProps) {
   usePan();
-  switch (weather.state) {
-    case 'clear-day': return <ClearDay />;
-    case 'clear-night': return <ClearNight />;
-    case 'rain': return <Rain />;
-    case 'fog': return <Fog />;
-    case 'fog-night': return <FogNight />;
-    case 'snow': return <Snow />;
-    case 'storm': return <Storm />;
-    case 'partly-cloudy': return <PartlyCloudy />;
-    case 'partly-cloudy-night': return <PartlyCloudyNight />;
-    case 'overcast': return <Overcast />;
-    default: return <ClearNight />;
-  }
+
+  const scene = (() => {
+    switch (weather.state) {
+      case 'clear-day':            return <ClearDay />;
+      case 'clear-night':          return <ClearNight />;
+      case 'rain':                 return <Rain />;
+      case 'fog':                  return <Fog />;
+      case 'fog-night':            return <FogNight />;
+      case 'snow':                 return <Snow />;
+      case 'storm':                return <Storm />;
+      case 'partly-cloudy':        return <PartlyCloudy />;
+      case 'partly-cloudy-night':  return <PartlyCloudyNight />;
+      case 'overcast':             return <Overcast />;
+      default:                     return <ClearNight />;
+    }
+  })();
+
+  return (
+    <>
+      {scene}
+      {weather.urbanDensity === 'urban' && (
+        <CityScape
+          palette={PALETTES[weather.state]}
+          groundY={GROUND_Y[weather.state]}
+        />
+      )}
+    </>
+  );
 }
 
 export default function Scene({ weather }: SceneProps) {
