@@ -11,6 +11,7 @@ import FogNight from './environments/FogNight';
 import Snow from './environments/Snow';
 import Storm from './environments/Storm';
 import PartlyCloudy from './environments/PartlyCloudy';
+import PartlyCloudyNight from './environments/PartlyCloudyNight';
 import Overcast from './environments/Overcast';
 
 interface SceneProps {
@@ -20,7 +21,8 @@ interface SceneProps {
 const FX: Record<string, { bloom: number; vignette: number; ca: number; noise: number }> = {
   'clear-day':     { bloom: 0.6, vignette: 0.2, ca: 0.001, noise: 0.02 },
   'clear-night':   { bloom: 0.8, vignette: 0.7, ca: 0.002, noise: 0.04 },
-  'partly-cloudy': { bloom: 0.2, vignette: 0.4, ca: 0.001, noise: 0.02 },
+  'partly-cloudy':       { bloom: 0.2, vignette: 0.4, ca: 0.001, noise: 0.02 },
+  'partly-cloudy-night': { bloom: 0.6, vignette: 0.6, ca: 0.002, noise: 0.03 },
   'overcast':      { bloom: 0.0, vignette: 0.6, ca: 0.001, noise: 0.04 },
   'fog':           { bloom: 0.2, vignette: 0.8, ca: 0.004, noise: 0.06 },
   'fog-night':     { bloom: 0.4, vignette: 0.9, ca: 0.003, noise: 0.05 },
@@ -39,6 +41,7 @@ function Environment({ weather }: SceneProps) {
     case 'snow': return <Snow />;
     case 'storm': return <Storm />;
     case 'partly-cloudy': return <PartlyCloudy />;
+    case 'partly-cloudy-night': return <PartlyCloudyNight />;
     case 'overcast': return <Overcast />;
     default: return <ClearNight />;
   }

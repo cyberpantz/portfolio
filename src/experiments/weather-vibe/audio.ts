@@ -249,6 +249,11 @@ class WeatherAudio {
         await this.loadRecording(AUDIO_ASSETS.ocean_surf,  0.12, dest);
         break;
 
+      case 'partly-cloudy-night':
+        await this.loadRecording(AUDIO_ASSETS.crickets, 0.50, dest);
+        this.wind(windspeed, dest);
+        break;
+
       case 'overcast':
         this.wind(windspeed, dest);
         await this.loadRecording(AUDIO_ASSETS.city_ambience, 0.28, dest);
