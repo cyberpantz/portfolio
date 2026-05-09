@@ -100,7 +100,13 @@ export function useWeather(): UseWeatherResult {
       }
     }
 
-    if (!readCache()) {
+    const cached = readCache();
+    if (cached) {
+      // Seed coords from cache so the interval can refetch, then immediately
+      // re-fetch in the background so is_day / conditions are never stale.
+      coordsRef.current = { latitude: cached.latitude, longitude: cached.longitude };
+      doFetch(cached.latitude, cached.longitude, cached.city);
+    } else {
       if (!navigator.geolocation) {
         setWeather(FALLBACK);
         setStatus('ready');
@@ -119,9 +125,6 @@ export function useWeather(): UseWeatherResult {
           setStatus('ready');
         },
       );
-    } else {
-      const cached = readCache();
-      if (cached) coordsRef.current = { latitude: cached.latitude, longitude: cached.longitude };
     }
 
     const intervalId = setInterval(() => {
