@@ -1,6 +1,10 @@
 import { useRef, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { BufferGeometry, BufferAttribute } from 'three';
+import { BufferGeometry, BufferAttribute, ShaderMaterial } from 'three';
+// @ts-ignore
+import grassWaveVert from '../shaders/grassWave.vert.glsl?raw';
+// @ts-ignore
+import grassOvercastFrag from '../shaders/grassOvercast.frag.glsl?raw';
 
 function DebrisParticles() {
   const pointsRef = useRef<any>(null);
@@ -56,8 +60,15 @@ function DebrisParticles() {
 }
 
 export default function Overcast() {
+  const groundRef = useRef<ShaderMaterial>(null);
+  const groundUniforms = useMemo(() => ({
+    uTime:         { value: 0 },
+    uWindStrength: { value: 1.4 }, // windier under overcast
+  }), []);
+
   useFrame(({ clock, camera }) => {
     const t = clock.getElapsedTime();
+    if (groundRef.current) groundRef.current.uniforms.uTime.value = t;
     camera.position.x = Math.sin(t * 0.06) * 1.5;
     camera.position.z = -t * 0.45;
     camera.position.y = 1.2 + Math.sin(t * 0.35) * 0.25;
@@ -73,8 +84,13 @@ export default function Overcast() {
         <meshBasicMaterial color="#8A8A8A" side={2} />
       </mesh>
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]}>
-        <planeGeometry args={[200, 200]} />
-        <meshStandardMaterial color="#7A7874" />
+        <planeGeometry args={[200, 200, 80, 80]} />
+        <shaderMaterial
+          ref={groundRef}
+          vertexShader={grassWaveVert}
+          fragmentShader={grassOvercastFrag}
+          uniforms={groundUniforms}
+        />
       </mesh>
       <DebrisParticles />
     </>
