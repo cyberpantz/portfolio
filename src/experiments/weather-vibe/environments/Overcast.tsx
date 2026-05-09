@@ -1,10 +1,7 @@
 import { useRef, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { BufferGeometry, BufferAttribute, ShaderMaterial } from 'three';
-// @ts-ignore
-import grassWaveVert from '../shaders/grassWave.vert.glsl?raw';
-// @ts-ignore
-import grassOvercastFrag from '../shaders/grassOvercast.frag.glsl?raw';
+import { BufferGeometry, BufferAttribute } from 'three';
+import { GrassField } from './GrassField';
 
 function DebrisParticles() {
   const pointsRef = useRef<any>(null);
@@ -48,27 +45,14 @@ function DebrisParticles() {
 
   return (
     <points ref={pointsRef} geometry={geometry}>
-      <pointsMaterial
-        color="#888880"
-        size={0.1}
-        transparent
-        opacity={0.55}
-        depthWrite={false}
-      />
+      <pointsMaterial color="#888880" size={0.1} transparent opacity={0.55} depthWrite={false} />
     </points>
   );
 }
 
 export default function Overcast() {
-  const groundRef = useRef<ShaderMaterial>(null);
-  const groundUniforms = useMemo(() => ({
-    uTime:         { value: 0 },
-    uWindStrength: { value: 1.4 }, // windier under overcast
-  }), []);
-
   useFrame(({ clock, camera }) => {
     const t = clock.getElapsedTime();
-    if (groundRef.current) groundRef.current.uniforms.uTime.value = t;
     camera.position.x = Math.sin(t * 0.06) * 1.5;
     camera.position.z = -t * 0.45;
     camera.position.y = 1.2 + Math.sin(t * 0.35) * 0.25;
@@ -79,19 +63,29 @@ export default function Overcast() {
     <>
       <ambientLight intensity={0.6} color="#9A9E9C" />
       <fog attach="fog" args={['#828282', 5, 45]} />
+
       <mesh scale={[-1, 1, 1]}>
         <sphereGeometry args={[500, 32, 32]} />
         <meshBasicMaterial color="#8A8A8A" side={2} />
       </mesh>
+
+      {/* Wet mud base — grass blades sit on top */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]}>
-        <planeGeometry args={[200, 200, 80, 80]} />
-        <shaderMaterial
-          ref={groundRef}
-          vertexShader={grassWaveVert}
-          fragmentShader={grassOvercastFrag}
-          uniforms={groundUniforms}
-        />
+        <planeGeometry args={[200, 200]} />
+        <meshStandardMaterial color="#2B2619" />
       </mesh>
+
+      <GrassField
+        count={50000}
+        spreadX={80}
+        spreadZ={200}
+        groundY={0}
+        maxBladeH={0.50}
+        windStrength={1.5}
+        colorBase={[0.10, 0.16, 0.08]}
+        colorTip={[0.30, 0.40, 0.18]}
+      />
+
       <DebrisParticles />
     </>
   );

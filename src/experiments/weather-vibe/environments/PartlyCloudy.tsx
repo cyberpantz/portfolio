@@ -1,22 +1,10 @@
-import { useRef, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Cloud, Clouds, Sky } from '@react-three/drei';
-import { ShaderMaterial } from 'three';
-// @ts-ignore
-import grassWaveVert from '../shaders/grassWave.vert.glsl?raw';
-// @ts-ignore
-import grassCloudyFrag from '../shaders/grassCloudy.frag.glsl?raw';
+import { GrassField } from './GrassField';
 
 export default function PartlyCloudy() {
-  const groundRef = useRef<ShaderMaterial>(null);
-  const uniforms = useMemo(() => ({
-    uTime:         { value: 0 },
-    uWindStrength: { value: 1.0 },
-  }), []);
-
   useFrame(({ clock, camera }) => {
     const t = clock.getElapsedTime();
-    if (groundRef.current) groundRef.current.uniforms.uTime.value = t;
     camera.position.x = Math.sin(t * 0.04) * 3;
     camera.position.y = 0.5 + Math.sin(t * 0.06) * 0.7;
     camera.rotation.x = 0.3 + Math.sin(t * 0.02) * 0.06;
@@ -34,15 +22,24 @@ export default function PartlyCloudy() {
         <Cloud position={[10, 20, -40]} speed={0.30} opacity={0.4} segments={8} />
         <Cloud position={[-40, 18, -50]} speed={0.20} opacity={0.3} segments={7} />
       </Clouds>
+
+      {/* Soil base — grass blades sit on top */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -5, 0]}>
-        <planeGeometry args={[200, 200, 80, 80]} />
-        <shaderMaterial
-          ref={groundRef}
-          vertexShader={grassWaveVert}
-          fragmentShader={grassCloudyFrag}
-          uniforms={uniforms}
-        />
+        <planeGeometry args={[200, 200]} />
+        <meshStandardMaterial color="#5C4A2A" />
       </mesh>
+
+      <GrassField
+        count={40000}
+        spreadX={80}
+        spreadZ={80}
+        groundY={-5}
+        maxBladeH={0.65}
+        windStrength={1.0}
+        colorBase={[0.08, 0.22, 0.04]}
+        colorTip={[0.48, 0.72, 0.22]}
+      />
+
       <fog attach="fog" args={['#B0C4D8', 60, 200]} />
     </>
   );
