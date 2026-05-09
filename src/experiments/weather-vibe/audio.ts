@@ -256,10 +256,16 @@ class WeatherAudio {
         break;
 
       case 'fog':
-      case 'fog-night':
         this.fogDrone(dest);
         this.wind(Math.min(windspeed, 8), dest);
         await this.loadRecording(AUDIO_ASSETS.fog_ambience, 0.35, dest);
+        break;
+
+      case 'fog-night':
+        this.fogDrone(dest);
+        this.wind(Math.min(windspeed, 8), dest);
+        await this.loadRecording(AUDIO_ASSETS.crickets,    0.40, dest); // muffled by fog
+        await this.loadRecording(AUDIO_ASSETS.fog_ambience, 0.30, dest);
         break;
 
       case 'rain':
