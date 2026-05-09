@@ -3,6 +3,7 @@ import { EffectComposer, Vignette, Noise, ChromaticAberration, Bloom } from '@re
 import { BlendFunction } from 'postprocessing';
 import { Vector2 } from 'three';
 import type { WeatherData } from './conditions';
+import { usePan } from './usePan';
 import ClearNight from './environments/ClearNight';
 import ClearDay from './environments/ClearDay';
 import Rain from './environments/Rain';
@@ -32,6 +33,7 @@ const FX: Record<string, { bloom: number; vignette: number; ca: number; noise: n
 };
 
 function Environment({ weather }: SceneProps) {
+  usePan();
   switch (weather.state) {
     case 'clear-day': return <ClearDay />;
     case 'clear-night': return <ClearNight />;
