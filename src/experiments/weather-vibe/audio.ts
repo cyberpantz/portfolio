@@ -1,4 +1,5 @@
 import type { WeatherData, WeatherState } from './conditions';
+import { getSettings, type AudioMultipliers } from './settings';
 
 // ─── Asset manifest ───────────────────────────────────────────────────────────
 // Files marked "optional" are tried at runtime; missing files fall back silently
@@ -21,23 +22,55 @@ export const AUDIO_ASSETS = {
 // ─── Engine ───────────────────────────────────────────────────────────────────
 
 class WeatherAudio {
-  private ctx: AudioContext | null = null;
-  private master: GainNode | null = null;
-  private active: AudioNode[] = [];
-  private recordings: AudioBufferSourceNode[] = [];
+  private ctx:            AudioContext | null = null;
+  private master:         GainNode | null = null;
+  private userMasterGain: GainNode | null = null;
+  private ambientGain:    GainNode | null = null;
+  private effectsGain:    GainNode | null = null;
+  private cityHumGain:    GainNode | null = null;
+  private active:         AudioNode[] = [];
+  private recordings:     AudioBufferSourceNode[] = [];
   private currentStateKey: string | null = null;
   private muted = false;
 
   private getCtx(): AudioContext {
     if (!this.ctx) {
       this.ctx = new AudioContext();
+      const saved = getSettings().audio;
+
       this.master = this.ctx.createGain();
       this.master.gain.value = 0;
       this.master.connect(this.ctx.destination);
       this.master.gain.linearRampToValueAtTime(0.7, this.ctx.currentTime + 4);
+
+      this.userMasterGain = this.ctx.createGain();
+      this.userMasterGain.gain.value = saved.master;
+      this.userMasterGain.connect(this.master);
+
+      this.ambientGain = this.ctx.createGain();
+      this.ambientGain.gain.value = saved.ambient;
+      this.ambientGain.connect(this.userMasterGain);
+
+      this.effectsGain = this.ctx.createGain();
+      this.effectsGain.gain.value = saved.effects;
+      this.effectsGain.connect(this.userMasterGain);
+
+      this.cityHumGain = this.ctx.createGain();
+      this.cityHumGain.gain.value = saved.cityHum;
+      this.cityHumGain.connect(this.userMasterGain);
     }
     if (this.ctx.state === 'suspended') this.ctx.resume();
     return this.ctx;
+  }
+
+  setAudioMultipliers(m: AudioMultipliers): void {
+    if (!this.ctx) return;
+    const t  = this.ctx.currentTime;
+    const tc = 0.05; // 50 ms ramp — prevents clicks on rapid slider movement
+    this.userMasterGain!.gain.setTargetAtTime(m.master,  t, tc);
+    this.ambientGain!.gain.setTargetAtTime(m.ambient,    t, tc);
+    this.effectsGain!.gain.setTargetAtTime(m.effects,    t, tc);
+    this.cityHumGain!.gain.setTargetAtTime(m.cityHum,    t, tc);
   }
 
   private stopAll() {
@@ -240,144 +273,144 @@ class WeatherAudio {
 
   async setState(weatherData: WeatherData) {
     const { state, windspeed, urbanDensity } = weatherData;
-    // Re-init when either weather state OR urban density changes
     const key = `${state}:${urbanDensity ?? 'rural'}`;
     if (key === this.currentStateKey) return;
     this.currentStateKey = key;
     this.stopAll();
     this.getCtx();
 
-    const dest     = this.master!;
-    const isUrban  = urbanDensity === 'urban';
-    const isTown   = urbanDensity === 'town';
+    const amb  = this.ambientGain!;
+    const efx  = this.effectsGain!;
+    const city = this.cityHumGain!;
+
+    const isUrban = urbanDensity === 'urban';
+    const isTown  = urbanDensity === 'town';
 
     switch (state) {
       case 'clear-night':
         if (isUrban) {
-          this.cityHum(dest);
-          await this.loadRecording(AUDIO_ASSETS.city_ambience, 0.55, dest);
+          this.cityHum(city);
+          await this.loadRecording(AUDIO_ASSETS.city_ambience, 0.55, amb);
         } else if (isTown) {
-          this.cityHum(dest);
-          await this.loadRecording(AUDIO_ASSETS.city_ambience, 0.20, dest);
-          await this.loadRecording(AUDIO_ASSETS.crickets,      0.35, dest);
-          this.wind(Math.min(windspeed, 15), dest);
+          this.cityHum(city);
+          await this.loadRecording(AUDIO_ASSETS.city_ambience, 0.20, amb);
+          await this.loadRecording(AUDIO_ASSETS.crickets,      0.35, amb);
+          this.wind(Math.min(windspeed, 15), efx);
         } else {
-          await this.loadRecording(AUDIO_ASSETS.crickets, 0.60, dest);
-          this.wind(Math.min(windspeed, 15), dest);
+          await this.loadRecording(AUDIO_ASSETS.crickets, 0.60, amb);
+          this.wind(Math.min(windspeed, 15), efx);
         }
         break;
 
       case 'clear-day':
         if (isUrban) {
-          this.cityHum(dest);
-          await this.loadRecording(AUDIO_ASSETS.city_ambience, 0.50, dest);
-          this.wind(windspeed, dest);
+          this.cityHum(city);
+          await this.loadRecording(AUDIO_ASSETS.city_ambience, 0.50, amb);
+          this.wind(windspeed, efx);
         } else if (isTown) {
-          this.cityHum(dest);
-          await this.loadRecording(AUDIO_ASSETS.city_ambience, 0.18, dest);
-          await this.loadRecording(AUDIO_ASSETS.birds,         0.30, dest);
-          this.wind(windspeed, dest);
+          this.cityHum(city);
+          await this.loadRecording(AUDIO_ASSETS.city_ambience, 0.18, amb);
+          await this.loadRecording(AUDIO_ASSETS.birds,         0.30, amb);
+          this.wind(windspeed, efx);
         } else {
-          await this.loadRecording(AUDIO_ASSETS.birds,      0.40, dest);
-          this.wind(windspeed, dest);
-          await this.loadRecording(AUDIO_ASSETS.ocean_surf, 0.15, dest);
+          await this.loadRecording(AUDIO_ASSETS.birds,      0.40, amb);
+          this.wind(windspeed, efx);
+          await this.loadRecording(AUDIO_ASSETS.ocean_surf, 0.15, amb);
         }
         break;
 
       case 'golden-hour':
         if (isUrban) {
-          this.cityHum(dest);
-          await this.loadRecording(AUDIO_ASSETS.city_ambience, 0.45, dest);
-          this.wind(Math.min(windspeed, 12), dest);
+          this.cityHum(city);
+          await this.loadRecording(AUDIO_ASSETS.city_ambience, 0.45, amb);
+          this.wind(Math.min(windspeed, 12), efx);
         } else {
-          await this.loadRecording(AUDIO_ASSETS.birds,      0.35, dest);
-          await this.loadRecording(AUDIO_ASSETS.ocean_surf, 0.12, dest);
-          this.wind(Math.min(windspeed, 12), dest);
+          await this.loadRecording(AUDIO_ASSETS.birds,      0.35, amb);
+          await this.loadRecording(AUDIO_ASSETS.ocean_surf, 0.12, amb);
+          this.wind(Math.min(windspeed, 12), efx);
         }
         break;
 
       case 'partly-cloudy':
         if (isUrban) {
-          this.cityHum(dest);
-          await this.loadRecording(AUDIO_ASSETS.city_ambience, 0.42, dest);
-          this.wind(windspeed, dest);
+          this.cityHum(city);
+          await this.loadRecording(AUDIO_ASSETS.city_ambience, 0.42, amb);
+          this.wind(windspeed, efx);
         } else {
-          this.wind(windspeed, dest);
-          await this.loadRecording(AUDIO_ASSETS.forest_wind, 0.30, dest);
-          await this.loadRecording(AUDIO_ASSETS.ocean_surf,  0.12, dest);
+          this.wind(windspeed, efx);
+          await this.loadRecording(AUDIO_ASSETS.forest_wind, 0.30, amb);
+          await this.loadRecording(AUDIO_ASSETS.ocean_surf,  0.12, amb);
         }
         break;
 
       case 'partly-cloudy-night':
         if (isUrban) {
-          this.cityHum(dest);
-          await this.loadRecording(AUDIO_ASSETS.city_ambience, 0.48, dest);
+          this.cityHum(city);
+          await this.loadRecording(AUDIO_ASSETS.city_ambience, 0.48, amb);
         } else if (isTown) {
-          this.cityHum(dest);
-          await this.loadRecording(AUDIO_ASSETS.city_ambience, 0.18, dest);
-          await this.loadRecording(AUDIO_ASSETS.crickets,      0.32, dest);
-          this.wind(windspeed, dest);
+          this.cityHum(city);
+          await this.loadRecording(AUDIO_ASSETS.city_ambience, 0.18, amb);
+          await this.loadRecording(AUDIO_ASSETS.crickets,      0.32, amb);
+          this.wind(windspeed, efx);
         } else {
-          await this.loadRecording(AUDIO_ASSETS.crickets, 0.50, dest);
-          this.wind(windspeed, dest);
+          await this.loadRecording(AUDIO_ASSETS.crickets, 0.50, amb);
+          this.wind(windspeed, efx);
         }
         break;
 
       case 'overcast':
-        this.wind(windspeed, dest);
+        this.wind(windspeed, efx);
         if (isUrban) {
-          this.cityHum(dest);
-          await this.loadRecording(AUDIO_ASSETS.city_ambience, 0.40, dest);
+          this.cityHum(city);
+          await this.loadRecording(AUDIO_ASSETS.city_ambience, 0.40, amb);
         } else {
-          await this.loadRecording(AUDIO_ASSETS.city_ambience, 0.28, dest);
-          await this.loadRecording(AUDIO_ASSETS.forest_wind,   0.20, dest);
+          await this.loadRecording(AUDIO_ASSETS.city_ambience, 0.28, amb);
+          await this.loadRecording(AUDIO_ASSETS.forest_wind,   0.20, amb);
         }
         break;
 
       case 'fog':
-        this.fogDrone(dest);
-        this.wind(Math.min(windspeed, 8), dest);
+        this.fogDrone(efx);
+        this.wind(Math.min(windspeed, 8), efx);
         if (isUrban) {
-          // Muffled city behind the fog — classic SF
-          await this.loadRecording(AUDIO_ASSETS.city_ambience, 0.22, dest);
+          await this.loadRecording(AUDIO_ASSETS.city_ambience, 0.22, amb);
         } else {
-          await this.loadRecording(AUDIO_ASSETS.fog_ambience, 0.35, dest);
+          await this.loadRecording(AUDIO_ASSETS.fog_ambience, 0.35, amb);
         }
         break;
 
       case 'fog-night':
-        this.fogDrone(dest);
-        this.wind(Math.min(windspeed, 8), dest);
+        this.fogDrone(efx);
+        this.wind(Math.min(windspeed, 8), efx);
         if (isUrban) {
-          await this.loadRecording(AUDIO_ASSETS.city_ambience, 0.20, dest);
+          await this.loadRecording(AUDIO_ASSETS.city_ambience, 0.20, amb);
         } else {
-          await this.loadRecording(AUDIO_ASSETS.crickets,      0.40, dest);
-          await this.loadRecording(AUDIO_ASSETS.fog_ambience,  0.30, dest);
+          await this.loadRecording(AUDIO_ASSETS.crickets,     0.40, amb);
+          await this.loadRecording(AUDIO_ASSETS.fog_ambience, 0.30, amb);
         }
         break;
 
       case 'rain':
-        this.layeredRain(false, dest);
-        this.wind(Math.min(windspeed, 20), dest);
-        await this.loadRecording(AUDIO_ASSETS.rain_on_glass, 0.45, dest);
-        await this.loadRecording(AUDIO_ASSETS.city_ambience, isUrban ? 0.20 : 0.10, dest);
-        if (isUrban) this.cityHum(dest);
+        this.layeredRain(false, efx);
+        this.wind(Math.min(windspeed, 20), efx);
+        await this.loadRecording(AUDIO_ASSETS.rain_on_glass, 0.45, efx);
+        await this.loadRecording(AUDIO_ASSETS.city_ambience, isUrban ? 0.20 : 0.10, amb);
+        if (isUrban) this.cityHum(city);
         break;
 
       case 'snow':
-        this.wind(Math.min(windspeed, 10), dest);
-        await this.loadRecording(AUDIO_ASSETS.snow_ambience, 0.40, dest);
+        this.wind(Math.min(windspeed, 10), efx);
+        await this.loadRecording(AUDIO_ASSETS.snow_ambience, 0.40, amb);
         if (isUrban) {
-          // City muffled under snow — quieter
-          await this.loadRecording(AUDIO_ASSETS.city_ambience, 0.15, dest);
+          await this.loadRecording(AUDIO_ASSETS.city_ambience, 0.15, amb);
         }
         break;
 
       case 'storm':
-        this.layeredRain(true, dest);
-        this.wind(windspeed, dest);
-        await this.loadRecording(AUDIO_ASSETS.storm_wind,    0.40, dest);
-        await this.loadRecording(AUDIO_ASSETS.rain_on_glass, 0.35, dest);
+        this.layeredRain(true, efx);
+        this.wind(windspeed, efx);
+        await this.loadRecording(AUDIO_ASSETS.storm_wind,    0.40, efx);
+        await this.loadRecording(AUDIO_ASSETS.rain_on_glass, 0.35, efx);
         break;
     }
   }
