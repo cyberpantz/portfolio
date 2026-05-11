@@ -218,7 +218,7 @@ class WeatherAudio {
   // Three phases: sharp high-freq crack → mid-freq bang → low rolling rumble.
   thunder(dest?: AudioNode) {
     const ctx    = this.getCtx();
-    const target = dest ?? this.master!;
+    const target = dest ?? this.effectsGain ?? this.master!;
     const now    = ctx.currentTime;
 
     // Phase 1: crack
@@ -418,7 +418,14 @@ class WeatherAudio {
   get isMuted() { return this.muted; }
 
   mute()   { this.muted = true;  if (this.master) this.master.gain.value = 0;   }
-  unmute() { this.muted = false; if (this.master) this.master.gain.value = 0.7; }
+  unmute() {
+    this.muted = false;
+    if (this.master) {
+      const t = this.master.context.currentTime;
+      this.master.gain.cancelScheduledValues(t);
+      this.master.gain.setTargetAtTime(0.7, t, 0.1);
+    }
+  }
   toggle() { if (this.muted) this.unmute(); else this.mute(); }
 }
 
