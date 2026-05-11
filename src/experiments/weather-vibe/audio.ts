@@ -64,6 +64,7 @@ class WeatherAudio {
   }
 
   setAudioMultipliers(m: AudioMultipliers): void {
+    // No-op until context is created on first user gesture; getCtx() applies settings on init.
     if (!this.ctx) return;
     const t  = this.ctx.currentTime;
     const tc = 0.05; // 50 ms ramp — prevents clicks on rapid slider movement

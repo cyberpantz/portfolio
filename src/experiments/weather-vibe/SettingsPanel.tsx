@@ -54,6 +54,7 @@ export interface SettingsPanelProps {
 export default function SettingsPanel({ palette, activeLayerLabels }: SettingsPanelProps) {
   const [open, setOpen] = useState(false);
   const panelRef        = useRef<HTMLDivElement>(null);
+  const triggerRef      = useRef<HTMLButtonElement>(null);
   const settings        = useSettings();
   const { textColor, accent } = palette;
 
@@ -100,7 +101,10 @@ export default function SettingsPanel({ palette, activeLayerLabels }: SettingsPa
   useEffect(() => {
     if (!open) return;
     const handler = (e: MouseEvent) => {
-      if (panelRef.current && !panelRef.current.contains(e.target as Node)) {
+      if (
+        panelRef.current && !panelRef.current.contains(e.target as Node) &&
+        triggerRef.current && !triggerRef.current.contains(e.target as Node)
+      ) {
         setOpen(false);
       }
     };
@@ -142,6 +146,7 @@ export default function SettingsPanel({ palette, activeLayerLabels }: SettingsPa
         style={{ bottom: 10, pointerEvents: 'auto', zIndex: 20 }}
       >
         <button
+          ref={triggerRef}
           onClick={() => setOpen(o => !o)}
           aria-label={open ? 'Close settings' : 'Open settings'}
           style={{
