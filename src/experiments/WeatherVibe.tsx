@@ -15,6 +15,11 @@ export default function WeatherVibe() {
 
   useEffect(() => {
     if (!weather) return;
+    if (audioStarted.current) {
+      // AudioContext already running — update immediately when location changes
+      weatherAudio.setState(weather);
+      return;
+    }
     const start = () => {
       if (audioStarted.current) return;
       audioStarted.current = true;
