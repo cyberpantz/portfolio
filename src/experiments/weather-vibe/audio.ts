@@ -289,6 +289,36 @@ class WeatherAudio {
     }
   }
 
+  private async loadPlaylistTrack(track: LocationTrack, dest: AudioNode): Promise<void> {
+    const ctx = this.getCtx();
+    try {
+      const res = await fetch(track.src);
+      if (!res.ok) { this.advancePlaylist(dest); return; }
+      const audioBuf = await ctx.decodeAudioData(await res.arrayBuffer());
+      const src = ctx.createBufferSource();
+      src.buffer = audioBuf;
+      src.loop = false;
+      const g = ctx.createGain();
+      g.gain.value = track.gain ?? 1.0;
+      src.connect(g);
+      g.connect(dest);
+      this.playlistSource = src;
+      src.onended = () => {
+        // Guard against stale callbacks after stopAll clears playlistSource
+        if (this.playlistSource === src) this.advancePlaylist(dest);
+      };
+      src.start();
+    } catch {
+      this.advancePlaylist(dest);
+    }
+  }
+
+  private advancePlaylist(dest: AudioNode): void {
+    if (this.playlistQueue.length === 0) return;
+    this.playlistIndex = (this.playlistIndex + 1) % this.playlistQueue.length;
+    this.loadPlaylistTrack(this.playlistQueue[this.playlistIndex], dest);
+  }
+
   // ─── State machine ────────────────────────────────────────────────────────
 
   async setState(weatherData: WeatherData) {
