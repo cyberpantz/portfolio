@@ -149,3 +149,17 @@ Active layer labels are computed by a pure helper function `getActiveLayerLabels
 - Saving/loading multiple presets
 - Exposing wind intensity as a visual slider (grass/wave speed) — possible future addition
 - Terrain inclusion in audio state key (ocean surf not yet wired to audio.ts)
+
+---
+
+## Extensibility
+
+The panel is designed to grow without structural changes:
+
+**Adding a new audio slider** — add a key to `AudioMultipliers` in `settings.ts`, add a corresponding category GainNode in `audio.ts`, and add one `<Slider>` entry to the AUDIO column in `SettingsPanel.tsx`. No other files change.
+
+**Adding a new visual slider** — same pattern: new key in `VisualMultipliers`, one multiplier line in `Scene.tsx`'s `EffectComposer`, one `<Slider>` in the VISUALS column.
+
+**Adding a third section** (e.g. SCENE — wave height, wind speed, particle density) — add a new interface to `settings.ts` (e.g. `SceneMultipliers`), a third column to the panel layout, and wire the values into whichever environment components consume them via props or a context read.
+
+The `<Slider>` component inside `SettingsPanel.tsx` should be a small reusable primitive (label, value display, track, thumb) so new sliders are a one-liner to add. The `settings.ts` module uses a generic listener pattern, so any new category automatically gets persistence and reactivity for free.
