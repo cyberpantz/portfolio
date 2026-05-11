@@ -1,4 +1,5 @@
 import type { WeatherData, WeatherState } from './conditions';
+import { getLocationTracks, type LocationTrack, type TrackBehavior } from './locationTracks';
 import { getSettings, type AudioMultipliers } from './settings';
 
 // ─── Asset manifest ───────────────────────────────────────────────────────────
@@ -32,6 +33,9 @@ class WeatherAudio {
   private recordings:     AudioBufferSourceNode[] = [];
   private currentStateKey: string | null = null;
   private muted = false;
+  private playlistQueue:  LocationTrack[] = [];
+  private playlistIndex:  number = 0;
+  private playlistSource: AudioBufferSourceNode | null = null;
 
   private getCtx(): AudioContext {
     if (!this.ctx) {
@@ -82,6 +86,21 @@ class WeatherAudio {
     this.active = [];
     this.recordings.forEach(n => { try { n.stop(); } catch {} });
     this.recordings = [];
+    if (this.playlistSource) {
+      try { this.playlistSource.stop(); } catch {}
+      this.playlistSource = null;
+    }
+    this.playlistQueue = [];
+    this.playlistIndex = 0;
+  }
+
+  private static shuffle<T>(arr: T[]): T[] {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
   }
 
   // ─── Pink noise (Kellet's algorithm) ─────────────────────────────────────
@@ -274,7 +293,7 @@ class WeatherAudio {
 
   async setState(weatherData: WeatherData) {
     const { state, windspeed, urbanDensity } = weatherData;
-    const key = `${state}:${urbanDensity ?? 'rural'}`;
+    const key = `${state}:${urbanDensity ?? 'rural'}:${weatherData.city?.toLowerCase().trim() ?? ''}`;
     if (key === this.currentStateKey) return;
     this.currentStateKey = key;
     this.stopAll();
