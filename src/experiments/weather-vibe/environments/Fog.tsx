@@ -1,6 +1,7 @@
 import { useRef, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { ShaderMaterial } from 'three';
+import { GrassField } from './GrassField';
 // @ts-ignore
 import fogFrag from '../shaders/fogMarch.frag.glsl?raw';
 
@@ -8,7 +9,8 @@ const VERT = `
 varying vec2 vUv;
 void main() {
   vUv = uv;
-  gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+  // Screen-space quad: renders fullscreen regardless of camera position
+  gl_Position = vec4(position.xy, 0.0, 1.0);
 }`;
 
 function TreeSilhouette({ x, z, scale = 1 }: { x: number; z: number; scale?: number }) {
@@ -28,7 +30,7 @@ function TreeSilhouette({ x, z, scale = 1 }: { x: number; z: number; scale?: num
   );
 }
 
-export default function Fog() {
+export default function Fog({ noGrass = false }: { noGrass?: boolean }) {
   const matRef = useRef<ShaderMaterial>(null);
   const uniforms = useMemo(() => ({ uTime: { value: 0 } }), []);
 
@@ -53,10 +55,18 @@ export default function Fog() {
       <ambientLight intensity={0.3} color="#C8CCBE" />
       <fog attach="fog" args={['#C8CCBE', 5, 40]} />
 
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -2, 0]}>
-        <planeGeometry args={[200, 200]} />
-        <meshStandardMaterial color="#A8AA9A" />
-      </mesh>
+      {!noGrass && (
+        <GrassField
+          count={80000}
+          spreadX={80}
+          spreadZ={200}
+          groundY={-2}
+          maxBladeH={0.45}
+          windStrength={0.4}
+          colorBase={[0.08, 0.13, 0.07]}
+          colorTip={[0.18, 0.26, 0.13]}
+        />
+      )}
 
       {trees.map((t, i) => <TreeSilhouette key={i} {...t} />)}
 
@@ -69,6 +79,7 @@ export default function Fog() {
           uniforms={uniforms}
           transparent
           depthWrite={false}
+          depthTest={false}
         />
       </mesh>
     </group>
