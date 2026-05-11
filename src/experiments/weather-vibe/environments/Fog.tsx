@@ -70,7 +70,8 @@ export default function Fog({ noGrass = false }: { noGrass?: boolean }) {
 
       {trees.map((t, i) => <TreeSilhouette key={i} {...t} />)}
 
-      <mesh position={[0, 0, -0.4]}>
+      {/* Fog overlay — frustumCulled off because vertex shader uses screen-space coords */}
+      <mesh position={[0, 0, -0.4]} frustumCulled={false}>
         <planeGeometry args={[2, 2]} />
         <shaderMaterial
           ref={matRef}

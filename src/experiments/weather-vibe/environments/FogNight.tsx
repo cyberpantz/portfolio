@@ -84,8 +84,8 @@ export default function FogNight({ noGrass = false }: { noGrass?: boolean }) {
 
       {trees.map((t, i) => <TreeSilhouette key={i} {...t} />)}
 
-      {/* Animated night-fog overlay */}
-      <mesh position={[0, 0, -0.4]}>
+      {/* Animated night-fog overlay — frustumCulled off because vertex shader uses screen-space coords */}
+      <mesh position={[0, 0, -0.4]} frustumCulled={false}>
         <planeGeometry args={[2, 2]} />
         <shaderMaterial
           ref={matRef}
