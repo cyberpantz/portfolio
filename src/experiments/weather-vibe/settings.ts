@@ -73,6 +73,7 @@ export function useSettings(): Settings {
   useEffect(() => {
     const fn = () => setS({ ...state });
     listeners.add(fn);
+    fn(); // sync once to catch any mutation between useState init and subscription
     return () => { listeners.delete(fn); };
   }, []);
   return s;

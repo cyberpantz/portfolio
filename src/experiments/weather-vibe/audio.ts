@@ -14,7 +14,7 @@ export const AUDIO_ASSETS = {
   city_ambience: '/audio/weather-vibe/city_ambience.mp3',
   ocean_surf:    '/audio/weather-vibe/ocean_surf.mp3',
   storm_wind:    '/audio/weather-vibe/storm_wind.mp3',
-  forest_wind:   '/audio/weather-vibe/gentle-breeze.png',
+  forest_wind:   '/audio/weather-vibe/gentle-breeze.mp3',
   snow_ambience: '/audio/weather-vibe/snow_ambience.wav',
   fog_ambience:  '/audio/weather-vibe/fog_ambience.wav',
 } as const;

@@ -32,6 +32,7 @@ function Slider({ label, value, onChange, accent, textColor }: SliderProps) {
         </span>
       </div>
       <input
+        aria-label={label}
         type="range"
         min={0}
         max={100}
@@ -56,6 +57,45 @@ export default function SettingsPanel({ palette, activeLayerLabels }: SettingsPa
   const settings        = useSettings();
   const { textColor, accent } = palette;
 
+  // Inject slider styles once via DOM to prevent duplication across mounts
+  useEffect(() => {
+    const id = 'sv-slider-styles';
+    if (document.getElementById(id)) return;
+    const el = document.createElement('style');
+    el.id = id;
+    el.textContent = `
+      .sv-slider {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 100%;
+        height: 2px;
+        background: rgba(176,192,208,0.12);
+        border-radius: 1px;
+        outline: none;
+        cursor: pointer;
+      }
+      .sv-slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: currentColor;
+        margin-top: -4px;
+        cursor: pointer;
+      }
+      .sv-slider::-moz-range-thumb {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: currentColor;
+        border: none;
+        cursor: pointer;
+      }
+    `;
+    document.head.appendChild(el);
+    return () => { el.remove(); };
+  }, []);
+
   // Close when clicking outside the panel
   useEffect(() => {
     if (!open) return;
@@ -68,13 +108,23 @@ export default function SettingsPanel({ palette, activeLayerLabels }: SettingsPa
     return () => document.removeEventListener('mousedown', handler);
   }, [open]);
 
+  // Close on Escape key
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setOpen(false); };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [open]);
+
   function handleAudio(key: keyof AudioMultipliers, v: number) {
-    setAudio({ [key]: v } as Partial<AudioMultipliers>);
+    const patch: Partial<AudioMultipliers> = { [key]: v };
+    setAudio(patch);
     weatherAudio.setAudioMultipliers(getSettings().audio);
   }
 
   function handleVisuals(key: keyof VisualMultipliers, v: number) {
-    setVisuals({ [key]: v } as Partial<VisualMultipliers>);
+    const patch: Partial<VisualMultipliers> = { [key]: v };
+    setVisuals(patch);
   }
 
   function handleReset() {
@@ -86,37 +136,6 @@ export default function SettingsPanel({ palette, activeLayerLabels }: SettingsPa
 
   return (
     <>
-      {/* Range input styles — cannot be set inline */}
-      <style>{`
-        .sv-slider {
-          -webkit-appearance: none;
-          appearance: none;
-          width: 100%;
-          height: 2px;
-          background: rgba(176,192,208,0.12);
-          border-radius: 1px;
-          outline: none;
-          cursor: pointer;
-        }
-        .sv-slider::-webkit-slider-thumb {
-          -webkit-appearance: none;
-          width: 10px;
-          height: 10px;
-          border-radius: 50%;
-          background: currentColor;
-          margin-top: -4px;
-          cursor: pointer;
-        }
-        .sv-slider::-moz-range-thumb {
-          width: 10px;
-          height: 10px;
-          border-radius: 50%;
-          background: currentColor;
-          border: none;
-          cursor: pointer;
-        }
-      `}</style>
-
       {/* Trigger pill — bottom-center, below the mute button */}
       <div
         className="absolute left-1/2 -translate-x-1/2"
@@ -238,6 +257,7 @@ export default function SettingsPanel({ palette, activeLayerLabels }: SettingsPa
                   {activeLayerLabels}
                 </span>
                 <button
+                  type="button"
                   onClick={handleReset}
                   style={{
                     background: 'none',
