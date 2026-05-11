@@ -87,8 +87,9 @@ class WeatherAudio {
     this.recordings.forEach(n => { try { n.stop(); } catch {} });
     this.recordings = [];
     if (this.playlistSource) {
-      try { this.playlistSource.stop(); } catch {}
+      const ps = this.playlistSource;
       this.playlistSource = null;
+      try { ps.stop(); } catch {}
     }
     this.playlistQueue = [];
     this.playlistIndex = 0;
@@ -293,7 +294,7 @@ class WeatherAudio {
     const ctx = this.getCtx();
     try {
       const res = await fetch(track.src);
-      if (!res.ok) { this.advancePlaylist(dest); return; }
+      if (!res.ok) { this.playlistSource = null; this.advancePlaylist(dest); return; }
       const audioBuf = await ctx.decodeAudioData(await res.arrayBuffer());
       const src = ctx.createBufferSource();
       src.buffer = audioBuf;
@@ -309,6 +310,7 @@ class WeatherAudio {
       };
       src.start();
     } catch {
+      this.playlistSource = null;
       this.advancePlaylist(dest);
     }
   }
