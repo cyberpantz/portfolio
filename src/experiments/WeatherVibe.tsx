@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useWeather } from './weather-vibe/useWeather';
 import Scene from './weather-vibe/Scene';
@@ -39,8 +39,9 @@ export default function WeatherVibe() {
     );
   }
 
-  const bg = PALETTES[weather.state].background;
   const palette = PALETTES[weather.state];
+  const bg = palette.background;
+  const activeLayerLabels = useMemo(() => getActiveLayerLabels(weather), [weather]);
 
   return (
     <div className="fixed inset-0" style={{ background: bg }}>
@@ -57,7 +58,7 @@ export default function WeatherVibe() {
         </motion.div>
       </AnimatePresence>
       <HUD weather={weather} status={status} onSetCity={setCity} />
-      <SettingsPanel palette={palette} activeLayerLabels={getActiveLayerLabels(weather)} />
+      <SettingsPanel palette={palette} activeLayerLabels={activeLayerLabels} />
       <AnimatePresence>
         {!audioReady && (
           <motion.div
@@ -66,7 +67,7 @@ export default function WeatherVibe() {
             animate={{ opacity: [0, 0.5, 0] }}
             transition={{ duration: 2.5, repeat: Infinity, delay: 1.5 }}
             exit={{ opacity: 0 }}
-            style={{ fontFamily: 'monospace', fontSize: 10, letterSpacing: '0.2em', color: PALETTES[weather.state].textColor }}
+            style={{ fontFamily: 'monospace', fontSize: 10, letterSpacing: '0.2em', color: palette.textColor }}
           >
             CLICK FOR AUDIO
           </motion.div>
