@@ -496,6 +496,11 @@ class WeatherAudio {
 }
 
 export function getActiveLayerLabels(weather: WeatherData): string {
+  const locationTracks = getLocationTracks(weather.city);
+  const behavior: TrackBehavior = locationTracks?.[0]?.behavior ?? 'replace';
+
+  if (locationTracks && behavior === 'takeover') return 'LOCATION TRACK';
+
   const { state, urbanDensity } = weather;
   const isUrban = urbanDensity === 'urban';
   const isTown  = urbanDensity === 'town';
@@ -553,7 +558,16 @@ export function getActiveLayerLabels(weather: WeatherData): string {
       break;
   }
 
-  return L.join(' · ');
+  if (!locationTracks) return L.join(' · ');
+  if (behavior === 'layer') return ['LOCATION TRACK', ...L].join(' · ');
+
+  // 'replace': keep synth + effect-recording labels, replace ambient recording labels
+  const AMB_RECORDING_LABELS = new Set([
+    'CITY AMBIENCE', 'BIRDS', 'CRICKETS', 'OCEAN SURF',
+    'FOREST WIND', 'SNOW AMBIENCE', 'FOG AMBIENCE',
+  ]);
+  const nonAmbient = L.filter(l => !AMB_RECORDING_LABELS.has(l));
+  return ['LOCATION TRACK', ...nonAmbient].join(' · ');
 }
 
 export const weatherAudio = new WeatherAudio();
