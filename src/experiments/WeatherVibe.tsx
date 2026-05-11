@@ -5,6 +5,8 @@ import Scene from './weather-vibe/Scene';
 import HUD from './weather-vibe/HUD';
 import { PALETTES } from './weather-vibe/conditions';
 import { weatherAudio } from './weather-vibe/audio';
+import SettingsPanel from './weather-vibe/SettingsPanel';
+import { getActiveLayerLabels } from './weather-vibe/audio';
 
 export default function WeatherVibe() {
   const { weather, status, setCity } = useWeather();
@@ -38,6 +40,7 @@ export default function WeatherVibe() {
   }
 
   const bg = PALETTES[weather.state].background;
+  const palette = PALETTES[weather.state];
 
   return (
     <div className="fixed inset-0" style={{ background: bg }}>
@@ -54,6 +57,7 @@ export default function WeatherVibe() {
         </motion.div>
       </AnimatePresence>
       <HUD weather={weather} status={status} onSetCity={setCity} />
+      <SettingsPanel palette={palette} activeLayerLabels={getActiveLayerLabels(weather)} />
       <AnimatePresence>
         {!audioReady && (
           <motion.div

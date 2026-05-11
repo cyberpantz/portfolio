@@ -165,8 +165,8 @@ export default function HUD({ weather, status, onSetCity }: HUDProps) {
                   if (e.key === 'Escape') cancel();
                 }}
                 onBlur={cancel}
-                placeholder="city or region..."
-                aria-label="Enter a city or region"
+                placeholder="city, state or country..."
+                aria-label="Enter a city, state, or country"
                 autoComplete="off"
                 spellCheck={false}
               />
@@ -230,7 +230,7 @@ export default function HUD({ weather, status, onSetCity }: HUDProps) {
       </div>
 
       {/* Audio toggle */}
-      <div className="absolute bottom-5 left-1/2 -translate-x-1/2" style={{ pointerEvents: 'auto' }}>
+      <div className="absolute bottom-10 left-1/2 -translate-x-1/2" style={{ pointerEvents: 'auto' }}>
         <button
           onClick={toggleMute}
           aria-label={muted ? 'Unmute audio' : 'Mute audio'}
