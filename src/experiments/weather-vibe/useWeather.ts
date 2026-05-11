@@ -113,7 +113,7 @@ async function fetchWeatherData(
   const cw = data.current_weather;
   const timezone: string | undefined = data.timezone ?? undefined;
   const geo = await geoRes.json().catch(() => ({}));
-  const city = existingCity ?? geo.city ?? geo.locality ?? undefined;
+  const city = existingCity ?? geo.locality ?? geo.city ?? undefined;
 
   // When population is known (city search via Open-Meteo geocoding), use tiered thresholds:
   // < 30k  → rural, 30k–200k → town (low-rise), ≥ 200k → urban (skyscrapers).
