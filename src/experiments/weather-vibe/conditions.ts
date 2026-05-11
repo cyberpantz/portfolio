@@ -8,7 +8,8 @@ export type WeatherState =
   | 'fog-night'
   | 'rain'
   | 'snow'
-  | 'storm';
+  | 'storm'
+  | 'golden-hour';
 
 export interface WeatherData {
   state: WeatherState;
@@ -18,7 +19,10 @@ export interface WeatherData {
   latitude: number;
   longitude: number;
   city?: string;
-  urbanDensity?: 'urban' | 'rural';
+  timezone?: string;
+  urbanDensity?: 'urban' | 'town' | 'rural';
+  population?: number;
+  terrain?: 'island' | 'coastal' | 'standard';
 }
 
 export function degreesToCompass(deg: number): string {
@@ -47,6 +51,7 @@ export const PALETTES: Record<WeatherState, Palette> = {
   'rain':          { background: '#1A2A3A', accent: '#2A7A8A', textColor: '#7AC8D8', isDark: true,  vibe: 'INSIDE' },
   'snow':          { background: '#E8EEF4', accent: '#D0E0F0', textColor: '#2A3A50', isDark: false, vibe: 'HUSHED' },
   'storm':         { background: '#050810', accent: '#2244AA', textColor: '#6688DD', isDark: true,  vibe: 'ELECTRIC' },
+  'golden-hour':   { background: '#E87020', accent: '#FFB030', textColor: '#F5D8A0', isDark: true,  vibe: 'GOLDEN'   },
 };
 
 // WMO weather interpretation code → WeatherState

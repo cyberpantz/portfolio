@@ -13,7 +13,9 @@ interface HUDProps {
 type EditState = 'idle' | 'editing' | 'loading' | 'not-found';
 
 export default function HUD({ weather, status, onSetCity }: HUDProps) {
-  const [time, setTime] = useState(() => new Date().toLocaleTimeString('en-GB'));
+  const tz = weather.timezone;
+  const fmt = (d: Date) => d.toLocaleTimeString('en-GB', tz ? { timeZone: tz } : undefined);
+  const [time, setTime] = useState(() => fmt(new Date()));
   const [muted, setMuted] = useState(false);
   const [editState, setEditState] = useState<EditState>('idle');
   const [input, setInput] = useState('');
@@ -26,9 +28,9 @@ export default function HUD({ weather, status, onSetCity }: HUDProps) {
   const shadow = palette.isDark ? '0 1px 6px rgba(0,0,0,0.8)' : 'none';
 
   useEffect(() => {
-    const id = setInterval(() => setTime(new Date().toLocaleTimeString('en-GB')), 1000);
+    const id = setInterval(() => setTime(fmt(new Date())), 1000);
     return () => clearInterval(id);
-  }, []);
+  }, [tz]); // restart interval if timezone changes (city switch)
 
   useEffect(() => {
     if (editState === 'editing') inputRef.current?.select();
