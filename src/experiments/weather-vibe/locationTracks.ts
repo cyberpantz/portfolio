@@ -6,6 +6,10 @@ export interface LocationTrack {
   behavior?: TrackBehavior; // default 'replace'
 }
 
+/**
+ * All tracks in a single entry should share the same behavior value.
+ * The behavior of the first shuffled track applies to the entire session (v1).
+ */
 export interface LocationEntry {
   city: string;          // matched case-insensitively against weather.city
   tracks: LocationTrack[];

@@ -33,9 +33,10 @@ class WeatherAudio {
   private recordings:     AudioBufferSourceNode[] = [];
   private currentStateKey: string | null = null;
   private muted = false;
-  private playlistQueue:  LocationTrack[] = [];
-  private playlistIndex:  number = 0;
-  private playlistSource: AudioBufferSourceNode | null = null;
+  private playlistQueue:    LocationTrack[] = [];
+  private playlistIndex:    number = 0;
+  private playlistSource:   AudioBufferSourceNode | null = null;
+  private playlistFailures: number = 0;
 
   private getCtx(): AudioContext {
     if (!this.ctx) {
@@ -93,6 +94,7 @@ class WeatherAudio {
     }
     this.playlistQueue = [];
     this.playlistIndex = 0;
+    this.playlistFailures = 0;
   }
 
   private static shuffle<T>(arr: T[]): T[] {
@@ -294,7 +296,13 @@ class WeatherAudio {
     const ctx = this.getCtx();
     try {
       const res = await fetch(track.src);
-      if (!res.ok) { this.playlistSource = null; this.advancePlaylist(dest); return; }
+      if (!res.ok) {
+        this.playlistFailures++;
+        if (this.playlistFailures >= this.playlistQueue.length) { this.playlistFailures = 0; return; }
+        this.playlistSource = null;
+        this.advancePlaylist(dest);
+        return;
+      }
       const audioBuf = await ctx.decodeAudioData(await res.arrayBuffer());
       const src = ctx.createBufferSource();
       src.buffer = audioBuf;
@@ -309,7 +317,10 @@ class WeatherAudio {
         if (this.playlistSource === src) this.advancePlaylist(dest);
       };
       src.start();
+      this.playlistFailures = 0;
     } catch {
+      this.playlistFailures++;
+      if (this.playlistFailures >= this.playlistQueue.length) { this.playlistFailures = 0; return; }
       this.playlistSource = null;
       this.advancePlaylist(dest);
     }
@@ -495,6 +506,11 @@ class WeatherAudio {
   toggle() { if (this.muted) this.unmute(); else this.mute(); }
 }
 
+const AMB_RECORDING_LABELS = new Set([
+  'CITY AMBIENCE', 'BIRDS', 'CRICKETS', 'OCEAN SURF',
+  'FOREST WIND', 'SNOW AMBIENCE', 'FOG AMBIENCE',
+]);
+
 export function getActiveLayerLabels(weather: WeatherData): string {
   const locationTracks = getLocationTracks(weather.city);
   const behavior: TrackBehavior = locationTracks?.[0]?.behavior ?? 'replace';
@@ -562,10 +578,6 @@ export function getActiveLayerLabels(weather: WeatherData): string {
   if (behavior === 'layer') return ['LOCATION TRACK', ...L].join(' · ');
 
   // 'replace': keep synth + effect-recording labels, replace ambient recording labels
-  const AMB_RECORDING_LABELS = new Set([
-    'CITY AMBIENCE', 'BIRDS', 'CRICKETS', 'OCEAN SURF',
-    'FOREST WIND', 'SNOW AMBIENCE', 'FOG AMBIENCE',
-  ]);
   const nonAmbient = L.filter(l => !AMB_RECORDING_LABELS.has(l));
   return ['LOCATION TRACK', ...nonAmbient].join(' · ');
 }
