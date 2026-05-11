@@ -338,132 +338,146 @@ class WeatherAudio {
     const isUrban = urbanDensity === 'urban';
     const isTown  = urbanDensity === 'town';
 
+    const locationTracks = getLocationTracks(weatherData.city);
+    if (locationTracks) {
+      this.playlistQueue = WeatherAudio.shuffle(locationTracks);
+      this.playlistIndex = 0;
+    }
+    const behavior: TrackBehavior = this.playlistQueue[0]?.behavior ?? 'replace';
+    const skipAmbient = !!locationTracks && (behavior === 'replace' || behavior === 'takeover');
+    const skipAll     = !!locationTracks && behavior === 'takeover';
+
     switch (state) {
       case 'clear-night':
         if (isUrban) {
-          this.cityHum(city);
-          await this.loadRecording(AUDIO_ASSETS.city_ambience, 0.55, amb);
+          if (!skipAll)     this.cityHum(city);
+          if (!skipAmbient) await this.loadRecording(AUDIO_ASSETS.city_ambience, 0.55, amb);
         } else if (isTown) {
-          this.cityHum(city);
-          await this.loadRecording(AUDIO_ASSETS.city_ambience, 0.20, amb);
-          await this.loadRecording(AUDIO_ASSETS.crickets,      0.35, amb);
-          this.wind(Math.min(windspeed, 15), efx);
+          if (!skipAll)     this.cityHum(city);
+          if (!skipAmbient) await this.loadRecording(AUDIO_ASSETS.city_ambience, 0.20, amb);
+          if (!skipAmbient) await this.loadRecording(AUDIO_ASSETS.crickets,      0.35, amb);
+          if (!skipAll)     this.wind(Math.min(windspeed, 15), efx);
         } else {
-          await this.loadRecording(AUDIO_ASSETS.crickets, 0.60, amb);
-          this.wind(Math.min(windspeed, 15), efx);
+          if (!skipAmbient) await this.loadRecording(AUDIO_ASSETS.crickets, 0.60, amb);
+          if (!skipAll)     this.wind(Math.min(windspeed, 15), efx);
         }
         break;
 
       case 'clear-day':
         if (isUrban) {
-          this.cityHum(city);
-          await this.loadRecording(AUDIO_ASSETS.city_ambience, 0.50, amb);
-          this.wind(windspeed, efx);
+          if (!skipAll)     this.cityHum(city);
+          if (!skipAmbient) await this.loadRecording(AUDIO_ASSETS.city_ambience, 0.50, amb);
+          if (!skipAll)     this.wind(windspeed, efx);
         } else if (isTown) {
-          this.cityHum(city);
-          await this.loadRecording(AUDIO_ASSETS.city_ambience, 0.18, amb);
-          await this.loadRecording(AUDIO_ASSETS.birds,         0.30, amb);
-          this.wind(windspeed, efx);
+          if (!skipAll)     this.cityHum(city);
+          if (!skipAmbient) await this.loadRecording(AUDIO_ASSETS.city_ambience, 0.18, amb);
+          if (!skipAmbient) await this.loadRecording(AUDIO_ASSETS.birds,         0.30, amb);
+          if (!skipAll)     this.wind(windspeed, efx);
         } else {
-          await this.loadRecording(AUDIO_ASSETS.birds,      0.40, amb);
-          this.wind(windspeed, efx);
-          await this.loadRecording(AUDIO_ASSETS.ocean_surf, 0.15, amb);
+          if (!skipAmbient) await this.loadRecording(AUDIO_ASSETS.birds,      0.40, amb);
+          if (!skipAll)     this.wind(windspeed, efx);
+          if (!skipAmbient) await this.loadRecording(AUDIO_ASSETS.ocean_surf, 0.15, amb);
         }
         break;
 
       case 'golden-hour':
         if (isUrban) {
-          this.cityHum(city);
-          await this.loadRecording(AUDIO_ASSETS.city_ambience, 0.45, amb);
-          this.wind(Math.min(windspeed, 12), efx);
+          if (!skipAll)     this.cityHum(city);
+          if (!skipAmbient) await this.loadRecording(AUDIO_ASSETS.city_ambience, 0.45, amb);
+          if (!skipAll)     this.wind(Math.min(windspeed, 12), efx);
         } else {
-          await this.loadRecording(AUDIO_ASSETS.birds,      0.35, amb);
-          await this.loadRecording(AUDIO_ASSETS.ocean_surf, 0.12, amb);
-          this.wind(Math.min(windspeed, 12), efx);
+          if (!skipAmbient) await this.loadRecording(AUDIO_ASSETS.birds,      0.35, amb);
+          if (!skipAmbient) await this.loadRecording(AUDIO_ASSETS.ocean_surf, 0.12, amb);
+          if (!skipAll)     this.wind(Math.min(windspeed, 12), efx);
         }
         break;
 
       case 'partly-cloudy':
         if (isUrban) {
-          this.cityHum(city);
-          await this.loadRecording(AUDIO_ASSETS.city_ambience, 0.42, amb);
-          this.wind(windspeed, efx);
+          if (!skipAll)     this.cityHum(city);
+          if (!skipAmbient) await this.loadRecording(AUDIO_ASSETS.city_ambience, 0.42, amb);
+          if (!skipAll)     this.wind(windspeed, efx);
         } else {
-          this.wind(windspeed, efx);
-          await this.loadRecording(AUDIO_ASSETS.forest_wind, 0.30, amb);
-          await this.loadRecording(AUDIO_ASSETS.ocean_surf,  0.12, amb);
+          if (!skipAll)     this.wind(windspeed, efx);
+          if (!skipAmbient) await this.loadRecording(AUDIO_ASSETS.forest_wind, 0.30, amb);
+          if (!skipAmbient) await this.loadRecording(AUDIO_ASSETS.ocean_surf,  0.12, amb);
         }
         break;
 
       case 'partly-cloudy-night':
         if (isUrban) {
-          this.cityHum(city);
-          await this.loadRecording(AUDIO_ASSETS.city_ambience, 0.48, amb);
+          if (!skipAll)     this.cityHum(city);
+          if (!skipAmbient) await this.loadRecording(AUDIO_ASSETS.city_ambience, 0.48, amb);
         } else if (isTown) {
-          this.cityHum(city);
-          await this.loadRecording(AUDIO_ASSETS.city_ambience, 0.18, amb);
-          await this.loadRecording(AUDIO_ASSETS.crickets,      0.32, amb);
-          this.wind(windspeed, efx);
+          if (!skipAll)     this.cityHum(city);
+          if (!skipAmbient) await this.loadRecording(AUDIO_ASSETS.city_ambience, 0.18, amb);
+          if (!skipAmbient) await this.loadRecording(AUDIO_ASSETS.crickets,      0.32, amb);
+          if (!skipAll)     this.wind(windspeed, efx);
         } else {
-          await this.loadRecording(AUDIO_ASSETS.crickets, 0.50, amb);
-          this.wind(windspeed, efx);
+          if (!skipAmbient) await this.loadRecording(AUDIO_ASSETS.crickets, 0.50, amb);
+          if (!skipAll)     this.wind(windspeed, efx);
         }
         break;
 
       case 'overcast':
-        this.wind(windspeed, efx);
+        if (!skipAll)     this.wind(windspeed, efx);
         if (isUrban) {
-          this.cityHum(city);
-          await this.loadRecording(AUDIO_ASSETS.city_ambience, 0.40, amb);
+          if (!skipAll)     this.cityHum(city);
+          if (!skipAmbient) await this.loadRecording(AUDIO_ASSETS.city_ambience, 0.40, amb);
         } else {
-          await this.loadRecording(AUDIO_ASSETS.city_ambience, 0.28, amb);
-          await this.loadRecording(AUDIO_ASSETS.forest_wind,   0.20, amb);
+          if (!skipAmbient) await this.loadRecording(AUDIO_ASSETS.city_ambience, 0.28, amb);
+          if (!skipAmbient) await this.loadRecording(AUDIO_ASSETS.forest_wind,   0.20, amb);
         }
         break;
 
       case 'fog':
-        this.fogDrone(efx);
-        this.wind(Math.min(windspeed, 8), efx);
+        if (!skipAll) this.fogDrone(efx);
+        if (!skipAll) this.wind(Math.min(windspeed, 8), efx);
         if (isUrban) {
-          await this.loadRecording(AUDIO_ASSETS.city_ambience, 0.22, amb);
+          if (!skipAmbient) await this.loadRecording(AUDIO_ASSETS.city_ambience, 0.22, amb);
         } else {
-          await this.loadRecording(AUDIO_ASSETS.fog_ambience, 0.35, amb);
+          if (!skipAmbient) await this.loadRecording(AUDIO_ASSETS.fog_ambience, 0.35, amb);
         }
         break;
 
       case 'fog-night':
-        this.fogDrone(efx);
-        this.wind(Math.min(windspeed, 8), efx);
+        if (!skipAll) this.fogDrone(efx);
+        if (!skipAll) this.wind(Math.min(windspeed, 8), efx);
         if (isUrban) {
-          await this.loadRecording(AUDIO_ASSETS.city_ambience, 0.20, amb);
+          if (!skipAmbient) await this.loadRecording(AUDIO_ASSETS.city_ambience, 0.20, amb);
         } else {
-          await this.loadRecording(AUDIO_ASSETS.crickets,     0.40, amb);
-          await this.loadRecording(AUDIO_ASSETS.fog_ambience, 0.30, amb);
+          if (!skipAmbient) await this.loadRecording(AUDIO_ASSETS.crickets,     0.40, amb);
+          if (!skipAmbient) await this.loadRecording(AUDIO_ASSETS.fog_ambience, 0.30, amb);
         }
         break;
 
       case 'rain':
-        this.layeredRain(false, efx);
-        this.wind(Math.min(windspeed, 20), efx);
-        await this.loadRecording(AUDIO_ASSETS.rain_on_glass, 0.45, efx);
-        await this.loadRecording(AUDIO_ASSETS.city_ambience, isUrban ? 0.20 : 0.10, amb);
-        if (isUrban) this.cityHum(city);
+        if (!skipAll) this.layeredRain(false, efx);
+        if (!skipAll) this.wind(Math.min(windspeed, 20), efx);
+        if (!skipAll) await this.loadRecording(AUDIO_ASSETS.rain_on_glass, 0.45, efx);
+        if (!skipAmbient) await this.loadRecording(AUDIO_ASSETS.city_ambience, isUrban ? 0.20 : 0.10, amb);
+        if (isUrban && !skipAll) this.cityHum(city);
         break;
 
       case 'snow':
-        this.wind(Math.min(windspeed, 10), efx);
-        await this.loadRecording(AUDIO_ASSETS.snow_ambience, 0.40, amb);
+        if (!skipAll)     this.wind(Math.min(windspeed, 10), efx);
+        if (!skipAmbient) await this.loadRecording(AUDIO_ASSETS.snow_ambience, 0.40, amb);
         if (isUrban) {
-          await this.loadRecording(AUDIO_ASSETS.city_ambience, 0.15, amb);
+          if (!skipAmbient) await this.loadRecording(AUDIO_ASSETS.city_ambience, 0.15, amb);
         }
         break;
 
       case 'storm':
-        this.layeredRain(true, efx);
-        this.wind(windspeed, efx);
-        await this.loadRecording(AUDIO_ASSETS.storm_wind,    0.40, efx);
-        await this.loadRecording(AUDIO_ASSETS.rain_on_glass, 0.35, efx);
+        if (!skipAll) this.layeredRain(true, efx);
+        if (!skipAll) this.wind(windspeed, efx);
+        if (!skipAll) await this.loadRecording(AUDIO_ASSETS.storm_wind,    0.40, efx);
+        if (!skipAll) await this.loadRecording(AUDIO_ASSETS.rain_on_glass, 0.35, efx);
         break;
+    }
+
+    if (locationTracks) {
+      const dest = behavior === 'takeover' ? this.userMasterGain! : amb;
+      await this.loadPlaylistTrack(this.playlistQueue[0], dest);
     }
   }
 
