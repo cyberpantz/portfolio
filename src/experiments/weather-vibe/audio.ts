@@ -1,4 +1,4 @@
-import type { WeatherData, WeatherState } from './conditions';
+import type { WeatherData } from './conditions';
 import { getLocationTracks, type LocationTrack, type TrackBehavior } from './locationTracks';
 import { getSettings, type AudioMultipliers } from './settings';
 

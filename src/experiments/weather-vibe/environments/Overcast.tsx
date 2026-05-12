@@ -45,12 +45,12 @@ function DebrisParticles() {
 
   return (
     <points ref={pointsRef} geometry={geometry}>
-      <pointsMaterial color="#888880" size={0.1} transparent opacity={0.55} depthWrite={false} />
+      <pointsMaterial color="#909088" size={0.18} transparent opacity={0.72} depthWrite={false} />
     </points>
   );
 }
 
-export default function Overcast() {
+export default function Overcast({ noGrass = false }: { noGrass?: boolean }) {
   useFrame(({ clock, camera }) => {
     const t = clock.getElapsedTime();
     camera.position.x = Math.sin(t * 0.06) * 1.5;
@@ -75,16 +75,18 @@ export default function Overcast() {
         <meshStandardMaterial color="#2B2619" />
       </mesh>
 
-      <GrassField
-        count={50000}
-        spreadX={80}
-        spreadZ={200}
-        groundY={0}
-        maxBladeH={0.50}
-        windStrength={1.5}
-        colorBase={[0.10, 0.16, 0.08]}
-        colorTip={[0.30, 0.40, 0.18]}
-      />
+      {!noGrass && (
+        <GrassField
+          count={100000}
+          spreadX={80}
+          spreadZ={200}
+          groundY={0}
+          maxBladeH={0.50}
+          windStrength={1.5}
+          colorBase={[0.10, 0.16, 0.08]}
+          colorTip={[0.30, 0.40, 0.18]}
+        />
+      )}
 
       <DebrisParticles />
     </>

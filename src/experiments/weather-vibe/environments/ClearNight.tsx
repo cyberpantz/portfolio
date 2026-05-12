@@ -2,6 +2,7 @@ import { useRef, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { ShaderMaterial, BufferGeometry, BufferAttribute, AdditiveBlending } from 'three';
 import type { Group, Points } from 'three';
+import { GrassField } from './GrassField';
 // @ts-ignore — glsl imports handled by vite
 import starFrag from '../shaders/starField.frag.glsl?raw';
 // @ts-ignore
@@ -94,7 +95,7 @@ function Fireflies() {
   );
 }
 
-export default function ClearNight() {
+export default function ClearNight({ noGrass = false }: { noGrass?: boolean }) {
   const groupRef = useRef<Group>(null);
 
   useFrame((state, delta) => {
@@ -111,6 +112,18 @@ export default function ClearNight() {
       <StarSphere />
       <Moon />
       <Fireflies />
+      {!noGrass && (
+        <GrassField
+          count={70000}
+          spreadX={80}
+          spreadZ={200}
+          groundY={-5}
+          maxBladeH={0.45}
+          windStrength={0.7}
+          colorBase={[0.02, 0.05, 0.03]}
+          colorTip={[0.05, 0.11, 0.05]}
+        />
+      )}
     </group>
   );
 }

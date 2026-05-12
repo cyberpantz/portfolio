@@ -1,154 +1,141 @@
-// Rain-on-glass: coalescing drop grid + condensation drips over a fog layer.
-// Outputs RGBA — fog is opaque, drops/trails are mostly transparent so the live
-// 3D scene shows through naturally via WebGL alpha blending.
+// Rain on glass — foreground overlay
+// Drop simulation adapted from "Heartfelt" by Martijn Steinrucken (BigWings) - 2017
+// Original: https://www.shadertoy.com/view/ltffzl  License: CC BY-NC-SA 3.0
+//
+// Architecture: alpha-blended quad over the 3D scene.
+// Alpha ≈ 0 where drops / trails / wipes clear the glass → scene shows through.
+// Alpha ≈ 1 in fogged areas → dark glass tint overlays the scene.
 
 uniform float uTime;
-uniform sampler2D uMask;
+uniform float uRainAmount;   // 0..1, driven by windspeed
+uniform sampler2D uMask;     // condensation mask (white = fogged, black = wiped)
+uniform vec2  uResolution;
 
 varying vec2 vUv;
 
-float hash(vec2 p) {
-  return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);
+#define S(a, b, t) smoothstep(a, b, t)
+
+// ── Noise helpers (BigWings originals) ───────────────────────────────────────
+vec3 N13(float p) {
+  vec3 p3 = fract(vec3(p) * vec3(.1031, .11369, .13787));
+  p3 += dot(p3, p3.yzx + 19.19);
+  return fract(vec3((p3.x + p3.y) * p3.z, (p3.x + p3.z) * p3.y, (p3.y + p3.z) * p3.x));
 }
 
-// ── Condensation drips ────────────────────────────────────────────────────────
-// Returns how much each pixel is cleared by a running drip (0..1),
-// and writes a bead highlight into the out param.
-float computeDrips(vec2 uv, float condensation, float time, out float beadGlow) {
-  float clearAmt = 0.0;
-  beadGlow = 0.0;
-
-  for (int i = 0; i < 8; i++) {
-    float fi = float(i);
-
-    float xCol     = hash(vec2(fi * 3.71, 0.17));
-    float speed    = 0.014 + hash(vec2(fi, 1.30)) * 0.022;  // slow realistic drip
-    float phase    = fract(time * speed + hash(vec2(fi, 2.73)) * 12.0);
-    float frontY   = 1.0 - phase;           // UV y=1 is screen top; front moves down
-    float trailLen = 0.10 + hash(vec2(fi, 3.10)) * 0.22;
-    float width    = 0.0022 + hash(vec2(fi, 4.51)) * 0.0028;
-
-    // Path wiggles slightly as it descends (two overlapping sines)
-    float wiggle = sin(uv.y * 20.0 + fi * 3.14 + time * 0.25) * 0.004
-                 + sin(uv.y * 41.0 + fi * 1.57 + time * 0.12) * 0.0015;
-    float inPath = smoothstep(width, 0.0, abs(uv.x - xCol - wiggle));
-
-    // Trail zone: from the front upward by trailLen
-    float trailTop = frontY + trailLen;
-    float inTrail  = 0.0;
-    if (uv.y > frontY && uv.y < trailTop) {
-      // Clear strongest near the front, taper toward top of trail
-      inTrail = smoothstep(trailTop, frontY + trailLen * 0.15, uv.y);
-    }
-
-    // Only drip where there's meaningful condensation
-    float condFactor = smoothstep(0.30, 0.65, condensation);
-
-    clearAmt = max(clearAmt, inPath * inTrail * condFactor);
-
-    // Water bead at the drip front — small bright teardrop blob
-    vec2  beadDelta = vec2((uv.x - xCol - wiggle) / (width * 2.5),
-                            (uv.y - frontY)         / (width * 6.0));
-    float beadDist  = length(beadDelta);
-    beadGlow = max(beadGlow,
-      smoothstep(1.0, 0.0, beadDist) * 0.75 * condFactor * inPath);
-  }
-
-  return clearAmt;
+float N(float t) {
+  return fract(sin(t * 12345.564) * 7658.76);
 }
 
+float Saw(float b, float t) {
+  return S(0., b, t) * S(1., b, t);
+}
+
+// ── Drop layers ───────────────────────────────────────────────────────────────
+vec2 DropLayer2(vec2 uv, float t) {
+  vec2 UV = uv;
+  uv.y += t * 0.75;
+  vec2 a    = vec2(6., 1.);
+  vec2 grid = a * 2.;
+  vec2 id   = floor(uv * grid);
+
+  float colShift = N(id.x);
+  uv.y += colShift;
+  id = floor(uv * grid);
+
+  vec3 n  = N13(id.x * 35.2 + id.y * 2376.1);
+  vec2 st = fract(uv * grid) - vec2(.5, 0.);
+
+  float x = n.x - .5;
+  float y = UV.y * 20.;
+  float wiggle = sin(y + sin(y));
+  x += wiggle * (.5 - abs(x)) * (n.z - .5);
+  x *= .7;
+
+  float ti = fract(t + n.z);
+  y = (Saw(.85, ti) - .5) * .9 + .5;
+  vec2 p = vec2(x, y);
+
+  float d        = length((st - p) * a.yx);
+  float mainDrop = S(.4, .0, d);
+
+  float r          = sqrt(S(1., y, st.y));
+  float cd         = abs(st.x - x);
+  float trail      = S(.23 * r, .15 * r * r, cd);
+  float trailFront = S(-.02, .02, st.y - y);
+  trail *= trailFront * r * r;
+
+  y = UV.y;
+  float trail2   = S(.2 * r, .0, cd);
+  float droplets = max(0., (sin(y * (1. - y) * 120.) - st.y)) * trail2 * trailFront * n.z;
+  y  = fract(y * 10.) + (st.y - .5);
+  float dd = length(st - vec2(x, y));
+  droplets = S(.3, 0., dd);
+
+  float m = mainDrop + droplets * r * trailFront;
+  return vec2(m, trail);
+}
+
+float StaticDrops(vec2 uv, float t) {
+  uv *= 40.;
+  vec2  id = floor(uv);
+  uv = fract(uv) - .5;
+  vec3  n  = N13(id.x * 107.45 + id.y * 3543.654);
+  vec2  p  = (n.xy - .5) * .7;
+  float d  = length(uv - p);
+  float fade = Saw(.025, fract(t + n.z));
+  return S(.3, 0., d) * fract(n.z * 10.) * fade;
+}
+
+vec2 Drops(vec2 uv, float t, float l0, float l1, float l2) {
+  float s  = StaticDrops(uv, t) * l0;
+  vec2  m1 = DropLayer2(uv, t) * l1;
+  vec2  m2 = DropLayer2(uv * 1.85, t) * l2;
+  float c  = s + m1.x + m2.x;
+  c = S(.3, 1., c);
+  return vec2(c, max(m1.y * l0, m2.y * l1));
+}
+
+// ── Main ─────────────────────────────────────────────────────────────────────
 void main() {
-  vec2  uv           = vUv;
-  float condensation = texture2D(uMask, uv).r;
+  // BigWings drop math uses centre-origin, aspect-corrected UVs
+  float aspect = uResolution.x / uResolution.y;
+  vec2 cuv = (vUv - 0.5) * vec2(aspect, 1.0);
 
-  // ── Drop grid ─────────────────────────────────────────────────────────
-  const vec2  GRID              = vec2(12.0, 7.0);
-  const float ASPECT_CORRECTION = 1.037;
+  float t = uTime * .2;
 
-  vec2 cell   = floor(uv * GRID);
-  vec2 cellUv = fract(uv * GRID);
+  float rainAmount  = uRainAmount;
+  float staticDrops = S(-.5, 1., rainAmount) * 2.;
+  float layer1      = S(.25, .75, rainAmount);
+  float layer2      = S(.0,  .5,  rainAmount);
 
-  float dropAlpha  = 0.0;
-  float specular   = 0.0;
-  float trailAlpha = 0.0;
+  vec2 c = Drops(cuv, t, staticDrops, layer1, layer2);
+  // c.x = drop/droplet coverage  c.y = trail coverage
 
-  for (int iy = -1; iy <= 1; iy++) {
-    for (int ix = -1; ix <= 1; ix++) {
-      vec2  nc = cell + vec2(float(ix), float(iy));
-      float h0 = hash(nc);
-      float h1 = hash(nc * 1.71 + vec2(0.31, 0.47));
-      float h2 = hash(nc * 2.34 + vec2(1.13, 0.79));
+  // Condensation mask — white=fully fogged, black=wiped by user
+  float condensation = texture2D(uMask, vUv).r;
 
-      if (h0 > 0.38) {
-        vec2  center  = vec2(0.2 + h1 * 0.6, 0.25 + h2 * 0.5);
-        float period  = 4.0 + h0 * 18.0;
-        float phase   = fract((uTime * 0.09 + h1 * 11.0) / period);
-        float maxR    = 0.07 + h2 * 0.18;
+  // Fog alpha: present where condensation is high; cleared by drops and trails
+  float fogAlpha = condensation * (1.0 - c.x * 0.92) * (1.0 - c.y * 0.72);
 
-        float radius  = 0.0;
-        float dripAmt = 0.0;
+  // Dark blue-grey glass tint
+  vec3 col = vec3(0.04, 0.07, 0.14);
 
-        if (phase < 0.52) {
-          radius = maxR * smoothstep(0.0, 0.52, phase);
-        } else if (phase < 0.76) {
-          float dp = (phase - 0.52) / 0.24;
-          radius   = maxR;
-          dripAmt  = dp * 0.58;
-          center.y += dripAmt;
-        } else {
-          float dp = (phase - 0.76) / 0.24;
-          radius   = maxR * (1.0 - dp);
-          dripAmt  = 0.58;
-          center.y += dripAmt;
-        }
+  // Specular highlight on drop surfaces
+  col += vec3(0.55, 0.75, 1.0) * c.x * 0.55;
 
-        vec2  delta = cellUv - vec2(float(ix), float(iy)) - center;
-        delta.x    *= ASPECT_CORRECTION;
-        float dist  = length(delta / vec2(1.0, 1.28));
+  // Subtle warm trail shimmer
+  col += vec3(0.20, 0.35, 0.55) * c.y * 0.25;
 
-        if (dist < radius && radius > 0.005) {
-          float t01  = dist / radius;
-          float edge = smoothstep(1.0, 0.52, t01);
-          dropAlpha  = max(dropAlpha, edge);
+  // Lightning flash
+  float lt        = (uTime + 3.) * 0.5;
+  float lightning = sin(lt * sin(lt * 10.)) * pow(max(0., sin(lt + sin(lt))), 10.);
+  col *= 1.0 + lightning * 0.8;
 
-          vec2  hi1  = vec2(-0.26 * radius, -0.32 * radius);
-          specular   = max(specular, smoothstep(1.0, 0.0, length(delta - hi1) / (radius * 0.36)) * edge * 0.95);
+  // Slow blue-hour tint cycle
+  float tint = sin(uTime * 0.08) * 0.5 + 0.5;
+  col = mix(col, col * vec3(0.8, 0.9, 1.3), tint * 0.3);
 
-          vec2  hi2  = vec2(0.20 * radius, 0.24 * radius);
-          specular   = max(specular, smoothstep(1.0, 0.0, length(delta - hi2) / (radius * 0.22)) * edge * 0.30);
-        }
+  float alpha = clamp(fogAlpha * 0.86 + c.x * 0.08, 0.0, 1.0);
 
-        if (dripAmt > 0.04 && radius > 0.03) {
-          vec2  trailMid = center - vec2(0.0, dripAmt * 0.5);
-          vec2  tp       = cellUv - vec2(float(ix), float(iy)) - trailMid;
-          tp.x          *= ASPECT_CORRECTION;
-          float td       = length(tp / vec2(radius * 0.26, dripAmt * 0.58));
-          trailAlpha     = max(trailAlpha, smoothstep(1.0, 0.25, td) * 0.55);
-        }
-      }
-    }
-  }
-
-  // ── Condensation drips ────────────────────────────────────────────────
-  float beadGlow;
-  float dripClear = computeDrips(uv, condensation, uTime, beadGlow);
-
-  // ── Composite ─────────────────────────────────────────────────────────
-  float fogAlpha = condensation * 0.88;
-  fogAlpha      *= (1.0 - dropAlpha  * 0.96);
-  fogAlpha      *= (1.0 - trailAlpha * 0.72);
-  fogAlpha      *= (1.0 - dripClear  * 0.90);  // drips clear fog as they run
-
-  float dropSurf = dropAlpha * 0.14 + trailAlpha * 0.09 + dripClear * 0.06;
-
-  vec3 glassColor = vec3(0.05, 0.09, 0.16);
-  vec3 dropColor  = vec3(0.18, 0.28, 0.42);
-  vec3 color      = mix(glassColor, dropColor, dropAlpha * 0.55 + trailAlpha * 0.3 + dripClear * 0.2);
-
-  color += vec3(0.88, 0.94, 1.0) * specular;           // drop specular
-  color += vec3(0.80, 0.90, 1.00) * beadGlow * 0.55;   // drip bead highlight
-
-  float alpha = clamp(fogAlpha + dropSurf, 0.0, 1.0);
-
-  gl_FragColor = vec4(color, alpha);
+  gl_FragColor = vec4(col, alpha);
 }

@@ -26,31 +26,40 @@ export default function CityScape({ palette, groundY }: Props) {
     for (let r = 0; r < 12; r++) {
       for (let c = 0; c < 6; c++) {
         if (Math.random() > 0.40) continue; // 40% of windows lit
-        // Slight warm variation per window
-        const g = Math.floor(170 + Math.random() * 85);
-        const b = Math.floor(60  + Math.random() * 90);
-        ctx.fillStyle = `rgb(255,${g},${b})`;
+        // Soft warm-white variation per window
+        const rr = Math.floor(210 + Math.random() * 45);
+        const g  = Math.floor(190 + Math.random() * 45);
+        const b  = Math.floor(150 + Math.random() * 55);
+        ctx.fillStyle = `rgb(${rr},${g},${b})`;
         ctx.fillRect(2 + c * 10, 3 + r * 10, 7, 7);
       }
     }
     return new CanvasTexture(canvas);
   }, [palette.isDark]);
 
-  // Day silhouette: background hue pushed dark — same tonality as sky, just darker
+  // Day buildings: desaturate the sky hue then darken → neutral concrete tone
+  // Pure darkening of a saturated sky yields near-black blue; desaturation first
+  // produces a warm gray that reads as actual buildings at distance.
   const dayColor = useMemo(() => {
     const c = new Color(palette.background);
-    return new Color(c.r * 0.20, c.g * 0.21, c.b * 0.32);
+    const gray = (c.r + c.g + c.b) / 3;
+    const sat  = 0.12; // retain 12 % of original hue
+    return new Color(
+      (gray * (1 - sat) + c.r * sat) * 0.52,
+      (gray * (1 - sat) + c.g * sat) * 0.50,
+      (gray * (1 - sat) + c.b * sat) * 0.48,
+    );
   }, [palette.background]);
 
   // Stable layout — seeded so buildings never jump between weather states
   const buildings = useMemo(() => {
     const rng = makeRng(42);
     return Array.from({ length: 32 }, (_, i) => {
-      const t    = i / 31;
-      const angle  = (t - 0.5) * 1.45;               // arc ±41° in radians
-      const radius = 80 + rng() * 30;                 // 80–110 units away
+      const t      = i / 31;
+      const angle  = (t - 0.5) * 2.4;                // arc ±69° — wide enough to frame the view
+      const radius = 65 + rng() * 60;                 // 65–125 units — more depth layering
       return {
-        x: radius * Math.sin(angle) + (rng() - 0.5) * 7, // slight jitter
+        x: radius * Math.sin(angle) + (rng() - 0.5) * 18, // generous lateral jitter
         z: -radius * Math.cos(angle),
         h: 16 + rng() * 32,  // height 16–48 units
         w:  5 + rng() * 9,   // width  5–14 units
@@ -68,8 +77,8 @@ export default function CityScape({ palette, groundY }: Props) {
             <meshStandardMaterial
               color="#030508"
               emissiveMap={windowTex ?? undefined}
-              emissive="#CC6018"
-              emissiveIntensity={windowTex ? 1.0 : 0}
+              emissive="#EED8C0"
+              emissiveIntensity={windowTex ? 0.4 : 0}
               roughness={1}
               metalness={0}
             />

@@ -4,7 +4,9 @@ import {
   ShaderMaterial,
   DataTexture, RGBAFormat, UnsignedByteType,
   BufferGeometry, BufferAttribute, AdditiveBlending,
+  Vector2,
 } from 'three';
+import { GrassField } from './GrassField';
 // @ts-ignore
 import glassFrag from '../shaders/wetGlass.frag.glsl?raw';
 // @ts-ignore
@@ -12,7 +14,7 @@ import glassVert from '../shaders/wetGlass.vert.glsl?raw';
 
 const MASK_SIZE = 512;
 
-function RainWorld() {
+function RainWorld({ noGrass = false }: { noGrass?: boolean }) {
   const particleCount = 3000;
   const pointsRef = useRef<any>(null);
 
@@ -57,6 +59,18 @@ function RainWorld() {
         <planeGeometry args={[200, 200]} />
         <meshStandardMaterial color="#0D1520" metalness={0.8} roughness={0.2} />
       </mesh>
+      {!noGrass && (
+        <GrassField
+          count={70000}
+          spreadX={80}
+          spreadZ={200}
+          groundY={-2}
+          maxBladeH={0.50}
+          windStrength={1.8}
+          colorBase={[0.03, 0.07, 0.03]}
+          colorTip={[0.07, 0.14, 0.07]}
+        />
+      )}
       <points ref={pointsRef} geometry={geometry}>
         <pointsMaterial
           color="#88AACC"
@@ -71,7 +85,7 @@ function RainWorld() {
   );
 }
 
-export default function Rain() {
+export default function Rain({ noGrass = false }: { noGrass?: boolean }) {
   const maskData = useMemo(() => new Uint8Array(MASK_SIZE * MASK_SIZE * 4).fill(255), []);
   const maskTex  = useMemo(() => {
     const tex = new DataTexture(maskData, MASK_SIZE, MASK_SIZE, RGBAFormat, UnsignedByteType);
@@ -81,17 +95,23 @@ export default function Rain() {
 
   const glassMat = useRef<ShaderMaterial>(null);
   const uniforms = useMemo(() => ({
-    uTime: { value: 0 },
-    uMask: { value: maskTex },
+    uTime:       { value: 0 },
+    uRainAmount: { value: 0.7 },
+    uMask:       { value: maskTex },
+    uResolution: { value: new Vector2(window.innerWidth, window.innerHeight) },
   }), [maskTex]);
 
   useFrame(({ clock, camera }) => {
-    if (glassMat.current) glassMat.current.uniforms.uTime.value = clock.getElapsedTime();
+    if (glassMat.current) {
+      glassMat.current.uniforms.uTime.value       = clock.getElapsedTime();
+      glassMat.current.uniforms.uResolution.value.set(window.innerWidth, window.innerHeight);
+    }
+
     const t = clock.getElapsedTime();
     camera.position.x = Math.sin(t * 0.22) * 0.5 + Math.sin(t * 0.37) * 0.2;
     camera.position.y = Math.sin(t * 0.18) * 0.3;
 
-    // Condensation refill
+    // Condensation slowly refills
     let dirty = false;
     for (let i = 0; i < maskData.length; i += 4) {
       if (maskData[i] < 255) {
@@ -121,9 +141,9 @@ export default function Rain() {
         if (dist > radius) continue;
         const nx = px + dx, ny = py + dy;
         if (nx < 0 || nx >= MASK_SIZE || ny < 0 || ny >= MASK_SIZE) continue;
-        const idx    = (ny * MASK_SIZE + nx) * 4;
-        const sigma  = radius * 0.4;
-        const gauss  = Math.exp(-(dist * dist) / (2 * sigma * sigma));
+        const idx   = (ny * MASK_SIZE + nx) * 4;
+        const sigma = radius * 0.4;
+        const gauss = Math.exp(-(dist * dist) / (2 * sigma * sigma));
         maskData[idx]     = Math.max(0, maskData[idx] - gauss * 255);
         maskData[idx + 1] = maskData[idx];
         maskData[idx + 2] = maskData[idx];
@@ -158,7 +178,11 @@ export default function Rain() {
       if (Date.now() - lastInteraction.current > 8000) {
         hintPlayed.current = true;
         let x = 80, y = window.innerHeight - 120;
-        const animate = () => { clearAt(x, y); x += 2; y -= 1; if (x < 180) requestAnimationFrame(animate); };
+        const animate = () => {
+          clearAt(x, y);
+          x += 2; y -= 1;
+          if (x < 180) requestAnimationFrame(animate);
+        };
         animate();
       }
     }, 1000);
@@ -167,8 +191,7 @@ export default function Rain() {
 
   return (
     <>
-      <RainWorld />
-      {/* Full-screen glass overlay — clip-space vertex shader + transparent alpha */}
+      <RainWorld noGrass={noGrass} />
       <mesh renderOrder={100}>
         <planeGeometry args={[2, 2]} />
         <shaderMaterial

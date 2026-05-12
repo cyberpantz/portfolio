@@ -2,9 +2,17 @@ import { useState } from 'react';
 import SimonSays from '../../experiments/SimonSays';
 
 type Screen = 'playing' | 'win' | 'lose';
+type Difficulty = 'easy' | 'hard' | 'super-hard';
+
+const DIFFICULTY_META: Record<Difficulty, { name: string; detail: string }> = {
+  'easy':       { name: 'Easy',   detail: '4-round sequence' },
+  'hard':       { name: 'Hard',   detail: '6-round sequence' },
+  'super-hard': { name: 'Insane', detail: '9-round sequence' },
+};
 
 export default function SimonSaysGame() {
   const [screen, setScreen] = useState<Screen>('playing');
+  const [wonDifficulty, setWonDifficulty] = useState<Difficulty | null>(null);
 
   return (
     <div className="min-h-screen bg-ink flex flex-col">
@@ -19,7 +27,7 @@ export default function SimonSaysGame() {
         <div className="w-full" style={{ maxWidth: 1200 }}>
           {screen === 'playing' && (
             <SimonSays
-              onWin={() => setScreen('win')}
+              onWin={(difficulty) => { setWonDifficulty(difficulty); setScreen('win'); }}
               onLose={() => setScreen('lose')}
               onCancel={() => { window.location.href = '/explorations'; }}
             />
@@ -27,7 +35,17 @@ export default function SimonSaysGame() {
 
           {screen === 'win' && (
             <div className="text-center">
-              <div className="font-serif text-4xl text-fg mb-4">You won! 🎉</div>
+              <div className="font-mono text-[10px] tracking-[0.3em] text-fg-muted uppercase mb-10">
+                Pattern Match — Complete
+              </div>
+              <div className="font-serif text-5xl text-fg mb-3">
+                Sequence cleared.
+              </div>
+              {wonDifficulty && (
+                <div className="font-mono text-[11px] tracking-[0.15em] text-fg-muted mb-10">
+                  {DIFFICULTY_META[wonDifficulty].name} &middot; {DIFFICULTY_META[wonDifficulty].detail}
+                </div>
+              )}
               <div className="flex gap-4 justify-center">
                 <button
                   type="button"

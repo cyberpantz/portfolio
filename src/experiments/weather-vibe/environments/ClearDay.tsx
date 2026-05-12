@@ -5,6 +5,7 @@ import { ShaderMaterial, BufferGeometry, BufferAttribute, AdditiveBlending } fro
 import atmFrag from '../shaders/atmosphere.frag.glsl?raw';
 // @ts-ignore
 import atmVert from '../shaders/atmosphere.vert.glsl?raw';
+import { GrassField } from './GrassField';
 
 function DustMotes() {
   const pointsRef = useRef<any>(null);
@@ -57,7 +58,7 @@ function DustMotes() {
   );
 }
 
-export default function ClearDay() {
+export default function ClearDay({ noGrass = false }: { noGrass?: boolean }) {
   const matRef = useRef<ShaderMaterial>(null);
   const uniforms = useMemo(() => ({ uTime: { value: 0 } }), []);
 
@@ -65,8 +66,8 @@ export default function ClearDay() {
     if (matRef.current) matRef.current.uniforms.uTime.value = clock.getElapsedTime();
     const t = clock.getElapsedTime();
     camera.position.x = Math.sin(t * 0.07) * 1.8;
-    camera.position.y = 0.5 + Math.sin(t * 0.13) * 0.5;
-    camera.rotation.x = Math.sin(t * 0.011) * 0.4 - 0.1;
+    camera.position.y = 1.8 + Math.sin(t * 0.13) * 0.4;
+    camera.rotation.x = Math.sin(t * 0.011) * 0.12 - 0.04; // gentler, more horizon
     camera.rotation.y += 0.00015;
   });
 
@@ -82,6 +83,24 @@ export default function ClearDay() {
           side={2}
         />
       </mesh>
+
+      {/* Warm daylight fill so buildings and any opaque objects are lit */}
+      <ambientLight intensity={1.4} color="#FFF4E0" />
+
+      {/* Golden dry-grass field — warm California afternoon */}
+      {!noGrass && (
+        <GrassField
+          count={90000}
+          spreadX={90}
+          spreadZ={220}
+          groundY={0}
+          maxBladeH={0.50}
+          windStrength={1.1}
+          colorBase={[0.28, 0.22, 0.06]}
+          colorTip={[0.52, 0.42, 0.12]}
+        />
+      )}
+
       <DustMotes />
     </>
   );

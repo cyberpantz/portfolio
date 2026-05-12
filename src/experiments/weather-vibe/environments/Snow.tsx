@@ -1,8 +1,9 @@
 import { useRef, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { BufferGeometry, BufferAttribute } from 'three';
+import { GrassField } from './GrassField';
 
-export default function Snow() {
+export default function Snow({ noGrass = false }: { noGrass?: boolean }) {
   const pointsRef = useRef<any>(null);
   const count = 5000;
 
@@ -54,6 +55,19 @@ export default function Snow() {
         <planeGeometry args={[200, 200]} />
         <meshStandardMaterial color="#D8E4EF" />
       </mesh>
+      {/* Sparse snow-buried stubs — blades barely poking above the snowpack */}
+      {!noGrass && (
+        <GrassField
+          count={35000}
+          spreadX={80}
+          spreadZ={200}
+          groundY={-2}
+          maxBladeH={0.18}
+          windStrength={0.5}
+          colorBase={[0.55, 0.65, 0.72]}
+          colorTip={[0.78, 0.85, 0.90]}
+        />
+      )}
       <points ref={pointsRef} geometry={geometry}>
         <pointsMaterial
           color="#FFFFFF"

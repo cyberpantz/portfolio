@@ -1,6 +1,7 @@
 import { useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Cloud, Clouds } from '@react-three/drei';
+import { GrassField } from './GrassField';
 import { ShaderMaterial, BufferGeometry, BufferAttribute, AdditiveBlending } from 'three';
 import type { Points } from 'three';
 // @ts-ignore
@@ -83,7 +84,7 @@ function Fireflies() {
   );
 }
 
-export default function PartlyCloudyNight() {
+export default function PartlyCloudyNight({ noGrass = false }: { noGrass?: boolean }) {
   useFrame(({ clock, camera }) => {
     const t = clock.getElapsedTime();
     camera.position.x = Math.sin(t * 0.04) * 2.5;
@@ -109,10 +110,18 @@ export default function PartlyCloudyNight() {
 
       <fog attach="fog" args={['#080A14', 80, 300]} />
 
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -5, 0]}>
-        <planeGeometry args={[200, 200]} />
-        <meshStandardMaterial color="#060810" />
-      </mesh>
+      {!noGrass && (
+        <GrassField
+          count={70000}
+          spreadX={80}
+          spreadZ={200}
+          groundY={-5}
+          maxBladeH={0.45}
+          windStrength={0.9}
+          colorBase={[0.02, 0.04, 0.04]}
+          colorTip={[0.04, 0.09, 0.08]}
+        />
+      )}
     </>
   );
 }

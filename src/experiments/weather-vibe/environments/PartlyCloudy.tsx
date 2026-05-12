@@ -2,7 +2,7 @@ import { useFrame } from '@react-three/fiber';
 import { Cloud, Clouds, Sky } from '@react-three/drei';
 import { GrassField } from './GrassField';
 
-export default function PartlyCloudy() {
+export default function PartlyCloudy({ noGrass = false }: { noGrass?: boolean }) {
   useFrame(({ clock, camera }) => {
     const t = clock.getElapsedTime();
     camera.position.x = Math.sin(t * 0.04) * 3;
@@ -29,16 +29,18 @@ export default function PartlyCloudy() {
         <meshStandardMaterial color="#5C4A2A" />
       </mesh>
 
-      <GrassField
-        count={40000}
-        spreadX={80}
-        spreadZ={80}
-        groundY={-5}
-        maxBladeH={0.65}
-        windStrength={1.0}
-        colorBase={[0.08, 0.22, 0.04]}
-        colorTip={[0.48, 0.72, 0.22]}
-      />
+      {!noGrass && (
+        <GrassField
+          count={80000}
+          spreadX={80}
+          spreadZ={80}
+          groundY={-5}
+          maxBladeH={0.65}
+          windStrength={1.0}
+          colorBase={[0.08, 0.22, 0.04]}
+          colorTip={[0.48, 0.72, 0.22]}
+        />
+      )}
 
       <fog attach="fog" args={['#B0C4D8', 60, 200]} />
     </>

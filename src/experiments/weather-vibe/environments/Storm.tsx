@@ -2,8 +2,9 @@ import { useRef, useMemo, useEffect } from 'react';
 import { useFrame } from '@react-three/fiber';
 import {
   ShaderMaterial, DataTexture, RGBAFormat, UnsignedByteType,
-  AdditiveBlending, BufferGeometry, BufferAttribute,
+  AdditiveBlending, BufferGeometry, BufferAttribute, Vector2,
 } from 'three';
+import { GrassField } from './GrassField';
 import { weatherAudio } from '../audio';
 // @ts-ignore
 import glassFrag from '../shaders/wetGlass.frag.glsl?raw';
@@ -12,7 +13,7 @@ import glassVert from '../shaders/wetGlass.vert.glsl?raw';
 
 const MASK_SIZE = 512;
 
-export default function Storm() {
+export default function Storm({ noGrass = false }: { noGrass?: boolean }) {
   const maskData = useMemo(() => new Uint8Array(MASK_SIZE * MASK_SIZE * 4).fill(255), []);
   const maskTex  = useMemo(() => {
     const tex = new DataTexture(maskData, MASK_SIZE, MASK_SIZE, RGBAFormat, UnsignedByteType);
@@ -22,8 +23,10 @@ export default function Storm() {
 
   const glassMat = useRef<ShaderMaterial>(null);
   const uniforms = useMemo(() => ({
-    uTime: { value: 0 },
-    uMask: { value: maskTex },
+    uTime:       { value: 0 },
+    uRainAmount: { value: 0.9 },
+    uMask:       { value: maskTex },
+    uResolution: { value: new Vector2(window.innerWidth, window.innerHeight) },
   }), [maskTex]);
 
   // Lightning state
@@ -98,7 +101,10 @@ export default function Storm() {
 
   useFrame(({ clock, camera }, delta) => {
     const t = clock.getElapsedTime();
-    if (glassMat.current) glassMat.current.uniforms.uTime.value = t;
+    if (glassMat.current) {
+      glassMat.current.uniforms.uTime.value = t;
+      glassMat.current.uniforms.uResolution.value.set(window.innerWidth, window.innerHeight);
+    }
     // Multi-frequency shake — feels like wind gusts
     camera.position.x = Math.sin(t * 1.7) * 0.35 + Math.sin(t * 2.9) * 0.15 + Math.sin(t * 0.4) * 0.6;
     camera.position.y = Math.sin(t * 2.1) * 0.2 + Math.sin(t * 0.6) * 0.3;
@@ -151,6 +157,18 @@ export default function Storm() {
         <planeGeometry args={[200, 200]} />
         <meshStandardMaterial color="#060810" metalness={0.9} roughness={0.1} />
       </mesh>
+      {!noGrass && (
+        <GrassField
+          count={70000}
+          spreadX={80}
+          spreadZ={200}
+          groundY={-2}
+          maxBladeH={0.55}
+          windStrength={3.2}
+          colorBase={[0.02, 0.05, 0.02]}
+          colorTip={[0.05, 0.10, 0.04]}
+        />
+      )}
       <points ref={pointsRef} geometry={geometry}>
         <pointsMaterial
           color="#6688BB"

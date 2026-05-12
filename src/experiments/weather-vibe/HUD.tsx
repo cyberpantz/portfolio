@@ -23,7 +23,6 @@ export default function HUD({ weather, status, onSetCity }: HUDProps) {
 
   const toggleMute = () => { weatherAudio.toggle(); setMuted(m => !m); };
   const palette = PALETTES[weather.state];
-  const accent = palette.accent;
   const textColor = palette.textColor;
   const shadow = palette.isDark ? '0 1px 6px rgba(0,0,0,0.8)' : 'none';
 

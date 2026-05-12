@@ -165,7 +165,7 @@ function Stage({ pair, direction, onAudioStarted, onChosen, autoStart }: StagePr
 export default function Chooser() {
   const [pairIndex, setPairIndex] = useState(0);
   const [direction, setDirection] = useState(1);
-  const [audioStarted, setAudioStarted] = useState(false);
+  const [, setAudioStarted] = useState(false);
   const [hasEverStarted, setHasEverStarted] = useState(false);
   const [badge, setBadge] = useState<ChosenItem | null>(null);
   const [choices, setChoices] = useState<ChosenItem[]>([]);
