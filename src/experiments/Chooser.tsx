@@ -200,7 +200,54 @@ export default function Chooser() {
           back link and the title. */}
       {/* Stage */}
       <div className="flex-1 relative overflow-hidden">
-        {!done && (
+        {/*
+          Start gate.
+
+          Browsers will not let an AudioContext run without a user gesture, and
+          without this the first click had to do two jobs at once: unlock the
+          audio AND register a choice. Since choosing immediately advances to
+          the next pair, the first pair's sound was never actually heard — the
+          one pair where the sound is the whole point.
+
+          Gating on an explicit click spends a gesture on nothing but audio.
+          By the time the first Stage mounts, hasEverStarted is already true,
+          so its autoStart path runs with the gesture banked rather than being
+          rejected as an unprompted play attempt.
+        */}
+        {!hasEverStarted && !done && (
+          <motion.div
+            initial={{ opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, ease: [0.19, 1, 0.22, 1] }}
+            className="absolute inset-0 z-30 flex flex-col items-center justify-center gap-6 bg-ink px-5 text-center"
+          >
+            <p className="text-exp-micro font-medium tracking-[0.2em] uppercase text-fg-muted">
+              The Chooser
+            </p>
+
+            <h2 className="max-w-[18ch] font-serif text-[clamp(38px,6.5vw,84px)] leading-[0.95] tracking-[-0.03em] text-fg">
+              Pick with your ears.
+            </h2>
+
+            <p className="max-w-[46ch] text-[clamp(16px,1.5vw,20px)] leading-[1.5] text-exp-bright [text-wrap:pretty]">
+              Every pair makes a sound as you move between them. Turn your volume
+              up — without it, this is just two shapes.
+            </p>
+
+            <button
+              type="button"
+              onClick={() => setHasEverStarted(true)}
+              className="mt-2 inline-flex min-h-11 cursor-pointer items-center gap-3 border border-accent
+                         px-7 text-exp-micro font-medium tracking-[0.16em] uppercase text-accent
+                         transition-colors duration-300 hover:bg-accent hover:text-ink"
+            >
+              Begin
+              <span aria-hidden="true">→</span>
+            </button>
+          </motion.div>
+        )}
+
+        {hasEverStarted && !done && (
           <AnimatePresence mode="wait" initial={false}>
             <Stage
               key={pair.id}
@@ -244,7 +291,11 @@ export default function Chooser() {
 
         {/* Prompt — centered just above the chooser items */}
         {/* Persistent title */}
-        {!badge && !done && (
+        {/* The "click anywhere to hear the audio" hint used to live here. The
+            start gate has taken that job, and the hint only rendered while
+            !hasEverStarted — which is now exactly when the stage is hidden, so
+            it had become unreachable. */}
+        {!badge && !done && hasEverStarted && (
           <div
             className="absolute left-0 right-0 flex flex-col items-center gap-2 pointer-events-none"
             style={{ top: '22%' }}
@@ -252,19 +303,6 @@ export default function Chooser() {
             <span className="font-mono text-2xl text-fg tracking-[0.15em] uppercase">
               who are you today?
             </span>
-            <AnimatePresence>
-              {!hasEverStarted && (
-                <motion.span
-                  key="hint"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  className="font-mono text-[11px] text-fg-muted/50 tracking-[0.12em]"
-                >
-                  click anywhere to hear the audio · then choose
-                </motion.span>
-              )}
-            </AnimatePresence>
           </div>
         )}
 
