@@ -1,0 +1,78 @@
+---
+import SectionHead from './SectionHead.astro';
+
+const P = 'text-body text-ink-2 [text-wrap:pretty]';
+const EYEBROW = 'mb-3.5 text-meta font-medium tracking-[0.2em] uppercase text-muted';
+const SIDE = 'mt-[clamp(32px,4vw,52px)] border-t border-rule pt-[22px]';
+---
+
+<section
+  id="about"
+  aria-labelledby="h-about"
+  class="mx-auto max-w-shell px-gut py-[clamp(80px,12vw,160px)]"
+>
+  <SectionHead num="01" id="h-about" label="About" />
+
+  <div
+    class="grid grid-cols-[minmax(0,1.55fr)_minmax(0,1fr)] items-start
+           gap-[clamp(44px,8vw,120px)] max-xl:grid-cols-1"
+  >
+    <div class="reveal">
+      <p class={`dropcap ${P}`}>
+        I care less about which framework is on the page than whether the thing works for
+        the person using it. Most of my career has been spent on products where that
+        distinction matters — tools where a wrong number, a buried control, or an
+        unreadable table has a real cost on the other side of the screen.
+      </p>
+      <p class={`mt-[22px] ${P}`}>
+        At ChargePoint I led front-end architecture for the Fleet Charging platform.
+        Charging is a scheduling problem wearing a hardware costume: limited power,
+        competing vehicles, tariffs with seasonal and critical-peak rules, equipment that
+        fails at inconvenient moments. Real-time updates and intuitive thoughtful UX make the difference between not knowing what is happening and running a tight ship.
+      </p>
+      <p class={`mt-[22px] ${P}`}>
+        Before that I was a lead on Tesla's vehicle configurator team: we were responsible for the discovery and
+        configuration flows customers used across 40-plus markets. Different
+        domain, same shape — a great many constraints underneath, and an interface that has
+        to feel simple even though it was anything but.
+      </p>
+      <p class={`mt-[22px] ${P}`}>
+        I work across the stack when it helps, spend real time in Figma, and treat
+        accessibility as part of the definition of done rather than a late audit. I build
+        with AI in the loop daily — spec-first, brainstorming, prototyping, refactoring.
+      </p>
+    </div>
+
+    <aside class="reveal">
+      <p
+        class="border-l-2 border-accent pl-6 font-display text-pull italic
+               tracking-[-0.016em] text-ink [text-wrap:balance]"
+      >
+        The interface is where a system either earns someone's trust or loses it.
+      </p>
+
+      <div class={SIDE}>
+        <p class={EYEBROW}>What I bring</p>
+        <p class="text-caption text-ink-3 [text-wrap:pretty]">
+          Twenty years of shipped front end. Comfort with genuinely complicated domains —
+          energy, automotive, healthcare, commerce. A design sensibility that came from
+          being a real part of the design process, not just executing.
+        </p>
+      </div>
+
+      {/*
+        Trimmed to a single orienting line. Spec §14 moves detailed
+        technology lists to the résumé — the mock carried three
+        separate inventories on the homepage, which is the toolkit
+        section the redesign set out to remove.
+      */}
+      <div class={SIDE}>
+        <p class={EYEBROW}>Mostly working in</p>
+        <p class="text-caption text-ink-3 [text-wrap:pretty]">
+          React · TypeScript · Node · Tailwind · Figma. The full list, and the twenty years
+          of it, lives on the <a class="ul-draw text-accent hover:text-accent-strong" href="#cv">CV</a>.
+        </p>
+      </div>
+    </aside>
+  </div>
+</section>

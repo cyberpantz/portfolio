@@ -1,0 +1,21 @@
+---
+import Base from '../layouts/Base.astro';
+import Nav from '../components/Nav.tsx';
+import Hero from '../components/Hero.tsx';
+import Work from '../components/Work.tsx';
+import Projects from '../components/Projects.tsx';
+import Skills from '../components/Skills.astro';
+import Contact from '../components/Contact.astro';
+import Footer from '../components/Footer.astro';
+---
+<Base>
+  <Nav client:load />
+  <div style="padding-top: 52px;">
+    <Hero client:load />
+    <Work client:load />
+    <Projects client:load />
+<Skills />
+    <Contact />
+    <Footer />
+  </div>
+</Base>

@@ -1,81 +1,145 @@
 ---
-import Base from '../../layouts/Base.astro';
-import { EXPLORATIONS } from '../../data/explorations';
+import ExpBase from '../../layouts/ExpBase.astro';
+import { VISIBLE_EXPLORATIONS } from '../../data/explorations';
 import { ExplorationIcon } from '../../components/ExplorationIcon';
+
+const pad = (i: number) => String(i + 1).padStart(2, '0');
 ---
-<Base title="Explorations — Frank Young" description="Side projects, experiments, and games.">
-  <div class="min-h-screen bg-ink flex flex-col">
-    <div class="flex items-center justify-between px-6 py-4 border-b border-rule flex-shrink-0">
-      <a href="/" class="font-mono text-[11px] text-fg-muted tracking-[0.08em] hover:text-fg transition-colors">
-        ← back to portfolio
+
+<ExpBase
+  title="Explorations — Frank Young"
+  description="Games, generative work and small experiments. No brief, no client, no deadline."
+>
+  <a
+    class="absolute top-0 -left-[9999px] z-[200] bg-fg px-6 py-4 text-[13px] tracking-[0.12em]
+           uppercase text-ink focus:top-4 focus:left-4"
+    href="#main">Skip to content</a
+  >
+
+  <header class="border-b border-rule">
+    <div class="mx-auto flex min-h-14 max-w-[1320px] items-center px-5 sm:px-8">
+      <a
+        href="/"
+        class="group/back inline-flex min-h-11 items-center gap-2.5 text-exp-micro font-medium
+               tracking-[0.16em] uppercase text-fg-muted transition-colors hover:text-fg"
+      >
+        <span
+          aria-hidden="true"
+          class="inline-block transition-transform duration-500 ease-editorial
+                 group-hover/back:-translate-x-1">←</span
+        >
+        Frank Young
       </a>
-      <span class="font-mono text-[11px] text-fg-muted tracking-[0.08em] uppercase">Explorations</span>
+    </div>
+  </header>
+
+  <main id="main" class="mx-auto max-w-[1320px] px-5 pb-24 sm:px-8">
+    <div class="border-b border-rule py-[clamp(56px,9vw,120px)]">
+      <p class="mb-[clamp(20px,3vw,32px)] text-exp-micro font-medium tracking-[0.2em] uppercase text-fg-muted">
+        <span class="mr-3.5 font-serif text-xl text-accent" aria-hidden="true">04</span>Explorations
+      </p>
+
+      <h1
+        class="max-w-[16ch] font-serif text-[clamp(38px,7.6vw,104px)] leading-[0.94]
+               tracking-[-0.026em] text-fg [text-wrap:balance]"
+      >
+        Things built <em class="not-italic text-accent">for fun.</em>
+      </h1>
+
+      <p class="mt-[clamp(24px,3vw,36px)] max-w-[56ch] text-[clamp(17px,1.5vw,21px)] leading-[1.5] text-exp-bright [text-wrap:pretty]">
+        No brief, no client, no deadline, No stress. 
+      </p>
     </div>
 
-    <div class="flex-1 px-6 py-12 max-w-[900px] mx-auto w-full">
-      <h2 class="font-serif font-normal text-fg mb-3 leading-[1.1]"
-          style="font-size: clamp(28px, 4vw, 44px);">
-        Things built<br />
-        <span class="text-accent italic">for fun.</span>
-      </h2>
-      <p class="text-sm text-fg-muted mb-6 leading-[1.7]">
-        No clients, no briefs — just making things.
-      </p>
-      <p class="sm:hidden font-mono text-sm text-fg/70 mb-10">
-        ⚠ these work best on a larger screen
-      </p>
-
-      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-px bg-rule border border-rule rounded overflow-hidden">
-        {EXPLORATIONS.map((exp) => (
-          <a href={exp.url ?? '#'}
-             class="bg-ink-surface px-6 py-7 flex flex-col gap-3 cursor-pointer group
-                    transition-all duration-200 hover:bg-ink-surface2 no-underline">
-            <div class="flex items-center justify-between">
-              <ExplorationIcon id={exp.id} size={20} />
-              <span class="font-mono text-[9px] text-fg-muted tracking-[0.12em] uppercase">
+    <ul class="grid grid-cols-3 list-none max-lg:grid-cols-2 max-md:grid-cols-1">
+      {VISIBLE_EXPLORATIONS.map((exp, i) => (
+        <li class="contents">
+          <a
+            href={exp.url ?? '#'}
+            class="group/exp flex flex-col gap-3.5 border-r border-b border-rule px-[clamp(20px,2.4vw,32px)]
+                   pt-[clamp(26px,3vw,40px)] pb-[clamp(28px,3.4vw,44px)] text-fg
+                   transition-colors duration-500 ease-editorial hover:bg-ink-surface
+                   nth-[3n]:border-r-0
+                   max-lg:nth-[3n]:border-r max-lg:nth-[2n]:border-r-0
+                   max-md:border-r-0!"
+          >
+            <span class="flex items-center justify-between gap-3">
+              <span class="flex items-baseline gap-3">
+                <span class="font-serif text-sm italic text-accent" aria-hidden="true">{pad(i)}</span>
+                <ExplorationIcon id={exp.id} size={18} />
+              </span>
+              <span class="text-exp-micro font-medium tracking-[0.16em] uppercase text-fg-muted">
                 {exp.type}
               </span>
-            </div>
-            <div>
-              <div class="font-serif text-lg text-[#bbb] group-hover:text-fg transition-colors mb-1.5">
-                {exp.name}
-              </div>
-              <div class="text-[13px] text-fg-muted leading-[1.65]">{exp.desc}</div>
-            </div>
-            <div class="flex gap-1 flex-wrap mt-auto">
-              {exp.tags.map((t) => (
-                <span class="font-mono text-[9px] text-fg-muted tracking-[0.06em] px-1.5 py-0.5
-                             border border-rule-strong rounded-sm">
-                  {t}
-                </span>
-              ))}
-            </div>
-            <div class="font-mono text-[10px] text-accent tracking-[0.06em] opacity-0
-                        group-hover:opacity-100 transition-opacity">
-              view →
-            </div>
-          </a>
-        ))}
-
-        {/* Teaser card */}
-        <div class="bg-ink-surface px-6 py-7 flex flex-col gap-3">
-          <div class="flex items-center justify-between">
-            <span class="font-mono text-[9px] text-fg-muted tracking-[0.12em] uppercase">Archives</span>
-          </div>
-          <div>
-            <div class="font-serif text-lg text-fg mb-1.5">More on the way</div>
-            <div class="text-[13px] text-fg-muted leading-[1.65]">
-              Digging through the archives to resurrect old experiments. A few things worth saving are getting dusted off.
-            </div>
-          </div>
-          <div class="mt-auto">
-            <span class="font-mono text-[9px] text-fg-muted tracking-[0.06em] px-1.5 py-0.5
-                         border border-rule-strong rounded-sm italic">
-              coming soon
             </span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</Base>
+
+            <h2 class="font-serif text-[clamp(22px,2.2vw,30px)] leading-[1.06] tracking-[-0.024em] text-fg">
+              {exp.name}
+            </h2>
+
+            <p class="text-exp-body text-exp-muted [text-wrap:pretty]">{exp.desc}</p>
+
+            <span class="mt-auto flex flex-wrap gap-x-3 gap-y-1.5 pt-4">
+              {exp.tags.map((t) => (
+                <span class="text-exp-micro tracking-[0.12em] uppercase text-exp-dim">{t}</span>
+              ))}
+            </span>
+
+            <span
+              class="inline-flex min-h-11 items-center gap-2.5 text-exp-micro font-medium
+                     tracking-[0.16em] uppercase text-accent"
+            >
+              Open
+              <span
+                aria-hidden="true"
+                class="inline-block transition-transform duration-500 ease-editorial
+                       group-hover/exp:translate-x-[7px] group-focus-visible/exp:translate-x-[7px]"
+                >→</span
+              >
+              {exp.needsRoom && (
+                <span class="sr-only">— works best on a larger screen</span>
+              )}
+            </span>
+          </a>
+        </li>
+      ))}
+
+      <li
+        class="flex flex-col gap-3.5 border-r border-b border-rule px-[clamp(20px,2.4vw,32px)]
+               pt-[clamp(26px,3vw,40px)] pb-[clamp(28px,3.4vw,44px)]
+               nth-[3n]:border-r-0 max-lg:nth-[3n]:border-r max-lg:nth-[2n]:border-r-0
+               max-md:border-r-0!"
+      >
+        <span class="text-exp-micro font-medium tracking-[0.16em] uppercase text-fg-muted">
+          Archives
+        </span>
+        <h2 class="font-serif text-[clamp(22px,2.2vw,30px)] leading-[1.06] tracking-[-0.024em] text-fg">
+          More on the way
+        </h2>
+        <p class="text-exp-body text-exp-muted [text-wrap:pretty]">
+          Digging through the archives to resurrect old experiments. A few things worth
+          saving are getting dusted off.
+        </p>
+        <span class="mt-auto pt-4 text-exp-micro font-medium tracking-[0.16em] uppercase text-exp-dim">
+          Coming soon
+        </span>
+      </li>
+    </ul>
+
+    <p class="mt-8 text-exp-note text-exp-dim md:hidden">
+      Several of these want a larger screen and a keyboard.
+    </p>
+  </main>
+</ExpBase>
+
+<style>
+  .sr-only {
+    position: absolute;
+    width: 1px; height: 1px;
+    padding: 0; margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+</style>

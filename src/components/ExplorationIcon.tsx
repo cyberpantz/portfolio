@@ -1,10 +1,20 @@
-import { Gamepad2, ChefHat, TrendingUp, Shuffle, type LucideIcon } from 'lucide-react';
+import {
+  Gamepad2,
+  ChefHat,
+  TrendingUp,
+  Shuffle,
+  ListChecks,
+  CloudSun,
+  type LucideIcon,
+} from 'lucide-react';
 
 const ICONS: Record<string, LucideIcon> = {
-  'pattern-match':      Gamepad2,
-  'kitchen-dodgeball':  ChefHat,
-  'wage-gap':        TrendingUp,
-  'chooser':            Shuffle,
+  'quizzolator': ListChecks,
+  'pattern-match': Gamepad2,
+  'wage-gap': TrendingUp,
+  'weather-vibe': CloudSun,
+  'chooser': Shuffle,
+  'kitchen-dodgeball': ChefHat,
 };
 
 export function ExplorationIcon({ id, size = 20 }: { id: string; size?: number }) {

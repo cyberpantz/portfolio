@@ -189,6 +189,8 @@ A DOM layer (not WebGL) rendered over the canvas. Keeps the 3D scene uncluttered
 
 **Audio toggle:** Small mute icon, bottom-center. No label. Icon only.
 
+> **Scope of "the HUD whispers":** This low-opacity, small-font philosophy applies to the ambient HUD overlay only — the coordinates, time, condition label, and vibe word that sit passively over the scene. It does NOT apply to functional control surfaces like the settings panel. Any interactive UI (sliders, buttons, labels the user reads while taking an action) must be legible: minimum 10px font size, minimum 0.7 opacity for primary labels, minimum 0.55 opacity for secondary labels. The scene dims when the settings panel opens precisely so the panel can be readable without fighting the background.
+
 ---
 
 ## Color Palettes

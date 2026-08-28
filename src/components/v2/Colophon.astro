@@ -1,0 +1,141 @@
+---
+import { EDUCATION } from '../../data/education';
+import ContactForm from './ContactForm.tsx';
+
+// The mailto is gone deliberately — a plain address in the markup is
+// the easiest thing in the world for a scraper to harvest. The form
+// reaches the same inbox without publishing it.
+const CONTACT = [
+  { k: 'Web', v: 'frankyoung.dev', href: 'https://frankyoung.dev', ext: true },
+  {
+    k: 'LinkedIn',
+    v: 'frank-young',
+    href: 'https://linkedin.com/in/frank-young-a77a152',
+    ext: true,
+  },
+  { k: 'Location', v: 'San Francisco Bay Area', href: null, ext: false },
+];
+
+const CV = '/Frank_Young_Resume.pdf';
+const year = new Date().getFullYear();
+
+const FOLIO = 'font-display text-sm tracking-[0.04em] text-muted [font-variant-numeric:tabular-nums]';
+---
+
+<section
+  id="contact"
+  aria-labelledby="h-con"
+  class="mx-auto max-w-shell border-t border-ink px-gut pt-[clamp(80px,12vw,160px)]
+         pb-[clamp(64px,9vw,120px)]"
+>
+  <div class="reveal">
+    <p class="mb-[clamp(20px,3vw,34px)] text-meta font-medium tracking-[0.2em] uppercase text-muted">
+      <span class="mr-3.5 font-display text-xl italic text-accent" aria-hidden="true">05</span>Contact
+    </p>
+
+    {/* A direct title, not a closing campaign line — spec §9.9 */}
+    <h2
+      id="h-con"
+      class="max-w-[14ch] font-display text-section tracking-[-0.026em] [text-wrap:balance]
+             max-[400px]:tracking-[-0.018em]"
+    >
+      Available for product and frontend roles.
+    </h2>
+  </div>
+
+  {/* Form leads, direct links sit alongside — same asymmetric split
+      the intro and the case-study spread use. */}
+  <div
+    class="reveal mt-[clamp(44px,6vw,76px)] grid grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)]
+           gap-[clamp(40px,7vw,104px)] border-t border-rule pt-[clamp(32px,4vw,52px)]
+           max-xl:grid-cols-1 max-xl:gap-[clamp(40px,6vw,56px)]"
+  >
+    {/* client:visible — the contact section is the bottom of a long
+        page, so the island hydrates when it is actually approached.
+        Astro still renders it to static HTML at build time, which is
+        both what Netlify's form detection needs and what makes the
+        form submit with JS disabled. */}
+    <ContactForm client:visible />
+
+    <div>
+      <p class="mb-5 text-meta font-medium tracking-[0.2em] uppercase text-muted">Or find me at</p>
+      <dl>
+        {CONTACT.map((c) => (
+          <div class="border-b border-rule-2 py-[18px] last:border-b-0">
+            <dt class="mb-1.5 text-meta font-medium tracking-[0.16em] uppercase text-muted">
+              {c.k}
+            </dt>
+            <dd>
+              {c.href ? (
+                <a
+                  class="ul-draw inline-flex min-h-11 items-center font-display
+                         text-[clamp(18px,1.7vw,23px)] tracking-[-0.016em] text-ink hover:text-accent"
+                  href={c.href}
+                  target={c.ext ? '_blank' : undefined}
+                  rel={c.ext ? 'noopener' : undefined}
+                >
+                  {c.v}
+                </a>
+              ) : (
+                <span
+                  class="inline-flex min-h-11 items-center font-display
+                         text-[clamp(18px,1.7vw,23px)] tracking-[-0.016em] text-ink"
+                  >{c.v}</span
+                >
+              )}
+            </dd>
+          </div>
+        ))}
+      </dl>
+    </div>
+  </div>
+
+  {/* A real file, not href="#" behind an alert(). Replace the PDF in
+      public/ and this keeps working. */}
+  <div
+    id="cv"
+    class="reveal mt-[clamp(44px,6vw,76px)] flex flex-wrap items-center gap-[30px] border border-ink
+           px-[clamp(24px,3.4vw,46px)] py-[clamp(28px,3.4vw,44px)]"
+  >
+    <div>
+      <p class="mb-3 text-meta font-medium tracking-[0.2em] uppercase text-muted">Curriculum Vitae</p>
+      <p class="font-display text-cv tracking-[-0.024em]">
+        The whole thing, on<br />three sides of paper.
+      </p>
+    </div>
+    <a
+      class="ml-auto inline-flex min-h-11 items-center gap-3 bg-ink px-8 py-4 text-meta font-medium
+             tracking-[0.18em] uppercase text-paper transition-colors duration-500 ease-editorial
+             hover:bg-accent hover:text-on-accent max-md:ml-0"
+      href={CV}
+      download
+    >
+      Download PDF <span aria-hidden="true">↓</span>
+    </a>
+  </div>
+
+  {/* Quiet, near the CV rather than as a career chapter — it is
+      context for the data-visualization thread, not a job. */}
+  <div class="reveal mt-[clamp(36px,4.5vw,60px)] border-t border-rule pt-[22px]">
+    <p class="mb-4 text-meta font-medium tracking-[0.2em] uppercase text-muted">Education</p>
+    <dl class="grid grid-cols-3 gap-x-[clamp(20px,3vw,44px)] gap-y-5 max-xl:grid-cols-1">
+      {EDUCATION.map((s) => (
+        <div>
+          <dt class="font-display text-[clamp(17px,1.5vw,20px)] tracking-[-0.016em] text-ink">
+            {s.school}
+          </dt>
+          <dd class="mt-1 text-caption text-ink-3">
+            {s.award}
+            {s.detail && <span class="block text-muted">{s.detail}</span>}
+            <span class="block text-meta tracking-[0.14em] text-muted">{s.yr}</span>
+          </dd>
+        </div>
+      ))}
+    </dl>
+  </div>
+
+  <footer class="mt-[clamp(36px,4.5vw,60px)] flex flex-wrap items-baseline gap-6 border-t border-rule pt-6 pb-2">
+    <span class={FOLIO}>Frank Young — Portfolio, {year}</span>
+    <span class={`${FOLIO} ml-auto`}>Set in Bodoni Moda &amp; Archivo</span>
+  </footer>
+</section>

@@ -7,11 +7,13 @@ import { PALETTES } from './weather-vibe/conditions';
 import { weatherAudio } from './weather-vibe/audio';
 import SettingsPanel from './weather-vibe/SettingsPanel';
 import { getActiveLayerLabels } from './weather-vibe/audio';
+import GlobeModal from './weather-vibe/GlobeModal';
 
 export default function WeatherVibe() {
-  const { weather, status, setCity } = useWeather();
+  const { weather, status, setLocation } = useWeather();
   const audioStarted = useRef(false);
   const [audioReady, setAudioReady] = useState(false);
+  const [globeOpen, setGlobeOpen] = useState(false);
 
   useEffect(() => {
     if (!weather) return;
@@ -34,9 +36,26 @@ export default function WeatherVibe() {
     };
   }, [weather]);
 
+  /*
+   * This has to stay above the early return below.
+   *
+   * useWeather seeds its state from a localStorage cache, so on a first
+   * ever visit `weather` is null for the first render, the early return
+   * fires, and this hook never runs. When the fetch resolves the next
+   * render does reach it — the hook count goes 5 → 6 and React throws
+   * "Rendered more hooks than during the previous render", killing the
+   * scene. On the second visit the cache is warm, `weather` is set on
+   * render one, and the counts happen to match. That asymmetry is why
+   * it only ever failed the first time.
+   */
+  const activeLayerLabels = useMemo(
+    () => (weather ? getActiveLayerLabels(weather) : ''),
+    [weather]
+  );
+
   if (!weather) {
     return (
-      <div className="fixed inset-0 bg-black flex items-center justify-center">
+      <div className="fixed inset-x-0 bottom-0 top-[var(--exp-chrome-h,0px)] bg-black flex items-center justify-center">
         <span style={{ fontFamily: 'monospace', color: '#C8D8F0', fontSize: 11, opacity: 0.4, letterSpacing: '0.2em' }}>
           LOCATING...
         </span>
@@ -46,10 +65,12 @@ export default function WeatherVibe() {
 
   const palette = PALETTES[weather.state];
   const bg = palette.background;
-  const activeLayerLabels = useMemo(() => getActiveLayerLabels(weather), [weather]);
 
   return (
-    <div className="fixed inset-0" style={{ background: bg }}>
+    <div
+      className="fixed inset-x-0 bottom-0 top-[var(--exp-chrome-h,0px)]"
+      style={{ background: bg }}
+    >
       <AnimatePresence mode="wait">
         <motion.div
           key={weather.state}
@@ -62,7 +83,7 @@ export default function WeatherVibe() {
           <Scene weather={weather} />
         </motion.div>
       </AnimatePresence>
-      <HUD weather={weather} status={status} onSetCity={setCity} />
+      <HUD weather={weather} status={status} onOpenGlobe={() => setGlobeOpen(true)} />
       <SettingsPanel palette={palette} activeLayerLabels={activeLayerLabels} />
       <AnimatePresence>
         {!audioReady && (
@@ -76,6 +97,18 @@ export default function WeatherVibe() {
           >
             CLICK FOR AUDIO
           </motion.div>
+        )}
+      </AnimatePresence>
+      <AnimatePresence>
+        {globeOpen && (
+          <GlobeModal
+            currentLat={weather.latitude}
+            currentLng={weather.longitude}
+            onClose={() => setGlobeOpen(false)}
+            onLocate={async (lat, lng, label, population) => {
+              await setLocation(lat, lng, label, population);
+            }}
+          />
         )}
       </AnimatePresence>
     </div>

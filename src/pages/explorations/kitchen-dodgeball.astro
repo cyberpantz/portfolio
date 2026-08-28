@@ -1,7 +1,12 @@
 ---
-import Base from '../../layouts/Base.astro';
+import ExpBase from '../../layouts/ExpBase.astro';
+import ExpChrome from '../../components/exp/ExpChrome.astro';
 import KitchenDodgeballGame from '../../components/games/KitchenDodgeballGame';
 ---
-<Base title="Fowl Play — Frank Young" description="Dodge falling kitchen items thrown by menacing chickens.">
-  <KitchenDodgeballGame client:load />
-</Base>
+
+<ExpBase title="Fowl Play — Frank Young" description="Dodge falling kitchen items thrown by menacing chickens.">
+  <ExpChrome name="Fowl Play" kind="Game" />
+  <main id="main" class="exp-stage">
+    <KitchenDodgeballGame client:load />
+  </main>
+</ExpBase>

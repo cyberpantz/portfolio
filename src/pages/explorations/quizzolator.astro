@@ -1,0 +1,38 @@
+---
+import ExpBase from '../../layouts/ExpBase.astro';
+import ExpChrome from '../../components/exp/ExpChrome.astro';
+import Quizzolator from '../../experiments/quizzolator/Quizzolator';
+---
+
+<ExpBase
+  title="The Quizzolator — Frank Young"
+  description="A gamified quiz engine. Two quizzes, one about farm animals and one about type."
+>
+  {/*
+    Specimen faces, subset to only the glyphs the typography quiz
+    actually sets. Without &text= this page would ship two whole
+    families and cost more than every other exploration combined.
+
+    display=block, not swap: swap renders a fallback and then
+    substitutes, which on a specimen question means the answer
+    visibly changes while someone is deciding.
+  */}
+  <link
+    slot="head"
+    rel="preload"
+    as="style"
+    href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital@0;1&family=Libre+Franklin&display=block&text=ModernHeightRegadinAVTR"
+  />
+  <link
+    slot="head"
+    rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital@0;1&family=Libre+Franklin&display=block&text=ModernHeightRegadinAVTR"
+  />
+
+  <ExpChrome name="The Quizzolator" kind="Game" />
+  <main id="main" class="exp-stage">
+    <div class="flex min-h-[calc(100dvh-var(--exp-chrome-h))] flex-col">
+      <Quizzolator client:load />
+    </div>
+  </main>
+</ExpBase>

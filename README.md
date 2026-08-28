@@ -37,14 +37,17 @@ src/
     Skills.astro                skill matrix
     Contact.astro               contact section
   experiments/
+    WeatherVibe.tsx             🌦 immersive weather scene with live data + spatial audio
+    weather-vibe/               engine: Scene, HUD, audio, conditions, locationTracks
     Skrillatime.tsx             💵 real-time wage comparison tool
-    PatternMatch.tsx            🎮 Simon-style memory game
+    SimonSays.tsx               🎮 pattern memory game
     KitchenDodgeball.tsx        🍳 canvas dodge game
   data/                         typed content (experience, projects, explorations)
   hooks/                        useActiveSection, useKeyboardNav
   styles/global.css             Tailwind base + CSS custom properties
 public/
-  sounds/                       audio files for experiments
+  audio/
+    weather-vibe/               ambient recordings + location track files (see README inside)
   projects/                     project screenshots
 ```
 
@@ -77,6 +80,36 @@ Output is a plain static folder — no server required.
 - **Accent color** — `--accent` in `src/styles/global.css`
 - **Content** — edit files under `src/data/`
 - **Project screenshots** — drop images into `public/projects/` and reference in `src/data/projects.ts`
+
+### Adding city-specific music to Weather Vibe
+
+Open `src/experiments/weather-vibe/locationTracks.ts` and add an entry to `LOCATION_TRACKS`:
+
+```ts
+export const LOCATION_TRACKS: LocationEntry[] = [
+  {
+    city: 'New Orleans',   // bare city name — matches "New Orleans, Louisiana" etc.
+    tracks: [
+      { src: '/audio/weather-vibe/locations/new-orleans-jazz.mp3' },
+      { src: '/audio/weather-vibe/locations/new-orleans-brass.mp3', gain: 0.8 },
+    ],
+  },
+];
+```
+
+Drop the audio files into `public/audio/weather-vibe/locations/`. The tracks shuffle on each visit and advance automatically when each one ends.
+
+**Behavior modes** (set per-track via `behavior`, defaults to `replace`):
+
+| Mode | Effect |
+|------|--------|
+| `replace` | Location track plays via the ambient bus; ambient recordings are skipped. Procedural synths (wind, city hum, etc.) still play. |
+| `layer` | Everything plays — location track is added on top of all existing audio. |
+| `takeover` | Only the location track plays; all procedural and ambient audio is silenced. |
+
+All tracks in one city entry should share the same `behavior` value — the first shuffled track's behavior applies for the entire visit.
+
+See `public/audio/weather-vibe/README.md` for file format, gain, and editing tips.
 
 ---
 

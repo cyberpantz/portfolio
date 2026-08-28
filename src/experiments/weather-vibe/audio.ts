@@ -1,5 +1,5 @@
 import type { WeatherData } from './conditions';
-import { getLocationTracks, type LocationTrack, type TrackBehavior } from './locationTracks';
+import { getLocationTracks, getLocationSignature, type LocationTrack, type TrackBehavior } from './locationTracks';
 import { getSettings, type AudioMultipliers } from './settings';
 
 // ─── Asset manifest ───────────────────────────────────────────────────────────
@@ -29,6 +29,7 @@ class WeatherAudio {
   private ambientGain:    GainNode | null = null;
   private effectsGain:    GainNode | null = null;
   private cityHumGain:    GainNode | null = null;
+  private analyser:       AnalyserNode | null = null;
   private active:         AudioNode[] = [];
   private recordings:     AudioBufferSourceNode[] = [];
   private currentStateKey: string | null = null;
@@ -48,6 +49,34 @@ class WeatherAudio {
       this.master.connect(this.ctx.destination);
       this.master.gain.linearRampToValueAtTime(0.7, this.ctx.currentTime + 4);
 
+      /**
+       * Analyser tap for the audio-reactive visuals.
+       *
+       * Hung off `master`, which is post-everything: it sees the user's own
+       * volume settings and the four-second intro ramp, so the visuals fade
+       * up with the sound instead of snapping in over silence. It is a tap,
+       * not a link in the chain — an AnalyserNode passes audio through
+       * untouched and its output is deliberately left unconnected, so this
+       * cannot colour or interrupt what you hear.
+       *
+       * smoothingTimeConstant is high on purpose. Raw frame-to-frame FFT
+       * output is jittery, and visuals driven by it read as a media-player
+       * visualiser. 0.85 gives motion that follows the mix rather than
+       * twitching at it.
+       */
+      this.analyser = this.ctx.createAnalyser();
+      this.analyser.fftSize = 1024;
+      this.analyser.smoothingTimeConstant = 0.85;
+      // The default -100..-30 dB window is built for music at broadcast level.
+      // These are ambient field recordings played quietly under a synth bed,
+      // so they occupy a thin strip at the bottom of that range and come back
+      // as byte values in the 40-80 band out of 255. Narrowing the window to
+      // where the content actually lives spreads those across the full scale
+      // before the auto-gain in audioLevels ever sees them.
+      this.analyser.minDecibels = -85;
+      this.analyser.maxDecibels = -25;
+      this.master.connect(this.analyser);
+
       this.userMasterGain = this.ctx.createGain();
       this.userMasterGain.gain.value = saved.master;
       this.userMasterGain.connect(this.master);
@@ -66,6 +95,14 @@ class WeatherAudio {
     }
     if (this.ctx.state === 'suspended') this.ctx.resume();
     return this.ctx;
+  }
+
+  /**
+   * Null until the first user gesture creates the context — the visuals must
+   * treat "no analyser yet" as silence rather than as an error.
+   */
+  getAnalyser(): AnalyserNode | null {
+    return this.analyser;
   }
 
   setAudioMultipliers(m: AudioMultipliers): void {
@@ -490,6 +527,26 @@ class WeatherAudio {
       const dest = behavior === 'takeover' ? this.userMasterGain! : amb;
       await this.loadPlaylistTrack(this.playlistQueue[0], dest);
     }
+
+    /**
+     * Signature sounds ride on top of whatever the bed turned out to be.
+     *
+     * Routed to the same destination as the playlist so a 'takeover' entry
+     * does not accidentally mute them — they are location audio too, and a
+     * takeover means "only the location", not "only the bed".
+     *
+     * loadRecording rather than loadPlaylistTrack, which buys three things:
+     * it loops, it does not advance a queue, and it registers in
+     * `this.recordings` so the existing stopAll tears it down on the next
+     * weather or city change. No new lifecycle to get wrong.
+     */
+    const signature = getLocationSignature(weatherData.city);
+    if (signature) {
+      const dest = behavior === 'takeover' ? this.userMasterGain! : amb;
+      for (const track of signature) {
+        await this.loadRecording(track.src, track.gain ?? 1.0, dest);
+      }
+    }
   }
 
   get isMuted() { return this.muted; }
@@ -515,7 +572,13 @@ export function getActiveLayerLabels(weather: WeatherData): string {
   const locationTracks = getLocationTracks(weather.city);
   const behavior: TrackBehavior = locationTracks?.[0]?.behavior ?? 'replace';
 
-  if (locationTracks && behavior === 'takeover') return 'LOCATION TRACK';
+  // Signature layers survive every behavior, takeover included, so they are
+  // appended on all four return paths below rather than folded into L.
+  const sig = getLocationSignature(weather.city)?.map(t => t.label ?? 'SIGNATURE') ?? [];
+
+  if (locationTracks && behavior === 'takeover') {
+    return ['LOCATION TRACK', ...sig].join(' · ');
+  }
 
   const { state, urbanDensity } = weather;
   const isUrban = urbanDensity === 'urban';
@@ -574,12 +637,12 @@ export function getActiveLayerLabels(weather: WeatherData): string {
       break;
   }
 
-  if (!locationTracks) return L.join(' · ');
-  if (behavior === 'layer') return ['LOCATION TRACK', ...L].join(' · ');
+  if (!locationTracks) return [...sig, ...L].join(' · ');
+  if (behavior === 'layer') return ['LOCATION TRACK', ...sig, ...L].join(' · ');
 
   // 'replace': keep synth + effect-recording labels, replace ambient recording labels
   const nonAmbient = L.filter(l => !AMB_RECORDING_LABELS.has(l));
-  return ['LOCATION TRACK', ...nonAmbient].join(' · ');
+  return ['LOCATION TRACK', ...sig, ...nonAmbient].join(' · ');
 }
 
 export const weatherAudio = new WeatherAudio();

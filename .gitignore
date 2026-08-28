@@ -23,3 +23,7 @@ pnpm-debug.log*
 
 # OS
 Thumbs.db
+.superpowers/
+
+# claude code local settings
+.claude/settings.local.json

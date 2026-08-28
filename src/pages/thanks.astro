@@ -1,0 +1,59 @@
+---
+import V2Base from '../layouts/V2Base.astro';
+
+/**
+ * Where the form lands when JS never ran. With JS the submission is
+ * handled in place and this page is never reached — but it has to be
+ * here and it has to look like the rest of the site, because the
+ * people most likely to see it are the ones with the least forgiving
+ * setups.
+ */
+---
+
+<V2Base
+  title="Message sent — Frank Young"
+  description="Thanks for getting in touch."
+>
+  <main
+    id="main"
+    class="mx-auto flex min-h-dvh max-w-shell flex-col justify-center px-gut
+           py-[clamp(64px,10vw,140px)]"
+  >
+    <p class="mb-[clamp(20px,3vw,34px)] text-meta font-medium tracking-[0.2em] uppercase text-muted">
+      Message sent
+    </p>
+
+    <h1
+      class="max-w-[16ch] font-display text-section tracking-[-0.026em] [text-wrap:balance]
+             max-[400px]:tracking-[-0.018em]"
+    >
+      Thanks — that reached me.
+    </h1>
+
+    <p class="mt-[clamp(24px,3vw,36px)] max-w-[52ch] text-standfirst text-ink-2 [text-wrap:pretty]">
+      I read everything that comes through here and I will write back. If it is urgent,
+      LinkedIn is the faster door.
+    </p>
+
+    <div class="mt-[clamp(36px,5vw,60px)] flex flex-wrap items-center gap-x-8 gap-y-3">
+      <a
+        class="inline-flex min-h-11 items-center gap-3 bg-ink px-8 py-4 text-meta font-medium
+               tracking-[0.18em] uppercase text-paper transition-colors duration-500
+               ease-editorial hover:bg-accent hover:text-on-accent"
+        href="/"
+      >
+        <span aria-hidden="true">←</span> Back to the portfolio
+      </a>
+
+      <a
+        class="ul-draw inline-flex min-h-11 items-center text-meta font-medium tracking-[0.16em]
+               uppercase text-accent"
+        href="https://linkedin.com/in/frank-young-a77a152"
+        target="_blank"
+        rel="noopener"
+      >
+        LinkedIn <span class="sr-only">(opens in a new tab)</span>
+      </a>
+    </div>
+  </main>
+</V2Base>

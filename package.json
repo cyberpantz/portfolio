@@ -13,10 +13,10 @@
   "dependencies": {
     "@astrojs/check": "0.9.9",
     "@astrojs/react": "^5.0.4",
-    "@astrojs/tailwind": "^6.0.2",
     "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9.6.1",
     "@react-three/postprocessing": "^3.0.4",
+    "@tailwindcss/vite": "^4.3.3",
     "astro": "^6.2.2",
     "canvas-confetti": "^1.9.4",
     "framer-motion": "^12.38.0",
@@ -25,14 +25,19 @@
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
     "recharts": "^3.8.1",
-    "tailwindcss": "^3.4.13",
+    "sharp": "^0.34.5",
+    "tailwindcss": "^4.3.3",
     "three": "^0.184.0",
-    "typescript": "^5.6.2"
+    "topojson-client": "^3.1.0",
+    "typescript": "^5.6.2",
+    "world-atlas": "^2.0.2",
+    "yet-another-react-lightbox": "^3.32.2"
   },
   "devDependencies": {
     "@types/canvas-confetti": "^1.9.0",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
-    "@types/three": "^0.184.1"
+    "@types/three": "^0.184.1",
+    "@types/topojson-client": "^3.1.5"
   }
 }

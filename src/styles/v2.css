@@ -1,0 +1,436 @@
+@import 'tailwindcss' source(none);
+
+/* v2 is its own design system. Scanning only its own files keeps it
+   from pulling v1's class names in, the same way global.css excludes
+   this tree. Paths are relative to this file. */
+@source '../components/v2/**/*.{astro,tsx,ts}';
+@source '../layouts/V2Base.astro';
+@source '../pages/index.astro';
+@source '../pages/thanks.astro';
+@source '../pages/404.astro';
+@source '../pages/work/**/*.astro';
+
+/* ============================================================
+   Runtime theme
+   ------------------------------------------------------------
+   Values live on :root so they can swap at runtime, and @theme
+   inline below maps them into Tailwind's namespaces. Utilities
+   therefore follow the theme on their own — `bg-paper` is right
+   in both modes and no `dark:` variant is needed anywhere.
+
+   Three layers, in this order:
+     1. light is the default
+     2. system dark, unless the visitor has chosen light
+     3. an explicit choice, which beats both
+
+   Layer 2 is what makes the page correct with JS disabled: the
+   inline head script is what sets data-theme, and without it a
+   dark-preferring visitor would otherwise get the light palette.
+
+   Ratios are WCAG 2.1 contrast against that theme's --paper.
+   ============================================================ */
+
+:root {
+  color-scheme: light;
+
+  --paper: #fcfbf9;
+  --paper-2: #f5f3ef;
+
+  --ink: #0d0d0c;   /* 18.80:1  AAA — display, headings, wordmark */
+  --ink-2: #2e2e2c; /* 13.16:1  AAA — body copy                   */
+  --ink-3: #51514a; /*  7.73:1  AAA — captions, secondary
+                          (7.22:1 on --paper-2, which matters:
+                           exploration copy sits on it on hover)  */
+  --muted: #545049; /*  7.75:1  AAA — eyebrows, nav, metadata     */
+
+  --accent: #0b5c55;        /*  7.59:1  AAA — links, small accent text */
+  --accent-strong: #083f3a; /* 11.39:1  AAA — link hover               */
+  --accent-lg: #0f766e;     /*  5.29:1  AA  — LARGE TEXT + GRAPHICS
+                                 ONLY. Never for text under 24px.      */
+
+  --rule: #cfcabf;
+  --rule-2: #e2ded5;
+
+  --on-accent: #fcfbf9;
+
+  --gut: clamp(24px, 5.2vw, 92px);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    color-scheme: dark;
+
+    --paper: #131311;
+    --paper-2: #1b1b18;
+
+    --ink: #f4f2ec;   /* 16.62:1  AAA */
+    --ink-2: #dcd8cf; /* 13.08:1  AAA */
+    --ink-3: #b0aba0; /*  8.13:1  AAA */
+    --muted: #aaa59c; /*  7.59:1  AAA */
+
+    --accent: #6fd0c2;        /* 10.17:1  AAA */
+    --accent-strong: #93e0d4; /* 12.27:1  AAA */
+    --accent-lg: #5cc4b5;     /*  8.87:1  AAA */
+
+    --rule: #3d3d36;
+    --rule-2: #26261f;
+
+    --on-accent: #0d0d0c;
+  }
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+
+  --paper: #131311;
+  --paper-2: #1b1b18;
+
+  --ink: #f4f2ec;
+  --ink-2: #dcd8cf;
+  --ink-3: #b0aba0;
+  --muted: #aaa59c;
+
+  --accent: #6fd0c2;
+  --accent-strong: #93e0d4;
+  --accent-lg: #5cc4b5;
+
+  --rule: #3d3d36;
+  --rule-2: #26261f;
+
+  --on-accent: #0d0d0c;
+}
+
+/* The case study follows the theme, on the same three layers as the
+   index above. Its ground is a shade off the index paper (1.07:1) so
+   the spread still reads as a different surface without ignoring the
+   toggle. Ratios are against that theme's --cs-ground. */
+:root {
+  --cs-ground: #f6f3ea;
+  --cs-1: #0d0d0c;         /* 17.53:1  AAA */
+  --cs-2: #2e2e2c;         /* 12.26:1  AAA */
+  --cs-3: #45453e;         /*  8.71:1  AAA */
+  --cs-muted: #525249;     /*  7.11:1  AAA — carries the eyebrow and
+                                every figure caption               */
+  --cs-accent: #0b5c55;    /*  7.07:1  AAA */
+  --cs-accent-hi: #083f3a; /* 10.62:1  AAA */
+  --cs-hair: rgb(13 13 12 / 0.16);
+  --cs-scrim: rgb(58 54 44 / 0.55);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --cs-ground: #0c0c0b;
+    --cs-1: #efece6;         /* 16.60:1  AAA */
+    --cs-2: #d8d4cc;         /* 13.24:1  AAA */
+    --cs-3: #c9c4ba;         /* 11.27:1  AAA */
+    --cs-muted: #a6a196;     /*  7.60:1  AAA — lifted from the
+                                  handoff's #8d887e at 5.55:1     */
+    --cs-accent: #6ee7d7;    /* 13.12:1  AAA */
+    --cs-accent-hi: #a7f3e6; /* 15.48:1  AAA */
+    --cs-hair: rgb(239 236 230 / 0.18);
+    --cs-scrim: rgb(8 8 7 / 0.9);
+  }
+}
+
+:root[data-theme='dark'] {
+  --cs-ground: #0c0c0b;
+  --cs-1: #efece6;
+  --cs-2: #d8d4cc;
+  --cs-3: #c9c4ba;
+  --cs-muted: #a6a196;
+  --cs-accent: #6ee7d7;
+  --cs-accent-hi: #a7f3e6;
+  --cs-hair: rgb(239 236 230 / 0.18);
+  --cs-scrim: rgb(8 8 7 / 0.9);
+}
+
+/* ============================================================
+   Tailwind theme
+   ------------------------------------------------------------
+   `inline` substitutes each value into the utility rather than
+   emitting var(--color-paper), which is what lets the :root
+   swap above reach utilities that were compiled ahead of time.
+   ============================================================ */
+
+@theme inline {
+  --color-paper: var(--paper);
+  --color-paper-2: var(--paper-2);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-strong: var(--accent-strong);
+  --color-accent-lg: var(--accent-lg);
+  --color-rule: var(--rule);
+  --color-rule-2: var(--rule-2);
+  --color-on-accent: var(--on-accent);
+
+  --color-cs-ground: var(--cs-ground);
+  --color-cs-1: var(--cs-1);
+  --color-cs-2: var(--cs-2);
+  --color-cs-3: var(--cs-3);
+  --color-cs-muted: var(--cs-muted);
+  --color-cs-accent: var(--cs-accent);
+  --color-cs-accent-hi: var(--cs-accent-hi);
+  --color-cs-hair: var(--cs-hair);
+  --color-cs-scrim: var(--cs-scrim);
+
+  --spacing-gut: var(--gut);
+}
+
+@theme {
+  --font-display: 'Bodoni Moda', Didot, 'Times New Roman', serif;
+  --font-sans: 'Archivo', system-ui, -apple-system, sans-serif;
+
+  /* Named sizes for type that repeats across sections. One-offs stay
+     as arbitrary values in the markup. 12px is the floor for metadata
+     — spec §13 — so `text-meta` is the smallest token here. */
+  --text-meta: 12px;
+  --text-meta--line-height: 1.5;
+  --text-caption: 15px;
+  --text-caption--line-height: 1.66;
+  --text-body: 17px;
+  --text-body--line-height: 1.78;
+  --text-standfirst: clamp(19px, 1.6vw, 23px);
+  --text-standfirst--line-height: 1.5;
+  --text-display: clamp(44px, 10.4vw, 168px);
+  --text-display--line-height: 0.92;
+  --text-section: clamp(38px, 7.6vw, 112px);
+  --text-section--line-height: 0.92;
+  --text-job: clamp(26px, 3.2vw, 42px);
+  --text-job--line-height: 1.06;
+  --text-project: clamp(26px, 2.5vw, 36px);
+  --text-project--line-height: 1.04;
+  --text-exp: clamp(22px, 2.2vw, 30px);
+  --text-exp--line-height: 1.06;
+  --text-cs-title: clamp(38px, 4.6vw, 76px);
+  --text-cs-title--line-height: 0.94;
+  --text-cs-tag: clamp(19px, 1.7vw, 25px);
+  --text-cs-tag--line-height: 1.36;
+  --text-pull: clamp(22px, 2.3vw, 30px);
+  --text-pull--line-height: 1.32;
+  --text-cv: clamp(23px, 2.6vw, 33px);
+  --text-cv--line-height: 1.12;
+
+  --container-shell: 1320px;
+  --container-spread: 1560px;
+
+  --ease-editorial: cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+/* ============================================================
+   Base
+   ============================================================ */
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+    background: var(--paper);
+  }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    font-size: 17px;
+    line-height: 1.62;
+    font-synthesis-weight: none;
+    text-rendering: optimizeLegibility;
+    font-feature-settings: 'kern' 1, 'liga' 1, 'calt' 1;
+    overflow-x: hidden;
+  }
+
+  body[data-lock='1'] { overflow: hidden; }
+
+  ::selection { background: var(--accent); color: var(--on-accent); }
+
+  :focus-visible {
+    outline: 3px solid var(--accent);
+    outline-offset: 3px;
+    border-radius: 1px;
+  }
+
+  /* The case study inverts the ground, so the ring inverts with it */
+  .cs :focus-visible { outline-color: var(--cs-accent); }
+
+  /* Themed too — a near-black scrim under a light spread reads as a
+     mistake rather than a modal. ::backdrop only began inheriting
+     from its originating element recently, so the dark value is the
+     fallback for browsers where the custom property will not resolve. */
+  dialog::backdrop { background: var(--cs-scrim, rgb(8 8 7 / 0.9)); }
+
+  summary::-webkit-details-marker { display: none; }
+}
+
+/* ============================================================
+   The handful of things utilities genuinely cannot express:
+   pseudo-elements, a progressive height animation, and the
+   reveal state machine.
+   ============================================================ */
+
+@layer components {
+  /* Drop cap — ::first-letter has no utility equivalent */
+  .dropcap::first-letter {
+    font-family: var(--font-display);
+    font-size: 5.2em;
+    line-height: 0.76;
+    float: left;
+    padding: 0.08em 0.09em 0 0;
+    color: var(--ink);
+  }
+
+  /* Underline that draws in from the left */
+  .ul-draw { position: relative; display: inline-block; }
+  .ul-draw::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -3px;
+    width: 100%;
+    height: 1px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.5s var(--ease-editorial);
+  }
+  .ul-draw:hover::after,
+  .ul-draw:focus-visible::after { transform: scaleX(1); }
+
+  /* Active nav link gets the same treatment, held open */
+  .nav-underline::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 14px;
+    height: 1px;
+    background: var(--accent);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.5s var(--ease-editorial);
+  }
+  .nav-underline[aria-current='true']::after { transform: scaleX(1); }
+
+  /* +/− built from two hairlines; the vertical one retracts on open */
+  .job-sign { position: relative; width: 14px; height: 14px; flex: none; }
+  .job-sign::before,
+  .job-sign::after {
+    content: '';
+    position: absolute;
+    background: var(--muted);
+    transition: transform 0.4s var(--ease-editorial), background 0.3s ease;
+  }
+  .job-sign::before { left: 0; top: 6.5px; width: 14px; height: 1px; }
+  .job-sign::after { left: 6.5px; top: 0; width: 1px; height: 14px; }
+  details[open] .job-sign::before,
+  details[open] .job-sign::after { background: var(--accent); }
+  details[open] .job-sign::after { transform: scaleY(0); }
+
+  /* Bullet marker as a rule rather than a dot */
+  .rule-list li::before {
+    content: '';
+    width: 20px;
+    height: 1px;
+    background: var(--accent);
+    margin-top: 13px;
+  }
+
+  /* Reveal-on-scroll is opt-in: [data-anim] is set by script, so a
+     JS-off visitor never meets the opacity:0 start state. */
+  :root[data-anim] .reveal {
+    opacity: 0;
+    transform: translateY(22px);
+    transition:
+      opacity 1s var(--ease-editorial),
+      transform 1s var(--ease-editorial);
+  }
+  :root[data-anim] .reveal[data-in='1'] { opacity: 1; transform: none; }
+
+  /* Accordion height animation where supported; instant open
+     everywhere else. Never load-bearing for access. */
+  @supports (interpolate-size: allow-keywords) {
+    :root { interpolate-size: allow-keywords; }
+    details.job::details-content {
+      block-size: 0;
+      overflow: hidden;
+      transition:
+        block-size 0.5s var(--ease-editorial),
+        content-visibility 0.5s allow-discrete;
+    }
+    details.job[open]::details-content { block-size: auto; }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  html { scroll-behavior: auto; }
+  :root[data-anim] .reveal { opacity: 1; transform: none; }
+}
+
+/* ── form field tokens ─────────────────────────────────────
+   WCAG 1.4.11: when a border is the only thing marking where
+   a field is, it needs 3:1 against its background. --rule is
+   1.58:1 — right for dividers, not for inputs.
+   ------------------------------------------------------- */
+:root {
+  --field: #948e81;        /* 3.15:1 on --paper */
+  --field-hover: #6f6a5f;
+  --danger: #a3312a;       /* 6.70:1 on --paper */
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --field: #63635a;      /* 3.07:1 on --paper */
+    --field-hover: #8a8a7e;
+    --danger: #f0968c;     /* 8.37:1 on --paper */
+  }
+}
+
+:root[data-theme='dark'] {
+  --field: #63635a;
+  --field-hover: #8a8a7e;
+  --danger: #f0968c;
+}
+
+@theme inline {
+  --color-field: var(--field);
+  --color-field-hover: var(--field-hover);
+  --color-danger: var(--danger);
+}
+
+@layer components {
+  /* Reset kept minimal — the browser's own focus and autofill
+     behaviour is worth preserving. */
+  .field {
+    width: 100%;
+    background: transparent;
+    border: 1px solid var(--field);
+    color: var(--ink);
+    font: inherit;
+    font-size: 16px;          /* 16px stops iOS zooming on focus */
+    line-height: 1.5;
+    padding: 13px 14px;
+    transition: border-color 0.3s ease;
+  }
+  .field::placeholder { color: var(--muted); opacity: 1; }
+  .field:hover { border-color: var(--field-hover); }
+  .field[aria-invalid='true'] { border-color: var(--danger); border-width: 2px; }
+  textarea.field { resize: vertical; min-height: 150px; }
+
+  select.field {
+    appearance: none;
+    background-image: linear-gradient(45deg, transparent 50%, var(--muted) 50%),
+                      linear-gradient(135deg, var(--muted) 50%, transparent 50%);
+    background-position: calc(100% - 19px) calc(50% + 2px), calc(100% - 13px) calc(50% + 2px);
+    background-size: 6px 6px, 6px 6px;
+    background-repeat: no-repeat;
+    padding-right: 40px;
+  }
+}

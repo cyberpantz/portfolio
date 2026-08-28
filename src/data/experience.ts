@@ -12,17 +12,31 @@ export interface Role {
   bullets: (string | Bullet)[];
 }
 
+/**
+ * Career chapters, sourced from Frank_Young_Resume_2026_DesignTechnologist.pdf.
+ *
+ * Two things changed from the earlier version of this file:
+ *   - Protrigga Design was a bullet under "Earlier Career". A two-person
+ *     agency where you were the entire technical half is a chapter, not
+ *     a footnote, so it stands on its own.
+ *   - Freelance / Contract 2019–2020 was missing entirely, which left an
+ *     unexplained year between Tesla and Kaiser.
+ *
+ * The Role interface is unchanged so v1's Work.tsx keeps compiling.
+ */
 export const EXPERIENCE: Role[] = [
   {
     co: 'ChargePoint',
     role: 'Staff Frontend Engineer',
     yr: '2021–2026',
-    tags: ['Microfrontends', 'Websockets', 'React', 'TypeScript', 'Tailwind', 'React-Query', 'WCAG/ADA', 'CI/CD'],
+    tags: ['React', 'TypeScript', 'Tailwind', 'TanStack Query', 'AWS', 'Docker', 'WCAG'],
+    blurb:
+      'Led front-end architecture for the fleet charging platform, partnering with product and design from sketch to production.',
     bullets: [
-      'Led frontend architecture for fleet EV charging platform',
-      'Built real-time fleet monitoring and analytics interfaces',
-      'Developed schema-driven UI systems and complex data tables',
-      'Mentored engineers, worked closely with product and design'
+      'Designed and built the Depot Map Designer — an interactive tool letting customers build EV charger maps and visualize real-time charging operations.',
+      'Built reusable UI patterns, accessible components, drag-and-drop tables, and schema-driven forms adopted across multiple front-end teams.',
+      'Turned complex real-time data into clear dashboards and decision-support interfaces.',
+      'Mentored engineers; shaped front-end architecture, code quality, and accessibility practice.',
     ],
   },
   {
@@ -31,55 +45,86 @@ export const EXPERIENCE: Role[] = [
     yr: '2020–2021',
     tags: ['React', 'TypeScript', 'Node', 'UX Design'],
     bullets: [
-      'Sole frontend engineer on a greenfield inventory application to keep track of touchscreen devices in use throughout Kaiser medical centers, which became critical during the covid-19 pandemic for telehealth and remote patient monitoring',
-      'Defined UX, delivered wireframes, mockups, and full React/TypeScript implementation with Node backend',
-      'This was a short-term contract role during the covid-19 pandemic (I had an entire office floor to myself! That was a first!)',
+      'Sole front-end engineer on a greenfield inventory app managing thousands of clinic touchscreen devices used for video visits — which became critical infrastructure during the pandemic.',
+      'Defined the UX flows, produced the wireframes and mockups, then built the React/TypeScript front end and the Node APIs behind it.',
+    ],
+  },
+  {
+    co: 'Freelance / Contract',
+    role: 'Applications Developer',
+    yr: '2019–2020',
+    tags: ['React', 'Next.js', 'Node', 'CMS'],
+    bullets: [
+      'React, Next.js, Node.js and CMS applications for Chegg, Experian, and other high-growth technology companies.',
     ],
   },
   {
     co: 'Tesla',
     role: 'Senior Applications Developer',
     yr: '2015–2019',
-    tags: [ 'React', 'Redux', 'NodeJS/ExpressJS/PHP','CI/CD'],
+    tags: ['React', 'Redux', 'Node', 'Express', 'ElasticSearch'],
     bullets: [
-      "One of the tech leads for Tesla's vehicle configurator — consumer-facing, 40+ markets",
-      'Frontend polish, NodeJS services, unit testing, deployment pipelines',
-      'Designed localization strategy for several high traffic applications',
-      'Contributed to inventory vehicle discovery and purchasing flows',
+      "Tech lead on Tesla's vehicle configurator — consumer-facing discovery, customization and purchase, shipped across global markets.",
+      'Built A/B testing and controlled-rollout workflows with LaunchDarkly, letting teams test consumer experiences and ship changes incrementally across markets.',
+      'Partnered with design, product, localization and accessibility on brand-critical commerce experiences.',
     ],
   },
   {
     co: 'Power-One / ABB',
-    role: 'UX Engineer',
+    role: 'User Experience Engineer',
     yr: '2010–2014',
-    tags: ['Energy', 'Dashboards', 'UX', 'Backbone'],
+    tags: ['Data Visualization', 'UX Design', 'JavaScript'],
     bullets: [
-      'Led small frontend engineering team for renewable energy monitoring platform',
-      'Built dashboards and analytics tools for real-time energy data and reporting',
+      'Led a small front-end team building reporting and data-visualization interfaces for solar and wind monitoring — UX design and development in one role.',
     ],
   },
   {
-    co: 'Fat Spaniel',
+    co: 'Fat Spaniel Technologies',
     role: 'Web Application Engineer',
     yr: '2008–2011',
-    tags: ['Adobe Flex', 'Bootstrap' ,'Backbone', 'UX', 'Data Viz'],
+    tags: ['Adobe Flex', 'HTML5', 'CSS3', 'Data Viz', 'UX Design'],
     bullets: [
-      'Built data visualizations for customer soloar and wind installations using Adobe Flex, Flash, and later HTML5/CSS3',
-      'Small company: I split my role between UX designer and applications developer'
+      'Led UI development and UX design for an energy monitoring platform — dashboards, charts and reporting tools.',
+      'Helped move the product off Adobe Flex and Flash and onto HTML5/CSS3.',
     ],
   },
   {
-    co: 'Earlier Career',
-    role: 'Various Roles',
-    yr: '2002–2008',
-    tags: ['Full-Stack', 'Education', 'Government', 'Advertising'],
-    blurb: 'Early career focused on full-stack web development, interactive kiosks, working in advertising, government and education.',
+    co: 'Protrigga Design',
+    role: 'Partner · Interactive Advertising',
+    yr: '2005–2009',
+    tags: ['Flash', 'Motion', 'Audio', 'Interactive Advertising'],
+    blurb:
+      'A two-person interactive agency. I was the entire technical half - Bela Spohrer was the design half. Go check out his work https://bela-sf.com/',
     bullets: [
-      { text: 'Protrigga Design — Partner · Interactive advertising & Flash production', dates: '2005–2009' },
-      { text: 'CaratFusion — Senior Developer · Digital media & campaign tooling', dates: 'Nov 2005–Jun 2006' },
-      { text: 'Academy of Art University — Instructional Designer · Online course curriculum', dates: 'Jun 2004–Mar 2005' },
-      { text: 'County of Humboldt — Senior Applications Developer · Government web apps', dates: 'Jan 2002–Dec 2004' },
-      { text: 'College of the Redwoods — Associate Faculty · Taught web design & development', dates: 'Jun 2002–Jun 2003' },
+      'Built Flash campaign sites for Warner Bros. Records — deeply interactive artist and release sites with embedded music players and cinematic scenes.',
+      'Motion and audio were the medium, not decoration: the whole experience was timeline, sound and state.',
+      'Running half a business meant scoping the work, pricing it and shipping it — the closest thing to product ownership available in 2005.',
+    ],
+  },
+  {
+    co: 'Earlier roles',
+    role: 'Advertising, education, government',
+    yr: '2002–2006',
+    tags: ['Flash', 'PHP', 'JavaScript', 'Instructional Design'],
+    blurb:
+      'Where the interactive and motion work started, before it had a job title attached.',
+    bullets: [
+      {
+        text: 'CaratFusion — Senior Flash / PHP / JavaScript Developer. Agency-side interactive advertising; animation and motion-driven brand experiences.',
+        dates: '2005–2006',
+      },
+      {
+        text: 'Academy of Art University — Instructional Designer. Developed course content with instructors and an editorial team, and built the animated interactive elements, quizzes, tests and video for online modules.',
+        dates: '2004–2005',
+      },
+      {
+        text: 'County of Humboldt — Senior Applications Developer. Government web applications.',
+        dates: '2002–2004',
+      },
+      {
+        text: 'College of the Redwoods — Associate Faculty. Taught web design and development, which is where I learned to explain a system.',
+        dates: '2002–2003',
+      },
     ],
   },
 ];

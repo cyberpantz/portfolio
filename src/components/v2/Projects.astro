@@ -1,0 +1,175 @@
+---
+import { Image } from 'astro:assets';
+import SectionHead from './SectionHead.astro';
+import CaseStudy from './CaseStudy.astro';
+import { PROJECTS_V2 } from '../../data/projectsV2';
+---
+
+<section
+  id="projects"
+  aria-labelledby="h-proj"
+  class="mx-auto max-w-shell px-gut py-[clamp(80px,12vw,160px)]"
+>
+  <SectionHead num="03" id="h-proj" label="Selected Projects" />
+
+  <div class="reveal mb-[clamp(36px,5vw,60px)] max-w-[62ch]">
+    <p class="text-standfirst tracking-[-0.007em] text-ink-2 [text-wrap:pretty]">
+      Things I built end to end — deciding what they should be, then making them.
+    </p>
+  </div>
+
+  {/*
+    Cards are real links to the routed case study at /work/<id>.
+    The script below upgrades them into the overlay; without JS they
+    simply navigate. That keeps the design's overlay behaviour, gives
+    every case study a shareable URL, and answers the handoff's open
+    question about routed pages with "both" rather than "either".
+  */}
+  <div
+    class="reveal grid grid-cols-3 gap-[clamp(22px,2.8vw,44px)] border-t border-ink
+           pt-[clamp(28px,3vw,44px)] max-lg:grid-cols-1 max-lg:gap-[clamp(40px,6vw,56px)]"
+  >
+    {PROJECTS_V2.map((p) => (
+      <a class="group/card flex min-w-0 flex-col gap-3 text-ink" href={`/work/${p.id}`} data-case={p.id}>
+        {/* border-rule, not rule-2: The Crumb's UI is warm cream and
+            near-identical to the paper ground, so the well needs a real
+            edge or the thumbnail floats. */}
+        <span class="relative mb-1.5 block aspect-4/3 overflow-hidden border border-rule bg-paper-2">
+          {p.cover ? (
+            <Image
+              class="size-full object-cover object-top transition-transform duration-[1300ms]
+                     ease-editorial group-hover/card:scale-[1.035] group-focus-visible/card:scale-[1.035]"
+              src={p.cover}
+              alt={p.coverAlt ?? ''}
+              widths={[420, 640, 900]}
+              sizes="(max-width: 1024px) 100vw, 33vw"
+              loading="lazy"
+              decoding="async"
+            />
+          ) : (
+            <span
+              class="absolute inset-0 flex items-center justify-center text-meta
+                     tracking-[0.16em] uppercase text-muted"
+              >No screens kept</span
+            >
+          )}
+        </span>
+
+        <span class="flex items-baseline gap-3">
+          <span class="font-display text-sm italic text-accent" aria-hidden="true">{p.n}</span>
+          <span class="text-meta tracking-[0.16em] uppercase text-muted">{p.year}</span>
+        </span>
+
+        <h3 class="font-display text-project font-normal tracking-[-0.026em] text-ink">{p.name}</h3>
+        <span class="text-caption text-ink-3">{p.tag}</span>
+
+        {p.status && (
+          <span class="self-start border border-rule px-2.5 py-[5px] text-meta tracking-[0.14em] uppercase text-muted">
+            {p.status}
+          </span>
+        )}
+
+        <span
+          class="mt-auto inline-flex min-h-11 items-center gap-2.5 pt-4 text-meta font-medium
+                 tracking-[0.16em] uppercase text-accent"
+        >
+          Case study
+          <span
+            aria-hidden="true"
+            class="inline-block transition-transform duration-500 ease-editorial
+                   group-hover/card:translate-x-[7px] group-focus-visible/card:translate-x-[7px]"
+            >→</span
+          >
+        </span>
+      </a>
+    ))}
+  </div>
+</section>
+
+{/*
+  One native <dialog> per project. showModal() brings the focus trap,
+  Escape handling, aria-modal and focus restoration with it — the
+  handoff lists "no focus trap" as an open accessibility gap, and this
+  closes it by letting the platform own the behaviour instead of
+  reimplementing it.
+*/}
+{PROJECTS_V2.map((p) => (
+  <dialog
+    class="cs fixed inset-0 m-0 size-full max-h-full max-w-full overflow-hidden border-0 p-0
+           bg-cs-ground text-cs-1"
+    id={`case-${p.id}`}
+    aria-labelledby={`case-${p.id}-title`}
+  >
+    <form method="dialog" class="fixed top-4 right-4 z-10 m-0">
+      <button
+        value="close"
+        class="inline-flex min-h-11 cursor-pointer items-center gap-2.5 border border-cs-hair
+               bg-cs-ground/80 px-[18px] text-meta font-medium tracking-[0.16em] uppercase
+               text-cs-1 transition-colors duration-300 hover:bg-cs-1 hover:text-cs-ground"
+      >
+        Close <span aria-hidden="true">✕</span>
+      </button>
+    </form>
+
+    {/* One scroll container, so the keyboard scrolls the spread the
+        way it scrolls any page. The text column sticks inside it
+        rather than becoming a second focusable scroll region. */}
+    <div data-cs-scroll class="h-full overflow-y-auto [overscroll-behavior:contain]">
+      <CaseStudy project={p} level={2} titleId={`case-${p.id}-title`} />
+    </div>
+  </dialog>
+))}
+
+<script is:inline>
+  (function () {
+    var cards = document.querySelectorAll('[data-case]');
+    if (!cards.length) return;
+
+    // Bail out on browsers without showModal — the links still work.
+    var probe = document.querySelector('dialog.cs');
+    if (!probe || typeof probe.showModal !== 'function') return;
+
+    var open = null;
+
+    function show(id, push) {
+      var dlg = document.getElementById('case-' + id);
+      if (!dlg) return false;
+      open = dlg;
+      dlg.showModal();
+      document.body.dataset.lock = '1';
+      var scroller = dlg.querySelector('[data-cs-scroll]');
+      if (scroller) scroller.scrollTop = 0;
+      if (push) history.pushState({ caseId: id }, '', '/work/' + id);
+      return true;
+    }
+
+    cards.forEach(function (card) {
+      card.addEventListener('click', function (e) {
+        // Leave modified clicks alone so "open in new tab" still works.
+        if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+        if (show(card.dataset.case, true)) e.preventDefault();
+      });
+    });
+
+    document.querySelectorAll('dialog.cs').forEach(function (dlg) {
+      // Fires for the close button, Escape, and programmatic close.
+      dlg.addEventListener('close', function () {
+        delete document.body.dataset.lock;
+        open = null;
+        if (history.state && history.state.caseId) history.back();
+      });
+
+      // Click on the backdrop — the dialog element itself is the only
+      // hit target outside the scroll container.
+      dlg.addEventListener('click', function (e) {
+        if (e.target === dlg) dlg.close();
+      });
+    });
+
+    window.addEventListener('popstate', function (e) {
+      var id = e.state && e.state.caseId;
+      if (id) show(id, false);
+      else if (open) open.close();
+    });
+  })();
+</script>

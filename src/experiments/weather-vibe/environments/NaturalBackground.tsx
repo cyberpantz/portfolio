@@ -87,34 +87,74 @@ function makePineShape(rng: () => number, width: number, height: number): Shape 
 interface PineProps {
   x: number; groundY: number; z: number; height: number;
   foliageColor: string; trunkColor: string; seed: number;
+  /** 0..1 blend toward the sky. Distant rows should lose contrast. */
+  haze?: number;
+  hazeColor?: string;
 }
 
-function PineTree({ x, groundY, z, height, foliageColor, trunkColor, seed }: PineProps) {
+function PineTree({
+  x, groundY, z, height, foliageColor, trunkColor, seed,
+  haze = 0, hazeColor = '#ffffff',
+}: PineProps) {
   const foliageGeom = useMemo(() => {
     const rng = makeRng(seed);
     return new ShapeGeometry(makePineShape(rng, height * 0.58, height));
   }, [seed, height]);
 
-  const colorStr = useMemo(() => {
+  /**
+   * Three things this used to get wrong.
+   *
+   * 1. Both billboards were painted the SAME colour. A cross-billboard only
+   *    reads as a solid object if its two faces catch different light —
+   *    identical faces just look like two flat cutouts sharing an axis. The
+   *    crossing plane is now darker, which is enough to imply a light
+   *    direction without introducing an actual light.
+   *
+   * 2. Variation was lightness only, ±0.05. Real stands of trees differ in
+   *    hue and saturation too — some yellower, some bluer, some washed out.
+   *    Widening to all three is what stops a row reading as one shape.
+   *
+   * 3. Every tree faced exactly the same way, so the billboards lined up into
+   *    a visible grid. A random yaw per tree breaks that up for free.
+   */
+  const { faceColor, sideColor, yaw } = useMemo(() => {
     const rng = makeRng(seed + 9999);
+
     const c = new Color(foliageColor);
-    c.offsetHSL(0, 0, (rng() - 0.5) * 0.10);
-    return `#${c.getHexString()}`;
-  }, [seed, foliageColor]);
+    c.offsetHSL(
+      (rng() - 0.5) * 0.06,  // hue: subtle, or the forest turns into confetti
+      (rng() - 0.5) * 0.18,  // saturation
+      (rng() - 0.5) * 0.16,  // lightness, wider than before
+    );
+    if (haze > 0) c.lerp(new Color(hazeColor), haze);
+
+    const side = c.clone().multiplyScalar(0.82);
+
+    return {
+      faceColor: `#${c.getHexString()}`,
+      sideColor: `#${side.getHexString()}`,
+      yaw: rng() * Math.PI,
+    };
+  }, [seed, foliageColor, haze, hazeColor]);
+
+  const trunkColorHazed = useMemo(() => {
+    if (haze <= 0) return trunkColor;
+    return `#${new Color(trunkColor).lerp(new Color(hazeColor), haze).getHexString()}`;
+  }, [trunkColor, haze, hazeColor]);
 
   const trunkH = height * 0.14;
 
   return (
-    <group position={[x, groundY, z]}>
+    <group position={[x, groundY, z]} rotation={[0, yaw, 0]}>
       <mesh geometry={foliageGeom}>
-        <meshBasicMaterial color={colorStr} side={DoubleSide} />
+        <meshBasicMaterial color={faceColor} side={DoubleSide} />
       </mesh>
       <mesh geometry={foliageGeom} rotation={[0, Math.PI / 2, 0]}>
-        <meshBasicMaterial color={colorStr} side={DoubleSide} />
+        <meshBasicMaterial color={sideColor} side={DoubleSide} />
       </mesh>
       <mesh position={[0, trunkH / 2, 0]}>
         <cylinderGeometry args={[0.022 * height, 0.038 * height, trunkH, 5]} />
-        <meshBasicMaterial color={trunkColor} />
+        <meshBasicMaterial color={trunkColorHazed} />
       </mesh>
     </group>
   );
@@ -125,9 +165,13 @@ interface RowProps {
   z: number; count: number; spread: number; groundY: number;
   avgHeight: number; seed: number;
   foliageColor: string; trunkColor: string;
+  haze?: number; hazeColor?: string;
 }
 
-function ForestRow({ z, count, spread, groundY, avgHeight, seed, foliageColor, trunkColor }: RowProps) {
+function ForestRow({
+  z, count, spread, groundY, avgHeight, seed, foliageColor, trunkColor,
+  haze = 0, hazeColor,
+}: RowProps) {
   const trees = useMemo(() => {
     const rng = makeRng(seed);
     return Array.from({ length: count }, (_, i) => ({
@@ -141,7 +185,8 @@ function ForestRow({ z, count, spread, groundY, avgHeight, seed, foliageColor, t
     <>
       {trees.map((t, i) => (
         <PineTree key={i} x={t.x} groundY={groundY} z={z} height={t.height}
-          foliageColor={foliageColor} trunkColor={trunkColor} seed={t.seed} />
+          foliageColor={foliageColor} trunkColor={trunkColor} seed={t.seed}
+          haze={haze} hazeColor={hazeColor} />
       ))}
     </>
   );
@@ -419,9 +464,16 @@ interface Props {
   palette: Palette;
   groundY: number;
   weatherState: WeatherState;
+  /**
+   * A city keeps the ridgelines and loses the forest, leaf litter and grazing
+   * animals. Distant hills behind a skyline is the Portland/Denver/Salt Lake
+   * silhouette; pine rows and cattle at z -18 through downtown is not.
+   */
+  density?: 'urban' | 'town' | 'rural';
 }
 
-export default function NaturalBackground({ palette, groundY, weatherState }: Props) {
+export default function NaturalBackground({ palette, groundY, weatherState, density = 'rural' }: Props) {
+  const urban = density === 'urban';
   const isSnow    = weatherState === 'snow';
   const isFog     = weatherState === 'fog' || weatherState === 'fog-night';
   const isAutumn  = weatherState === 'clear-day' || weatherState === 'partly-cloudy';
@@ -449,20 +501,24 @@ export default function NaturalBackground({ palette, groundY, weatherState }: Pr
       <MountainRidge z={-150} color={mountainColors[1]} peakHeight={19} width={400} seed={37}  groundY={groundY} />
       <MountainRidge z={-85}  color={mountainColors[0]} peakHeight={14} width={280} seed={73}  groundY={groundY} />
 
-      {/* Pine forest — hidden in fog */}
-      {!isFog && (
+      {/* Pine forest — hidden in fog, and in cities */}
+      {!isFog && !urban && (
         <>
-          <ForestRow z={-58} count={20} spread={220} groundY={groundY} avgHeight={7}  seed={101} foliageColor={foliageColor} trunkColor={trunkColor} />
-          <ForestRow z={-32} count={15} spread={150} groundY={groundY} avgHeight={9}  seed={213} foliageColor={foliageColor} trunkColor={trunkColor} />
-          <ForestRow z={-18} count={10} spread={90}  groundY={groundY} avgHeight={11} seed={317} foliageColor={foliageColor} trunkColor={trunkColor} />
+          {/* Aerial perspective. The three rows were identically coloured, so
+              depth came only from scale and overlap — which reads as one flat
+              cutout mass. Blending the far row toward the sky separates them
+              the way distance actually does. */}
+          <ForestRow z={-58} count={20} spread={220} groundY={groundY} avgHeight={7}  seed={101} foliageColor={foliageColor} trunkColor={trunkColor} haze={0.34} hazeColor={palette.background} />
+          <ForestRow z={-32} count={15} spread={150} groundY={groundY} avgHeight={9}  seed={213} foliageColor={foliageColor} trunkColor={trunkColor} haze={0.17} hazeColor={palette.background} />
+          <ForestRow z={-18} count={10} spread={90}  groundY={groundY} avgHeight={11} seed={317} foliageColor={foliageColor} trunkColor={trunkColor} haze={0.05} hazeColor={palette.background} />
         </>
       )}
 
       {/* Fallen leaves for warm clear/partly-cloudy days */}
-      {isAutumn && <FallenLeaves groundY={groundY} />}
+      {isAutumn && !urban && <FallenLeaves groundY={groundY} />}
 
       {/* Grazing animals for overcast rural scenes */}
-      {isOvercast && <GrazingAnimals groundY={groundY} />}
+      {isOvercast && !urban && <GrazingAnimals groundY={groundY} />}
     </>
   );
 }

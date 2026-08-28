@@ -68,7 +68,7 @@ function FlipDigit({ value, cellW }: { value: string; cellW: number }) {
 
   return (
     <div
-      className="relative overflow-hidden rounded-sm border border-white/10"
+      className="relative overflow-hidden rounded-xs border border-white/10"
       style={{ width: cellW, height: cellH, background: 'rgba(255,255,255,0.04)' }}
     >
       <div className="absolute inset-x-0 top-0 h-1/2 bg-gradient-to-b from-white/5 to-transparent pointer-events-none z-10" />
@@ -306,10 +306,10 @@ function EarningsChart({ elapsed, wage }: { elapsed: number; wage: number }) {
     <div className="flex flex-col flex-1 min-h-0 gap-4">
 
       {/* Stat cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 flex-shrink-0">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 shrink-0">
         {stats.map(s => (
           <div key={s.label}
-            className="border p-3 rounded-sm"
+            className="border p-3 rounded-xs"
             style={{ borderColor: 'rgba(255,255,255,0.08)', background: 'rgba(255,255,255,0.02)' }}
           >
             <p className="font-mono uppercase tracking-widest mb-1"
@@ -375,7 +375,7 @@ function EarningsChart({ elapsed, wage }: { elapsed: number; wage: number }) {
       </div>
 
       {/* Legend */}
-      <div className="flex items-center justify-center gap-8 pb-2 flex-shrink-0">
+      <div className="flex items-center justify-center gap-8 pb-2 shrink-0">
         {lineSpecs.map(l => (
           <div key={l.key} className="flex items-center gap-2">
             <svg width={24} height={12}>
@@ -391,7 +391,7 @@ function EarningsChart({ elapsed, wage }: { elapsed: number; wage: number }) {
       </div>
 
       {/* Log scale explainer */}
-      <p className="font-mono text-exp-note text-center text-exp-muted leading-relaxed pb-4 flex-shrink-0 max-w-2xl mx-auto">
+      <p className="font-mono text-exp-note text-center text-exp-muted leading-relaxed pb-4 shrink-0 max-w-2xl mx-auto">
         This chart uses a logarithmic scale — each step up the Y-axis represents a 10× increase, not a fixed dollar amount.
         On a standard linear scale, Elon's line would shoot off the top of the screen within seconds,
         compressing every other worker into an invisible flat line at the bottom.
@@ -465,21 +465,25 @@ const TAB_LABELS = [
   { key: 'afford'  as const, label: 'Table'  },
 ];
 
-export default function WageGap() {
-  const [wage, setWage] = useState(() => {
-    try {
-      const v = parseFloat(localStorage.getItem('skrillatime-wage') ?? '');
+const WAGE_KEY = 'wage-gap-rate';
+/** Older builds of this experiment stored the rate under the name it
+ *  had before it was Wage Gap. Read it once so an existing visitor
+ *  does not silently lose their saved figure. */
+const LEGACY_WAGE_KEY = 'skrillatime-wage';
+
+function savedWage(): number | null {
+  try {
+    for (const key of [WAGE_KEY, LEGACY_WAGE_KEY]) {
+      const v = parseFloat(localStorage.getItem(key) ?? '');
       if (!isNaN(v) && v > 0) return v;
-    } catch {}
-    return MEDIAN_WAGE;
-  });
-  const [inputWage, setInputWage] = useState(() => {
-    try {
-      const v = parseFloat(localStorage.getItem('skrillatime-wage') ?? '');
-      if (!isNaN(v) && v > 0) return String(v);
-    } catch {}
-    return String(MEDIAN_WAGE);
-  });
+    }
+  } catch {}
+  return null;
+}
+
+export default function WageGap() {
+  const [wage, setWage] = useState(() => savedWage() ?? MEDIAN_WAGE);
+  const [inputWage, setInputWage] = useState(() => String(savedWage() ?? MEDIAN_WAGE));
   const [editingWage, setEditingWage] = useState(false);
   const [earnings, setEarnings] = useState(0);
   const [elapsed, setElapsed] = useState(0);
@@ -563,7 +567,7 @@ export default function WageGap() {
   const applyWage = useCallback(() => {
     const rate = parseFloat(inputWage);
     if (isNaN(rate) || rate <= 0) return;
-    try { localStorage.setItem('skrillatime-wage', String(rate)); } catch {}
+    try { localStorage.setItem(WAGE_KEY, String(rate)); } catch {}
     setWage(rate);
     setEditingWage(false);
     startTimer(rate);
@@ -602,25 +606,12 @@ export default function WageGap() {
       onClick={initAudio}
     >
       {/* ── Header ── */}
-      <div className="border-b border-white/10 flex-shrink-0">
-        {/* Row 1: back + title */}
-        <div className="relative flex items-center px-6 py-3 sm:py-4 sm:justify-between">
-          <a
-            href="/explorations"
-            className="font-mono text-exp-label text-exp-muted tracking-[0.08em] hover:text-exp-bright transition-colors"
-            onClick={e => e.stopPropagation()}
-          >
-            ← back
-          </a>
-          {/* Mobile: title centered between back and right edge */}
-          <span className="sm:hidden flex-1 text-center font-mono text-exp-label text-exp-muted tracking-[0.08em] uppercase">
-            Wage Gap
-          </span>
-          {/* Desktop: title absolutely centered, tabs on right */}
-          <span className="hidden sm:block font-mono text-exp-label text-exp-muted tracking-[0.08em] uppercase absolute left-1/2 -translate-x-1/2">
-            Wage Gap
-          </span>
-          <div className="hidden sm:flex items-center gap-5" onClick={e => e.stopPropagation()}>
+      <div className="border-b border-white/10 shrink-0">
+        {/* Row 1: view tabs.
+            The back link and title that used to sit here are gone —
+            the page's ExpChrome bar already carries both. */}
+        <div className="relative hidden items-center px-6 py-4 sm:flex sm:justify-end">
+          <div className="flex items-center gap-5" onClick={e => e.stopPropagation()}>
             {TAB_LABELS.map(({ key, label }) => (
               <button key={key} onClick={() => setView(key)}
                 className={`font-mono text-exp-label tracking-[0.08em] uppercase transition-colors cursor-pointer ${
@@ -684,12 +675,19 @@ export default function WageGap() {
           </div>
 
           {/* Right: comparisons */}
-          <div className="flex-1 flex flex-col justify-center px-6 py-6 sm:px-12 sm:py-10 gap-8 overflow-y-auto">
+          <div className="flex-1 flex flex-col justify-center px-6 py-6 sm:px-12 sm:py-10 gap-6 overflow-y-auto">
 
-            {/* Context blurb */}
-            <p className="font-mono text-exp-body text-exp-muted leading-relaxed max-w-sm">
-              While you work, so does everyone else — from the minimum wage worker to the world's wealthiest person. These counters are synchronized and expose the wealth gap in a dramatic way.
-              The federal minimum wage hasn't changed since 2009. Billionaire wealth has grown by trillions. This is not an accident.
+            {/* Context blurb.
+                max-w-sm gave a 43-character measure in a monospace
+                face — a newspaper column inside a much wider one —
+                which ran this to seven lines and pushed every counter
+                below the fold. Widened, and the sentence explaining
+                that the counters "expose the wealth gap in a dramatic
+                way" is gone: they are visibly doing it. */}
+            <p className="font-mono text-exp-body text-exp-muted leading-relaxed max-w-xl">
+              While you work, so does everyone else — from the minimum wage worker to the world's
+              wealthiest person. The federal minimum wage hasn't changed since 2009. Billionaire
+              wealth has grown by trillions. This is not an accident.
             </p>
 
             <div className="border-t border-white/10" />
@@ -723,7 +721,7 @@ export default function WageGap() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -4 }}
                     transition={{ duration: 0.15 }}
-                    className="border border-white/10 rounded-sm p-4 mt-1"
+                    className="border border-white/10 rounded-xs p-4 mt-1"
                     style={{ background: 'rgba(255,255,255,0.03)' }}
                     onClick={e => e.stopPropagation()}
                   >
@@ -831,7 +829,7 @@ export default function WageGap() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/95 backdrop-blur-sm flex items-center justify-center z-50"
+            className="fixed inset-0 bg-black/95 backdrop-blur-xs flex items-center justify-center z-50"
             onClick={() => setEditingWage(false)}
           >
             <motion.div
@@ -853,7 +851,7 @@ export default function WageGap() {
                   onChange={e => setInputWage(e.target.value)}
                   onKeyDown={e => e.key === 'Enter' && applyWage()}
                   autoFocus
-                  className="font-mono text-exp-bright bg-transparent border-b border-white/30 focus:outline-none focus:border-white [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                  className="font-mono text-exp-bright bg-transparent border-b border-white/30 focus:outline-hidden focus:border-white [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                   style={{ fontSize: 'clamp(2rem, 5vw, 4rem)', width: '5ch' }}
                 />
                 <span className="font-mono text-exp-base" style={{ fontSize: 'clamp(1rem, 2vw, 1.5rem)' }}>/ hr</span>

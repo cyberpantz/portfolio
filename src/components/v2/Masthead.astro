@@ -1,0 +1,180 @@
+---
+const NAV = [
+  { id: 'about', label: 'About' },
+  { id: 'work', label: 'Work' },
+  { id: 'projects', label: 'Projects' },
+  { id: 'explorations', label: 'Explorations' },
+  { id: 'contact', label: 'Contact' },
+];
+
+// 12px metadata floor and a 44px target — spec §13
+const LINK =
+  'nav-underline relative inline-flex min-h-11 items-center whitespace-nowrap ' +
+  'text-meta font-medium tracking-[0.16em] uppercase text-muted ' +
+  'transition-colors duration-500 hover:text-ink aria-[current=true]:text-ink';
+---
+
+<header
+  id="masthead"
+  class="sticky top-0 z-60 border-b border-rule-2 bg-paper data-[scrolled='1']:border-rule"
+>
+  {/* gap-y is the row gap between wrapped lines. Without it the
+      toggle's bottom border sits flush on the nav's top rule. */}
+  <div
+    class="mx-auto flex min-h-19 max-w-shell flex-wrap items-center gap-x-4 px-gut
+           max-lg:gap-y-2.5 max-lg:pt-1.5 lg:flex-nowrap lg:gap-x-8 lg:gap-y-0"
+  >
+    <a
+      href="#main"
+      class="whitespace-nowrap py-3 font-display text-[23px] tracking-[-0.018em] text-ink hover:text-accent max-lg:py-2"
+      >Frank Young</a
+    >
+
+    {/*
+      Real anchors, not buttons calling scrollIntoView. They work
+      without JS, survive middle-click and copy-link, and put a
+      shareable hash in the URL. aria-current is set by the observer
+      below purely as an enhancement.
+
+      Below lg the row wraps to its own line and scrolls sideways
+      instead of the links being hidden with no replacement.
+    */}
+    {/*
+      The toggle sits outside <nav> on purpose. It is not a section
+      link, and keeping it out of the scrolling row means it stays
+      reachable when the links overflow — spec §16 asks for the theme
+      control to remain directly accessible at every width.
+
+      Hidden until the script unhides it: a control that cannot work
+      without JS should not be presented as if it can.
+    */}
+    <button
+      id="theme-btn"
+      type="button"
+      hidden
+      class="inline-flex min-h-11 min-w-11 cursor-pointer items-center justify-center gap-2
+             border border-rule px-3 text-meta font-medium tracking-[0.14em] uppercase
+             text-muted transition-colors duration-300 hover:border-ink-3 hover:text-ink
+             max-lg:order-2 max-lg:ml-auto lg:order-3"
+    >
+      <span
+        aria-hidden="true"
+        class="size-3.5 flex-none rounded-full border border-current
+               bg-linear-[90deg,currentColor_0_50%,transparent_50%_100%]"
+      ></span>
+      <span id="theme-label">Dark</span>
+    </button>
+
+    {/* py on the wrapped row keeps the bordered toggle and the links
+        clear of the divider above them, which otherwise sat hard
+        against the button's own border. */}
+    <nav
+      aria-label="Sections"
+      class="flex items-center gap-7
+             max-lg:order-3 max-lg:w-full max-lg:gap-5 max-lg:overflow-x-auto
+             max-lg:border-t max-lg:border-rule-2 max-lg:pt-1.5
+             max-lg:[scrollbar-width:none] max-lg:[&::-webkit-scrollbar]:hidden
+             lg:order-2 lg:ml-auto"
+    >
+      {NAV.map((item) => (
+        <a class={LINK} href={`#${item.id}`} data-nav={item.id}>{item.label}</a>
+      ))}
+
+      {/* Carries an arrow as well as colour, so it does not rely on
+          hue alone to read as different — spec §13 */}
+      <a
+        href="#cv"
+        class="ul-draw inline-flex min-h-11 items-center gap-2 whitespace-nowrap
+               text-meta font-medium tracking-[0.16em] uppercase text-accent"
+      >
+        <span aria-hidden="true">↓</span>
+        Curriculum Vitae
+      </a>
+    </nav>
+  </div>
+</header>
+
+<script is:inline>
+  (function () {
+    var root = document.documentElement;
+    var btn = document.getElementById('theme-btn');
+    var label = document.getElementById('theme-label');
+
+    /* ---- theme toggle ---- */
+    if (btn && label) {
+      var sync = function () {
+        var isDark = root.getAttribute('data-theme') === 'dark';
+        var next = isDark ? 'Light' : 'Dark';
+        label.textContent = next;
+        // The visible label already names the destination, so the
+        // accessible name says the whole thing rather than one word.
+        btn.setAttribute('aria-label', 'Switch to ' + next.toLowerCase() + ' theme');
+      };
+
+      btn.hidden = false;
+      sync();
+
+      btn.addEventListener('click', function () {
+        var next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        root.setAttribute('data-theme', next);
+        root.setAttribute('data-theme-source', 'user');
+        sync();
+        try {
+          localStorage.setItem('fy-theme', next);
+        } catch (e) {
+          /* storage unavailable — the choice just will not persist */
+        }
+      });
+
+      // Follow the OS only while the visitor has not made a choice.
+      var mq = window.matchMedia('(prefers-color-scheme: dark)');
+      var onSystem = function (e) {
+        if (root.getAttribute('data-theme-source') === 'user') return;
+        root.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+        sync();
+      };
+      if (mq.addEventListener) mq.addEventListener('change', onSystem);
+    }
+
+    /* ---- masthead rule on scroll ---- */
+    var mh = document.getElementById('masthead');
+    if (mh) {
+      var onScroll = function () {
+        mh.dataset.scrolled = window.scrollY > 20 ? '1' : '0';
+      };
+      window.addEventListener('scroll', onScroll, { passive: true });
+      onScroll();
+    }
+
+    /* ---- current section ---- */
+    var links = Array.prototype.slice.call(document.querySelectorAll('[data-nav]'));
+    var sections = links
+      .map(function (l) { return document.getElementById(l.dataset.nav); })
+      .filter(Boolean);
+
+    if (sections.length && 'IntersectionObserver' in window) {
+      var visible = new Set();
+      var mark = function () {
+        var current = null;
+        for (var i = 0; i < sections.length; i++) {
+          if (visible.has(sections[i].id)) { current = sections[i].id; break; }
+        }
+        links.forEach(function (l) {
+          if (l.dataset.nav === current) l.setAttribute('aria-current', 'true');
+          else l.removeAttribute('aria-current');
+        });
+      };
+      var io = new IntersectionObserver(
+        function (entries) {
+          entries.forEach(function (e) {
+            if (e.isIntersecting) visible.add(e.target.id);
+            else visible.delete(e.target.id);
+          });
+          mark();
+        },
+        { rootMargin: '-30% 0px -60% 0px' }
+      );
+      sections.forEach(function (s) { io.observe(s); });
+    }
+  })();
+</script>

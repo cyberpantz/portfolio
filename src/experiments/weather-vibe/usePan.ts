@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
-import type { Camera } from 'three';
+import type { Camera, PerspectiveCamera } from 'three';
+import { readAudioLevels } from './audioLevels';
 
 // Gentle parallax pan. Mouse/keys tilt the camera by a fixed bounded offset —
 // NOT a continuous rotation. Achieved by applying only the DELTA each frame
@@ -17,6 +18,13 @@ const MAX_X_RAD      = 0.35; // hard clamp ~20° — world can never flip
 const Z_SMOOTH       = 0.04;
 const Z_MAX_IN       = 15;   // max units forward the viewer can travel
 
+// Audio breath: the low end widens the lens by at most a degree. Deliberately
+// below the threshold where you would call it an effect — you read it as the
+// scene being alive rather than as the camera doing something. Anything past
+// about 1.5° starts to look like a zoom and fights the parallax.
+const FOV_BREATH = 1.3;
+const FOV_SMOOTH = 0.06;
+
 export function usePan() {
   const mouseTarget = useRef({ x: 0, y: 0 });
   const keysHeld    = useRef<Set<string>>(new Set());
@@ -27,6 +35,17 @@ export function usePan() {
   const zTarget  = useRef(0);
   const zSmooth  = useRef(0);
   const zApplied = useRef(0);
+
+  // Resting field of view, captured once so the breath is always measured
+  // from the camera's own configured lens rather than from last frame.
+  const baseFov = useRef<number | null>(null);
+  const stillCamera = useRef(false);
+
+  useEffect(() => {
+    stillCamera.current =
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  }, []);
 
   useEffect(() => {
     const onMove = (e: MouseEvent) => {
@@ -83,5 +102,17 @@ export function usePan() {
     const dz = zSmooth.current - zApplied.current;
     zApplied.current  = zSmooth.current;
     camera.position.z += dz;
+
+    // ── Audio breath ─────────────────────────────────────────────────────────
+    // FOV rather than position, so this stays completely independent of the
+    // delta bookkeeping above and of the per-environment camera animations.
+    const cam = camera as PerspectiveCamera;
+    if (!stillCamera.current && cam.isPerspectiveCamera) {
+      if (baseFov.current === null) baseFov.current = cam.fov;
+      const { bass } = readAudioLevels();
+      const target = baseFov.current + bass * FOV_BREATH;
+      cam.fov += (target - cam.fov) * FOV_SMOOTH;
+      cam.updateProjectionMatrix();
+    }
   });
 }

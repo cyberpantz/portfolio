@@ -1,4 +1,7 @@
-import { Canvas } from '@react-three/fiber';
+import { useRef } from 'react';
+import { Canvas, useFrame } from '@react-three/fiber';
+import { FORWARD_DRIFT, forwardDrift, framingFor } from './cameraRig';
+import { landmarksFor, layoutFor } from './cityLayout';
 import { EffectComposer, Vignette, Noise, ChromaticAberration, Bloom } from '@react-three/postprocessing';
 import { BlendFunction } from 'postprocessing';
 import { Vector2 } from 'three';
@@ -16,6 +19,9 @@ import PartlyCloudy from './environments/PartlyCloudy';
 import PartlyCloudyNight from './environments/PartlyCloudyNight';
 import Overcast from './environments/Overcast';
 import CityScape from './environments/CityScape';
+import CityHills from './environments/CityHills';
+import CityGround from './environments/CityGround';
+import CityLit from './environments/CityLit';
 import SmallTown from './environments/SmallTown';
 import NaturalBackground from './environments/NaturalBackground';
 import TropicalBackground from './environments/TropicalBackground';
@@ -55,10 +61,68 @@ const GROUND_Y: Record<WeatherState, number> = {
   'storm':              -2,
 };
 
+/**
+ * The one place that decides where the camera ends up.
+ *
+ * Everything else that touches the camera keeps doing what it did — the
+ * environments still drift x and y with their own signature sines, usePan
+ * still applies the viewer's parallax and dolly as deltas. This composes on
+ * top and owns exactly two things: framing height, and forward drift.
+ *
+ * It renders last so its useFrame registers after the environment's, which
+ * matters because environments assign y outright every frame.
+ *
+ * Height uses a written/observed comparison rather than a clamp. If
+ * camera.position.y is still exactly what this wrote last frame, the
+ * environment did not assign one, so the previous environment value is reused
+ * instead of adding to our own output — which is what would otherwise walk the
+ * camera into orbit. Correct in both cases, no magic ceiling.
+ *
+ * Forward drift is applied as a delta, matching usePan's idiom, so the
+ * viewer's own scroll-dolly still composes with it rather than being
+ * overwritten.
+ */
+function CameraRig({ weather }: SceneProps) {
+  const framing = framingFor(weather.urbanDensity, layoutFor(weather.city));
+  const profile = FORWARD_DRIFT[weather.state];
+
+  const lastWroteY = useRef<number | null>(null);
+  const lastEnvY = useRef(0);
+  const appliedZ = useRef(0);
+
+  useFrame(({ camera, clock }) => {
+    const envY =
+      lastWroteY.current !== null && camera.position.y === lastWroteY.current
+        ? lastEnvY.current
+        : camera.position.y;
+    lastEnvY.current = envY;
+
+    const y = envY + framing.lift;
+    camera.position.y = y;
+    lastWroteY.current = y;
+
+    const target = profile
+      ? forwardDrift(clock.getElapsedTime(), {
+          reach: profile.reach * framing.driftScale,
+          period: profile.period,
+        })
+      : 0;
+    camera.position.z += target - appliedZ.current;
+    appliedZ.current = target;
+  });
+
+  return null;
+}
+
 function Environment({ weather }: SceneProps) {
   usePan();
 
-  const noGrass = weather.terrain === 'island' || weather.terrain === 'coastal';
+  // Cities are paved. A meadow through downtown was the same category error
+  // as a beach through downtown, just less obvious because it is short.
+  const noGrass =
+    weather.terrain === 'island' ||
+    weather.terrain === 'coastal' ||
+    weather.urbanDensity === 'urban';
 
   const scene = (() => {
     switch (weather.state) {
@@ -77,59 +141,68 @@ function Environment({ weather }: SceneProps) {
     }
   })();
 
+  /**
+   * Terrain and density are independent axes, and they used to be tangled.
+   * The old chain returned CityScape ALONE for anything over 200k people, so
+   * every large city lost its geography: no bay behind San Francisco, no
+   * Atlantic behind Miami, no ridgelines behind Portland or Denver. Towns got
+   * a backdrop, cities did not, which was the tell that this was a mistake
+   * rather than a decision.
+   *
+   * Now the backdrop always renders and the built layer sits in front of it.
+   * The backdrops take `density` and drop their own near field for cities —
+   * see CoastalBackground, where the beach would otherwise run through
+   * downtown.
+   */
+  const palette  = PALETTES[weather.state];
+  const groundY  = GROUND_Y[weather.state];
+  const density  = weather.urbanDensity;
+  const relief   = weather.relief ?? 0;
+  const layout   = layoutFor(weather.city);
+
+  const backdrop =
+    weather.terrain === 'island' ? (
+      <TropicalBackground palette={palette} groundY={groundY} weatherState={weather.state} density={density} />
+    ) : weather.terrain === 'coastal' ? (
+      <CoastalBackground palette={palette} groundY={groundY} weatherState={weather.state} density={density} />
+    ) : (
+      <NaturalBackground palette={palette} groundY={groundY} weatherState={weather.state} density={density} />
+    );
+
   return (
     <>
       {scene}
-      {weather.urbanDensity === 'urban' ? (
-        <CityScape
-          palette={PALETTES[weather.state]}
-          groundY={GROUND_Y[weather.state]}
-        />
-      ) : weather.urbanDensity === 'town' ? (
-        <>
-          <SmallTown
-            palette={PALETTES[weather.state]}
-            groundY={GROUND_Y[weather.state]}
+      {backdrop}
+      {/* Pavement first — it covers the rural soil plane the weather
+          environment drew, which is otherwise a dark slab under the city. */}
+      {density === 'urban' && <CityGround palette={palette} groundY={groundY} />}
+
+      {/* Hills before the city: the land is behind and beneath the buildings,
+          and both read the same height function so they agree. */}
+      {density === 'urban' && <CityHills palette={palette} groundY={groundY} relief={relief} />}
+      {/* Buildings are lit by their own per-weather sun on a private layer,
+          so exposure does not swing with each environment's ambient. */}
+      {density === 'urban' && (
+        <CityLit state={weather.state} fogScale={{ near: 5, far: 5.5 }}>
+          <CityScape
+            palette={palette}
+            groundY={groundY}
+            relief={relief}
+            layout={layout}
+            landmarks={landmarksFor(weather.city)}
           />
-          {weather.terrain === 'island' ? (
-            <TropicalBackground
-              palette={PALETTES[weather.state]}
-              groundY={GROUND_Y[weather.state]}
-              weatherState={weather.state}
-            />
-          ) : weather.terrain === 'coastal' ? (
-            <CoastalBackground
-              palette={PALETTES[weather.state]}
-              groundY={GROUND_Y[weather.state]}
-              weatherState={weather.state}
-            />
-          ) : (
-            <NaturalBackground
-              palette={PALETTES[weather.state]}
-              groundY={GROUND_Y[weather.state]}
-              weatherState={weather.state}
-            />
-          )}
-        </>
-      ) : weather.terrain === 'island' ? (
-        <TropicalBackground
-          palette={PALETTES[weather.state]}
-          groundY={GROUND_Y[weather.state]}
-          weatherState={weather.state}
-        />
-      ) : weather.terrain === 'coastal' ? (
-        <CoastalBackground
-          palette={PALETTES[weather.state]}
-          groundY={GROUND_Y[weather.state]}
-          weatherState={weather.state}
-        />
-      ) : (
-        <NaturalBackground
-          palette={PALETTES[weather.state]}
-          groundY={GROUND_Y[weather.state]}
-          weatherState={weather.state}
-        />
+        </CityLit>
       )}
+      {density === 'town' && (
+        <CityLit state={weather.state} fogScale={{ near: 2, far: 2.2 }}>
+          <SmallTown palette={palette} groundY={groundY} />
+        </CityLit>
+      )}
+
+      {/* Last, so its useFrame runs after the environment sets the camera.
+          Rendered for every density — rural framing is a no-op lift, but the
+          rig still owns the forward drift. */}
+      <CameraRig weather={weather} />
     </>
   );
 }

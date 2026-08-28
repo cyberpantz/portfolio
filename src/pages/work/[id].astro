@@ -1,0 +1,40 @@
+---
+import V2Base from '../../layouts/V2Base.astro';
+import CaseStudy from '../../components/v2/CaseStudy.astro';
+import { PROJECTS_V2 } from '../../data/projectsV2';
+
+export function getStaticPaths() {
+  return PROJECTS_V2.map((p) => ({ params: { id: p.id }, props: { project: p } }));
+}
+
+const { project } = Astro.props;
+---
+
+{/*
+  The destination the gallery cards actually point at. On the homepage
+  JS intercepts the click and opens the same content in a dialog, but
+  this page is what loads for a shared link, a new-tab click, a crawler,
+  or anyone without JS.
+*/}
+<V2Base title={`${project.name} — Frank Young`} description={project.tag}>
+  <div class="cs min-h-dvh bg-cs-ground text-cs-1">
+    <nav aria-label="Breadcrumb" class="mx-auto max-w-spread border-b border-cs-hair px-gut pt-5">
+      <a
+        class="inline-flex min-h-11 items-center gap-2.5 text-meta font-medium tracking-[0.16em]
+               uppercase text-cs-muted hover:text-cs-1"
+        href="/#projects"
+      >
+        <span aria-hidden="true">←</span> All projects
+      </a>
+    </nav>
+
+    {/* No fixed masthead on this page, so the sticky text column sits
+        closer to the top than it does inside the dialog. */}
+    <main
+      id="main"
+      class="[&>div]:pt-[clamp(40px,5vw,72px)] [&_[data-cs-text]]:top-[clamp(24px,3vw,48px)]"
+    >
+      <CaseStudy project={project} level={1} />
+    </main>
+  </div>
+</V2Base>

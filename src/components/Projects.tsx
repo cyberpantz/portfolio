@@ -59,7 +59,7 @@ export default function Projects() {
                     onClick={() => open(i)}
                     className="group w-full sm:w-[350px] cursor-pointer text-left"
                   >
-                    <div className="h-48 rounded-sm overflow-hidden border border-rule group-hover:border-rule-strong transition-colors">
+                    <div className="h-48 rounded-xs overflow-hidden border border-rule group-hover:border-rule-strong transition-colors">
                       {p.images?.[0] ? (
                         <img
                           src={p.images[0]}
@@ -167,7 +167,7 @@ export default function Projects() {
                       href={proj!.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex self-start px-4 py-2 rounded-sm border border-accent/30 text-accent
+                      className="inline-flex self-start px-4 py-2 rounded-xs border border-accent/30 text-accent
                                  font-mono text-[11px] tracking-[0.06em] no-underline
                                  transition-colors hover:bg-accent/10"
                     >

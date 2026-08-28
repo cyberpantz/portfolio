@@ -1,0 +1,72 @@
+---
+import SectionHead from './SectionHead.astro';
+import { VISIBLE_EXPLORATIONS } from '../../data/explorations';
+
+const pad = (i: number) => String(i + 1).padStart(2, '0');
+
+const CELL =
+  'flex flex-col gap-3.5 border-r border-b border-rule-2 px-[clamp(20px,2.4vw,32px)] ' +
+  'pt-[clamp(26px,3vw,40px)] pb-[clamp(28px,3.4vw,44px)] transition-colors duration-500 ' +
+  'ease-editorial nth-[3n]:border-r-0 ' +
+  'max-xl:nth-[3n]:border-r max-xl:nth-[2n]:border-r-0 ' +
+  'max-md:border-r-0! ';
+
+const NAME = 'font-display text-exp font-normal tracking-[-0.024em] text-ink';
+const DESC = 'text-caption text-ink-3 [text-wrap:pretty]';
+const KIND = 'text-meta font-medium tracking-[0.16em] uppercase text-muted';
+const MORE = 'mt-auto pt-[18px] text-meta font-medium tracking-[0.16em] uppercase';
+---
+
+<section
+  id="explorations"
+  aria-labelledby="h-exp"
+  class="mx-auto max-w-shell px-gut py-[clamp(80px,12vw,160px)]"
+>
+  <SectionHead num="04" id="h-exp" label="Explorations" />
+
+  <div class="reveal mb-[clamp(36px,5vw,60px)] max-w-[62ch]">
+    <p class="text-standfirst tracking-[-0.007em] text-ink-2 [text-wrap:pretty]">
+      Games, generative work, small experiments. No brief, no client, no deadline — which
+      is the point.
+    </p>
+  </div>
+
+  {/*
+    Each card is a real anchor. The mock rendered a div with a
+    "Read more →" that went nowhere and was not focusable, so its
+    :focus-within rule could never fire.
+  */}
+  <div class="reveal grid grid-cols-3 border-t border-ink max-xl:grid-cols-2 max-md:grid-cols-1">
+    {VISIBLE_EXPLORATIONS.map((exp, i) => (
+      <a class={`group/exp text-ink hover:bg-paper-2 ${CELL}`} href={exp.url ?? '/explorations'}>
+        <span class="flex items-baseline justify-between gap-3">
+          <span class="font-display text-sm italic text-accent" aria-hidden="true">{pad(i)}</span>
+          <span class={KIND}>{exp.type}</span>
+        </span>
+        <h3 class={NAME}>{exp.name}</h3>
+        <p class={DESC}>{exp.desc}</p>
+        <span class={`${MORE} text-accent`}>
+          Open
+          <span
+            aria-hidden="true"
+            class="inline-block transition-transform duration-500 ease-editorial
+                   group-hover/exp:translate-x-[7px] group-focus-visible/exp:translate-x-[7px]"
+            >→</span
+          >
+        </span>
+      </a>
+    ))}
+
+    <div class={CELL}>
+      <span class="flex items-baseline justify-between gap-3">
+        <span class={KIND}>Archives</span>
+      </span>
+      <h3 class={NAME}>More on the way</h3>
+      <p class={DESC}>
+        Digging through the archives to resurrect old experiments. A few things worth
+        saving are getting dusted off.
+      </p>
+      <span class={`${MORE} text-muted`}>Coming soon</span>
+    </div>
+  </div>
+</section>

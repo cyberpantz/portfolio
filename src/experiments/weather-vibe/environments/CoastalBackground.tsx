@@ -92,7 +92,21 @@ const COAST_FRAG = `
   }
 `;
 
-function CoastalOcean({ groundY }: { groundY: number }) {
+/**
+ * `far` pushes the water behind the whole city instead of under the camera.
+ *
+ * The default plane is 400x388 centred at z -206, so it spans z -12 to -400 —
+ * its near edge is essentially at the viewer's feet. For a beach that is
+ * correct and intended. For a city it was a regression: enabling the coastal
+ * backdrop for urban density dropped a near-black water plane across the lower
+ * half of the frame, because from eye height a flat surface a few units away
+ * fills everything below the horizon.
+ *
+ * The far variant is wider and shallower, centred well past the building arc
+ * (z -30..-119) and the hill layers (to -165), so the water reads as a band on
+ * the horizon that the skyline stands in front of.
+ */
+function CoastalOcean({ groundY, far = false }: { groundY: number; far?: boolean }) {
   const material = useMemo(() => new ShaderMaterial({
     uniforms: { time: { value: 0 } },
     vertexShader: COAST_VERT,
@@ -104,8 +118,17 @@ function CoastalOcean({ groundY }: { groundY: number }) {
   });
 
   return (
-    <mesh position={[0, groundY - 0.40, -206]} rotation={[-Math.PI / 2, 0, 0]} material={material}>
-      <planeGeometry args={[400, 388, 64, 32]} />
+    <mesh
+      position={[0, groundY - 0.40, far ? -360 : -206]}
+      rotation={[-Math.PI / 2, 0, 0]}
+      material={material}
+    >
+      {far ? (
+        // Spans z -210 to -510: entirely beyond the city and the hills.
+        <planeGeometry args={[900, 300, 64, 32]} />
+      ) : (
+        <planeGeometry args={[400, 388, 64, 32]} />
+      )}
     </mesh>
   );
 }
@@ -156,9 +179,29 @@ interface Props {
   palette: Palette;
   groundY: number;
   weatherState: WeatherState;
+  /**
+   * Downtown sits where the beach would be. A coastal CITY keeps the water
+   * on the horizon (z -206, well behind the building arc at z -23..-125) and
+   * drops everything in the near field — sand, surf, rocks and dune grass all
+   * read as shoreline, and a shoreline through the middle of a skyline reads
+   * as a bug. San Francisco and Miami want the bay behind the towers, not a
+   * beach in front of them.
+   */
+  density?: 'urban' | 'town' | 'rural';
 }
 
-export default function CoastalBackground({ palette: _palette, groundY, weatherState: _weatherState }: Props) {
+export default function CoastalBackground({
+  palette: _palette,
+  groundY,
+  weatherState: _weatherState,
+  density = 'rural',
+}: Props) {
+  const urban = density === 'urban';
+
+  if (urban) {
+    return <CoastalOcean groundY={groundY} far />;
+  }
+
   return (
     <>
       <CoastalOcean groundY={groundY} />

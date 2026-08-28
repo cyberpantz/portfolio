@@ -196,19 +196,8 @@ export default function Chooser() {
 
   return (
     <div className="min-h-screen bg-ink flex flex-col select-none cursor-crosshair">
-      {/* Header */}
-      <div className="flex items-center justify-between px-6 py-4 border-b border-rule flex-shrink-0">
-        <a
-          href="/explorations"
-          className="font-mono text-[11px] text-fg-muted tracking-[0.08em] hover:text-fg transition-colors"
-        >
-          ← back
-        </a>
-        <span className="font-mono text-[11px] text-fg-muted tracking-[0.08em] uppercase">
-          The Chooser
-        </span>
-      </div>
-
+      {/* Header removed — the page's ExpChrome bar already carries the
+          back link and the title. */}
       {/* Stage */}
       <div className="flex-1 relative overflow-hidden">
         {!done && (
@@ -297,7 +286,7 @@ export default function Chooser() {
                     initial={{ scale: 0, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
                     transition={{ type: 'spring', stiffness: 340, damping: 22 }}
-                    className="w-8 h-8 rounded-full overflow-hidden border border-fg-muted/20 bg-white/5 flex-shrink-0"
+                    className="w-8 h-8 rounded-full overflow-hidden border border-fg-muted/20 bg-white/5 shrink-0"
                   >
                     <img src={c.image} alt={c.label} className="w-full h-full object-contain p-1" draggable={false} />
                   </motion.div>
@@ -325,7 +314,7 @@ export default function Chooser() {
                   <motion.div
                     key={i}
                     layoutId={`choice-${i}`}
-                    className="rounded-full overflow-hidden border border-fg-muted/25 bg-white/5 flex-shrink-0"
+                    className="rounded-full overflow-hidden border border-fg-muted/25 bg-white/5 shrink-0"
                     style={{ width: 96, height: 96 }}
                     animate={{ scale: [1, 1.06, 1] }}
                     transition={{

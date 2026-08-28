@@ -22,12 +22,12 @@ function Slider({ label, value, onChange, accent, textColor }: SliderProps) {
     <div style={{ marginBottom: 10 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
         <span style={{
-          color: textColor, fontFamily: 'monospace', fontSize: 9,
-          letterSpacing: '0.1em', opacity: accent ? 1 : 0.65,
+          color: textColor, fontFamily: 'monospace', fontSize: 11,
+          letterSpacing: '0.1em', opacity: accent ? 1 : 0.85,
         }}>
           {label}
         </span>
-        <span style={{ color: accent ?? textColor, fontFamily: 'monospace', fontSize: 9, opacity: 0.75 }}>
+        <span style={{ color: accent ?? textColor, fontFamily: 'monospace', fontSize: 11, opacity: 0.9 }}>
           {pct}%
         </span>
       </div>
@@ -218,8 +218,8 @@ export default function SettingsPanel({ palette, activeLayerLabels }: SettingsPa
                 {/* ── Audio ── */}
                 <div style={{ flex: 1 }}>
                   <div style={{
-                    color: textColor, fontFamily: 'monospace', fontSize: 8,
-                    letterSpacing: '0.2em', opacity: 0.45,
+                    color: textColor, fontFamily: 'monospace', fontSize: 10,
+                    letterSpacing: '0.2em', opacity: 0.7,
                     marginBottom: 12, paddingBottom: 6,
                     borderBottom: `1px solid ${dimBorder}`,
                   }}>AUDIO</div>
@@ -236,8 +236,8 @@ export default function SettingsPanel({ palette, activeLayerLabels }: SettingsPa
                 {/* ── Visuals ── */}
                 <div style={{ flex: 1 }}>
                   <div style={{
-                    color: textColor, fontFamily: 'monospace', fontSize: 8,
-                    letterSpacing: '0.2em', opacity: 0.45,
+                    color: textColor, fontFamily: 'monospace', fontSize: 10,
+                    letterSpacing: '0.2em', opacity: 0.7,
                     marginBottom: 12, paddingBottom: 6,
                     borderBottom: `1px solid ${dimBorder}`,
                   }}>VISUALS</div>
@@ -257,7 +257,7 @@ export default function SettingsPanel({ palette, activeLayerLabels }: SettingsPa
               }}>
                 <span style={{
                   color: textColor, fontFamily: 'monospace',
-                  fontSize: 8, letterSpacing: '0.1em', opacity: 0.3,
+                  fontSize: 10, letterSpacing: '0.1em', opacity: 0.55,
                 }}>
                   {activeLayerLabels}
                 </span>
@@ -269,12 +269,12 @@ export default function SettingsPanel({ palette, activeLayerLabels }: SettingsPa
                     border: `1px solid rgba(176,192,208,0.15)`,
                     color: textColor,
                     fontFamily: 'monospace',
-                    fontSize: 8,
+                    fontSize: 10,
                     letterSpacing: '0.12em',
                     padding: '4px 10px',
                     borderRadius: 2,
                     cursor: 'pointer',
-                    opacity: 0.55,
+                    opacity: 0.75,
                   }}
                 >
                   RESET

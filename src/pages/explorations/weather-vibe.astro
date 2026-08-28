@@ -1,7 +1,12 @@
 ---
-import Base from '../../layouts/Base.astro';
+import ExpBase from '../../layouts/ExpBase.astro';
+import ExpChrome from '../../components/exp/ExpChrome.astro';
 import WeatherVibe from '../../experiments/WeatherVibe';
 ---
-<Base title="Weather Vibe — Frank Young" description="A meditative 3D environment that lives in your local weather.">
-  <WeatherVibe client:only="react" />
-</Base>
+
+<ExpBase title="Weather Vibe — Frank Young" description="A meditative 3D environment that lives in your local weather.">
+  <ExpChrome name="Weather Vibe" kind="Experience" />
+  <main id="main" class="exp-stage">
+    <WeatherVibe client:only="react" />
+  </main>
+</ExpBase>

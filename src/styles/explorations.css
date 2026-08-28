@@ -1,0 +1,199 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap');
+
+@import 'tailwindcss' source(none);
+
+@source '../pages/explorations/**/*.astro';
+@source '../layouts/ExpBase.astro';
+@source '../components/exp/**/*.{astro,tsx,ts}';
+@source '../experiments/**/*.{tsx,ts}';
+@source '../components/games/**/*.tsx';
+@source '../components/ExplorationIcon.tsx';
+@source '../data/explorations.ts';
+
+/* ============================================================
+   Explorations
+   ------------------------------------------------------------
+   These pages sit between the two systems. The experiments are
+   ~3,800 lines of React written against v1's token names, and
+   renaming every class would be a large edit with no visual
+   payoff. So the names stay and the VALUES move here.
+
+   Two consequences worth knowing:
+
+   1. This palette is FIXED dark. It does not follow the site
+      theme. v2 reuses the names `ink`, `rule` and `accent` for
+      different, theme-dependent things — under v2's tokens
+      `bg-ink` would flip to near-white in dark mode and every
+      experiment would invert. A separate stylesheet with fixed
+      values is what prevents that.
+
+   2. Redefining --font-serif and --font-sans is what restyles
+      the experiment chrome. Every existing `font-serif` and
+      `font-sans` class in those 3,800 lines picks up Bodoni and
+      Archivo without a single markup change.
+
+   Ratios below are against --color-ink (#0a0a0a), the page
+   ground, with the surface value in brackets where it differs.
+   ============================================================ */
+
+@theme {
+  /* ── grounds ── */
+  --color-ink: #0a0a0a;
+  --color-ink-surface: #111111;
+  --color-ink-surface2: #181818;
+
+  --color-rule: #1f1f1f;
+  --color-rule-strong: #2a2a2a;
+
+  /* ── text ── */
+  --color-fg: #e2e2e2;      /* 15.28:1  AAA */
+  --color-fg-sub: #999999;  /*  6.95:1  AA  */
+  --color-fg-muted: #9d9d96;/*  7.26:1  AAA — was #808080 at 5.01:1 */
+
+  --color-exp-bright: #c8c8c8; /* 11.83:1  AAA */
+  --color-exp-base: #999999;   /*  6.95:1  AA  */
+  --color-exp-muted: #9a9a92;  /*  6.99:1  AA+ — was #757575 at 4.30:1, below AA */
+  --color-exp-dim: #7d7d75;    /*  4.77:1  AA  — was #444444 at 2.03:1, far below AA */
+
+  /* Teal, matching the rest of the site. The old royal blue was
+     4.08:1 on this ground, which failed AA for the link and label
+     text it was carrying. */
+  --color-accent: #6fd0c2;      /* 10.82:1  AAA */
+  --color-accent-soft: rgb(111 208 194 / 0.1);
+  --color-accent-ring: rgb(111 208 194 / 0.3);
+
+  /* ── type ──
+     serif and sans are deliberately pointed at the v2 faces; the
+     experiments' own `font-serif` / `font-sans` classes inherit
+     the editorial look for free. Mono stays JetBrains — these
+     pages are the one place a mono voice belongs. */
+  --font-serif: 'Bodoni Moda', Didot, 'Times New Roman', serif;
+  --font-sans: 'Archivo', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  --text-exp-micro: 12px;   /* was 11px — 12px is the metadata floor, spec §13 */
+  --text-exp-micro--line-height: 1.4;
+  --text-exp-note: 13px;    /* was 12px */
+  --text-exp-note--line-height: 1.5;
+  --text-exp-label: 14px;   /* was 13px */
+  --text-exp-label--line-height: 1.5;
+  --text-exp-body: 15px;    /* was 14px */
+  --text-exp-body--line-height: 1.65;
+
+  --ease-editorial: cubic-bezier(0.19, 1, 0.22, 1);
+
+  /* ── motion, carried over from the v1 config ── */
+  --animate-fade-up: fadeUp 0.7s cubic-bezier(0.4, 0, 0.2, 1) both;
+  --animate-fade-up-2: fadeUp 0.7s 0.1s cubic-bezier(0.4, 0, 0.2, 1) both;
+  --animate-fade-up-3: fadeUp 0.7s 0.2s cubic-bezier(0.4, 0, 0.2, 1) both;
+  --animate-blink: blink 1.1s step-end infinite;
+  --animate-gallery-in: galleryIn 0.15s ease-out both;
+
+  @keyframes fadeUp {
+    0% { opacity: 0; transform: translateY(18px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+  @keyframes galleryIn {
+    0% { opacity: 0; transform: translateY(6px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+}
+
+@layer base {
+  html {
+    background: var(--color-ink);
+    color: var(--color-fg);
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    font-size: 15px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--color-accent);
+    outline-offset: 3px;
+    border-radius: 1px;
+  }
+
+  ::selection { background: var(--color-accent); color: var(--color-ink); }
+
+  ::-webkit-scrollbar { width: 10px; }
+  ::-webkit-scrollbar-track { background: var(--color-ink); }
+  ::-webkit-scrollbar-thumb { background: var(--color-rule-strong); }
+  ::-webkit-scrollbar-thumb:hover { background: var(--color-exp-dim); }
+}
+
+@layer components {
+  .scrollbar-none { scrollbar-width: none; }
+  .scrollbar-none::-webkit-scrollbar { display: none; }
+
+  /* Kept because a handful of experiments still reference them */
+  .expand-open {
+    max-height: 600px; opacity: 1; overflow: hidden;
+    transition: max-height 0.45s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+  }
+  .expand-closed {
+    max-height: 0; opacity: 0; overflow: hidden;
+    transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s ease;
+  }
+  .cursor { display: inline-block; }
+
+  .ul-draw { position: relative; display: inline-block; }
+  .ul-draw::after {
+    content: '';
+    position: absolute;
+    left: 0; bottom: -3px;
+    width: 100%; height: 1px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.5s var(--ease-editorial);
+  }
+  .ul-draw:hover::after,
+  .ul-draw:focus-visible::after { transform: scaleX(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ============================================================
+   Experiment stage
+   ------------------------------------------------------------
+   The chrome bar is sticky and opaque, so whatever sits below it
+   has to account for its height.
+
+   The `> child` version of these rules did not work: Astro wraps
+   every island in <astro-island>, which is display:contents, so
+   the experiment's real root is a GRANDCHILD of .exp-stage and a
+   min-height on the island itself is ignored outright. Hence the
+   descendant selector, which is still specificity 0,2,0 and so
+   beats the 0,1,0 utility it is overriding.
+
+   Weather Vibe's root is position:fixed and cannot be corrected
+   from here at all — a fixed box resolves against the viewport,
+   not an ancestor. That one sets its own top from
+   --exp-chrome-h in the component.
+   ============================================================ */
+
+:root {
+  --exp-chrome-h: 56px;
+}
+
+/* Only the four experiment roots use min-h-screen; nothing nested
+   does, so this cannot catch anything it should not. */
+.exp-stage .min-h-screen {
+  min-height: calc(100dvh - var(--exp-chrome-h));
+}

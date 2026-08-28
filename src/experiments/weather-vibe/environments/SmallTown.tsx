@@ -1,6 +1,7 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { Shape, ExtrudeGeometry } from 'three';
 import type { Palette } from '../conditions';
+import { shadedBox } from '../faceShade';
 
 const BRICK_COLORS = [
   '#8B4030', '#B05840', '#C47A5A', '#D4B896',
@@ -59,12 +60,23 @@ function Building({ x, z, w, h, d, color, roofColor, roofType, groundY, windowCo
 
   const frontZ = z + d / 2; // face toward camera
 
+  const bodyGeom = useMemo(() => shadedBox(w, h, d), [w, h, d]);
+  const parapetGeom = useMemo(
+    () => (roofType === 'flat' ? shadedBox(w + 0.2, 0.22, d + 0.2) : null),
+    [roofType, w, d],
+  );
+  useEffect(() => () => {
+    bodyGeom.dispose();
+    parapetGeom?.dispose();
+  }, [bodyGeom, parapetGeom]);
+
   return (
     <group>
-      {/* Body */}
-      <mesh position={[x, groundY + h / 2, z]}>
-        <boxGeometry args={[w, h, d]} />
-        <meshBasicMaterial color={color} />
+      {/* Body. Baked per-face shading — see faceShade.ts. Without it every
+          wall of the box is the identical flat colour, which is what made
+          these read as coloured paper rather than buildings. */}
+      <mesh position={[x, groundY + h / 2, z]} geometry={bodyGeom}>
+        <meshLambertMaterial color={color} vertexColors />
       </mesh>
 
       {/* Gable roof */}
@@ -75,10 +87,9 @@ function Building({ x, z, w, h, d, color, roofColor, roofType, groundY, windowCo
       )}
 
       {/* Flat parapet */}
-      {roofType === 'flat' && (
-        <mesh position={[x, groundY + h + 0.12, z]}>
-          <boxGeometry args={[w + 0.20, 0.22, d + 0.20]} />
-          <meshBasicMaterial color={roofColor} />
+      {roofType === 'flat' && parapetGeom && (
+        <mesh position={[x, groundY + h + 0.12, z]} geometry={parapetGeom}>
+          <meshLambertMaterial color={roofColor} vertexColors />
         </mesh>
       )}
 

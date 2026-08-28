@@ -1,6 +1,6 @@
 import { RotateCcw, Frown, PartyPopper, Sparkles, Crown, LogOut } from 'lucide-react';
 import { useState, useCallback, useEffect, useRef } from 'react';
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import confetti from 'canvas-confetti';
 import { playNote, MUSICAL_NOTES, resumeAudioContext } from '@/lib/audio/toneGenerator';
 import { getVolumeEnabled } from '@/lib/audio/volumeControl';
@@ -22,18 +22,13 @@ type GameState = 'difficulty-select' | 'playing' | 'victory' | 'game-over';
 type Difficulty = 'easy' | 'hard' | 'super-hard';
 type GamePhase = 'simon-turn' | 'player-turn' | 'between-rounds';
 
-const WILDCARD_NOTES: (keyof typeof MUSICAL_NOTES)[] = ['C4', 'D4', 'E4', 'F4', 'G4', 'A4'];
-const WILDCARD_COLORS: Record<string, string> = {
-  purple: '#a855f7',
-  blue: '#3b82f6',
-  pink: '#ec4899',
-  emerald: '#10b981',
-  orange: '#f97316',
-  rose: '#f43f5e',
-};
+import { PadGlyph, DifficultyBars, GlyphRow, PAD_SHAPES, PAD_COLORS, PAD_NAMES } from './simon/glyphs';
 
-// Card colors for visual variety
-const CARD_COLORS = ['purple', 'blue', 'pink', 'emerald', 'orange', 'rose'];
+const WILDCARD_NOTES: (keyof typeof MUSICAL_NOTES)[] = ['C4', 'D4', 'E4', 'F4', 'G4', 'A4'];
+// Pads are identified by SHAPE first and colour second, so the game
+// is playable without colour vision. PAD_COLORS is the muted palette
+// from ./simon/glyphs — every hue clears AAA on this ground.
+const CARD_COLORS = PAD_SHAPES;
 
 /**
  * Simon Says Memory Game
@@ -47,6 +42,10 @@ export default function SimonSays({
   hideVictoryButton = false,
 }: SimonSaysProps) {
   // Game state
+  // framer-motion animates in JS, so the stylesheet's blanket
+  // reduced-motion rule cannot stop an infinite pulse. Gate it here.
+  const reduceMotion = useReducedMotion();
+
   const [gameState, setGameState] = useState<GameState>('difficulty-select');
   const [difficulty, setDifficulty] = useState<Difficulty | null>(defaultDifficulty || null);
   const [gamePhase, setGamePhase] = useState<GamePhase>('simon-turn');
@@ -145,7 +144,9 @@ export default function SimonSays({
 
     // Highlight card briefly
     setHighlightedCardIndex(cardIndex);
-    setTimeout(() => setHighlightedCardIndex(null), 200);
+    // 280ms rather than 200 — long enough for the glow and the
+    // first pulse ring to actually read as a response.
+    setTimeout(() => setHighlightedCardIndex(null), 280);
 
     // Check if player is correct so far
     const isCorrect = simonSequence[newPlayerSequence.length - 1] === cardIndex;
@@ -251,7 +252,7 @@ export default function SimonSays({
         particleCount: 150,
         spread: 100,
         origin: { y: 0.6 },
-        colors: ['#a855f7', '#ec4899', '#f97316', '#10b981', '#3b82f6'],
+        colors: ['#6fd0c2', '#d9a441', '#e0857f', '#a99ae0', '#7fb4de'],
       });
 
       // Side cannons
@@ -261,7 +262,7 @@ export default function SimonSays({
           angle: 60,
           spread: 55,
           origin: { x: 0, y: 0.7 },
-          colors: ['#a855f7', '#ec4899'],
+          colors: ['#6fd0c2', '#a99ae0'],
         });
         fireConfetti({
           particleCount: 50,
@@ -280,7 +281,7 @@ export default function SimonSays({
           particleCount: 100,
           spread: 120,
           origin: { y: 0.6 },
-          colors: ['#f97316', '#ec4899', '#a855f7'],
+          colors: ['#d9a441', '#e0857f', '#6fd0c2'],
         });
       }, 750));
 
@@ -317,26 +318,22 @@ export default function SimonSays({
         className="flex flex-col items-center"
       >
         {/* Bouncing controller */}
+        {/* The six pads, shown up front so the shapes are familiar
+            before the sequence starts. Replaces a bouncing emoji. */}
         <motion.div
-          className="flex justify-center mb-4"
-          animate={{ y: [0, -8, 0] }}
-          transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+          className="flex justify-center mb-7"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.15, duration: 0.5 }}
         >
-          <span className="text-5xl">🎮</span>
+          <GlyphRow size={26} />
         </motion.div>
 
-        <h3
-          className="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-400 to-orange-400 mb-3"
-          style={{
-            textShadow: '0 0 20px rgba(168,85,247,0.5), 0 0 40px rgba(168,85,247,0.3)',
-            fontFamily: 'system-ui, -apple-system, sans-serif',
-            letterSpacing: '0.05em',
-          }}
-        >
-          PATTERN MATCH
+        <h3 className="font-serif text-[clamp(38px,6vw,64px)] leading-[0.95] tracking-[-0.03em] text-fg mb-3">
+          Pattern Match
         </h3>
 
-        <p className="text-exp-base text-sm tracking-widest font-mono uppercase mb-10">
+        <p className="text-exp-micro tracking-[0.2em] uppercase text-fg-muted mb-10">
           Remember the sequence
         </p>
 
@@ -352,32 +349,26 @@ export default function SimonSays({
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             {([
-              { id: 'easy' as const,       emoji: '🧠', label: 'Easy',   sub: '4-card sequence', glow: 'rgba(34,197,94,0.5)',  border: '#22c55e', bg: 'rgba(34,197,94,0.12)'  },
-              { id: 'hard' as const,       emoji: '🔥', label: 'Hard',   sub: '6-card sequence', glow: 'rgba(234,179,8,0.5)', border: '#eab308', bg: 'rgba(234,179,8,0.12)'  },
-              { id: 'super-hard' as const, emoji: '💀', label: 'Insane', sub: '9-card sequence', glow: 'rgba(239,68,68,0.5)', border: '#ef4444', bg: 'rgba(239,68,68,0.12)'  },
-            ]).map(({ id, emoji, label, sub, glow, border, bg }) => (
+              { id: 'easy' as const,       level: 1 as const, label: 'Easy',   sub: '4-card sequence' },
+              { id: 'hard' as const,       level: 2 as const, label: 'Hard',   sub: '6-card sequence' },
+              { id: 'super-hard' as const, level: 3 as const, label: 'Insane', sub: '9-card sequence' },
+            ]).map(({ id, level, label, sub }) => (
               <motion.button
                 key={id}
                 onClick={() => startGame(id)}
-                whileHover={{ scale: 1.04, y: -2 }}
-                whileTap={{ scale: 0.97 }}
-                className="relative flex flex-col items-center gap-1.5 px-4 py-5 rounded-lg border-2 font-mono uppercase tracking-widest cursor-pointer"
-                style={{
-                  borderColor: border,
-                  background: bg,
-                  boxShadow: `0 0 20px ${glow}`,
-                  color: border,
-                }}
+                whileHover={{ y: -2 }}
+                whileTap={{ scale: 0.98 }}
+                className="group/diff flex cursor-pointer flex-col items-center gap-2.5 border
+                           border-rule-strong px-4 py-5 text-fg-muted transition-colors
+                           duration-300 hover:border-accent hover:text-accent"
               >
-                <motion.span
-                  className="text-4xl"
-                  animate={{ scale: [1, 1.1, 1] }}
-                  transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-                >
-                  {emoji}
-                </motion.span>
-                <span className="text-sm font-black">{label}</span>
-                <span className="text-[10px] opacity-70 normal-case tracking-normal">{sub}</span>
+                {/* Ascending bars rather than brain / flame / skull.
+                    Says "more" without the platform roulette. */}
+                <DifficultyBars level={level} size={26} />
+                <span className="text-exp-label font-medium tracking-[0.14em] uppercase">
+                  {label}
+                </span>
+                <span className="text-exp-micro tracking-[0.06em] text-exp-dim">{sub}</span>
               </motion.button>
             ))}
           </div>
@@ -442,16 +433,16 @@ export default function SimonSays({
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.3, duration: 0.5 }}
           >
-            <h3 className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-600 via-pink-600 to-orange-600 dark:from-purple-400 dark:via-pink-400 dark:to-orange-400 mb-2 uppercase tracking-wider">
-              Epic Victory!
+            <h3 className="mb-2 font-serif text-[clamp(32px,5vw,52px)] leading-[1] tracking-[-0.03em] text-accent">
+              Sequence complete
             </h3>
             <motion.p
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.5 }}
-              className="text-lg font-bold text-white/80"
+              className="text-exp-body text-exp-bright"
             >
-              {difficulty === 'easy' ? 'Easy' : difficulty === 'hard' ? 'Hard' : 'Insane'} Mode Conquered!
+              {difficulty === 'easy' ? 'Easy' : difficulty === 'hard' ? 'Hard' : 'Insane'} cleared.
             </motion.p>
           </motion.div>
 
@@ -465,17 +456,21 @@ export default function SimonSays({
             >
               <motion.button
                 onClick={() => setGameState('difficulty-select')}
-                whileHover={{ scale: 1.04 }}
+                whileHover={{ y: -2 }}
                 whileTap={{ scale: 0.97 }}
-                className="px-6 py-3 border-2 border-white/20 text-exp-bright font-mono text-sm uppercase tracking-wider rounded-lg hover:border-white/40 hover:text-white transition-colors"
+                className="min-h-11 border border-rule-strong px-6 text-exp-micro font-medium
+                           tracking-[0.16em] uppercase text-fg-muted transition-colors
+                           duration-300 hover:border-fg-muted hover:text-fg"
               >
                 Change Difficulty
               </motion.button>
               <motion.button
                 onClick={() => difficulty && startGame(difficulty)}
-                whileHover={{ scale: 1.06, y: -2 }}
+                whileHover={{ y: -2 }}
                 whileTap={{ scale: 0.97 }}
-                className="px-8 py-3 bg-gradient-to-b from-purple-500 to-pink-600 text-white font-black text-sm uppercase tracking-wider rounded-lg shadow-[0_0_20px_rgba(168,85,247,0.5)] hover:shadow-[0_0_30px_rgba(168,85,247,0.7)] transition-shadow"
+                className="min-h-11 border border-accent px-8 text-exp-micro font-medium
+                           tracking-[0.16em] uppercase text-accent transition-colors
+                           duration-300 hover:bg-accent hover:text-ink"
               >
                 Play Again
               </motion.button>
@@ -545,7 +540,7 @@ export default function SimonSays({
             Round {round} of {difficulty && getMaxRounds(difficulty)}
           </h3>
           <p className="font-mono text-xs tracking-widest uppercase"
-            style={{ color: gamePhase === 'player-turn' ? '#a855f7' : 'rgba(255,255,255,0.4)' }}>
+            style={{ color: gamePhase === 'player-turn' ? 'var(--color-accent)' : 'var(--color-fg-muted)' }}>
             {gamePhase === 'simon-turn' && 'watch...'}
             {gamePhase === 'player-turn' && 'your turn'}
             {gamePhase === 'between-rounds' && 'get ready...'}
@@ -563,16 +558,13 @@ export default function SimonSays({
                 return (
                   <motion.div
                     key={i}
-                    className="rounded-full flex-1"
+                    className="flex-1"
                     style={{ height: 6 }}
                     animate={{
-                      backgroundColor: done
-                        ? '#a855f7'
-                        : current
-                          ? '#a855f7'
-                          : 'rgba(255,255,255,0.12)',
-                      opacity: done ? 0.6 : 1,
-                      boxShadow: current ? '0 0 8px 2px rgba(168,85,247,0.7)' : 'none',
+                      backgroundColor: done || current
+                        ? 'var(--color-accent)'
+                        : 'var(--color-rule-strong)',
+                      opacity: done ? 0.55 : 1,
                     }}
                     transition={{ duration: 0.3 }}
                   />
@@ -584,89 +576,90 @@ export default function SimonSays({
       </motion.div>
 
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3 mb-4">
-        {CARD_COLORS.map((color, index) => {
+        {CARD_COLORS.map((shape, index) => {
           const isHighlighted = highlightedCardIndex === index;
-          const highlightColor = WILDCARD_COLORS[color] || WILDCARD_COLORS.purple;
+          const hue = PAD_COLORS[shape];
           const isDisabled = gamePhase !== 'player-turn' || isPlayingSequence;
 
           return (
             <motion.button
               key={index}
-              initial={{ scale: 0, rotate: -180 }}
-              animate={{ scale: 1, rotate: 0 }}
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
               transition={{
                 duration: 0.4,
-                delay: index * 0.08,
+                delay: index * 0.06,
                 type: 'spring',
-                stiffness: 200,
-                damping: 15
+                stiffness: 260,
+                damping: 22,
               }}
               onClick={() => handleCardClick(index)}
               disabled={isDisabled}
-              style={
-                isHighlighted
-                  ? {
-                      borderColor: highlightColor,
-                      backgroundColor: `${highlightColor}20`,
-                      boxShadow: `0 10px 25px -5px ${highlightColor}50, 0 8px 10px -6px ${highlightColor}50`,
-                    }
-                  : {
-                      borderColor: `${highlightColor}50`,
-                      backgroundColor: `${highlightColor}0d`,
-                    }
-              }
-              className={`group flex flex-col items-center justify-center p-3 rounded-xl border-2 min-h-[100px] transition-all ${
-                isDisabled ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer'
-              }`}
+              aria-label={PAD_NAMES[shape]}
+              style={{
+                borderColor: isHighlighted ? hue : 'var(--color-rule-strong)',
+                backgroundColor: isHighlighted ? `${hue}1f` : 'transparent',
+                // The glow, back but on-system: the pad's own hue
+                // instead of neon purple, a crisp inner edge plus a
+                // soft bloom. Appears instantly, which is what makes
+                // a 280ms click feel like a response.
+                boxShadow: isHighlighted
+                  ? `inset 0 0 20px -9px ${hue}, 0 0 18px -10px ${hue}`
+                  : 'none',
+                transition: 'box-shadow 140ms ease-out',
+              }}
+              className={`group relative flex min-h-[100px] flex-col items-center justify-center
+                          border p-3 transition-colors duration-200 ${
+                            isDisabled ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'
+                          }`}
             >
-              <div className="relative w-9 h-9">
-                {/* Concentric pulse rings when highlighted */}
-                {isHighlighted && (
-                  <>
-                    {[0, 1, 2].map((ring) => (
-                      <motion.div
-                        key={ring}
-                        className="absolute inset-0 rounded-full"
-                        style={{
-                          borderWidth: '3px',
-                          borderStyle: 'solid',
-                          borderColor: highlightColor,
-                        }}
-                        initial={{ scale: 1, opacity: 0.8 }}
-                        animate={{
-                          scale: [1, 1.8, 2.2],
-                          opacity: [0.8, 0.3, 0],
-                        }}
-                        transition={{
-                          duration: 1.2,
-                          repeat: Infinity,
-                          delay: ring * 0.3,
-                          ease: 'easeOut',
-                        }}
-                      />
-                    ))}
-                  </>
-                )}
-                {/* Main circle */}
-                <div
-                  className="relative w-9 h-9 rounded-full transition-all"
-                  style={
-                    isHighlighted
-                      ? {
-                          borderWidth: '3px',
-                          borderStyle: 'solid',
-                          borderColor: highlightColor,
-                          backgroundColor: `${highlightColor}40`,
-                        }
-                      : {
-                          borderWidth: '3px',
-                          borderStyle: 'solid',
-                          borderColor: `${highlightColor}70`,
-                          backgroundColor: `${highlightColor}20`,
-                        }
-                  }
+              {/* Concentric pulses, restored. Three of them, staggered,
+                  in the pad's hue and a hairline thick rather than 3px
+                  of purple. The first starts with no delay so a quick
+                  click still gets one. */}
+              {isHighlighted && !reduceMotion && (
+                <>
+                  {[0, 1, 2].map((ring) => (
+                    <motion.span
+                      key={ring}
+                      className="pointer-events-none absolute inset-0"
+                      style={{ border: `1px solid ${hue}` }}
+                      initial={{ opacity: 0.5, scale: 1 }}
+                      animate={{ opacity: 0, scale: 1.09 }}
+                      transition={{
+                        duration: 0.55,
+                        repeat: Infinity,
+                        delay: ring * 0.13,
+                        ease: 'easeOut',
+                      }}
+                    />
+                  ))}
+                </>
+              )}
+
+              {/* A soft bloom behind the glyph itself */}
+              {isHighlighted && (
+                <motion.span
+                  className="pointer-events-none absolute"
+                  style={{
+                    width: 64,
+                    height: 64,
+                    borderRadius: '50%',
+                    background: `radial-gradient(circle, ${hue}2b 0%, transparent 70%)`,
+                  }}
+                  initial={{ opacity: 0, scale: 0.7 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.18, ease: 'easeOut' }}
                 />
-              </div>
+              )}
+
+              <motion.span
+                className="relative"
+                animate={{ scale: isHighlighted ? 1.07 : 1 }}
+                transition={{ type: 'spring', stiffness: 460, damping: 20 }}
+              >
+                <PadGlyph shape={shape} size={40} active={isHighlighted} />
+              </motion.span>
             </motion.button>
           );
         })}

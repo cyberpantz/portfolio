@@ -76,6 +76,45 @@ All of these have good CC0/CC-BY options:
 
 ---
 
+## Location-specific tracks
+
+Specific cities can have curated playlists that play instead of (or on top of) the default soundscape. The tracks shuffle on each visit and chain automatically when each one ends.
+
+**Step 1 — drop your files** into `public/audio/weather-vibe/locations/` (create the folder if it doesn't exist). MP3 or WAV, any sample rate.
+
+**Step 2 — register the city** in `src/experiments/weather-vibe/locationTracks.ts`:
+
+```ts
+export const LOCATION_TRACKS: LocationEntry[] = [
+  {
+    city: 'New Orleans',   // bare city name — matches "New Orleans, Louisiana" or any region suffix
+    tracks: [
+      { src: '/audio/weather-vibe/locations/new-orleans-jazz.mp3' },
+      { src: '/audio/weather-vibe/locations/new-orleans-brass.mp3', gain: 0.8 },
+    ],
+  },
+];
+```
+
+That's it — no other files need to change.
+
+**Behavior modes** (optional `behavior` field on each track, defaults to `replace`):
+
+| Mode | What plays |
+|------|-----------|
+| `replace` | Location track via ambient bus. Ambient recordings skipped; procedural synths (wind, city hum) still play. |
+| `layer` | Location track added on top of everything — nothing is skipped. |
+| `takeover` | Only the location track; all other audio silenced. Routed directly to master. |
+
+Set `behavior` consistently across all tracks in one city entry — the first shuffled track's value applies for the whole visit.
+
+**Gain tips for location tracks:**
+- Start at `gain: 0.8` and adjust by ear. Unity (`1.0`) can overpower the procedural layer.
+- For `layer` mode, keep it lower (`0.5–0.6`) so it doesn't drown the ambient bed.
+- For `takeover` mode, `1.0` is usually right since it's the only thing playing.
+
+---
+
 ## Adjusting gain levels
 
 If a recording feels too loud or quiet relative to the procedural layer, edit `audio.ts`

@@ -1,0 +1,139 @@
+{
+  "id": "css",
+  "title": "CSS",
+  "blurb": "Eight questions about the language you have been writing for years. This one is fetched at runtime from a JSON endpoint standing in for a CMS or API — same engine, remote content.",
+  "questions": [
+    {
+      "id": "cascade",
+      "kind": "text",
+      "prompt": "The first C in CSS stands for—",
+      "choices": [
+        { "id": "cascading", "label": "Cascading" },
+        { "id": "computed", "label": "Computed" },
+        { "id": "component", "label": "Component" },
+        { "id": "class", "label": "Class" }
+      ],
+      "correctId": "cascading",
+      "reveal": "Cascading. The cascade is the part everyone fights and almost nobody reads about."
+    },
+    {
+      "id": "stacking",
+      "kind": "text",
+      "prompt": "Which of these creates a new stacking context?",
+      "aside": "This is why your z-index: 9999 did nothing.",
+      "choices": [
+        { "id": "opacity", "label": "opacity: 0.99" },
+        { "id": "float", "label": "float: left" },
+        { "id": "overflow", "label": "overflow: hidden" },
+        { "id": "display", "label": "display: block" }
+      ],
+      "correctId": "opacity",
+      "reveal": "Any opacity below 1 does it. So do transform, filter, will-change, backdrop-filter and about twenty others. The element is now trapped in its parent's layer, and no z-index will save it."
+    },
+    {
+      "id": "em",
+      "kind": "text",
+      "prompt": "When you set font-size in em, it is relative to—",
+      "choices": [
+        { "id": "parent", "label": "The parent's font-size" },
+        { "id": "own", "label": "The element's own font-size" },
+        { "id": "root", "label": "The root font-size" },
+        { "id": "viewport", "label": "The viewport width" }
+      ],
+      "correctId": "parent",
+      "reveal": "The parent's — but for every other property, em is relative to the element's own font-size. Same unit, two meanings, no warning."
+    },
+    {
+      "id": "rem",
+      "kind": "text",
+      "prompt": "rem is relative to—",
+      "choices": [
+        { "id": "root", "label": "The root element's font-size" },
+        { "id": "parent", "label": "The parent's font-size" },
+        { "id": "body", "label": "The body's font-size" },
+        { "id": "default", "label": "Always 16px" }
+      ],
+      "correctId": "root",
+      "reveal": "Root em. Named by someone who had already used up em and was not going to start over."
+    },
+    {
+      "id": "space",
+      "kind": "text",
+      "prompt": "Which one leaves the element's space in the layout?",
+      "choices": [
+        { "id": "visibility", "label": "visibility: hidden" },
+        { "id": "display", "label": "display: none" },
+        { "id": "content", "label": "content-visibility: hidden" },
+        { "id": "hidden", "label": "The hidden attribute" }
+      ],
+      "correctId": "visibility",
+      "reveal": "visibility: hidden keeps the box and hides the paint. display: none removes it from the layout entirely, and from the accessibility tree with it."
+    },
+    {
+      "id": "position",
+      "kind": "text",
+      "prompt": "The initial value of position is—",
+      "choices": [
+        { "id": "static", "label": "static" },
+        { "id": "relative", "label": "relative" },
+        { "id": "initial", "label": "initial" },
+        { "id": "auto", "label": "auto" }
+      ],
+      "correctId": "static",
+      "reveal": "static, which is the one value that makes top, right, bottom and left do nothing at all."
+    },
+    {
+      "id": "justify",
+      "kind": "text",
+      "prompt": "In flexbox, justify-content aligns along—",
+      "choices": [
+        { "id": "main", "label": "The main axis" },
+        { "id": "cross", "label": "The cross axis" },
+        { "id": "horizontal", "label": "Always horizontally" },
+        { "id": "block", "label": "The block axis" }
+      ],
+      "correctId": "main",
+      "reveal": "The main axis — whichever one flex-direction just made it. This is how everyone loses ten minutes to a column."
+    },
+    {
+      "id": "specificity",
+      "kind": "text",
+      "prompt": "Which selector wins?",
+      "choices": [
+        { "id": "id", "label": "#nav a" },
+        { "id": "class", "label": ".nav .link a" },
+        { "id": "element", "label": "header nav ul li a" },
+        { "id": "attr", "label": "a[href^=\"/\"]" }
+      ],
+      "correctId": "id",
+      "reveal": "One id beats any number of classes, which beats any number of elements. Specificity does not add up across columns — it is compared left to right, and the id column is checked first."
+    }
+  ],
+  "results": [
+    {
+      "min": 8,
+      "title": "Reads The Spec",
+      "body": "Eight for eight. You have opened the CSS Working Group's GitHub on purpose, possibly more than once."
+    },
+    {
+      "min": 6,
+      "title": "Fluent",
+      "body": "You know why things break before you open devtools. That is most of the job."
+    },
+    {
+      "min": 4,
+      "title": "Working Knowledge",
+      "body": "You can build the thing. You will occasionally argue with it in public."
+    },
+    {
+      "min": 2,
+      "title": "Trial And Error",
+      "body": "You get there eventually, usually by adding !important and looking away."
+    },
+    {
+      "min": 0,
+      "title": "Fought The Cascade",
+      "body": "The cascade won. It usually does, and it has been doing this since 1996."
+    }
+  ]
+}

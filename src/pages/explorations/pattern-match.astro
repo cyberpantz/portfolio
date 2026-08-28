@@ -1,7 +1,12 @@
 ---
-import Base from '../../layouts/Base.astro';
+import ExpBase from '../../layouts/ExpBase.astro';
+import ExpChrome from '../../components/exp/ExpChrome.astro';
 import SimonSaysGame from '../../components/games/SimonSaysGame';
 ---
-<Base title="Pattern Match — Frank Young" description="Color sequence memory game inspired by the 1980s Simon.">
-  <SimonSaysGame client:load />
-</Base>
+
+<ExpBase title="Pattern Match — Frank Young" description="Colour and sound sequence memory, after the 1980s Simon.">
+  <ExpChrome name="Pattern Match" kind="Game" />
+  <main id="main" class="exp-stage">
+    <SimonSaysGame client:load />
+  </main>
+</ExpBase>

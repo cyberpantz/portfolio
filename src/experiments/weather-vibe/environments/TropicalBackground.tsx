@@ -207,9 +207,21 @@ interface Props {
   palette: Palette;
   groundY: number;
   weatherState: WeatherState;
+  density?: 'urban' | 'town' | 'rural';
 }
 
-export default function TropicalBackground({ palette: _palette, groundY, weatherState: _weatherState }: Props) {
+export default function TropicalBackground({
+  palette: _palette,
+  groundY,
+  weatherState: _weatherState,
+  density = 'rural',
+}: Props) {
+  // See CoastalBackground: a dense city keeps the water horizon and loses the
+  // beach, surf and palms, which would otherwise cut through downtown.
+  if (density === 'urban') {
+    return <Ocean groundY={groundY} />;
+  }
+
   return (
     <>
       <Ocean groundY={groundY} />

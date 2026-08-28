@@ -1,0 +1,20 @@
+---
+interface Props {
+  num: string;
+  id: string;
+  label: string;
+}
+const { num, id, label } = Astro.props;
+---
+
+{/*
+  A static border rather than a scaleX transition keyed to an
+  observer, so the structure is present whether or not the
+  enhancement script ever runs.
+*/}
+<div class="reveal mb-[clamp(44px,6vw,80px)] flex items-baseline gap-5 border-b border-ink pb-[22px]">
+  <span class="font-display text-xl italic text-accent [font-variant-numeric:lining-nums]" aria-hidden="true">
+    {num}
+  </span>
+  <h2 class="text-meta font-medium tracking-[0.2em] uppercase text-muted" id={id}>{label}</h2>
+</div>

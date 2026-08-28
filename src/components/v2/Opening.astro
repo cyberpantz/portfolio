@@ -1,0 +1,64 @@
+---
+const META = [
+  // "Currently" claimed the ChargePoint role was ongoing. It ended in
+  // April 2026 — "Most recently" states the same experience accurately,
+  // and the Status row below carries the availability.
+  { k: 'Most recently', v: 'Staff Frontend Engineer, ChargePoint — Fleet Charging' },
+  { k: 'Previously', v: 'Tesla, Kaiser Permanente, Power-One / ABB, Fat Spaniel' },
+  { k: 'Focus', v: 'The intersection of creative and frontend engineering' },
+];
+
+const DT = 'pt-1 text-meta font-medium tracking-[0.16em] uppercase text-muted max-sm:pt-0';
+// 116px of label column leaves too little for the value on a phone,
+// so the pair stacks rather than wrapping raggedly.
+const ROW =
+  'grid grid-cols-[116px_1fr] gap-4 border-b border-rule-2 py-[13px] text-base text-ink-2 ' +
+  'last:border-b-0 max-sm:grid-cols-1 max-sm:gap-1';
+---
+
+{/* No 100vh lock — spec §8. Padding-driven, so the lede and the
+    first rule sit near the fold on a laptop. */}
+<section
+  id="top"
+  aria-labelledby="h-open"
+  class="mx-auto max-w-shell px-gut pt-[clamp(56px,8vw,104px)] pb-[clamp(64px,9vw,120px)]"
+>
+  <div class="reveal">
+    <p class="mb-[clamp(24px,3.4vw,40px)] text-meta font-medium tracking-[0.2em] uppercase text-muted">
+      Application development · user experience · systems · prototyping
+    </p>
+
+    {/* Descriptive, not a slogan — spec §3 asks the headline to name
+        the service rather than behave like a campaign line. */}
+    <h1
+      id="h-open"
+      class="max-w-[15ch] font-display text-display tracking-[-0.026em] [text-wrap:balance]
+             [overflow-wrap:break-word] max-[400px]:tracking-[-0.018em]"
+    >
+      Form and <em class="font-normal italic">function</em> .
+    </h1>
+  </div>
+
+  <div
+    class="reveal mt-[clamp(44px,6vw,72px)] grid grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)]
+           gap-[clamp(36px,7vw,104px)] border-t border-rule pt-8 max-xl:grid-cols-1"
+  >
+    <p class="text-standfirst tracking-[-0.007em] text-ink-2 [text-wrap:pretty]">
+      Twenty years spent where product thinking meets the front end — turning functional requirements into well-built UI that goes the extra mile.
+    </p>
+
+    <dl>
+      {META.map((row) => (
+        <div class={ROW}>
+          <dt class={DT}>{row.k}</dt>
+          <dd>{row.v}</dd>
+        </div>
+      ))}
+      <div class={ROW}>
+        <dt class={DT}>Status</dt>
+        {/* Reads as available by word, not by colour alone */}
+        <dd class="font-medium text-accent">Open to new work</dd>
+      </div>
+    </dl>
+  </div>
+</section>

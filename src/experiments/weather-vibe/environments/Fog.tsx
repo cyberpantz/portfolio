@@ -38,7 +38,10 @@ export default function Fog({ noGrass = false }: { noGrass?: boolean }) {
     if (matRef.current) matRef.current.uniforms.uTime.value = clock.getElapsedTime();
     const t = clock.getElapsedTime();
     camera.position.x = Math.sin(t * 0.09) * 1.0;
-    camera.position.z = -t * 0.35;
+    // Forward drift now lives in CameraRig (cameraRig.ts). It used to be
+    // `camera.position.z = -t * 0.35` here — linear and unbounded, so a long
+    // session ended up inside the scenery. The rig eases it within a fixed
+    // reach and scales it down for cities.
     camera.position.y = 0.8 + Math.sin(t * 0.5) * 0.18 + Math.sin(t * 1.2) * 0.06;
     camera.rotation.z = Math.sin(t * 0.07) * 0.008;
   });

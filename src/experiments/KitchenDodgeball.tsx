@@ -666,7 +666,7 @@ export default function KitchenDodgeball({
 
         {/* Start Screen - Retro Arcade Style */}
         {gameState === 'ready' && (
-          <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-b from-purple-900 via-indigo-900 to-black/95 backdrop-blur-sm px-4 py-6 overflow-y-auto">
+          <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-b from-purple-900 via-indigo-900 to-black/95 backdrop-blur-xs px-4 py-6 overflow-y-auto">
             <div className="flex flex-col items-center w-full max-w-2xl">
               {/* Retro Title with Glow */}
               <motion.div
@@ -814,7 +814,7 @@ export default function KitchenDodgeball({
 
         {/* Win Screen */}
         {gameState === 'won' && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/70 backdrop-blur-sm">
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/70 backdrop-blur-xs">
             <motion.div
               className="text-6xl mb-4"
               initial={{ scale: 0 }}
@@ -855,7 +855,7 @@ export default function KitchenDodgeball({
 
         {/* Lose Screen */}
         {gameState === 'lost' && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/70 backdrop-blur-sm">
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/70 backdrop-blur-xs">
             <motion.div
               className="text-6xl mb-4"
               initial={{ scale: 0 }}

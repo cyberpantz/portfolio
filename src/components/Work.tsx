@@ -17,7 +17,7 @@ function WorkRow({ item, defaultOpen }: { item: Role; defaultOpen?: boolean }) {
         className="w-full flex items-center gap-4 py-5 select-none cursor-pointer text-left"
       >
         <span
-          className={`w-2 h-2 rounded-full flex-shrink-0 transition-all duration-300
+          className={`w-2 h-2 rounded-full shrink-0 transition-all duration-300
                       ${open
                         ? 'bg-accent border-accent shadow-[0_0_8px_rgb(var(--accent)/0.4)]'
                         : 'bg-transparent border border-rule-strong'}`}
@@ -38,7 +38,7 @@ function WorkRow({ item, defaultOpen }: { item: Role; defaultOpen?: boolean }) {
           </div>
         </div>
 
-        <div className="flex items-center gap-4 flex-shrink-0">
+        <div className="flex items-center gap-4 shrink-0">
           <span className="font-mono text-[11px] text-fg-muted">{item.yr}</span>
           <span
             className={`font-mono text-base inline-block transition-transform duration-300
@@ -58,10 +58,10 @@ function WorkRow({ item, defaultOpen }: { item: Role; defaultOpen?: boolean }) {
             const { text, dates } = normalizeBullet(raw);
             return (
               <div key={i} className="flex gap-3 items-start mb-2.5">
-                <span className="w-1 h-1 rounded-full bg-accent flex-shrink-0 mt-[7px]" />
+                <span className="w-1 h-1 rounded-full bg-accent shrink-0 mt-[7px]" />
                 <span className="text-sm text-fg-sub leading-[1.65] flex-1">{text}</span>
                 {dates && (
-                  <span className="font-mono text-[10px] text-fg-muted tracking-[0.06em] flex-shrink-0 mt-[5px]">
+                  <span className="font-mono text-[10px] text-fg-muted tracking-[0.06em] shrink-0 mt-[5px]">
                     {dates}
                   </span>
                 )}

@@ -1,0 +1,208 @@
+---
+import V2Base from '../layouts/V2Base.astro';
+
+/**
+ * Astro emits this to dist/404.html and Netlify serves it for any
+ * unmatched route automatically — no redirect rule needed.
+ *
+ * The joke is the format, not the font size: it is laid out exactly
+ * like a case study, with an eyebrow, a standfirst, the same three
+ * notes columns, and a captioned plate. The plate is empty.
+ */
+
+const NOTES = [
+  {
+    label: 'The problem',
+    body: 'You have arrived at a URL that resolves to nothing. This is philosophically interesting and practically useless.',
+  },
+  {
+    label: 'What we attempted',
+    body: 'Refreshing. Refreshing harder. Reading the address aloud, slowly, in case it responded to tone. Checking the git log. Checking a second git log that turned out to be the same git log. Blaming the cache. Blaming the router. Blaming ourselves, briefly, before returning to blaming the cache.',
+  },
+  {
+    label: 'Root cause',
+    body: 'Undetermined. The leading theory is that this page was never written. A competing theory, held by one team member with some conviction, is that it was written and is simply shy.',
+  },
+];
+
+const THEORIES = [
+  'The page was deployed to a different website by mistake and is doing very well there.',
+  'The page exists but has been redacted by a party that will not identify itself.',
+  'The page was over-scoped, grew a settings panel, and had to be put down.',
+  'The page is at the bottom of a backlog, beneath a ticket titled “misc.”',
+  'The page achieved sentience, read its own analytics, and left.',
+  'There was never a page. There was only ever this page, about the page.',
+  'The page is behind a feature flag nobody remembers creating.',
+  'The page went to get milk in 2019.',
+];
+---
+
+<V2Base
+  title="404 — Frank Young"
+  description="The page you asked for does not exist. An investigation is ongoing."
+>
+  <a
+    class="absolute top-0 -left-[9999px] z-[200] bg-ink px-6 py-4 text-[13px] tracking-[0.12em]
+           uppercase text-paper focus:top-4 focus:left-4"
+    href="#main">Skip to content</a
+  >
+
+  <header class="border-b border-rule-2 bg-paper">
+    <div class="mx-auto flex min-h-19 max-w-shell items-center px-gut">
+      <a
+        href="/"
+        class="whitespace-nowrap py-3 font-display text-[23px] tracking-[-0.018em] text-ink hover:text-accent"
+        >Frank Young</a
+      >
+    </div>
+  </header>
+
+  <main id="main" class="mx-auto max-w-shell px-gut pt-[clamp(48px,7vw,96px)] pb-[clamp(64px,9vw,120px)]">
+    <div
+      class="grid grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] items-start gap-[clamp(40px,5vw,88px)]
+             max-lg:grid-cols-1 max-lg:gap-[clamp(36px,6vw,56px)]"
+    >
+      <div>
+        <p class="mb-[clamp(18px,2.4vw,28px)] text-meta font-medium tracking-[0.2em] uppercase text-muted">
+          Error 404 · Filed 2026 · Status: unresolved
+        </p>
+
+        <h1
+          class="font-display text-[clamp(44px,7.4vw,112px)] leading-[0.92] tracking-[-0.03em]
+                 [text-wrap:balance] max-[400px]:tracking-[-0.018em]"
+        >
+          This page does not exist.
+        </h1>
+
+        <p class="mt-5 max-w-[32ch] font-display text-[clamp(19px,1.7vw,25px)] italic leading-[1.36] text-ink-3">
+          We have checked. We have checked again. We sent someone.
+        </p>
+
+        <p class="mt-[clamp(24px,3vw,36px)] max-w-[58ch] text-base/[1.76] text-ink-2 [text-wrap:pretty]">
+          The address you requested has been cross-referenced against every page on this
+          site, several pages on other sites, and one page a colleague described
+          confidently from memory. No match was found. A formal search was opened at 09:14
+          and remains open at the time of writing.
+        </p>
+
+        {/* The requested path, filled in by script. textContent only —
+            never innerHTML with anything that came out of the URL. */}
+        <p class="mt-7 border-t border-rule pt-5 text-meta tracking-[0.14em] uppercase text-muted">
+          Address on file
+        </p>
+        <p
+          id="requested-path"
+          class="mt-1.5 [overflow-wrap:anywhere] font-display text-[clamp(17px,1.6vw,22px)] text-ink"
+        >
+          /the-page-you-were-looking-for
+        </p>
+
+        <div
+          class="mt-[clamp(32px,4vw,48px)] flex flex-col gap-[clamp(20px,2.4vw,30px)]
+                 border-t border-rule pt-[clamp(24px,3vw,32px)]"
+        >
+          {NOTES.map((n) => (
+            <div>
+              <h2 class="mb-2.5 text-meta font-medium tracking-[0.18em] uppercase text-accent">
+                {n.label}
+              </h2>
+              <p class="max-w-[54ch] text-caption text-ink-2 [text-wrap:pretty]">{n.body}</p>
+            </div>
+          ))}
+        </div>
+
+        <div class="mt-[clamp(28px,3.4vw,42px)] border-t border-rule pt-[clamp(24px,3vw,32px)]">
+          <h2 class="mb-2.5 text-meta font-medium tracking-[0.18em] uppercase text-accent">
+            Working theory <span id="theory-n">1</span> of {THEORIES.length}
+          </h2>
+          <p
+            id="theory"
+            class="max-w-[54ch] min-h-[3.4em] text-caption text-ink-2 [text-wrap:pretty]"
+          >
+            {THEORIES[0]}
+          </p>
+          <button
+            id="theory-next"
+            type="button"
+            hidden
+            class="mt-4 inline-flex min-h-11 cursor-pointer items-center gap-2.5 border border-rule
+                   px-5 text-meta font-medium tracking-[0.16em] uppercase text-muted
+                   transition-colors duration-300 hover:border-ink-3 hover:text-ink"
+          >
+            Advance the investigation <span aria-hidden="true">→</span>
+          </button>
+        </div>
+
+        <div class="mt-[clamp(36px,5vw,60px)] flex flex-wrap items-center gap-x-8 gap-y-3">
+          <a
+            class="inline-flex min-h-11 items-center gap-3 bg-ink px-8 py-4 text-meta font-medium
+                   tracking-[0.18em] uppercase text-paper transition-colors duration-500
+                   ease-editorial hover:bg-accent hover:text-on-accent"
+            href="/"
+          >
+            <span aria-hidden="true">←</span> Back to solid ground
+          </a>
+          <a
+            class="ul-draw inline-flex min-h-11 items-center text-meta font-medium tracking-[0.16em]
+                   uppercase text-accent"
+            href="/#projects">Selected projects</a
+          >
+          <a
+            class="ul-draw inline-flex min-h-11 items-center text-meta font-medium tracking-[0.16em]
+                   uppercase text-accent"
+            href="/explorations">Explorations</a
+          >
+        </div>
+      </div>
+
+      {/*
+        The punchline: a plate, captioned in the same voice as every
+        other figure on this site, containing nothing at all.
+      */}
+      <figure class="m-0 lg:sticky lg:top-[clamp(48px,7vw,96px)]">
+        <div
+          class="flex aspect-4/3 items-center justify-center border border-rule bg-paper-2"
+          role="img"
+          aria-label="An empty picture frame, representing the missing page."
+        >
+          <span class="px-8 text-center text-meta tracking-[0.2em] uppercase text-muted">
+            Nothing
+          </span>
+        </div>
+        <figcaption class="mt-3 text-meta/[1.6] tracking-[0.12em] uppercase text-muted">
+          Fig. 404 — The absent page, photographed in its natural state. Shown actual size.
+        </figcaption>
+      </figure>
+    </div>
+  </main>
+
+  <script is:inline define:vars={{ THEORIES }}>
+    (function () {
+      var pathEl = document.getElementById('requested-path');
+      if (pathEl) {
+        // textContent, never innerHTML — this string comes from the URL.
+        pathEl.textContent = location.pathname + location.search;
+      }
+
+      var btn = document.getElementById('theory-next');
+      var out = document.getElementById('theory');
+      var num = document.getElementById('theory-n');
+      if (!btn || !out || !num) return;
+
+      // Start somewhere other than the first one, so two people
+      // comparing notes get different theories.
+      var i = Math.floor(Math.random() * THEORIES.length);
+      var show = function () {
+        out.textContent = THEORIES[i];
+        num.textContent = String(i + 1);
+      };
+      show();
+
+      btn.hidden = false;
+      btn.addEventListener('click', function () {
+        i = (i + 1) % THEORIES.length;
+        show();
+      });
+    })();
+  </script>
+</V2Base>

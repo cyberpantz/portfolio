@@ -1,21 +1,65 @@
 ---
-import Base from '../layouts/Base.astro';
-import Nav from '../components/Nav.tsx';
-import Hero from '../components/Hero.tsx';
-import Work from '../components/Work.tsx';
-import Projects from '../components/Projects.tsx';
-import Skills from '../components/Skills.astro';
-import Contact from '../components/Contact.astro';
-import Footer from '../components/Footer.astro';
+import V2Base from '../layouts/V2Base.astro';
+import Masthead from '../components/v2/Masthead.astro';
+import Opening from '../components/v2/Opening.astro';
+import About from '../components/v2/About.astro';
+import Work from '../components/v2/Work.astro';
+import Projects from '../components/v2/Projects.astro';
+import Explorations from '../components/v2/Explorations.astro';
+import Colophon from '../components/v2/Colophon.astro';
 ---
-<Base>
-  <Nav client:load />
-  <div style="padding-top: 52px;">
-    <Hero client:load />
-    <Work client:load />
-    <Projects client:load />
-<Skills />
-    <Contact />
-    <Footer />
-  </div>
-</Base>
+
+<V2Base>
+  <a
+    class="absolute top-0 -left-[9999px] z-[200] bg-ink px-6 py-4 text-[13px] tracking-[0.12em]
+           uppercase text-paper focus:top-4 focus:left-4"
+    href="#main">Skip to content</a
+  >
+
+  <Masthead />
+
+  {/* scroll-margin clears the sticky masthead; it grows a second row
+      below lg, so the offset grows with it */}
+  <main id="main" class="[&_section]:scroll-mt-21 max-lg:[&_section]:scroll-mt-33">
+    <Opening />
+    <About />
+    <Work />
+    <Projects />
+    <Explorations />
+    <Colophon />
+  </main>
+
+  {/*
+    Reveal-on-scroll is opt-in: this script marks <html data-anim>,
+    which is the only thing that arms the opacity:0 start state in
+    v2.css. Without JS the page renders fully rather than blank.
+  */}
+  <script is:inline>
+    (function () {
+      if (!('IntersectionObserver' in window)) return;
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+      document.documentElement.setAttribute('data-anim', '');
+
+      var io = new IntersectionObserver(
+        function (entries) {
+          entries.forEach(function (e) {
+            if (!e.isIntersecting) return;
+            e.target.setAttribute('data-in', '1');
+            io.unobserve(e.target);
+          });
+        },
+        { rootMargin: '0px 0px -8% 0px', threshold: 0.04 }
+      );
+
+      var items = document.querySelectorAll('.reveal');
+      for (var i = 0; i < items.length; i++) {
+        // Anything already on screen at load is shown immediately —
+        // no fade-in on content the visitor is already looking at.
+        var r = items[i].getBoundingClientRect();
+        if (r.top < window.innerHeight * 0.92) items[i].setAttribute('data-in', '1');
+        else io.observe(items[i]);
+      }
+    })();
+  </script>
+</V2Base>

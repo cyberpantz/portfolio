@@ -1,0 +1,49 @@
+---
+import '../styles/explorations.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = 'Explorations — Frank Young',
+  description = 'Games, generative work and small experiments.',
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{title}</title>
+
+    {/* These pages are fixed dark by design, so color-scheme is
+        declared rather than resolved — form controls, scrollbars and
+        the browser's own chrome match without a theme script. */}
+    <meta name="color-scheme" content="dark" />
+    <meta name="theme-color" content="#0a0a0a" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500&family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;1,6..96,400&display=swap"
+    />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+
+    {/* Per-page head additions — the Quizzolator uses this to preload
+        its subset specimen fonts. */}
+    <slot name="head" />
+  </head>
+
+  <body class="bg-ink text-fg" style="color-scheme: dark;">
+    <slot />
+  </body>
+</html>

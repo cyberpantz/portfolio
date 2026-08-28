@@ -54,7 +54,10 @@ export default function Overcast({ noGrass = false }: { noGrass?: boolean }) {
   useFrame(({ clock, camera }) => {
     const t = clock.getElapsedTime();
     camera.position.x = Math.sin(t * 0.06) * 1.5;
-    camera.position.z = -t * 0.45;
+    // Forward drift now lives in CameraRig (cameraRig.ts). It used to be
+    // `camera.position.z = -t * 0.45` here — linear and unbounded, so a long
+    // session ended up inside the scenery. The rig eases it within a fixed
+    // reach and scales it down for cities.
     camera.position.y = 1.2 + Math.sin(t * 0.35) * 0.25;
     camera.rotation.z = Math.sin(t * 0.05) * 0.012;
   });

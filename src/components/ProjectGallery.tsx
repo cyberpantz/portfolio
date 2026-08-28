@@ -84,7 +84,7 @@ export default function ProjectGallery({ project, imageIdx, onImageChange }: Pro
 
       {/* Arrow nav — only when >1 image */}
       {hasMultiple && (
-        <div className="flex items-center justify-between border-t border-rule flex-shrink-0 px-4"
+        <div className="flex items-center justify-between border-t border-rule shrink-0 px-4"
              style={{ height: 44 }}>
           <button
             type="button"

@@ -1,0 +1,48 @@
+---
+interface Props {
+  /** Name of the experiment, shown on the right. */
+  name: string;
+  /** Kind label — Game, Interactive, Experience. */
+  kind?: string;
+}
+
+const { name, kind } = Astro.props;
+---
+
+{/*
+  The experiment pages previously had no chrome at all — a full-screen
+  React mount with no way back and no title. This is deliberately thin:
+  a hairline bar that names where you are and how to leave, without
+  competing with the thing it frames.
+*/}
+<header
+  class="sticky top-0 z-50 border-b border-rule bg-ink/95 backdrop-blur-[2px]"
+>
+  {/* Fixed height, not min-height: the stage below reserves exactly
+      --exp-chrome-h, so the bar must not grow past it. */}
+  <div class="mx-auto flex h-[var(--exp-chrome-h)] max-w-[1320px] items-center gap-4 px-5 sm:px-8">
+    <a
+      href="/explorations"
+      class="group/back inline-flex min-h-11 items-center gap-2.5 font-sans text-exp-micro
+             font-medium tracking-[0.16em] uppercase text-fg-muted transition-colors
+             hover:text-fg"
+    >
+      <span
+        aria-hidden="true"
+        class="inline-block transition-transform duration-500 ease-editorial
+               group-hover/back:-translate-x-1"
+        >←</span
+      >
+      Explorations
+    </a>
+
+    <span class="ml-auto flex items-baseline gap-3 truncate">
+      {kind && (
+        <span class="font-sans text-exp-micro tracking-[0.16em] uppercase text-fg-muted max-sm:hidden">
+          {kind}
+        </span>
+      )}
+      <span class="truncate font-serif text-lg text-fg">{name}</span>
+    </span>
+  </div>
+</header>

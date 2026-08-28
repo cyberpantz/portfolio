@@ -53,7 +53,7 @@ export default function Hero() {
           <a
             ref={mailRef}
             href="#"
-            className="inline-flex px-5 py-2.5 rounded-sm bg-accent text-ink
+            className="inline-flex px-5 py-2.5 rounded-xs bg-accent text-ink
                        font-mono text-xs font-medium tracking-[0.06em]
                        transition-opacity hover:opacity-85"
           >
@@ -62,7 +62,7 @@ export default function Hero() {
           <a
             href="#work"
             onClick={e => { e.preventDefault(); document.getElementById('work')?.scrollIntoView({ behavior: 'smooth' }); }}
-            className="inline-flex px-5 py-2.5 rounded-sm border border-rule-strong text-fg-sub
+            className="inline-flex px-5 py-2.5 rounded-xs border border-rule-strong text-fg-sub
                        font-mono text-xs tracking-[0.06em]
                        transition-colors hover:text-fg hover:border-fg-sub"
           >

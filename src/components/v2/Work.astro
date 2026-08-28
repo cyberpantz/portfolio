@@ -1,0 +1,92 @@
+---
+import SectionHead from './SectionHead.astro';
+import { EXPERIENCE } from '../../data/experience';
+
+const bulletText = (b: string | { text: string; dates?: string }) =>
+  typeof b === 'string' ? b : b.text;
+const bulletDates = (b: string | { text: string; dates?: string }) =>
+  typeof b === 'string' ? undefined : b.dates;
+---
+
+<section
+  id="work"
+  aria-labelledby="h-work"
+  class="mx-auto max-w-shell px-gut py-[clamp(80px,12vw,160px)]"
+>
+  <SectionHead num="02" id="h-work" label="Work" />
+
+  <div class="reveal mb-[clamp(36px,5vw,60px)] max-w-[62ch]">
+    <p class="text-standfirst tracking-[-0.007em] text-ink-2 [text-wrap:pretty]">
+      Seven chapters worth naming, and the years before them spend building my foundation.
+    </p>
+  </div>
+
+  {/*
+    Native <details> rather than a button plus a height-measuring
+    panel. The browser owns the expanded state, keyboard operation
+    and the accessibility tree; the content is reachable with JS
+    disabled; and there is no measurement to jam if a toggle is
+    interrupted mid-transition. The height animation lives in
+    v2.css behind an @supports and is never load-bearing.
+  */}
+  <div class="reveal">
+    {EXPERIENCE.map((role, i) => (
+      <details
+        class="job group border-b border-rule-2 first-of-type:border-t first-of-type:border-t-rule last-of-type:border-b-rule"
+        open={i === 0}
+      >
+        <summary
+          class="grid cursor-pointer list-none grid-cols-[clamp(72px,8vw,124px)_minmax(0,1fr)_auto]
+                 items-baseline gap-x-[clamp(16px,3vw,44px)] py-[clamp(22px,2.6vw,32px)]
+                 max-md:grid-cols-[minmax(0,1fr)_auto]"
+        >
+          <span
+            class="pt-2 font-display text-base text-muted [font-variant-numeric:tabular-nums_lining-nums] max-md:hidden"
+            >{role.yr}</span
+          >
+          <span>
+            {/*
+              The h3 sits inside <summary> so each role appears in the
+              document outline — screen-reader users navigate this list
+              by heading. summary must be the first child of details,
+              so the heading goes inside it rather than wrapping it.
+            */}
+            <h3
+              class="block font-display text-job font-normal tracking-[-0.026em] text-ink-3
+                     transition-colors duration-500 group-hover:text-ink group-open:text-ink"
+            >
+              {role.co}
+            </h3>
+            <span class="mt-2 block text-sm text-muted">{role.role}</span>
+          </span>
+          <span class="job-sign mt-3.5" aria-hidden="true"></span>
+        </summary>
+
+        <div
+          class="grid grid-cols-[clamp(72px,8vw,124px)_minmax(0,1fr)] gap-x-[clamp(16px,3vw,44px)]
+                 pb-[clamp(28px,3.4vw,44px)] max-md:grid-cols-1"
+        >
+          <span aria-hidden="true" class="max-md:hidden"></span>
+          <div>
+            {role.blurb && (
+              <p class="mb-[18px] max-w-[64ch] text-body text-ink-2 [text-wrap:pretty]">{role.blurb}</p>
+            )}
+            <ul class="rule-list flex max-w-[64ch] list-none flex-col gap-[13px]">
+              {role.bullets.map((b) => (
+                <li class="grid grid-cols-[auto_1fr] gap-4 text-base/[1.72] text-ink-2">
+                  <span>
+                    {bulletText(b)}
+                    {bulletDates(b) && <span class="text-muted"> · {bulletDates(b)}</span>}
+                  </span>
+                </li>
+              ))}
+            </ul>
+            <p class="mt-6 text-meta tracking-[0.12em] uppercase text-muted">
+              {role.tags.join(' · ')}
+            </p>
+          </div>
+        </div>
+      </details>
+    ))}
+  </div>
+</section>
