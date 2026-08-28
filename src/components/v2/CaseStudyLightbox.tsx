@@ -26,9 +26,22 @@ import 'yet-another-react-lightbox/plugins/captions.css';
 
 interface Props {
   slides: Slide[];
+  /**
+   * The project this instance belongs to.
+   *
+   * REQUIRED for correctness, not decoration. The homepage renders one case
+   * study per project, each inside its own <dialog>, so several of these
+   * islands are alive at once. The first version queried
+   * `[data-cs-shot]` across the whole document, which meant every instance
+   * bound to every plate on the page: clicking one project's third plate
+   * opened index 2 of ALL THREE projects simultaneously, and whichever
+   * painted last was the one you saw. The indices were per-project; the
+   * selector was not.
+   */
+  group: string;
 }
 
-export default function CaseStudyLightbox({ slides }: Props) {
+export default function CaseStudyLightbox({ slides, group }: Props) {
   const [index, setIndex] = useState(-1);
   const [portalRoot, setPortalRoot] = useState<HTMLElement | null>(null);
 
@@ -36,7 +49,9 @@ export default function CaseStudyLightbox({ slides }: Props) {
 
   useEffect(() => {
     const triggers = Array.from(
-      document.querySelectorAll<HTMLElement>('[data-cs-shot]'),
+      document.querySelectorAll<HTMLElement>(
+        `[data-cs-group="${CSS.escape(group)}"][data-cs-shot]`,
+      ),
     );
 
     const onClick = (event: Event) => {
@@ -49,9 +64,7 @@ export default function CaseStudyLightbox({ slides }: Props) {
 
     triggers.forEach((el) => el.addEventListener('click', onClick));
     return () => triggers.forEach((el) => el.removeEventListener('click', onClick));
-    // Re-bound whenever the slide set changes, which is how a different
-    // project's plates get picked up when the dialog swaps content.
-  }, [slides]);
+  }, [slides, group]);
 
   return (
     <Lightbox

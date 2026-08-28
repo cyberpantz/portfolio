@@ -86,8 +86,7 @@ export const PROJECTS_V2: ProjectV2[] = [
     status: null,
     tag: 'A bake journal that reads your loaf and tells you what the crumb means.',
     cover: crumbCover,
-    coverAlt:
-      "The Crumb's landing headline, \"Read between the crumbs\", above a Start your bake log button.",
+    coverAlt: "Lev, The Crumb's illustrated sourdough mascot, smiling.",
     para:
       'Sourdough has a slow feedback loop — change one variable, wait a week, guess at the result. The Crumb closes it. You log a bake, photograph the crumb, and get a structured read on fermentation, crust and shaping, scored against the numbers you actually used. Around the journal sit interactive models — a fermentation activity curve, a live starter ecosystem — that explain why the loaf turned out the way it did. Product, design, front end, backend and deployment are all mine.',
     notes: [
@@ -220,7 +219,7 @@ export const PROJECTS_V2: ProjectV2[] = [
     tag: 'Meal planning for every scenario at once. It got out of hand.',
     cover: mealtripCover,
     coverAlt:
-      "MealTrip's landing headline, \"Plan food for your dinner party\", above Start Planning Free.",
+      "MealTrip's My Kitchen screen: a personal recipe library shown as cards with food photography.",
     para:
       'The idea was one planner that could handle any eating situation — weeknights, dinner parties, road trips, backpacking, restrictions, budgets. Every scenario I added made the data model more general and the interface less usable, until the thing could describe any meal plan and help with none of them. I stopped before launch. Vittles is what that lesson turned into: a few scenarios taken seriously.',
     notes: [

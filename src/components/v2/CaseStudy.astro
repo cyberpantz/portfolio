@@ -122,6 +122,7 @@ const lightboxSlides = await Promise.all(
           */}
           <button
             type="button"
+            data-cs-group={p.id}
             data-cs-shot={i}
             aria-label={`View larger: ${shot.alt}`}
             class="group/plate block w-full cursor-zoom-in border-0 bg-transparent p-0"
@@ -159,5 +160,5 @@ const lightboxSlides = await Promise.all(
   is also skipped entirely when there is nothing to open.
 */}
 {lightboxSlides.length > 0 && (
-  <CaseStudyLightbox client:idle slides={lightboxSlides} />
+  <CaseStudyLightbox client:idle slides={lightboxSlides} group={p.id} />
 )}
