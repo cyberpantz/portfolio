@@ -14,9 +14,15 @@ export interface VisualMultipliers {
   ca:       number;
 }
 
+/** Which edge the settings panel is attached to. */
+export type Dock = 'bottom' | 'right';
+
 export interface Settings {
   audio:   AudioMultipliers;
   visuals: VisualMultipliers;
+  /** Persisted like everything else here — a layout choice someone made once
+   *  should not be undone by a reload. */
+  dock:    Dock;
 }
 
 const STORAGE_KEY = 'weather-vibe-settings';
@@ -24,19 +30,29 @@ const STORAGE_KEY = 'weather-vibe-settings';
 const DEFAULTS: Settings = {
   audio:   { master: 1, ambient: 1, effects: 1, cityHum: 1 },
   visuals: { bloom: 1, vignette: 1, grain: 1, ca: 1 },
+  dock:    'bottom',
 };
+
+const fresh = (): Settings => ({
+  audio:   { ...DEFAULTS.audio },
+  visuals: { ...DEFAULTS.visuals },
+  dock:    DEFAULTS.dock,
+});
 
 function loadFromStorage(): Settings {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return { audio: { ...DEFAULTS.audio }, visuals: { ...DEFAULTS.visuals } };
+    if (!raw) return fresh();
     const parsed = JSON.parse(raw) as Partial<Settings>;
     return {
       audio:   { ...DEFAULTS.audio,   ...(parsed.audio   ?? {}) },
       visuals: { ...DEFAULTS.visuals, ...(parsed.visuals ?? {}) },
+      // Validated rather than trusted: this value is read straight back out of
+      // localStorage, where anything could be sitting.
+      dock:    parsed.dock === 'right' ? 'right' : 'bottom',
     };
   } catch {
-    return { audio: { ...DEFAULTS.audio }, visuals: { ...DEFAULTS.visuals } };
+    return fresh();
   }
 }
 
@@ -62,8 +78,17 @@ export function setVisuals(partial: Partial<VisualMultipliers>): void {
   notify();
 }
 
+export function setDock(dock: Dock): void {
+  state = { ...state, dock };
+  persist();
+  notify();
+}
+
 export function resetSettings(): void {
-  state = { audio: { ...DEFAULTS.audio }, visuals: { ...DEFAULTS.visuals } };
+  // Dock is deliberately preserved. RESET is understood as "put the sliders
+  // back", and having the panel leap to the other edge would read as a bug.
+  const { dock } = state;
+  state = { ...fresh(), dock };
   persist();
   notify();
 }

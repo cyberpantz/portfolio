@@ -185,9 +185,18 @@ export default function GlobeModal({
             animate={{ opacity: 1, y: 0 }}
             onClick={handleLocate}
             disabled={loading || exitPhase !== 'open'}
-            className="mt-4 bg-transparent font-mono text-[11px] tracking-[0.2em] text-white/80 transition hover:text-white disabled:opacity-40"
+            /* The shared experiment button: bordered, uppercase, teal, filling
+               on hover. Same class list as the Quizzolator's Begin — this was
+               the one control still styled as bare text, which read as a link
+               rather than the primary action of the screen. */
+            className="mt-4 inline-flex min-h-11 cursor-pointer items-center gap-3 border border-accent
+                       px-7 text-exp-micro font-medium tracking-[0.16em] uppercase text-accent
+                       transition-colors duration-300 hover:bg-accent hover:text-ink
+                       disabled:cursor-not-allowed disabled:border-rule disabled:text-exp-dim
+                       disabled:hover:bg-transparent"
           >
-            LOCATE
+            {loading ? 'Going' : 'Go'}
+            <span aria-hidden="true">→</span>
           </motion.button>
         ) : (
           <p className="mt-4 font-mono text-[10px] tracking-[0.18em] text-white/35">

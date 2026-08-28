@@ -2,8 +2,7 @@ import { useEffect, useState } from 'react';
 import type React from 'react';
 import type { WeatherData } from './conditions';
 import { PALETTES, degreesToCompass } from './conditions';
-import { weatherAudio } from './audio';
-import { Volume2, VolumeX, Thermometer, Wind, ArrowUp, MapPin } from 'lucide-react';
+import { Thermometer, Wind, ArrowUp, MapPin } from 'lucide-react';
 
 interface HUDProps {
   weather: WeatherData;
@@ -24,10 +23,8 @@ export default function HUD({ weather, status, onOpenGlobe }: HUDProps) {
   const tz = weather.timezone;
   const fmt = (d: Date) => d.toLocaleTimeString('en-GB', tz ? { timeZone: tz } : undefined);
   const [time, setTime] = useState(() => fmt(new Date()));
-  const [muted, setMuted] = useState(false);
   const [hoveredCorner, setHoveredCorner] = useState<Corner | null>(null);
 
-  const toggleMute = () => { weatherAudio.toggle(); setMuted(m => !m); };
   const palette = PALETTES[weather.state];
   const textColor = palette.textColor;
   const shadow = palette.isDark ? '0 1px 6px rgba(0,0,0,0.8)' : 'none';
@@ -180,16 +177,10 @@ export default function HUD({ weather, status, onOpenGlobe }: HUDProps) {
         {palette.vibe}
       </div>
 
-      {/* Audio toggle */}
-      <div className="absolute bottom-10 left-1/2 -translate-x-1/2" style={{ pointerEvents: 'auto' }}>
-        <button
-          onClick={toggleMute}
-          aria-label={muted ? 'Unmute audio' : 'Mute audio'}
-          style={{ color: textColor, opacity: 0.65, background: 'none', border: 'none', cursor: 'pointer', filter: 'drop-shadow(0 1px 4px rgba(0,0,0,0.6))' }}
-        >
-          {muted ? <VolumeX size={14} /> : <Volume2 size={14} />}
-        </button>
-      </div>
+      {/* The audio toggle used to float here, bottom-centre. It has moved to
+          the top of the settings panel's AUDIO column, next to the volume
+          sliders it belongs with — one place for sound rather than a lone
+          icon hovering over the scene. */}
 
     </div>
   );

@@ -174,7 +174,22 @@ const CITY_LANDMARKS: { city: string; landmarks: Landmark[] }[] = [
     // of a mile off — distance is what lets you see the whole shape, and the
     // wider x moves it clear of the boulevard's right-hand wall rather than
     // peering over it.
-    landmarks: [{ kind: 'transamerica', x: 48, z: -150, rot: 0.5, height: 74 }],
+    /*
+      Moved onto the avenue's axis, and this is the third position because the
+      first two were solved for the wrong constraint.
+
+      At x48 z-150 the APEX had a clear line of sight — but only 12% of the
+      tower's silhouette did. The boulevard layout put a continuous wall of
+      buildings along that diagonal, so everything below the tip was buried.
+      Sighting on the apex alone is what hid that; sampling the whole height
+      is what found it.
+
+      The street gap (x -18..+18) is the one corridor with no wall in it. Sat
+      near that axis and pushed deep, the Pyramid terminates the vista instead
+      of peering over rooftops — which is also the more truthful image, since
+      from Market it reads as the thing the street runs toward.
+    */
+    landmarks: [{ kind: 'transamerica', x: 14, z: -180, rot: 0.5, height: 98 }],
   },
 ];
 

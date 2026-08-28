@@ -24,6 +24,11 @@ import type { ImageMetadata } from 'astro';
  */
 import crumbCover from '../assets/projects/crumb-cover.png';
 import crumbHome from '../assets/projects/crumb-home.png';
+import crumbOnboarding from '../assets/projects/crumb-onboarding.png';
+/* crumb-anatomy.png is deliberately NOT imported. It is the source the 4:3
+   crumb-cover.png was composed from — kept in the folder so the cover can be
+   regenerated, but the screen itself stays out of the gallery. Astro only
+   emits assets that are imported, so an unreferenced file costs nothing. */
 import crumbBake from '../assets/projects/crumb-bake.png';
 import crumbVerdict from '../assets/projects/crumb-verdict.png';
 import crumbFermentation from '../assets/projects/crumb-fermentation.png';
@@ -86,9 +91,10 @@ export const PROJECTS_V2: ProjectV2[] = [
     status: null,
     tag: 'A bake journal that reads your loaf and tells you what the crumb means.',
     cover: crumbCover,
-    coverAlt: "Lev, The Crumb's illustrated sourdough mascot, smiling.",
+    coverAlt:
+      'An annotated photograph of a sourdough crumb cross-section, with six numbered markers labelling the crust, alveoli, cell walls and air pockets.',
     para:
-      'Sourdough has a slow feedback loop — change one variable, wait a week, guess at the result. The Crumb closes it. You log a bake, photograph the crumb, and get a structured read on fermentation, crust and shaping, scored against the numbers you actually used. Around the journal sit interactive models — a fermentation activity curve, a live starter ecosystem — that explain why the loaf turned out the way it did. Product, design, front end, backend and deployment are all mine.',
+      'Sourdough has a slow feedback loop — change one variable, wait, observe, repeat. For new bakers it can be overwhelming and hard to know what went wrong when your loaf doesn\'t turn out as expected. With TheCrumb users can log a bake, photograph the loaf, and get a structured read on timing, fermentation, crust and shaping, scored against the numbers, starter, and ingredients you actually used. Around the journal sit useful educational experiments — a fermentation activity curve, a live starter ecosystem, a bulk fermentation simulator — that help explain why the loaf turned out the way it did. Owned product from start to finish. Product, design, front end, backend and deployment.',
     notes: [
       {
         label: 'The problem',
@@ -111,6 +117,12 @@ export const PROJECTS_V2: ProjectV2[] = [
         src: crumbHome,
         caption: 'Landing — tools for curious bakers',
         alt: "The Crumb's landing page: the headline \"Read between the crumbs\" beside an illustrated loaf.",
+      },
+      {
+        src: crumbOnboarding,
+        caption:
+          'First run — two of the three setup steps are marked optional, and the one that produces a diagnosis is marked start here',
+        alt: "The Crumb's signed-in home: a welcome headline, three setup cards for a starter, a recipe and a first bake, and Lev the sourdough copilot below with an ask box.",
       },
       {
         src: crumbBake,
@@ -221,19 +233,19 @@ export const PROJECTS_V2: ProjectV2[] = [
     coverAlt:
       "MealTrip's My Kitchen screen: a personal recipe library shown as cards with food photography.",
     para:
-      'The idea was one planner that could handle any eating situation — weeknights, dinner parties, road trips, backpacking, restrictions, budgets. Every scenario I added made the data model more general and the interface less usable, until the thing could describe any meal plan and help with none of them. I stopped before launch. Vittles is what that lesson turned into: a few scenarios taken seriously.',
+      'The idea started off reasonably. I wanted to make a group food planner that was more fun than a spreadsheet. I had just downloaded Claude and started jamming; one poorly defined prompt after another. It was so fun. Add a new feature. Animate some things that nobody expects to be animated. Pack the delightful interface elements in everywhere. It became one planner that could handle any eating situation — weeknights, dinner parties, road trips, backpacking, restrictions, budgets. Confetti. Animal sounds. Gamification for no good reason.Every scenario I added made the data model more general and the interface less usable, until the thing could describe any meal plan and help with none of them. I stopped before launch. Vittles is what that lesson turned into: a few scenarios taken seriously, and more niche. This project taught me an important lesson about scope, and that planning is more important than ever when you are using a generative model to build a product.',
     notes: [
       {
         label: 'The problem',
-        body: 'I chased generality instead of a user. A planner that fits every scenario has to ask about all of them up front, which is exactly the work people wanted removed.',
+        body: 'I got caught up in the newbie phase of ai magic. I chased novelty instead of product definition. I was so amazed that I could build things that would have previously taken me a week in a hour or two.',
       },
       {
         label: 'Product decisions',
-        body: 'The useful decision was the one to stop. Scope became the design problem, and narrowing it produced a shippable product a year later.',
+        body: 'The useful decision was the one to stop. This project was part of the journey, a learning experience, not a product.',
       },
       {
         label: 'Tech',
-        body: 'React, a heavily normalised schema, and a constraint solver for portioning — most of which survived into Vittles at a tenth the size.',
+        body: 'React, Tailwind, NextJS - deployed on Vercel',
       },
     ],
     stack: 'React · TypeScript · Node',

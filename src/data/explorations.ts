@@ -50,14 +50,14 @@ export const EXPLORATIONS: Exploration[] = [
     desc: 'A meditative 3D scene that lives in your local weather — hand-written shaders for rain, fog and golden hour, with a generated soundtrack underneath.',
     needsRoom: true,
   },
-  {
-    id: 'chooser',
-    name: 'The Chooser',
-    type: 'Interactive',
-    tags: ['Audio', 'React', 'Generative'],
-    url: '/explorations/chooser',
-    desc: 'Five choices, each with its own soundtrack. Pick your vibe and the result tells you who you are today.',
-  },
+  // {
+  //   id: 'chooser',
+  //   name: 'The Chooser',
+  //   type: 'Interactive',
+  //   tags: ['Audio', 'React', 'Generative'],
+  //   url: '/explorations/chooser',
+  //   desc: 'Five choices, each with its own soundtrack. Pick your vibe and the result tells you who you are today.',
+  // },
   {
     // Route stays /kitchen-dodgeball so existing links keep working;
     // the game has always called itself Fowl Play.
@@ -66,7 +66,7 @@ export const EXPLORATIONS: Exploration[] = [
     type: 'Game',
     tags: ['Game', 'Canvas', 'React'],
     url: '/explorations/kitchen-dodgeball',
-    desc: 'Dodge falling kitchen items thrown by menacing chickens. Progressively harder waves, and boss items that do not play fair.',
+    desc: 'Hilarious result of late night vibe coding. Dodge falling kitchen items thrown by menacing chickens. Progressively harder waves, and boss fowl that do not play fair. ',
     needsRoom: true,
   },
 ];

@@ -97,8 +97,7 @@ export const EXPERIENCE: Role[] = [
       'A two-person interactive agency. I was the entire technical half - Bela Spohrer was the design half. Go check out his work https://bela-sf.com/',
     bullets: [
       'Built Flash campaign sites for Warner Bros. Records — deeply interactive artist and release sites with embedded music players and cinematic scenes.',
-      'Motion and audio were the medium, not decoration: the whole experience was timeline, sound and state.',
-      'Running half a business meant scoping the work, pricing it and shipping it — the closest thing to product ownership available in 2005.',
+      'Motion and audio were the medium, not decoration: the whole experience was timeline, sound and state.'
     ],
   },
   {
@@ -107,7 +106,7 @@ export const EXPERIENCE: Role[] = [
     yr: '2002–2006',
     tags: ['Flash', 'PHP', 'JavaScript', 'Instructional Design'],
     blurb:
-      'Where the interactive and motion work started, before it had a job title attached.',
+      'Where the interactive and motion work started.',
     bullets: [
       {
         text: 'CaratFusion — Senior Flash / PHP / JavaScript Developer. Agency-side interactive advertising; animation and motion-driven brand experiences.',

@@ -100,7 +100,16 @@ export function TransamericaPyramid({
   const tipR = baseR * 0.05;
 
   const { body, wings } = useMemo(() => {
-    const pale = color.clone().lerp(new Color(1, 1, 1), 0.45);
+    /*
+      Barely lightened, not paled.
+
+      This was lerped 45% toward white, which is truthful about the real
+      building and wrong for this scene: at the depth the tower now sits, city
+      fog is already washing it halfway to the sky, and a pale subject plus
+      heavy fog leaves nothing to see. Holding it near the facade tone keeps a
+      silhouette that survives the haze.
+    */
+    const pale = color.clone().lerp(new Color(1, 1, 1), 0.12);
 
     // Wings start where the taper has narrowed noticeably and stop short of
     // the spire, matching the real break at roughly floors 29 to 45.

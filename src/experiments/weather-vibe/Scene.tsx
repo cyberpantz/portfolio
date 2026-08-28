@@ -182,8 +182,14 @@ function Environment({ weather }: SceneProps) {
       {density === 'urban' && <CityHills palette={palette} groundY={groundY} relief={relief} />}
       {/* Buildings are lit by their own per-weather sun on a private layer,
           so exposure does not swing with each environment's ambient. */}
+      {/* A boulevard is a deliberate long view — it runs to z -300 and is meant
+          to terminate in something. At the arc's fog depth the far end was
+          already fog-coloured, so the vista had nothing to arrive at. */}
       {density === 'urban' && (
-        <CityLit state={weather.state} fogScale={{ near: 5, far: 5.5 }}>
+        <CityLit
+          state={weather.state}
+          fogScale={layout === 'boulevard' ? { near: 5, far: 8 } : { near: 5, far: 5.5 }}
+        >
           <CityScape
             palette={palette}
             groundY={groundY}
@@ -219,10 +225,26 @@ export default function Scene({ weather }: SceneProps) {
       <Environment weather={weather} />
 
       <EffectComposer>
-        <Bloom intensity={fx.bloom * visuals.bloom} luminanceThreshold={0.3} />
-        <Vignette darkness={fx.vignette * visuals.vignette} offset={0.3} blendFunction={BlendFunction.NORMAL} />
-        <ChromaticAberration offset={new Vector2(fx.ca * visuals.ca, fx.ca * visuals.ca)} />
-        <Noise opacity={fx.noise * visuals.grain} />
+        {/*
+          Each slider runs 0–200%, and the curve is what makes the top half
+          worth having.
+
+          A plain multiplier capped at 1.0 could only ever subtract from the
+          shipped look, and these baselines are tiny — chromatic aberration
+          starts at 0.001–0.004 and grain at 0.02–0.06 opacity. Sliding those
+          down from "barely there" to "nothing" is a change nobody can see,
+          which is exactly how it felt.
+
+          Raising them to a power gives headroom without moving the default:
+          v = 1 is always exactly the value the weather intended, while v = 2
+          multiplies by 2^p. The exponents differ because the effects do —
+          grain and aberration need several times their base before they read
+          at all, bloom and vignette are already strong and would blow out.
+        */}
+        <Bloom intensity={fx.bloom * visuals.bloom ** 1.5} luminanceThreshold={0.3} />
+        <Vignette darkness={fx.vignette * visuals.vignette ** 1.2} offset={0.3} blendFunction={BlendFunction.NORMAL} />
+        <ChromaticAberration offset={new Vector2(fx.ca * visuals.ca ** 2.5, fx.ca * visuals.ca ** 2.5)} />
+        <Noise opacity={fx.noise * visuals.grain ** 2.5} />
       </EffectComposer>
     </Canvas>
   );

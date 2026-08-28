@@ -62,15 +62,54 @@ export function degreesToCompass(deg: number): string {
   return dirs[Math.round(deg / 45) % 8];
 }
 
+/**
+ * A palette describes THE SKY. Every colour in it is chosen relative to
+ * `background`, and that is the only ground any of them are safe on.
+ *
+ * This caused the same bug four times in one session — a settings panel whose
+ * text vanished on clear days, a hover fill at 1.16:1, a landmark that
+ * dissolved into fog, a CTA nobody could read — every one of them a token
+ * borrowed from here and painted onto something that was not the sky. Five of
+ * the nine states were unreadable in the settings panel and had been from the
+ * start; it only surfaced because the scene happened to sit in overcast,
+ * whose textColor is near-white by coincidence.
+ *
+ * The rule: if it is drawn ON the sky, use these. If it sits on its own
+ * ground — a panel, a pill, a glass button — use CHROME below.
+ */
 export interface Palette {
+  /** The sky itself. Everything else here is chosen against this. */
   background: string;
+  /** Emphasis that sits WITH the sky, so it cannot also stand out from it.
+   *  Fine for HUD accents; measures as low as 1.16:1 on dark chrome. */
   accent: string;
-  // textColor: readable HUD color — dark for light-background states, light for dark ones
+  /** Readable ON THE SKY — dark on light states, light on dark ones.
+   *  Never on chrome: on light-sky weather this is a dark navy. */
   textColor: string;
-  // isDark: true = dark bg (apply drop shadow), false = light bg (no shadow, dark text is crisp)
+  /** True = dark sky, so sky-borne text wants a drop shadow. Not a
+   *  time-of-day flag — see isNightPalette, which overcast breaks. */
   isDark: boolean;
   vibe: string;
 }
+
+/**
+ * Colours for UI that sits on its own ground rather than on the sky.
+ *
+ * Fixed on purpose. The glass is dark in every weather, so its foreground can
+ * be too — and a constant ground deserves a constant foreground. Chrome that
+ * followed the palette is exactly what kept breaking.
+ */
+export const CHROME = {
+  /** 13.47:1 on the panel ground, 5.06:1 on glass over the brightest sky. */
+  fg: '#E8EDF2',
+  /** Resting glass. Below ~0.5 alpha a bright sky washes the label out. */
+  glass: 'rgba(0,0,0,0.58)',
+  /** Hover / active glass. */
+  glassStrong: 'rgba(0,0,0,0.68)',
+  /** The portfolio's accent, matching --color-accent in explorations.css.
+   *  Chrome belongs to the site, not to the forecast. */
+  teal: '#6fd0c2',
+} as const;
 
 export const PALETTES: Record<WeatherState, Palette> = {
   'clear-day':     { background: '#87CEEB', accent: '#F5A623', textColor: '#1A3A5C', isDark: false, vibe: 'OPEN' },
