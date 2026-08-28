@@ -231,12 +231,20 @@ export default function ContactForm() {
         <button
           type="submit"
           disabled={busy}
-          className="inline-flex min-h-11 cursor-pointer items-center gap-3 bg-ink px-8 py-4 text-meta
-                     font-medium tracking-[0.18em] uppercase text-paper transition-colors duration-500
-                     ease-editorial hover:bg-accent hover:text-on-accent
+          className="btn-roll inline-flex min-h-11 cursor-pointer items-center gap-3 bg-ink px-8 py-4
+                     text-meta font-medium tracking-[0.18em] uppercase text-paper transition-colors
+                     duration-500 ease-editorial hover:bg-accent hover:text-on-accent
                      disabled:cursor-not-allowed disabled:opacity-60"
         >
-          {busy ? 'Sending' : 'Send message'} <span aria-hidden="true">→</span>
+          <span className="btn-roll-window">
+            <span className="btn-roll-deck">
+              <span className="btn-roll-face">{busy ? 'Sending' : 'Send message'}</span>
+              <span className="btn-roll-face" aria-hidden="true">
+                {busy ? 'Sending' : 'Send message'}
+              </span>
+            </span>
+          </span>
+          <span aria-hidden="true" className="btn-roll-glyph">→</span>
         </button>
 
         {/*

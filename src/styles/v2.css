@@ -406,6 +406,113 @@
 }
 
 @layer components {
+  /* ============================================================
+     Label roll — the shared hover for the primary controls.
+
+     One face slides up and out while an identical face rises to
+     replace it. The label never changes, so this reads as
+     mechanical precision rather than as a message: the button
+     acknowledges the pointer without saying anything new.
+
+     Chosen over a copy swap on purpose. Text that changes on hover
+     is a small lie to anyone using a screen reader or a keyboard —
+     the accessible name would differ from what a sighted user
+     reads a moment later. The second face is aria-hidden and
+     duplicated, so the accessible name is stable while the motion
+     is not.
+
+     Both faces must be the same height for translateY(-50%) to
+     land exactly one face up, which is why line-height is pinned
+     here rather than inherited.
+     ============================================================ */
+  /* The WINDOW does the clipping, not the button.
+     Putting overflow on the button did nothing, because the button's own
+     height is set by the deck inside it — two faces tall, so both were
+     visible with nothing to hide. Clipping there would also have let the
+     second face bleed into the button's bottom padding. This is a box of
+     exactly one face, and the deck slides behind it. */
+  .btn-roll-window {
+    display: block;
+    overflow: hidden;
+    height: 1.25em; /* one face; must match .btn-roll-face */
+  }
+
+  .btn-roll-deck {
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.62s var(--ease-editorial);
+  }
+
+  /* -50% of the deck, which is two faces tall, is exactly one face. */
+  .btn-roll:hover .btn-roll-deck,
+  .btn-roll:focus-visible .btn-roll-deck {
+    transform: translateY(-50%);
+  }
+
+  /* Faces carry the LABEL ONLY. The glyph is a sibling of the window, not a
+     child of it: inside, a glyph that drifts downward gets sliced in half by
+     the very clip that makes the roll work — the arrowhead stays and the stem
+     is cut off. Only the text needs hiding. */
+  .btn-roll-face {
+    display: flex;
+    align-items: center;
+    height: 1.25em;
+    line-height: 1.25;
+    flex: none; /* never let the deck squash a face to fit */
+    white-space: nowrap;
+  }
+
+  /* The glyph drifts while the label rolls — two speeds reading as
+     one gesture. Direction is set per button, since a download
+     falls and a send departs. */
+  .btn-roll-glyph {
+    transition: transform 0.62s var(--ease-editorial);
+  }
+  .btn-roll:hover .btn-roll-glyph {
+    transform: translateX(5px);
+  }
+  .btn-roll-down:hover .btn-roll-glyph {
+    transform: translateY(4px);
+  }
+
+  /* A disabled control should not perform. */
+  .btn-roll:disabled .btn-roll-deck,
+  .btn-roll:disabled .btn-roll-glyph {
+    transform: none;
+  }
+
+  /* ------------------------------------------------------------
+     Theme disc.
+
+     The toggle gets its own gesture rather than the roll, because
+     it is a state control, not an action: nothing departs, so a
+     drifting arrow would be the wrong verb. The half-filled disc
+     rotates instead, sweeping its terminator across like a moon
+     phase — which is what the control actually does.
+
+     Half a turn, so hovering twice returns it to where it began.
+     ------------------------------------------------------------ */
+  .theme-disc {
+    transition: transform 0.7s var(--ease-editorial);
+  }
+  .theme-btn:hover .theme-disc,
+  .theme-btn:focus-visible .theme-disc {
+    transform: rotate(180deg);
+  }
+
+  /* The global reduced-motion rule only shortens durations, which would
+     leave these snapping instantly to their hover position. Cancelling the
+     transform is the honest reading of the preference. */
+  @media (prefers-reduced-motion: reduce) {
+    .btn-roll:hover .btn-roll-deck,
+    .btn-roll:focus-visible .btn-roll-deck,
+    .btn-roll:hover .btn-roll-glyph,
+    .theme-btn:hover .theme-disc,
+    .theme-btn:focus-visible .theme-disc {
+      transform: none;
+    }
+  }
+
   /* Reset kept minimal — the browser's own focus and autofill
      behaviour is worth preserving. */
   .field {

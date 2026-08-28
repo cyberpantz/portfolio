@@ -39,7 +39,7 @@ const FOLIO = 'font-display text-sm tracking-[0.04em] text-muted [font-variant-n
       class="max-w-[14ch] font-display text-section tracking-[-0.026em] [text-wrap:balance]
              max-[400px]:tracking-[-0.018em]"
     >
-      Available to work. Open to full-time roles, contract, or gig work. 
+      Available to work: full-time, contract, or gig. 
     </h2>
   </div>
 
@@ -100,17 +100,25 @@ const FOLIO = 'font-display text-sm tracking-[0.04em] text-muted [font-variant-n
     <div>
       <p class="mb-3 text-meta font-medium tracking-[0.2em] uppercase text-muted">Curriculum Vitae</p>
       <p class="font-display text-cv tracking-[-0.024em]">
-        The whole thing, on<br />three sides of paper.
+        The whole thing<br />
       </p>
     </div>
     <a
-      class="ml-auto inline-flex min-h-11 items-center gap-3 bg-ink px-8 py-4 text-meta font-medium
-             tracking-[0.18em] uppercase text-paper transition-colors duration-500 ease-editorial
-             hover:bg-accent hover:text-on-accent max-md:ml-0"
+      class="btn-roll btn-roll-down ml-auto inline-flex min-h-11 items-center gap-3 bg-ink px-8 py-4
+             text-meta font-medium tracking-[0.18em] uppercase text-paper transition-colors
+             duration-500 ease-editorial hover:bg-accent hover:text-on-accent max-md:ml-0"
       href={CV}
       download
     >
-      Download PDF <span aria-hidden="true">↓</span>
+      <span class="btn-roll-window">
+        <span class="btn-roll-deck">
+          <span class="btn-roll-face">Download PDF</span>
+          {/* Duplicate, hidden from assistive tech: the roll is decoration,
+              and the accessible name must stay a single "Download PDF". */}
+          <span class="btn-roll-face" aria-hidden="true">Download PDF</span>
+        </span>
+      </span>
+      <span aria-hidden="true" class="btn-roll-glyph">↓</span>
     </a>
   </div>
 
