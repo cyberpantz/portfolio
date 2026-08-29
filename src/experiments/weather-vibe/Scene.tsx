@@ -22,6 +22,7 @@ import CityScape from './environments/CityScape';
 import CityHills from './environments/CityHills';
 import CityGround from './environments/CityGround';
 import CityLit from './environments/CityLit';
+import { StreetTrees } from './environments/cityDetail';
 import SmallTown from './environments/SmallTown';
 import NaturalBackground from './environments/NaturalBackground';
 import TropicalBackground from './environments/TropicalBackground';
@@ -197,6 +198,9 @@ function Environment({ weather }: SceneProps) {
             layout={layout}
             landmarks={landmarksFor(weather.city)}
           />
+          {/* Inside CityLit so the planting takes the same sun as the
+              buildings — lit separately it would read as pasted on. */}
+          <StreetTrees palette={palette} groundY={groundY} layout={layout} />
         </CityLit>
       )}
       {density === 'town' && (

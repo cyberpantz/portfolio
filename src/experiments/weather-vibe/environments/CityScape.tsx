@@ -7,6 +7,7 @@ import { cityHillHeight } from '../cityTerrain';
 import { shadedBox } from '../faceShade';
 import { buildingsFor, type CityLayout, type Landmark } from '../cityLayout';
 import { TransamericaPyramid } from './landmarks';
+import { Graffiti } from './cityDetail';
 
 /**
  * The windows breathe with the soundtrack.
@@ -37,6 +38,76 @@ import { TransamericaPyramid } from './landmarks';
  */
 const WINDOW_BASE = 0.4;
 const WINDOW_RANGE = 0.26;
+
+/**
+ * Window patterns. `cols`/`rows` set the grid, the insets set how much of each
+ * cell is glass, `lit` is the share illuminated after dark.
+ *
+ * These read as building eras, which is why they matter more than they look
+ * like they should: a ribbon-windowed slab beside a punched-opening block
+ * beside a tall-slotted tower is what makes a skyline feel accumulated rather
+ * than issued.
+ */
+const FENESTRATION = [
+  { cols: 6, rows: 12, insetX: 0.18, insetY: 0.18, lit: 0.40 }, // punched openings
+  { cols: 5, rows: 9,  insetX: 0.28, insetY: 0.10, lit: 0.34 }, // tall slots
+  { cols: 1, rows: 15, insetX: 0.04, insetY: 0.30, lit: 0.55 }, // ribbon / curtain wall
+  { cols: 4, rows: 7,  insetX: 0.14, insetY: 0.12, lit: 0.30 }, // large sparse panes
+] as const;
+
+/**
+ * Building silhouettes.
+ *
+ * Every tower was a plain extruded box, so a skyline varied only in height
+ * and width — which reads as a bar chart, not a city. What distinguishes a
+ * real skyline is what happens at the TOP: setbacks, mechanical penthouses,
+ * masts and crowns. That is also where the eye goes, since the tops are the
+ * only part silhouetted against the sky.
+ *
+ * Each variant is expressed as caps stacked on the same box rather than as
+ * new geometry types, so they reuse shadedBox and the single shared material
+ * — the silhouette changes, the draw setup does not.
+ */
+type CapSpec = { scale: number; height: number };
+
+const SILHOUETTES: { w: number; caps: CapSpec[] }[] = [
+  { w: 0.42, caps: [] },                                            // flat slab
+  { w: 0.66, caps: [{ scale: 0.72, height: 0.16 }] },               // single setback
+  { w: 0.82, caps: [{ scale: 0.74, height: 0.13 }, { scale: 0.5, height: 0.1 }] }, // ziggurat
+  { w: 0.92, caps: [{ scale: 0.30, height: 0.07 }] },               // rooftop plant
+  { w: 1.00, caps: [{ scale: 0.55, height: 0.09 }, { scale: 0.12, height: 0.3 }] }, // mast
+];
+
+function pickSilhouette(roll: number): CapSpec[] {
+  for (const s of SILHOUETTES) if (roll <= s.w) return s.caps;
+  return [];
+}
+
+/**
+ * Facade materials, as multipliers on the sky-derived concrete tone.
+ *
+ * Multipliers rather than absolute colours on purpose: a brick building at
+ * dusk should be a dusk-lit brick, not the same swatch it was at noon. These
+ * ride whatever the weather has already done to the facade tone.
+ *
+ * Weights are cumulative and deliberately concrete-heavy — roughly two in
+ * five buildings stay plain, which is what keeps the coloured ones reading as
+ * materials rather than decoration.
+ */
+const FACADES: { w: number; rgb: [number, number, number] }[] = [
+  { w: 0.28, rgb: [1.00, 1.00, 1.00] }, // concrete
+  { w: 0.44, rgb: [1.30, 1.06, 0.80] }, // sandstone
+  { w: 0.60, rgb: [1.48, 0.82, 0.66] }, // brick / terracotta
+  { w: 0.76, rgb: [0.74, 0.95, 1.38] }, // blue glass
+  { w: 0.86, rgb: [0.76, 1.24, 0.98] }, // green glass
+  { w: 0.94, rgb: [1.24, 0.90, 0.64] }, // bronze
+  { w: 1.00, rgb: [1.12, 1.12, 1.18] }, // pale stone
+];
+
+function pickFacade(roll: number): [number, number, number] {
+  for (const f of FACADES) if (roll <= f.w) return f.rgb;
+  return FACADES[0].rgb;
+}
 
 // Deterministic pseudo-random — same seed = same city every session
 function makeRng(seed: number) {
@@ -70,57 +141,60 @@ export default function CityScape({
   const night = isNightPalette(palette);
 
   /**
-   * Both window textures come from the same seeded pass, so the building that
-   * has a light on in the top-left corner at night has a window in the
-   * top-left corner by day. Same city, different hour.
+   * One texture per fenestration type, not one for the whole city.
    *
-   * NIGHT is an emissive map: black ground, warm lit rectangles, 40% occupancy.
-   *
-   * DAY is a colour map, and it exists because correcting the day/night test
-   * left daytime buildings as flat untextured slabs — which was arguably worse
-   * than the bug it fixed. Glass in daylight is not brighter than concrete, it
-   * is DARKER, so this paints white (multiplies to the untouched facade tone)
-   * with grey windows that multiply down. Every window is drawn rather than
-   * 40%, because unlit glass does not disappear at noon.
+   * Every tower shared a single window texture built from one seed, so the
+   * entire skyline carried the identical grid — the same failure as the
+   * facades all being grey and the tops all being flat.
    */
-  const windowTex = useMemo(() => {
-    const rng = makeRng(1337);
-    const W = 64, H = 128;
-    const canvas = document.createElement('canvas');
-    canvas.width = W; canvas.height = H;
-    const ctx = canvas.getContext('2d')!;
+  const windowTexes = useMemo(
+    () =>
+      FENESTRATION.map((f, i) => {
+        const rng = makeRng(1337 + i * 613);
+        const W = 64;
+        const H = 128;
+        const canvas = document.createElement('canvas');
+        canvas.width = W;
+        canvas.height = H;
+        const ctx = canvas.getContext('2d')!;
 
-    ctx.fillStyle = night ? '#000' : '#fff';
-    ctx.fillRect(0, 0, W, H);
+        ctx.fillStyle = night ? '#000' : '#fff';
+        ctx.fillRect(0, 0, W, H);
 
-    for (let r = 0; r < 12; r++) {
-      for (let c = 0; c < 6; c++) {
-        const lit = rng() <= 0.40;
-        // Draw from the same three rolls either way, so the day and night
-        // textures stay in step regardless of which branch is taken.
-        const a = rng(), b2 = rng(), c2 = rng();
+        const cellW = W / f.cols;
+        const cellH = H / f.rows;
+        const winW = cellW * (1 - f.insetX * 2);
+        const winH = cellH * (1 - f.insetY * 2);
 
-        if (night) {
-          if (!lit) continue;
-          ctx.fillStyle = `rgb(${Math.floor(210 + a * 45)},${Math.floor(190 + b2 * 45)},${Math.floor(150 + c2 * 55)})`;
-        } else {
-          // 0.50–0.70 of the facade tone. Enough to read as a grid at
-          // distance without turning the tower into a checkerboard.
-          const v = Math.floor(128 + a * 51);
-          ctx.fillStyle = `rgb(${v},${v},${v})`;
+        for (let r = 0; r < f.rows; r++) {
+          for (let c = 0; c < f.cols; c++) {
+            const lit = rng() <= f.lit;
+            // Same three rolls either way, so day and night stay in step.
+            const a = rng(), b2 = rng(), c2 = rng();
+
+            if (night) {
+              if (!lit) continue;
+              ctx.fillStyle = `rgb(${Math.floor(210 + a * 45)},${Math.floor(190 + b2 * 45)},${Math.floor(150 + c2 * 55)})`;
+            } else {
+              // 0.50–0.70 of the facade tone: a grid at distance, not a
+              // checkerboard up close.
+              const v = Math.floor(128 + a * 51);
+              ctx.fillStyle = `rgb(${v},${v},${v})`;
+            }
+            ctx.fillRect(c * cellW + cellW * f.insetX, r * cellH + cellH * f.insetY, winW, winH);
+          }
         }
-        ctx.fillRect(2 + c * 10, 3 + r * 10, 7, 7);
-      }
-    }
-    const tex = new CanvasTexture(canvas);
-    // Three treats a texture as linear unless told otherwise. Canvas pixels
-    // are sRGB, so without this the day windows — drawn at 128/255 to sit at
-    // half the facade tone — render nearer 0.73, and the grid that should read
-    // as windows washes out to almost nothing. The night emissive map got away
-    // with it because black-to-bright has contrast to spare.
-    tex.colorSpace = SRGBColorSpace;
-    return tex;
-  }, [night]);
+
+        const tex = new CanvasTexture(canvas);
+        // Three treats a texture as linear unless told otherwise. Canvas
+        // pixels are sRGB, so without this the day windows render nearer 0.73
+        // and the grid washes out. The night emissive map got away with it
+        // because black-to-bright has contrast to spare.
+        tex.colorSpace = SRGBColorSpace;
+        return tex;
+      }),
+    [night],
+  );
 
   // Day buildings: desaturate the sky hue then darken → neutral concrete tone
   // Pure darkening of a saturated sky yields near-black blue; desaturation first
@@ -150,20 +224,20 @@ export default function CityScape({
    * were always visually identical, and sharing means the audio-reactive
    * update below is a single property write per frame instead of 32.
    */
-  const nightMaterial = useMemo(() => {
+  const nightMaterials = useMemo(() => {
     if (!night) return null;
-    return new MeshStandardMaterial({
+    return windowTexes.map((tex) => new MeshStandardMaterial({
       color: new Color('#030508'),
-      emissiveMap: windowTex ?? undefined,
+      emissiveMap: tex,
       emissive: new Color('#EED8C0'),
-      emissiveIntensity: windowTex ? WINDOW_BASE : 0,
+      emissiveIntensity: WINDOW_BASE,
       roughness: 1,
       metalness: 0,
       // Modulates diffuse only, so the emissive window map keeps full
       // strength — a lit window is lit whichever way its wall faces.
       vertexColors: true,
-    });
-  }, [night, windowTex]);
+    }));
+  }, [night, windowTexes]);
 
   /**
    * Geometry per tower, built once. Each carries baked per-face shading, and
@@ -180,43 +254,89 @@ export default function CityScape({
       const total = base + b.h + SKIRT;
 
       /**
-       * Per-building tint. Value spread does most of the work — a skyline
-       * reads as many buildings mainly through differing lightness, not hue.
-       * The warm/cool axis is kept narrow and deliberately biased warm, since
-       * concrete, brick and travertine all skew that way and a purely neutral
-       * city is what made this look like a housing block.
+       * Per-building tint: lightness spread PLUS a facade material.
+       *
+       * The first version varied only lightness with a faint warm nudge —
+       * a range of greys, which is why this read as a housing block while the
+       * small towns, which have real facade colours, read as places. Cities
+       * are not monochrome: brick, sandstone, bronze and tinted glass are all
+       * ordinary, and a skyline usually carries several at once.
+       *
+       * Weighted so concrete still dominates. The point is a few buildings
+       * that are plainly a different material, not a paintbox — and because
+       * these multiply the sky-derived facade tone, they stay tied to the
+       * light rather than reading as flat colour.
        */
-      const value = 0.72 + rng() * 0.62; // 0.72–1.34
-      const warm = (rng() - 0.35) * 0.14; // slight bias toward warm
+      const value = 0.74 + rng() * 0.56; // 0.74–1.30
+      const facade = pickFacade(rng());
+
+      const tint = {
+        r: value * facade[0],
+        g: value * facade[1],
+        b: value * facade[2],
+      };
+
+      // Caps sit on the real roofline, which is the top of the box before the
+      // below-ground skirt is added.
+      const roofY = groundY + base + b.h;
+      let capY = roofY;
+      const caps = pickSilhouette(rng()).map((c) => {
+        const ch = b.h * c.height;
+        const geom = shadedBox(b.w * c.scale, ch, b.d * c.scale, tint);
+        const y = capY + ch / 2;
+        capY += ch;
+        return { geom, y };
+      });
 
       return {
         x: b.x,
         z: b.z,
         rot: b.rot,
+        /** Which fenestration this building was built with. */
+        variant: Math.floor(rng() * FENESTRATION.length),
+        w: b.w,
+        d: b.d,
+        /** Ground level at this building — where paint and planting sit. */
+        baseY: groundY + base,
         // Top stays at groundY + base + b.h; bottom lands at groundY - SKIRT.
-        centerY: groundY + base + b.h - total / 2,
-        geom: shadedBox(b.w, total, b.d, {
-          r: value * (1 + warm),
-          g: value,
-          b: value * (1 - warm * 0.9),
-        }),
+        centerY: roofY - total / 2,
+        geom: shadedBox(b.w, total, b.d, tint),
+        caps,
       };
     });
   }, [buildings, relief, groundY]);
 
+  /** Stable across renders so the tag textures are generated once. */
+  const taggableWalls = useMemo(
+    () =>
+      towers
+        .filter((t) => t.z > -95)
+        .map((t) => ({ x: t.x, z: t.z, d: t.d, w: t.w, baseY: t.baseY })),
+    [towers],
+  );
+
   // Created outside the reconciler, so they have to be disposed by hand.
-  useEffect(() => () => nightMaterial?.dispose(), [nightMaterial]);
-  useEffect(() => () => windowTex?.dispose(), [windowTex]);
-  useEffect(() => () => towers.forEach((t) => t.geom.dispose()), [towers]);
+  useEffect(() => () => nightMaterials?.forEach((m) => m.dispose()), [nightMaterials]);
+  useEffect(() => () => windowTexes.forEach((t) => t.dispose()), [windowTexes]);
+  useEffect(
+    () => () =>
+      towers.forEach((t) => {
+        t.geom.dispose();
+        t.caps.forEach((c) => c.geom.dispose());
+      }),
+    [towers],
+  );
 
   useFrame(() => {
-    if (!nightMaterial || !windowTex) return;
+    if (!nightMaterials) return;
     const { mid, high } = readAudioLevels();
     // Weighted so ordinary street noise lands mid-range instead of pinned at
     // the ceiling — a value that spends its life clamped at 1 is a constant,
     // and a constant is not a reaction.
     const drive = Math.min(1, mid * 0.5 + high * 0.6);
-    nightMaterial.emissiveIntensity = WINDOW_BASE + drive * WINDOW_RANGE;
+    const next = WINDOW_BASE + drive * WINDOW_RANGE;
+    // A handful of writes instead of one — still nothing next to 32.
+    for (const m of nightMaterials) m.emissiveIntensity = next;
   });
 
   return (
@@ -235,19 +355,36 @@ export default function CityScape({
           unlikely. Only the skyline silhouette is ever seen. */}
       {towers.map((b, i) => {
         return (
-        <mesh key={i} position={[b.x, b.centerY, b.z]} rotation={[0, b.rot, 0]} geometry={b.geom}>
-          {nightMaterial ? (
-            <primitive object={nightMaterial} attach="material" />
+        <group key={i} position={[b.x, 0, b.z]} rotation={[0, b.rot, 0]}>
+          {b.caps.map((c, ci) => (
+            <mesh key={ci} position={[0, c.y, 0]} geometry={c.geom}>
+              {nightMaterials ? (
+                <primitive object={nightMaterials[b.variant]} attach="material" />
+              ) : (
+                <meshLambertMaterial color={dayColor} map={windowTexes[b.variant]} vertexColors />
+              )}
+            </mesh>
+          ))}
+          <mesh position={[0, b.centerY, 0]} geometry={b.geom}>
+          {nightMaterials ? (
+            <primitive object={nightMaterials[b.variant]} attach="material" />
           ) : (
             // map multiplies, so white texels keep dayColor exactly and the
             // window texels darken it. No second colour to keep in sync.
             // Lambert, not basic: buildings are lit by CityLit's dedicated
             // per-weather sun. The vertex colours survive as a shallow floor.
-            <meshLambertMaterial color={dayColor} map={windowTex ?? undefined} vertexColors />
+            <meshLambertMaterial color={dayColor} map={windowTexes[b.variant]} vertexColors />
           )}
-        </mesh>
+          </mesh>
+        </group>
         );
       })}
+
+      {/* Paint, on the near walls only — a tag 200 units away is a smudge.
+          `walls` is memoised: built inline it was a new array every render,
+          which re-ran the texture generation and disposed the live textures
+          on each pass. */}
+      <Graffiti walls={taggableWalls} layout={layout} />
 
       {landmarks.map((l, i) =>
         l.kind === 'transamerica' ? (
