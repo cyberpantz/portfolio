@@ -47,7 +47,7 @@ export const EXPLORATIONS: Exploration[] = [
     type: 'Experience',
     tags: ['WebGL', 'Three.js', 'Shaders', 'Web Audio'],
     url: '/explorations/weather-vibe',
-    desc: 'A meditative 3D scene that lives in your local weather — hand-written shaders for rain, fog and golden hour, with a generated soundtrack underneath.',
+    desc: 'A vibe-coded meditative 3D scene that changes with the weather for the current location. Open source ambient soundscapes and shaders for rain, fog and golden hour.',
     needsRoom: true,
   },
   // {

@@ -34,6 +34,15 @@ import crumbVerdict from '../assets/projects/crumb-verdict.png';
 import crumbFermentation from '../assets/projects/crumb-fermentation.png';
 import crumbStarter from '../assets/projects/crumb-starter.png';
 import crumbEmail from '../assets/projects/crumb-email.png';
+/* sizer-cover.png is a composed 4:3 window on the visualiser panel of
+   sizer-visualizer.png — the bag drawn inside the airline's published frame
+   with its three dimensions called out. Cropped around the drawing rather than
+   centre-cropped, because the centre of that screenshot is empty panel. */
+import sizerCover from '../assets/projects/sizer-cover.png';
+import sizerLanding from '../assets/projects/sizer-landing.png';
+import sizerCatalogue from '../assets/projects/sizer-catalogue.png';
+import sizerVisualizer from '../assets/projects/sizer-visualizer.png';
+import sizerCheckTrip from '../assets/projects/sizer-check-trip.png';
 import vittlesCover from '../assets/projects/vittles-cover.png';
 import vittlesProblem from '../assets/projects/vittles-problem.png';
 import vittlesLanding from '../assets/projects/vittles-landing.png';
@@ -153,8 +162,73 @@ export const PROJECTS_V2: ProjectV2[] = [
   },
 
   {
-    id: 'vittles',
+    id: 'sizer',
     n: '02',
+    name: 'Sizer',
+    year: '2026',
+    status: null,
+    tag: 'Whether your carry-on fits. It started with an Amazon search that did not.',
+    cover: sizerCover,
+    coverAlt:
+      "Sizer's size visualiser: a carry-on drawn inside the dark outline of an airline's published cabin limit, with its width, height and depth called out.",
+    para:
+      'I searched Amazon for a carry-on under 21 inches. It returned a 29-inch checked bag, a neck pillow, packing cubes, and a suitcase whose own listing gave three different sets of dimensions in three different places. I tried "EU cabin friendly" and was shown a golf travel case. Somewhere in there I stopped shopping and started taking notes. No search can answer this, because "carry-on" is not a size. The airlines here publish seventeen different limits, from 40 cm to 61 cm on the longest side. And a product listing may or may not be counting the wheels, which add about four centimetres and are exactly the part a gate measures. Sizer answers what the search box cannot: your bag, your airline, the fare you actually clicked, across 75 airlines and 57 bags. It also names the leg of your trip that ruins it, which is never the leg you were worried about. By month two I had firm views on whether three millimetres is a real distance, and a file in the repository holding 3,861 verdicts about suitcases that must stay byte-identical forever. I have measured zero bags myself; the site confesses this on every page, and I have decided that is integrity.',
+    notes: [
+      {
+        label: 'The problem',
+        body: 'Everyone answering this question is trying to sell you a bag. The affiliate roundups copy dimensions off retail listings, which are wrong in the generous direction — a happy accident for anyone earning a commission in the generous direction. The airlines publish the truth and then bury it three clicks into a fare table. Five of them sell a cheapest ticket that includes no cabin bag whatsoever, a detail they are in no rush to lead with. Nobody was answering the specific question, because answering it properly is boring, and boring is expensive.',
+      },
+      {
+        label: 'Product decisions',
+        body: 'Five answers instead of two, because a centimetre over is a shrug at one airline and eighty euros at another. Flights before bags — I had this backwards for months, cheerfully asking which suitcase before establishing whether the ticket permits any suitcase at all. And an airline I have not researched is excluded from every count rather than quietly assumed to be relaxed about it, on the principle that an absent fact must never produce a confident answer. That sentence now appears in roughly nine of my code comments.',
+      },
+      {
+        label: 'What went wrong',
+        body: 'For one glorious afternoon every bag page carried a note explaining that its own figures could not be trusted — including the thirty-seven pages where they were entirely fine. One expression checked a property that did not exist, undefined is falsy, and the site achieved a state of total, indiscriminate, unearned humility. I found it by looking at the deployed page rather than at the code, which is the lesson and also mildly humiliating. Separately, I wrote a privacy policy asserting that the site could not track you because it was static. Static sites track people all day long. I had promoted a choice to a law of physics, on a website whose entire thesis is that luggage brands do this with tape measures.',
+      },
+      {
+        label: 'Tech',
+        body: 'Astro with Preact islands, Tailwind, deployed static to Cloudflare Workers. The fit engine is a standalone module pinned by that 3,861-verdict golden file, plus 694 tests, nearly all of which exist because something specific went wrong once and I took it personally.',
+      },
+    ],
+    stack: 'Astro · TypeScript · Preact · Tailwind · Cloudflare Workers',
+    /* Temporary workers.dev host. Swap for the real domain, or set both of these
+       to null until there is one — mealtrip shows the null case rendering fine. */
+    url: 'https://sizer.phranque-y.workers.dev',
+    cta: 'Visit Sizer',
+    /*
+      Ordered as the argument runs: the question, the shelf that answers it at a
+      glance, the single screen that makes the gap between a brochure figure and
+      a gate visible, and finally the trip-level answer no per-airline lookup can
+      give.
+    */
+    shots: [
+      {
+        src: sizerLanding,
+        caption: 'Landing — three ways in, because people arrive with different questions',
+        alt: 'Sizer\'s landing page: the headline "Will your carry-on actually fit?" above three entry points — I have a bag, I am buying one, I am flying somewhere.',
+      },
+      {
+        src: sizerCatalogue,
+        caption: 'Catalogue — shelved by how widely a bag fits, not by brand or price',
+        alt: 'The bag catalogue headed "Carry-on bags, ranked by how many airlines they fit", with type filters and a "Goes anywhere" shelf of bags clearing at least 80% of airlines.',
+      },
+      {
+        src: sizerVisualizer,
+        caption: 'Bag detail — the bag drawn inside the airline\'s own frame, wheels included',
+        alt: "A Travelpro spinner checked against Austrian Airlines: outside and packing dimensions on the left, and the bag drawn inside the airline's published limit with width, height and depth called out.",
+      },
+      {
+        src: sizerCheckTrip,
+        caption: 'Trip checker — every leg, and the one that actually decides',
+        alt: 'The trip checker with a flight and a bag entered, returning a "Tight" verdict, the airline\'s strictness score, a chart of the bag against the cabin limit on each axis, and how much weight is left to pack.',
+      },
+    ],
+  },
+
+  {
+    id: 'vittles',
+    n: '03',
     name: 'Vittles',
     year: '2026',
     status: 'Launching soon',
@@ -224,7 +298,7 @@ export const PROJECTS_V2: ProjectV2[] = [
 
   {
     id: 'mealtrip',
-    n: '03',
+    n: '04',
     name: 'MealTrip',
     year: '2024',
     status: 'Unshipped experiment',
