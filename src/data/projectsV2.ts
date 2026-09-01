@@ -167,28 +167,28 @@ export const PROJECTS_V2: ProjectV2[] = [
     name: 'Sizer',
     year: '2026',
     status: null,
-    tag: 'Whether your carry-on fits. It started with an Amazon search that did not.',
+    tag: 'Will your carry-on fit? Sizer answers the question for every airline, every bag, every leg of your trip.',
     cover: sizerCover,
     coverAlt:
       "Sizer's size visualiser: a carry-on drawn inside the dark outline of an airline's published cabin limit, with its width, height and depth called out.",
     para:
-      'I searched Amazon for a carry-on under 21 inches. It returned a 29-inch checked bag, a neck pillow, packing cubes, and a suitcase whose own listing gave three different sets of dimensions in three different places. I tried "EU cabin friendly" and was shown a golf travel case. Somewhere in there I stopped shopping and started taking notes. No search can answer this, because "carry-on" is not a size. The airlines here publish seventeen different limits, from 40 cm to 61 cm on the longest side. And a product listing may or may not be counting the wheels, which add about four centimetres and are exactly the part a gate measures. Sizer answers what the search box cannot: your bag, your airline, the fare you actually clicked, across 75 airlines and 57 bags. It also names the leg of your trip that ruins it, which is never the leg you were worried about. By month two I had firm views on whether three millimetres is a real distance, and a file in the repository holding 3,861 verdicts about suitcases that must stay byte-identical forever. I have measured zero bags myself; the site confesses this on every page, and I have decided that is integrity.',
+      ' I was searching Google for a carry-on under 21 inches. It returned a 29-inch checked bag, a neck pillow, packing cubes, and a suitcase whose own listing gave three different sets of dimensions in three different places. I tried "EU cabin friendly" and was shown a golf travel case. Somewhere in there I stopped shopping and started taking notes. I discovered that "carry-on" is not a size. The airlines here publish seventeen different limits, from 40 cm to 61 cm on the longest side. And a product listing may or may not be counting the wheels, which are exactly the part a gate agent will measure. Sizer answers what the search box cannot: your bag, your airline, the fare you actually clicked, across a growing list of airlines and bags. It also names the leg of your trip that ruins it, which is never the leg you were worried about.',
     notes: [
       {
         label: 'The problem',
-        body: 'Everyone answering this question is trying to sell you a bag. The affiliate roundups copy dimensions off retail listings, which are wrong in the generous direction — a happy accident for anyone earning a commission in the generous direction. The airlines publish the truth and then bury it three clicks into a fare table. Five of them sell a cheapest ticket that includes no cabin bag whatsoever, a detail they are in no rush to lead with. Nobody was answering the specific question, because answering it properly is boring, and boring is expensive.',
+        body: 'Everyone answering this question is trying to sell you a bag. The affiliate roundups copy dimensions off retail listings. The airlines publish the truth and then bury it three clicks into a fare table. Five of them sell a cheapest ticket that includes no cabin bag whatsoever, a detail they are in no rush to lead with. Nobody was answering the specific question, because answering there\'s no incentive to do so. I built Sizer to show the answer in a way that makes the gap between a brochure figure and a gate visible.',
       },
       {
         label: 'Product decisions',
-        body: 'Five answers instead of two, because a centimetre over is a shrug at one airline and eighty euros at another. Flights before bags — I had this backwards for months, cheerfully asking which suitcase before establishing whether the ticket permits any suitcase at all. And an airline I have not researched is excluded from every count rather than quietly assumed to be relaxed about it, on the principle that an absent fact must never produce a confident answer. That sentence now appears in roughly nine of my code comments.',
+        body: 'Establish trust. Make it Bbautiful, but not pretentious. Always show sources. Show links to the airline and bag manufacturer when available. Allow for custom bags. Keept the design clean. Build something useful, then think about monetization. ',
       },
       {
-        label: 'What went wrong',
-        body: 'For one glorious afternoon every bag page carried a note explaining that its own figures could not be trusted — including the thirty-seven pages where they were entirely fine. One expression checked a property that did not exist, undefined is falsy, and the site achieved a state of total, indiscriminate, unearned humility. I found it by looking at the deployed page rather than at the code, which is the lesson and also mildly humiliating. Separately, I wrote a privacy policy asserting that the site could not track you because it was static. Static sites track people all day long. I had promoted a choice to a law of physics, on a website whose entire thesis is that luggage brands do this with tape measures.',
+        label: 'Process',
+        body: 'I vibe coded this thing in less than a week.  Step 1: Establish clear specs and product vision. Step 2: Establish design direction;  generate a round of mockups. Step 3: Write technical specs and implementation plans that refer to mockups, Step 4: Iterate. Rinse. Repeat. ',
       },
       {
         label: 'Tech',
-        body: 'Astro with Preact islands, Tailwind, deployed static to Cloudflare Workers. The fit engine is a standalone module pinned by that 3,861-verdict golden file, plus 694 tests, nearly all of which exist because something specific went wrong once and I took it personally.',
+        body: 'Astro with Preact islands, Tailwind, ThreeJS for the luggage visualization, deployed static to Cloudflare Workers. The sizing engine is a standalone module with over 600 tests!.',
       },
     ],
     stack: 'Astro · TypeScript · Preact · Tailwind · Cloudflare Workers',
