@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hire — Frank Young</title>
+<style>
+  :root{
+    --ground:#0D0F0F;
+    --ink:#EFEDE7;
+    --mid:#9A9A94;
+    --soft:#6F726E;
+    --teal:#4FB3A9;
+    --ember:#C98A4B;
+    --hair:rgba(239,237,231,.14);
+    --sans:"Helvetica Neue","Inter",Helvetica,Arial,sans-serif;
+    --serif:"Charter","Iowan Old Style",Georgia,serif;
+  }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; padding:0; background:var(--ground); color:var(--ink); }
+  body{ font-family:var(--sans); -webkit-font-smoothing:antialiased; }
+
+  /* ---------- the living ground ---------- */
+  #field{
+    position:fixed; inset:0; width:100%; height:100%;
+    display:block; z-index:0;
+  }
+  /* scrim keeps text contrast stable no matter what the field is doing */
+  .scrim{
+    position:fixed; inset:0; z-index:1; pointer-events:none;
+    background:
+      radial-gradient(120% 90% at 50% 40%, rgba(13,15,15,.30) 0%, rgba(13,15,15,.78) 62%, rgba(13,15,15,.92) 100%);
+  }
+
+  main{ position:relative; z-index:2; }
+
+  .wrap{ max-width:1080px; margin:0 auto; padding:0 6vw; }
+
+  /* ---------- hero ---------- */
+  .hero{ min-height:100svh; display:flex; flex-direction:column; justify-content:center; padding:14vh 0 10vh; }
+  .eyebrow{
+    display:inline-flex; align-items:center; gap:.7em;
+    font-size:.72rem; font-weight:700; letter-spacing:.22em; text-transform:uppercase;
+    color:var(--teal); margin-bottom:2.2rem;
+  }
+  .pulse{
+    width:7px; height:7px; border-radius:50%; background:var(--teal);
+    box-shadow:0 0 0 0 rgba(79,179,169,.6); animation:pulse 3.4s ease-out infinite;
+  }
+  @keyframes pulse{
+    0%{ box-shadow:0 0 0 0 rgba(79,179,169,.55); }
+    70%{ box-shadow:0 0 0 12px rgba(79,179,169,0); }
+    100%{ box-shadow:0 0 0 0 rgba(79,179,169,0); }
+  }
+
+  /* short headline, so it can go bigger and tighter */
+  h1{
+    font-size:clamp(3rem, 9vw, 7.5rem);
+    line-height:.98; letter-spacing:-.035em; font-weight:700;
+    margin:0 0 2.6rem 0; max-width:12ch;
+  }
+
+  .lede{
+    font-size:clamp(1.05rem, 1.55vw, 1.32rem);
+    line-height:1.62; color:var(--ink); opacity:.86;
+    max-width:56ch; margin:0;
+  }
+  .lede strong{ font-weight:600; opacity:1; }
+
+  /* ---------- offerings ---------- */
+  .offer-head{
+    font-size:.72rem; font-weight:700; letter-spacing:.22em; text-transform:uppercase;
+    color:var(--soft); margin:0 0 2.6rem 0;
+    padding-bottom:1rem; border-bottom:1px solid var(--hair);
+  }
+  .offers{
+    display:grid; grid-template-columns:repeat(auto-fit, minmax(250px,1fr));
+    gap:3rem 3.5rem; padding-bottom:12vh;
+  }
+  .offer h3{
+    font-size:1.16rem; font-weight:700; letter-spacing:-.01em;
+    margin:0 0 .7rem 0;
+  }
+  .offer .num{
+    display:block; font-family:var(--serif); font-style:italic;
+    font-size:.9rem; color:var(--teal); margin-bottom:.9rem;
+  }
+  .offer p{ margin:0; font-size:.95rem; line-height:1.62; color:var(--mid); }
+
+  /* ---------- close ---------- */
+  .close{ padding:0 0 14vh; }
+  .rule{ height:2px; width:64px; background:var(--teal); margin-bottom:2.6rem; }
+  .avail{ font-size:1rem; color:var(--mid); margin:0 0 1.6rem 0; line-height:1.6; }
+  .mail{
+    display:inline-block; font-size:clamp(1.4rem,3.4vw,2.4rem); font-weight:700;
+    letter-spacing:-.02em; color:var(--ink); text-decoration:none;
+    border-bottom:2px solid rgba(79,179,169,.55); padding-bottom:.12em;
+    transition:border-color .35s ease, color .35s ease;
+  }
+  .mail:hover{ color:var(--teal); border-color:var(--teal); }
+  .back{
+    display:inline-block; margin-top:4rem; font-size:.8rem; letter-spacing:.14em;
+    text-transform:uppercase; color:var(--soft); text-decoration:none;
+    border-bottom:1px solid transparent; transition:color .3s, border-color .3s;
+  }
+  .back:hover{ color:var(--ink); border-color:var(--hair); }
+
+  @media (prefers-reduced-motion: reduce){
+    .pulse{ animation:none; }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="field" aria-hidden="true"></canvas>
+<div class="scrim" aria-hidden="true"></div>
+
+<main>
+  <div class="wrap">
+
+    <section class="hero">
+      <span class="eyebrow"><span class="pulse" aria-hidden="true"></span> Available for work</span>
+      <h1>I design and build.</h1>
+      <p class="lede">
+        Twenty years on both sides of the design and engineering line. The useful part isn't
+        the range — it's that nothing gets lost explaining the idea to someone else.
+        <strong>What ships looks like what was designed</strong>, and it gets there faster.
+      </p>
+    </section>
+
+    <section aria-labelledby="offers-head">
+      <h2 class="offer-head" id="offers-head">Where I'm most useful</h2>
+      <div class="offers">
+        <div class="offer">
+          <span class="num">01</span>
+          <h3>0-to-1 builds</h3>
+          <p>You have an idea and no capacity. I take it from sketch to a working product.
+             The Crumb and Vittles were both built this way — solo, concept through deployment.</p>
+        </div>
+        <div class="offer">
+          <span class="num">02</span>
+          <h3>Design engineering, embedded</h3>
+          <p>You have designers and nobody who can build the ambitious version.
+             I slot in and close that gap.</p>
+        </div>
+        <div class="offer">
+          <span class="num">03</span>
+          <h3>Interactive &amp; motion work</h3>
+          <p>Landing experiences, campaign pieces, engagement mechanics — where the craft
+             is in how it feels, not just what it does.</p>
+        </div>
+        <div class="offer">
+          <span class="num">04</span>
+          <h3>AI product interfaces</h3>
+          <p>Generative UI, structured output, thinking states. The design problems most
+             teams haven't solved yet.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="close">
+      <div class="rule" aria-hidden="true"></div>
+      <p class="avail">Currently open to contract and full-time.<br>
+         San Francisco Bay Area — happy remote.</p>
+      <a class="mail" href="mailto:phranque.y@gmail.com">phranque.y@gmail.com</a>
+      <br>
+      <a class="back" href="/">← back to the work</a>
+    </section>
+
+  </div>
+</main>
+
+<script type="module">
+/* ──────────────────────────────────────────────────────────────
+   Living ground.
+
+   One full-screen quad, one fragment shader. Domain-warped fbm
+   noise drives two colour fields — one cool, one warm — that flow
+   through each other and blend at the boundary. That's the whole
+   idea of the page rendered as motion, rather than decoration.
+
+   Restraint rules, deliberately:
+     · full cycle measured in ~90s, not seconds
+     · peak luminance ~12% above ground, so it stays ground
+     · pointer nudges the warp on a long ease — never tracks
+     · prefers-reduced-motion  → one static frame, no loop
+     · tab hidden / offscreen  → rAF stops entirely
+     · no WebGL                → CSS gradient, page unaffected
+   ────────────────────────────────────────────────────────────── */
+
+const canvas = document.getElementById('field');
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+const gl = canvas.getContext('webgl2', { antialias:false, alpha:false, powerPreference:'low-power' })
+        || canvas.getContext('webgl',  { antialias:false, alpha:false, powerPreference:'low-power' });
+
+if (!gl) {
+  canvas.style.background =
+    'radial-gradient(120% 80% at 30% 20%, #16302E 0%, #0D0F0F 55%),' +
+    'radial-gradient(90% 70% at 78% 78%, #2A1E14 0%, rgba(13,15,15,0) 60%)';
+} else {
+  const VERT = `
+    attribute vec2 p;
+    void main(){ gl_Position = vec4(p, 0.0, 1.0); }`;
+
+  const FRAG = `
+    precision highp float;
+    uniform vec2  uRes;
+    uniform float uTime;
+    uniform vec2  uPointer;   // eased, -1..1
+    uniform float uIntensity; // 0..1, fades in on load
+
+    // cheap value noise + fbm — plenty for an ambient field
+    float hash(vec2 p){
+      p = fract(p * vec2(123.34, 456.21));
+      p += dot(p, p + 45.32);
+      return fract(p.x * p.y);
+    }
+    float noise(vec2 p){
+      vec2 i = floor(p), f = fract(p);
+      vec2 u = f * f * (3.0 - 2.0 * f);
+      return mix(mix(hash(i), hash(i + vec2(1,0)), u.x),
+                 mix(hash(i + vec2(0,1)), hash(i + vec2(1,1)), u.x), u.y);
+    }
+    float fbm(vec2 p){
+      float v = 0.0, a = 0.5;
+      for (int i = 0; i < 5; i++){
+        v += a * noise(p);
+        p *= 2.02;
+        a *= 0.5;
+      }
+      return v;
+    }
+
+    void main(){
+      vec2 uv = gl_FragCoord.xy / uRes.xy;
+      vec2 p  = uv;
+      p.x *= uRes.x / uRes.y;
+
+      float t = uTime * 0.014;                 // slow. deliberately.
+      vec2  m = uPointer * 0.22;
+
+      // domain warp — this is what makes it read as liquid, not clouds
+      vec2 q = vec2(fbm(p * 1.6 + t),
+                    fbm(p * 1.6 + vec2(3.4, 1.7) - t * 0.8));
+      vec2 r = vec2(fbm(p * 1.6 + q * 1.9 + m + t * 0.5),
+                    fbm(p * 1.6 + q * 1.9 - m + vec2(8.3, 2.8) - t * 0.4));
+      float f = fbm(p * 1.4 + r * 1.6);
+
+      // two fields: cool and warm, meeting in the middle
+      vec3 ground = vec3(0.051, 0.059, 0.059);
+      vec3 cool   = vec3(0.122, 0.400, 0.384);
+      vec3 warm   = vec3(0.400, 0.251, 0.129);
+
+      float coolMask = smoothstep(0.36, 0.86, f + r.x * 0.22);
+      float warmMask = smoothstep(0.42, 0.92, 1.0 - f + r.y * 0.20);
+
+      vec3 col = ground;
+      col = mix(col, cool, coolMask * 0.42);
+      col = mix(col, warm, warmMask * 0.20);
+
+      // a slow breath, so it never feels frozen between warps
+      col *= 0.94 + 0.06 * sin(uTime * 0.22 + f * 3.0);
+
+      // keep it ground, not figure
+      col = mix(ground, col, uIntensity);
+
+      // vignette so the edges stay quiet behind the type
+      float vig = smoothstep(1.25, 0.25, length(uv - 0.5));
+      col *= 0.72 + 0.28 * vig;
+
+      // dither — kills banding in the dark gradient
+      float d = (hash(gl_FragCoord.xy) - 0.5) / 255.0;
+      gl_FragColor = vec4(col + d, 1.0);
+    }`;
+
+  const compile = (type, src) => {
+    const s = gl.createShader(type);
+    gl.shaderSource(s, src); gl.compileShader(s);
+    if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) console.error(gl.getShaderInfoLog(s));
+    return s;
+  };
+  const prog = gl.createProgram();
+  gl.attachShader(prog, compile(gl.VERTEX_SHADER, VERT));
+  gl.attachShader(prog, compile(gl.FRAGMENT_SHADER, FRAG));
+  gl.linkProgram(prog); gl.useProgram(prog);
+
+  const buf = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 3,-1, -1,3]), gl.STATIC_DRAW);
+  const loc = gl.getAttribLocation(prog, 'p');
+  gl.enableVertexAttribArray(loc);
+  gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+
+  const U = {
+    res:       gl.getUniformLocation(prog, 'uRes'),
+    time:      gl.getUniformLocation(prog, 'uTime'),
+    pointer:   gl.getUniformLocation(prog, 'uPointer'),
+    intensity: gl.getUniformLocation(prog, 'uIntensity'),
+  };
+
+  // cap DPR — a 3x retina full-screen shader is wasted battery
+  const DPR = Math.min(devicePixelRatio || 1, 1.75);
+  function resize(){
+    const w = Math.floor(innerWidth * DPR), h = Math.floor(innerHeight * DPR);
+    if (canvas.width !== w || canvas.height !== h){
+      canvas.width = w; canvas.height = h;
+      gl.viewport(0, 0, w, h);
+    }
+    gl.uniform2f(U.res, canvas.width, canvas.height);
+  }
+  addEventListener('resize', resize, { passive:true });
+  resize();
+
+  // pointer influence, heavily eased — a nudge, never a cursor-follow
+  const target = { x:0, y:0 }, eased = { x:0, y:0 };
+  addEventListener('pointermove', (ev) => {
+    target.x = (ev.clientX / innerWidth)  * 2 - 1;
+    target.y = (ev.clientY / innerHeight) * 2 - 1;
+  }, { passive:true });
+
+  let intensity = 0, running = false, raf = 0, t0 = performance.now();
+
+  function frame(now){
+    const t = (now - t0) / 1000;
+    eased.x += (target.x - eased.x) * 0.018;   // ~2s to settle
+    eased.y += (target.y - eased.y) * 0.018;
+    intensity += (1 - intensity) * 0.012;      // fade in, never a hard cut
+
+    gl.uniform1f(U.time, t);
+    gl.uniform2f(U.pointer, eased.x, eased.y);
+    gl.uniform1f(U.intensity, intensity);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+
+    raf = requestAnimationFrame(frame);
+  }
+
+  function start(){ if (!running && !reduced){ running = true; raf = requestAnimationFrame(frame); } }
+  function stop(){ running = false; cancelAnimationFrame(raf); }
+
+  if (reduced){
+    // one considered still frame — the composition, without the motion
+    gl.uniform1f(U.time, 42.0);
+    gl.uniform2f(U.pointer, 0, 0);
+    gl.uniform1f(U.intensity, 1);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+  } else {
+    start();
+    document.addEventListener('visibilitychange', () => document.hidden ? stop() : start());
+  }
+}
+</script>
+</body>
+</html>

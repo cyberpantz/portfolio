@@ -14,6 +14,34 @@ const LINK =
   'transition-colors duration-500 hover:text-ink aria-[current=true]:text-ink';
 ---
 
+{/* The dot is decoration — "Hire me" carries the meaning on its own, so
+    nobody has to notice a 7px circle to understand the link. */}
+<style>
+  .mast-dot {
+    display: inline-block;
+    inline-size: 7px;
+    block-size: 7px;
+    flex: none;
+    border-radius: 50%;
+    background: currentColor;
+    animation: mast-breathe 3.4s ease-in-out infinite;
+  }
+  @keyframes mast-breathe {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.4;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .mast-dot {
+      animation: none;
+    }
+  }
+</style>
+
 <header
   id="masthead"
   class="sticky top-0 z-60 border-b border-rule-2 bg-paper data-[scrolled='1']:border-rule"
@@ -80,14 +108,23 @@ const LINK =
         <a class={LINK} href={`#${item.id}`} data-nav={item.id}>{item.label}</a>
       ))}
 
-      {/* Carries an arrow as well as colour, so it does not rely on
-          hue alone to read as different — spec §13 */}
+      {/* Only ONE accent link in the row, and it is this one: while he is
+          looking for work, availability is the loudest thing the nav
+          should say. The CV keeps its arrow and drops to the standard
+          treatment so the two do not compete. */}
       <a
-        href="#cv"
-        class="ul-draw inline-flex min-h-11 items-center gap-2 whitespace-nowrap
+        href="/hire"
+        class="ul-draw inline-flex min-h-11 items-center gap-2.5 whitespace-nowrap
                text-meta font-medium tracking-[0.16em] uppercase text-accent"
       >
-        <span aria-hidden="true">↓</span>
+        <span class="mast-dot" aria-hidden="true"></span>
+        Hire me
+      </a>
+
+      {/* Carries an arrow as well as colour, so it does not rely on
+          hue alone to read as different — spec §13 */}
+      <a href="#cv" class={LINK}>
+        <span aria-hidden="true" class="mr-2">↓</span>
         Curriculum Vitae
       </a>
     </nav>

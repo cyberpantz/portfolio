@@ -1,0 +1,325 @@
+---
+import V2Base from '../layouts/V2Base.astro';
+import HireForm from '../components/v2/HireForm.tsx';
+import ContourField from '../components/v2/ContourField.tsx';
+
+/**
+ * /hire — the availability page.
+ *
+ * Three sections and nothing else: who is available, what arrives, and the
+ * form. Deliberately NOT a second portfolio — the work already has a
+ * gallery one click away, and repeating three covers here would only make
+ * the page longer without answering a question this visitor is asking.
+ * They arrived from a message; they want the scope and the way to reply.
+ *
+ * Two things carried over from decisions made elsewhere in the site:
+ *
+ *  · No mailto. A plain address in the markup is free food for scrapers —
+ *    the same reason the homepage colophon dropped its own. This page gets
+ *    its OWN Netlify form (`hire`) rather than reusing `contact`, so
+ *    project enquiries arrive in their own list and ask their own
+ *    questions: shape, timeline, budget, brief.
+ *  · The site's tokens, not the prototype's. Bodoni and the teal that
+ *    shifts with the theme, so this reads as a page of the portfolio
+ *    rather than a landing page bolted onto it.
+ *
+ * NOTE: `src/styles/v2.css` opens with `source(none)` and an explicit
+ * @source allowlist. This file is on it. A new page added here without
+ * that line gets no generated utilities and collapses to unstyled text.
+ */
+
+/*
+ * Deliverables, not positioning. Each line says what arrives, in the
+ * plainest words available — someone deciding whether to write should not
+ * have to translate a value proposition into a scope of work.
+ */
+const OFFERS = [
+  {
+    n: '01',
+    head: 'A product, from scratch',
+    body: 'Concept to deployed. Product thinking, design, front end, backend, infrastructure.',
+  },
+  {
+    n: '02',
+    head: 'The build your designers drew',
+    body: 'I work in the design file and the repo. Components, interaction, motion, states.',
+  },
+  {
+    n: '03',
+    head: 'Interfaces for complex systems',
+    body: 'Fleets, energy, logistics. Dense data, real constraints, screens people use all day.',
+  },
+  {
+    n: '04',
+    head: 'AI product interfaces',
+    body: 'Generative UI, structured output, streaming and thinking states, wrong answers handled well.',
+  },
+];
+
+const META = 'text-meta font-medium tracking-[0.2em] uppercase text-muted';
+
+/*
+ * Section heads here are NOT `text-section`.
+ *
+ * On the homepage `text-section` (clamp 38→112px) is the largest thing on
+ * the page — there is no h1 competing with it. This page has a real h1, so
+ * reusing that size gives two near-identical display sizes and no
+ * hierarchy at all. Section heads drop a clear step below the h1 and read
+ * as what they are: subheads.
+ */
+const SUBHEAD =
+  'font-display text-[clamp(30px,4.2vw,54px)] leading-[1.02] tracking-[-0.026em] [text-wrap:balance]';
+---
+
+<V2Base
+  title="Hire Frank Young — Creative Technologist, available now"
+  description="Frank Young — designer and engineer, available for contract, freelance or full-time. Products built from scratch, design engineering, interfaces for complex systems, AI product work. San Francisco Bay Area, happy remote."
+>
+  <a
+    class="absolute top-0 -left-[9999px] z-[200] bg-ink px-6 py-4 text-[13px] tracking-[0.12em]
+           uppercase text-paper focus:top-4 focus:left-4"
+    href="#main">Skip to content</a
+  >
+
+  {/*
+    client:load, not client:visible — it is the ground the first
+    paragraph sits on. Hydrating it when it scrolls into view would mean
+    it never hydrates at all.
+  */}
+  <ContourField client:load />
+
+  {/* No bg-paper on this bar: the contour field is behind the whole page
+      and an opaque header would cut a blank band across the top of it. */}
+  <header class="relative z-10 border-b border-rule-2">
+    <div class="mx-auto flex min-h-19 max-w-shell flex-wrap items-center gap-x-6 px-gut">
+      <a
+        class="whitespace-nowrap py-3 font-display text-[23px] tracking-[-0.018em] text-ink hover:text-accent"
+        href="/">Frank Young</a
+      >
+      <a
+        class={`ul-draw ml-auto inline-flex min-h-11 items-center gap-2 ${META} hover:text-ink`}
+        href="/"><span aria-hidden="true">←</span> The work</a
+      >
+    </div>
+  </header>
+
+  <main id="main" class="relative z-10 mx-auto max-w-shell px-gut">
+    {/* ---------------------------------------------------------------
+        Hero
+        --------------------------------------------------------------- */}
+    <section class="pt-[clamp(64px,10vw,132px)] pb-[clamp(56px,8vw,104px)]">
+      {/*
+        The dot is decoration; the words carry the status on their own, so
+        nobody depends on a green pixel to learn that he is available.
+      */}
+      <p class={`reveal flex items-center gap-3 ${META}`}>
+        <span class="avail-dot" aria-hidden="true"></span>
+        Available for work
+      </p>
+
+      <h1
+        class="reveal mt-[clamp(24px,3.4vw,44px)] max-w-[13ch] font-display
+               text-[clamp(52px,9vw,124px)] leading-[0.94] tracking-[-0.035em] [text-wrap:balance]"
+        style="transition-delay:110ms"
+      >
+        I design and build.
+      </h1>
+
+      {/* No lede. The h1 says it, and the four cards below say it in
+          specifics — a paragraph in between only delays both. */}
+      <p class={`reveal mt-[clamp(32px,4.5vw,52px)] ${META}`} style="transition-delay:220ms">
+        Contract, freelance or full-time &nbsp;·&nbsp; San Francisco Bay Area &nbsp;·&nbsp;
+        Happy remote
+      </p>
+    </section>
+
+    {/* ---------------------------------------------------------------
+        Offerings
+        --------------------------------------------------------------- */}
+    <section aria-labelledby="h-offers" class="border-t border-ink pt-[clamp(44px,6vw,76px)]">
+      {/* No section number. The cards below are already numbered 01–04;
+          a second 01/02/03 running down the page beside them is two
+          numbering systems arguing in the same column. */}
+      <div class="reveal">
+        <p class={`mb-[clamp(18px,2.4vw,28px)] ${META}`}>What I deliver</p>
+        <h2 id="h-offers" class={`max-w-[18ch] ${SUBHEAD}`}>Four kinds of engagement.</h2>
+      </div>
+
+      <div
+        class="mt-[clamp(40px,6vw,72px)] grid grid-cols-2 gap-x-[clamp(32px,5vw,88px)]
+               gap-y-[clamp(36px,5vw,64px)] max-lg:grid-cols-1"
+      >
+        {/*
+          Staggered by index. 80ms is enough to read as a cascade rather
+          than a queue — the four cards finish arriving inside half a
+          second, so nobody is ever waiting on the last one.
+        */}
+        {OFFERS.map((o, i) => (
+          <div
+            class="reveal border-t border-rule pt-[clamp(20px,2.4vw,30px)]"
+            style={`transition-delay:${i * 80}ms`}
+          >
+            <span class="font-display text-xl italic text-accent" aria-hidden="true">{o.n}</span>
+            <h3
+              class="mt-2.5 font-display text-[clamp(25px,2.6vw,34px)] tracking-[-0.022em] text-ink"
+            >
+              {o.head}
+            </h3>
+            <p class="mt-3.5 max-w-[38ch] text-[clamp(16px,1.4vw,18px)] leading-[1.62] text-ink-2">
+              {o.body}
+            </p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    {/* ---------------------------------------------------------------
+        Contact
+        --------------------------------------------------------------- */}
+    <section
+      id="contact"
+      aria-labelledby="h-hire-con"
+      class="mt-[clamp(72px,10vw,132px)] border-t border-ink pt-[clamp(44px,6vw,76px)]
+             pb-[clamp(64px,9vw,120px)]"
+    >
+      <div class="reveal">
+        <p class={`mb-[clamp(18px,2.4vw,28px)] ${META}`}>Start something</p>
+        <h2 id="h-hire-con" class={`max-w-[16ch] ${SUBHEAD}`}>
+          Tell me what you&rsquo;re building.
+        </h2>
+      </div>
+
+      {/*
+        The form runs the full column rather than sharing a split with the
+        links. It carries three side-by-side selects of its own, and
+        squeezing that into 1.25fr collapses them to a stack at desktop
+        widths where there is plenty of room.
+      */}
+      <div
+        class="reveal mt-[clamp(40px,6vw,72px)] max-w-[900px] border-t border-rule
+               pt-[clamp(32px,4vw,52px)]"
+        style="transition-delay:80ms"
+      >
+        {/*
+          A distinct Netlify form named `hire`, so project enquiries land
+          in their own list. Astro renders the island to static HTML at
+          build time, which is both what Netlify's form detection needs
+          and what lets it submit with JS disabled.
+          client:visible — it is the bottom of the page.
+        */}
+        <HireForm client:visible />
+      </div>
+
+      <div
+        class="mt-[clamp(40px,5vw,64px)] flex flex-wrap items-baseline gap-x-[clamp(32px,5vw,72px)]
+               gap-y-6 border-t border-rule pt-[clamp(24px,3vw,36px)]"
+      >
+        <p class={META}>Or find me at</p>
+        <a
+          class="ul-draw inline-flex min-h-11 items-center font-display
+                 text-[clamp(18px,1.7vw,23px)] tracking-[-0.016em] text-ink hover:text-accent"
+          href="https://linkedin.com/in/frank-young-a77a152"
+          target="_blank"
+          rel="noopener">LinkedIn</a
+        >
+        <a
+          class="ul-draw inline-flex min-h-11 items-center gap-2 font-display
+                 text-[clamp(18px,1.7vw,23px)] tracking-[-0.016em] text-ink hover:text-accent"
+          href="/Frank_Young_Resume.pdf"
+          download><span aria-hidden="true">↓</span> Curriculum vitae, PDF</a
+        >
+      </div>
+    </section>
+  </main>
+
+  {/*
+    Same reveal state machine as the homepage: this script sets
+    <html data-anim>, which is the ONLY thing that arms the opacity:0
+    start state in v2.css. Without JS the page renders fully rather than
+    blank, and prefers-reduced-motion never arms it at all.
+
+    One deliberate difference from the homepage. There, anything already
+    on screen at load is marked visible immediately — the rule being no
+    fade-in on content the visitor is already looking at. On a page whose
+    hero IS the content, that rule would mean the entrance never plays.
+    So here above-the-fold items animate on load, released on a double
+    rAF: the first frame commits the opacity:0 start state, the second
+    flips it, and the transition actually runs. Setting both in one frame
+    is a no-op the browser collapses.
+  */}
+  <script is:inline>
+    (function () {
+      if (!('IntersectionObserver' in window)) return;
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+      document.documentElement.setAttribute('data-anim', '');
+
+      var items = Array.prototype.slice.call(document.querySelectorAll('.reveal'));
+      var fold = window.innerHeight * 0.92;
+
+      /*
+        Trigger deliberately LATER than the homepage's.
+        It uses rootMargin -8% with threshold 0.04, which fires the moment
+        an element peeks over the bottom edge — so a 1s reveal finishes
+        while the element is still at the very bottom of the screen, and
+        the visitor never sees it play. Pulling the bottom margin in to
+        -18% and asking for 15% of the element means it starts once the
+        element is properly on screen and lands in reading position.
+      */
+      var io = new IntersectionObserver(
+        function (entries) {
+          entries.forEach(function (e) {
+            if (!e.isIntersecting) return;
+            e.target.setAttribute('data-in', '1');
+            io.unobserve(e.target);
+          });
+        },
+        { rootMargin: '0px 0px -18% 0px', threshold: 0.15 }
+      );
+
+      var onLoad = [];
+      items.forEach(function (el) {
+        if (el.getBoundingClientRect().top < fold) onLoad.push(el);
+        else io.observe(el);
+      });
+
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () {
+          onLoad.forEach(function (el) { el.setAttribute('data-in', '1'); });
+        });
+      });
+    })();
+  </script>
+</V2Base>
+
+<style>
+  /* A slow breath rather than a blink — an urgent pulse on an
+     availability badge reads as a countdown timer. */
+  .avail-dot {
+    display: inline-block;
+    inline-size: 8px;
+    block-size: 8px;
+    flex: none;
+    border-radius: 50%;
+    background: var(--accent-lg);
+    animation: avail-breathe 3.4s ease-in-out infinite;
+  }
+
+  @keyframes avail-breathe {
+    0%,
+    100% {
+      opacity: 1;
+      box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent-lg) 55%, transparent);
+    }
+    50% {
+      opacity: 0.55;
+      box-shadow: 0 0 0 5px color-mix(in srgb, var(--accent-lg) 0%, transparent);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .avail-dot {
+      animation: none;
+    }
+  }
+</style>

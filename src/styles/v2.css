@@ -6,6 +6,7 @@
 @source '../components/v2/**/*.{astro,tsx,ts}';
 @source '../layouts/V2Base.astro';
 @source '../pages/index.astro';
+@source '../pages/hire.astro';
 @source '../pages/thanks.astro';
 @source '../pages/404.astro';
 @source '../pages/work/**/*.astro';
