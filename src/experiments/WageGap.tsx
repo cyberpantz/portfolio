@@ -38,6 +38,13 @@ function computeCellW(availablePx: number) {
   return Math.max(30, Math.min(CELL_W_MAX, Math.floor((availablePx - DISPLAY_MARGIN) / DISPLAY_DIVISOR)));
 }
 
+/*
+ * How long the roll-past-zero choreography takes: animate down to the
+ * duplicate zero, then rebase. Nothing may interrupt it half-finished.
+ */
+const WRAP_MS = 380;
+const REBASE_MS = 32;
+
 function FlipDigit({ value, cellW }: { value: string; cellW: number }) {
   const cellH    = Math.round(cellW * (CELL_H_MAX / CELL_W_MAX));
   const fontSize = Math.round(cellW * (72 / CELL_W_MAX));
@@ -45,26 +52,95 @@ function FlipDigit({ value, cellW }: { value: string; cellW: number }) {
   const num = parseInt(value, 10);
   const prevNum = useRef(num);
   const [pos, setPos] = useState(num);
-  const instant = useRef(false);
+
+  /*
+   * `animate` is STATE, not a ref.
+   *
+   * It was a ref, which does not cause a render — so the flag was being
+   * written and then read on whatever render happened to come next. It
+   * worked by luck. As state it is guaranteed to be correct on the render
+   * that applies the matching position.
+   */
+  const [animate, setAnimate] = useState(true);
+
+  // Index 10 is a SECOND zero, so 9 -> 0 rolls forward instead of spinning
+  // backwards through 8,7,6...
   const strip = useMemo(() => [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0], []);
 
+  const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
+  const clearTimers = () => {
+    timers.current.forEach(clearTimeout);
+    timers.current = [];
+  };
+  const lastChange = useRef(0);
+
   useEffect(() => {
-    const wrapping = prevNum.current === 9 && num === 0;
-    if (wrapping) {
-      instant.current = false;
-      setPos(10);
-      setTimeout(() => {
-        instant.current = true;
-        setPos(0);
-        prevNum.current = num;
-        setTimeout(() => { instant.current = false; }, 50);
-      }, 380);
-    } else {
-      instant.current = false;
+    const from = prevNum.current;
+    if (from === num) return;
+
+    /*
+     * Cancel anything still in flight.
+     *
+     * This is the bug behind the blinking, and why it showed up at higher
+     * wages. The cents digit changes at wage/36 per second — 0.8/s at the
+     * median, but 2.6/s by $95/hr and 13.9/s at $500/hr. Past roughly
+     * $95/hr the digit changes faster than this 380ms choreography can
+     * finish, so the old code left stale timeouts running: each one fired
+     * `setPos(0)` later, yanking the reel to zero regardless of which digit
+     * should have been showing, and wrote a STALE closure value into
+     * prevNum, which then broke rollover detection for every later change.
+     * They also stacked — at $500/hr several were in flight at once.
+     */
+    clearTimers();
+
+    const now = performance.now();
+    const sinceLast = now - lastChange.current;
+    lastChange.current = now;
+    prevNum.current = num;
+
+    // Any decrease is a roll past zero. The old check was `=== 9 && === 0`,
+    // which misses skips like 7 -> 2 — real at high rates, and they made the
+    // reel spin backwards.
+    const rollsOver = num < from;
+
+    /*
+     * If this digit is changing faster than the animation can play, do not
+     * try to play it. Nobody can read a 380ms flip at 14 changes a second;
+     * attempting it is exactly what produced the jerk. Cut straight to the
+     * value instead.
+     *
+     * This degrades per digit for free: the cents reel goes hard-cut while
+     * the tens and dollars, which change far more slowly, keep the flip.
+     */
+    if (sinceLast < WRAP_MS * 1.25) {
+      setAnimate(false);
       setPos(num);
-      prevNum.current = num;
+      timers.current.push(setTimeout(() => setAnimate(true), REBASE_MS));
+      return;
     }
+
+    if (!rollsOver) {
+      setAnimate(true);
+      setPos(num);
+      return;
+    }
+
+    // Roll forward onto the duplicate zero, rebase to the real zero with no
+    // animation, then continue to the target if it is not zero.
+    setAnimate(true);
+    setPos(10);
+    timers.current.push(setTimeout(() => {
+      setAnimate(false);
+      setPos(0);
+      timers.current.push(setTimeout(() => {
+        setAnimate(true);
+        if (num !== 0) setPos(num);
+      }, REBASE_MS));
+    }, WRAP_MS));
   }, [num]);
+
+  // Unmounting mid-roll left timers running against a dead component.
+  useEffect(() => clearTimers, []);
 
   return (
     <div
@@ -78,9 +154,9 @@ function FlipDigit({ value, cellW }: { value: string; cellW: number }) {
         className="absolute inset-x-0 top-0"
         animate={{ y: -pos * cellH }}
         transition={
-          instant.current
-            ? { duration: 0 }
-            : { type: 'spring', stiffness: 220, damping: 32, mass: 0.8 }
+          animate
+            ? { type: 'spring', stiffness: 220, damping: 32, mass: 0.8 }
+            : { duration: 0 }
         }
       >
         {strip.map((d, i) => (
@@ -160,10 +236,36 @@ function CoinParticle({ angle, distance, duration, size }: Omit<Coin, 'id'>) {
 
 // ---------- Comparison data ----------
 
-const MEDIAN_WAGE = 29.13; // BLS Q3 2024 median hourly earnings
+/*
+ * Figures refreshed September 2026.
+ *
+ * MEDIAN_WAGE — BLS Q2 2026: median usual weekly earnings for the 120.9M
+ * full-time wage and salary workers were $1,251. Divided by a 40-hour week.
+ * (Was $29.13, BLS Q3 2024.)
+ *
+ * MIN_WAGE — still $7.25. Unchanged since 2009, which is now seventeen
+ * years. 22 states and 66 cities have raised their own floors above it.
+ *
+ * ELON_RATE — Bloomberg Billionaires Index, 31 August 2026: $888B, a
+ * year-to-date gain of $269B (+43.4%). Over the 243 days elapsed that is
+ * $269e9 / 243 / 24 = $46,124,829 per hour. The previous figure was
+ * $7,191,780/hr from 2024 — the rate is now 6.4x what this piece shipped
+ * with.
+ *
+ * 2026 is also the year the framing broke in an instructive way. SpaceX
+ * listed on 12 June and he became the first trillionaire; his fortune
+ * peaked at $1.32T on 16 June, then fell roughly $594B from that peak as
+ * SpaceX slid post-IPO and Tesla softened over the summer. Trackers still
+ * disagree by hundreds of billions — Forbes had $726B on 4 August while
+ * Bloomberg had $888B on the 31st. A number that can move half a trillion
+ * dollars in ten weeks, and that two reputable sources cannot agree on to
+ * within 20%, is not a wage. That is the point the piece should now make,
+ * and the copy below makes it.
+ */
+const MEDIAN_WAGE = 31.28; // BLS Q2 2026: $1,251/wk ÷ 40
 
-const ELON_RATE    = 7_191_780; // ~$63B / yr, Bloomberg 2024
-const MIN_WAGE     = 7.25;       // US federal minimum wage
+const ELON_RATE    = 46_124_829; // $269B YTD ÷ 243 days ÷ 24h, Bloomberg 31 Aug 2026
+const MIN_WAGE     = 7.25;       // US federal minimum, unchanged since 2009
 const MEDIAN_LABEL = 'US Median Worker';
 
 // ---------- helpers ----------
@@ -221,23 +323,45 @@ function fmtElapsed(secs: number) {
 const CHART_N   = 150;
 const CHART_EPS = 0.5;
 
-interface LineSpec { key: string; name: string; stroke: string; width: number; dash?: string; }
+interface LineSpec {
+  key: string;
+  name: string;
+  /** Colour of the plotted line. May be low-alpha — lines are allowed to recede. */
+  stroke: string;
+  width: number;
+  dash?: string;
+  /** Colour of this series' TEXT. Must stay legible; never reuse `stroke`. */
+  ink: string;
+}
 
 function EarningsChart({ elapsed, wage }: { elapsed: number; wage: number }) {
   const maxTime = Math.max(elapsed, 30);
 
+  /*
+   * `stroke` draws the LINE. `ink` sets the TEXT.
+   *
+   * They were the same value, and that was the bug behind the unreadable
+   * labels: a 22%-white stroke is correct for a line that should recede
+   * into a chart, and is nowhere near legible as type — the minimum-wage
+   * card and its legend entry were effectively invisible, and the card
+   * label was then multiplied by a further opacity:0.5 on top.
+   *
+   * Lines keep their hierarchy through stroke weight, dash and value.
+   * Text does not get to be decorative: every ink below clears 4.5:1 on
+   * black, so the series can be told apart by anyone.
+   */
   const lineSpecs: LineSpec[] = [
-    { key: 'elon',    name: 'Elon Musk',        stroke: '#EF4444',                 width: 2 },
-    { key: 'you',     name: 'You',               stroke: '#FFFFFF',                 width: 2 },
-    { key: 'median',  name: 'US Median Worker',  stroke: 'rgba(255,255,255,0.45)', width: 1.5, dash: '6 4' },
-    { key: 'minwage', name: 'Federal Min. Wage', stroke: 'rgba(255,255,255,0.22)', width: 1.5, dash: '3 5' },
+    { key: 'elon',    name: 'Elon Musk',        stroke: '#EF4444',                width: 2,               ink: '#FF6B6B' },
+    { key: 'you',     name: 'You',              stroke: '#FFFFFF',                width: 2,               ink: '#FFFFFF' },
+    { key: 'median',  name: 'US Median Worker', stroke: 'rgba(255,255,255,0.45)', width: 1.5, dash: '6 4', ink: 'rgba(255,255,255,0.78)' },
+    { key: 'minwage', name: 'Federal Min. Wage',stroke: 'rgba(255,255,255,0.26)', width: 1.5, dash: '3 5', ink: 'rgba(255,255,255,0.62)' },
   ];
 
   const stats = [
-    { label: 'Elon Musk',        earned: (ELON_RATE   / 3600) * elapsed, color: '#EF4444' },
-    { label: 'You',               earned: (wage        / 3600) * elapsed, color: '#FFFFFF' },
-    { label: 'US Median Worker',  earned: (MEDIAN_WAGE / 3600) * elapsed, color: 'rgba(255,255,255,0.45)' },
-    { label: 'Federal Min. Wage', earned: (MIN_WAGE    / 3600) * elapsed, color: 'rgba(255,255,255,0.22)' },
+    { label: 'Elon Musk',         earned: (ELON_RATE   / 3600) * elapsed, ink: '#FF6B6B' },
+    { label: 'You',               earned: (wage        / 3600) * elapsed, ink: '#FFFFFF' },
+    { label: 'US Median Worker',  earned: (MEDIAN_WAGE / 3600) * elapsed, ink: 'rgba(255,255,255,0.78)' },
+    { label: 'Federal Min. Wage', earned: (MIN_WAGE    / 3600) * elapsed, ink: 'rgba(255,255,255,0.62)' },
   ];
 
   const data = useMemo(() => {
@@ -279,25 +403,77 @@ function EarningsChart({ elapsed, wage }: { elapsed: number; wage: number }) {
   interface TooltipEntry { name?: string; value?: number; stroke?: string; dataKey?: string; }
   function CustomTooltip({ active, payload, label }: { active?: boolean; payload?: TooltipEntry[]; label?: number }) {
     if (!active || !payload?.length) return null;
+
+    // Ordered high to low so the rows read as a ranking rather than as
+    // whatever order the series happen to be declared in.
+    const rows = [...payload].sort((a, b) => (b.value ?? 0) - (a.value ?? 0));
+    const inkFor = (k?: string) => lineSpecs.find(l => l.key === k)?.ink ?? '#fff';
+    const you = payload.find(e => e.dataKey === 'you')?.value ?? 0;
+
     return (
       <div style={{
-        background: 'rgba(0,0,0,0.92)',
-        border: '1px solid rgba(255,255,255,0.12)',
-        padding: '10px 14px',
+        background: 'rgba(8,8,8,0.94)',
+        backdropFilter: 'blur(8px)',
+        WebkitBackdropFilter: 'blur(8px)',
+        border: '1px solid rgba(255,255,255,0.16)',
+        borderRadius: 3,
+        padding: '11px 14px 12px',
         fontFamily: 'monospace',
+        boxShadow: '0 12px 32px rgba(0,0,0,0.6)',
+        minWidth: 236,
       }}>
-        <p style={{ color: 'rgba(255,255,255,0.35)', fontSize: 13, marginBottom: 8 }}>
-          {fmtX(label ?? 0)}
+        <p style={{
+          color: 'rgba(255,255,255,0.62)', fontSize: 11, marginBottom: 9,
+          textTransform: 'uppercase', letterSpacing: '0.14em',
+        }}>
+          {fmtX(label ?? 0)} elapsed
         </p>
-        {payload.map(entry => (
-          <div key={entry.dataKey} style={{
-            display: 'flex', justifyContent: 'space-between', gap: 24,
-            fontSize: 13, color: entry.stroke, marginBottom: 3,
+
+        {rows.map(entry => {
+          const spec = lineSpecs.find(l => l.key === entry.dataKey);
+          const v = entry.value ?? 0;
+          return (
+            <div key={entry.dataKey} style={{
+              display: 'grid',
+              gridTemplateColumns: 'auto 1fr auto',
+              alignItems: 'center',
+              gap: 9,
+              fontSize: 13,
+              padding: '3px 0',
+            }}>
+              {/* The swatch carries the series identity, so the label
+                  itself can stay at a legible neutral weight. */}
+              <svg width={16} height={8} aria-hidden="true">
+                <line x1={0} y1={4} x2={16} y2={4}
+                  stroke={spec?.stroke} strokeWidth={spec?.width ?? 2}
+                  strokeDasharray={spec?.dash} strokeLinecap="round" />
+              </svg>
+              <span style={{ color: 'rgba(255,255,255,0.72)' }}>{entry.name}</span>
+              <span style={{
+                color: inkFor(entry.dataKey), fontVariantNumeric: 'tabular-nums',
+              }}>
+                {fmtMoney(v)}
+              </span>
+            </div>
+          );
+        })}
+
+        {/* The multiple is the whole argument of the piece, so the tooltip
+            states it outright instead of leaving it to be inferred from
+            four numbers on a log axis. */}
+        {you > 0 && (
+          <p style={{
+            marginTop: 9, paddingTop: 8,
+            borderTop: '1px solid rgba(255,255,255,0.12)',
+            color: 'rgba(255,255,255,0.62)', fontSize: 11.5,
           }}>
-            <span style={{ opacity: 0.8 }}>{entry.name}</span>
-            <span>{fmtMoney(entry.value ?? 0)}</span>
-          </div>
-        ))}
+            Elon is{' '}
+            <span style={{ color: '#FF6B6B', fontVariantNumeric: 'tabular-nums' }}>
+              {Math.round(ELON_RATE / wage).toLocaleString()}&times;
+            </span>{' '}
+            your rate
+          </p>
+        )}
       </div>
     );
   }
@@ -309,14 +485,18 @@ function EarningsChart({ elapsed, wage }: { elapsed: number; wage: number }) {
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 shrink-0">
         {stats.map(s => (
           <div key={s.label}
-            className="border p-3 rounded-xs"
-            style={{ borderColor: 'rgba(255,255,255,0.08)', background: 'rgba(255,255,255,0.02)' }}
+            className="border rounded-xs px-3.5 py-3"
+            style={{ borderColor: 'rgba(255,255,255,0.10)', background: 'rgba(255,255,255,0.025)' }}
           >
-            <p className="font-mono uppercase tracking-widest mb-1"
-              style={{ color: s.color, opacity: 0.5, fontSize: 11 }}>
+            {/* The label is a neutral grey at a single, legible value —
+                it does not need to restate the series colour, which the
+                figure beneath it already carries. */}
+            <p className="font-mono uppercase mb-1.5"
+              style={{ color: 'rgba(255,255,255,0.62)', fontSize: 11, letterSpacing: '0.14em' }}>
               {s.label}
             </p>
-            <p className="font-mono tabular-nums" style={{ color: s.color, fontSize: 18 }}>
+            <p className="font-mono tabular-nums"
+              style={{ color: s.ink, fontSize: 19, letterSpacing: '-0.01em' }}>
               {fmtMoney(s.earned)}
             </p>
           </div>
@@ -328,33 +508,33 @@ function EarningsChart({ elapsed, wage }: { elapsed: number; wage: number }) {
       <div style={{ position: 'absolute', inset: 0 }}>
       <ResponsiveContainer width="100%" height="100%">
         <LineChart data={data} margin={{ top: 10, right: 20, bottom: 36, left: 70 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
+          <CartesianGrid strokeDasharray="2 6" stroke="rgba(255,255,255,0.09)" />
           <XAxis
             dataKey="t"
             type="number"
             domain={[CHART_EPS, maxTime]}
             tickFormatter={fmtX}
-            tick={{ fill: 'rgba(255,255,255,0.25)', fontSize: 12, fontFamily: 'monospace' }}
-            axisLine={{ stroke: 'rgba(255,255,255,0.1)' }}
-            tickLine={{ stroke: 'rgba(255,255,255,0.1)' }}
+            tick={{ fill: 'rgba(255,255,255,0.52)', fontSize: 12, fontFamily: 'monospace' }}
+            axisLine={{ stroke: 'rgba(255,255,255,0.18)' }}
+            tickLine={{ stroke: 'rgba(255,255,255,0.18)' }}
             label={{ value: 'time elapsed', position: 'insideBottom', offset: -16,
-              style: { fill: 'rgba(255,255,255,0.18)', fontSize: 12, fontFamily: 'monospace' } }}
+              style: { fill: 'rgba(255,255,255,0.46)', fontSize: 12, fontFamily: 'monospace' } }}
           />
           <YAxis
             scale="log"
             domain={[0.001, (ELON_RATE / 3600) * maxTime * 1.5]}
             ticks={yTicks}
             tickFormatter={fmtY}
-            tick={{ fill: 'rgba(255,255,255,0.25)', fontSize: 12, fontFamily: 'monospace' }}
-            axisLine={{ stroke: 'rgba(255,255,255,0.1)' }}
-            tickLine={{ stroke: 'rgba(255,255,255,0.1)' }}
+            tick={{ fill: 'rgba(255,255,255,0.52)', fontSize: 12, fontFamily: 'monospace' }}
+            axisLine={{ stroke: 'rgba(255,255,255,0.18)' }}
+            tickLine={{ stroke: 'rgba(255,255,255,0.18)' }}
             allowDataOverflow
             label={{ value: 'earnings (log scale)', angle: -90, position: 'insideLeft', offset: -55,
-              style: { fill: 'rgba(255,255,255,0.18)', fontSize: 12, fontFamily: 'monospace' } }}
+              style: { fill: 'rgba(255,255,255,0.46)', fontSize: 12, fontFamily: 'monospace' } }}
           />
           <Tooltip
             content={<CustomTooltip />}
-            cursor={{ stroke: 'rgba(255,255,255,0.15)', strokeWidth: 1 }}
+            cursor={{ stroke: 'rgba(255,255,255,0.34)', strokeWidth: 1, strokeDasharray: '3 3' }}
           />
           {lineSpecs.map(l => (
             <Line
@@ -383,7 +563,7 @@ function EarningsChart({ elapsed, wage }: { elapsed: number; wage: number }) {
                 stroke={l.stroke} strokeWidth={l.width}
                 strokeDasharray={l.dash} strokeLinecap="round" />
             </svg>
-            <span className="font-mono text-exp-note tracking-wider" style={{ color: l.stroke }}>
+            <span className="font-mono text-exp-note tracking-wider" style={{ color: l.ink }}>
               {l.name}
             </span>
           </div>
@@ -431,16 +611,45 @@ function AffordTable({ wage }: { wage: number }) {
             </tr>
           </thead>
           <tbody>
+            {/*
+              Row highlight on hover. A wide table of numbers is read across,
+              and there is nothing here to hold the eye on one line — the
+              rules are at 5% white, deliberately faint. The tint is the
+              cheapest fix that does not add ink to the design.
+
+              group/row + the `You` column responding too, so hovering a row
+              also picks out the reader's own number in it. Keyboard and
+              touch reach it through focus-within.
+            */}
             {AFFORD_ITEMS.map((item, i) => (
-              <tr key={item.label} className={i < AFFORD_ITEMS.length - 1 ? 'border-b border-white/5' : ''}>
-                <td className="sticky left-0 bg-black py-3.5 pr-4 sm:pr-8">
-                  <div className="font-mono text-exp-label text-exp-base">{item.label}</div>
-                  <div className="font-mono text-exp-note text-exp-dim">${item.price.toLocaleString()}</div>
+              <tr
+                key={item.label}
+                tabIndex={0}
+                className={`group/row outline-none transition-colors duration-150
+                  hover:bg-white/[0.055] focus-within:bg-white/[0.055]
+                  ${i < AFFORD_ITEMS.length - 1 ? 'border-b border-white/5' : ''}`}
+              >
+                {/* The sticky cell needs its own tint: it sits on bg-black to
+                    cover the scrolling columns, so the row's background is
+                    painted behind it and never shows through. */}
+                <td className="sticky left-0 bg-black py-3.5 pr-4 sm:pr-8 transition-colors duration-150
+                               group-hover/row:bg-[#0d0d0d] group-focus-within/row:bg-[#0d0d0d]">
+                  <div className="font-mono text-exp-label text-exp-base transition-colors duration-150
+                                  group-hover/row:text-exp-bright group-focus-within/row:text-exp-bright">
+                    {item.label}
+                  </div>
+                  <div className="font-mono text-exp-note text-exp-dim">
+                    ${item.price.toLocaleString()}
+                  </div>
                 </td>
                 {columns.map(col => {
                   const { text, cls } = fmtWorkTime(item.price, col.rate);
                   return (
-                    <td key={col.name} className={`py-3.5 pl-4 sm:pl-8 text-right font-mono tabular-nums text-exp-label ${cls}`}>
+                    <td key={col.name}
+                      className={`py-3.5 pl-4 sm:pl-8 text-right font-mono tabular-nums text-exp-label
+                        transition-colors duration-150 ${cls}
+                        ${col.highlight ? 'group-hover/row:text-exp-bright group-focus-within/row:text-exp-bright' : ''}`}
+                    >
                       {text}
                     </td>
                   );
@@ -450,7 +659,7 @@ function AffordTable({ wage }: { wage: number }) {
           </tbody>
         </table>
         <p className="font-mono text-exp-micro text-exp-dim mt-8 leading-relaxed">
-          prices are US averages · assumes continuous work · wages: BLS 2024, Elon: Bloomberg 2024
+          prices are US averages · assumes continuous work · wages: BLS Q2 2026, Elon: Bloomberg Aug 2026
         </p>
       </div>
     </div>
@@ -610,23 +819,32 @@ export default function WageGap() {
         {/* Row 1: view tabs.
             The back link and title that used to sit here are gone —
             the page's ExpChrome bar already carries both. */}
-        <div className="relative hidden items-center px-6 py-4 sm:flex sm:justify-end">
-          <div className="flex items-center gap-5" onClick={e => e.stopPropagation()}>
-            {TAB_LABELS.map(({ key, label }) => (
-              <button key={key} onClick={() => setView(key)}
-                className={`font-mono text-exp-label tracking-[0.08em] uppercase transition-colors cursor-pointer ${
-                  view === key ? 'text-exp-bright' : 'text-exp-muted hover:text-exp-base'
-                }`}
-              >{label}</button>
-            ))}
-          </div>
-        </div>
-        {/* Row 2 (mobile only): tabs */}
-        <div className="sm:hidden flex items-center justify-center gap-8 pb-3" onClick={e => e.stopPropagation()}>
+        {/*
+          ONE tab row, centred on small screens and right-aligned from sm up.
+          There were two — a desktop copy and a `sm:hidden` mobile copy — with
+          the same list rendered twice and the same handlers duplicated. That
+          is what put a stray, barely-visible tab label in the top left.
+          A single row cannot disagree with itself.
+
+          role=tablist so the group is announced as a set rather than as
+          three unrelated buttons, and aria-selected carries the state that
+          was previously conveyed by brightness alone.
+        */}
+        <div
+          className="flex items-center justify-center gap-6 px-6 py-3.5 sm:justify-end sm:gap-5 sm:py-4"
+          role="tablist"
+          aria-label="View"
+          onClick={e => e.stopPropagation()}
+        >
           {TAB_LABELS.map(({ key, label }) => (
             <button key={key} onClick={() => setView(key)}
-              className={`font-mono text-exp-label tracking-[0.08em] uppercase transition-colors cursor-pointer ${
-                view === key ? 'text-exp-bright' : 'text-exp-muted hover:text-exp-base'
+              role="tab"
+              aria-selected={view === key}
+              className={`font-mono text-exp-label tracking-[0.08em] uppercase transition-colors cursor-pointer
+                border-b pb-1 -mb-px ${
+                view === key
+                  ? 'text-exp-bright border-white/70'
+                  : 'text-exp-muted border-transparent hover:text-exp-base hover:border-white/25'
               }`}
             >{label}</button>
           ))}
@@ -698,21 +916,43 @@ export default function WageGap() {
                 <span className="font-mono text-exp-label uppercase tracking-wider text-exp-base">
                   Elon Musk
                 </span>
-                <button
-                  onClick={e => { e.stopPropagation(); setShowElonInfo(v => !v); }}
-                  className="font-mono text-exp-label text-exp-muted hover:text-exp-bright transition-colors cursor-pointer leading-none"
-                  title="How was this calculated?"
-                >
-                  ⓘ
-                </button>
               </div>
               <div className="flex items-baseline gap-4">
                 <span className="font-mono text-exp-bright tabular-nums" style={{ fontSize: 'clamp(1.8rem, 3.5vw, 3.2rem)' }}>
                   {fmtMoney((ELON_RATE / 3600) * elapsed)}
                 </span>
               </div>
+              {/*
+                The ⓘ that used to sit beside the name is gone. It was a
+                lone glyph with no label, parked next to a heading rather
+                than next to the claim it explains — and the thing a reader
+                doubts is the multiple, not the name. The control now sits
+                directly after that sentence and says what it does.
+
+                aria-expanded/aria-controls so the state is announced, not
+                just drawn; the caret rotates so it reads as a disclosure.
+              */}
               <span className="font-mono text-exp-note text-exp-muted">
                 earns {Math.round(ELON_RATE / wage).toLocaleString()} times your hourly rate
+                {' · '}
+                <button
+                  onClick={e => { e.stopPropagation(); setShowElonInfo(v => !v); }}
+                  aria-expanded={showElonInfo}
+                  aria-controls="elon-method"
+                  className="font-mono text-exp-note text-exp-base hover:text-exp-bright
+                             underline decoration-dotted underline-offset-4 decoration-white/30
+                             hover:decoration-white/70 transition-colors cursor-pointer
+                             inline-flex items-center gap-1"
+                >
+                  {showElonInfo ? 'Hide' : 'Learn more'}
+                  <span
+                    aria-hidden="true"
+                    className="inline-block transition-transform duration-200 text-[0.85em]"
+                    style={{ transform: showElonInfo ? 'rotate(180deg)' : 'none' }}
+                  >
+                    ▾
+                  </span>
+                </button>
               </span>
               <AnimatePresence>
                 {showElonInfo && (
@@ -721,23 +961,98 @@ export default function WageGap() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -4 }}
                     transition={{ duration: 0.15 }}
+                    id="elon-method"
                     className="border border-white/10 rounded-xs p-4 mt-1"
                     style={{ background: 'rgba(255,255,255,0.03)' }}
                     onClick={e => e.stopPropagation()}
                   >
-                    <p className="font-mono text-exp-note text-exp-bright font-bold uppercase tracking-widest mb-3">
+                    {/*
+                      Shown as a revision, not a restatement.
+
+                      Quietly swapping the number would have thrown away the
+                      most interesting thing the piece now has: a two-year
+                      before-and-after on the same measurement, taken the same
+                      way. The original stays on the page, dimmed and dated;
+                      the update sits under a rule. That the figure moved 6.4x
+                      in two years is the finding — it is only legible if the
+                      earlier number is still there to be compared against.
+                    */}
+                    {/*
+                      Four sizes, and they rank by importance rather than by
+                      reading order:
+                        11px  section labels — wayfinding, the quietest thing
+                        13px  supporting prose
+                        15px  the 2024 result — subordinate, it is history
+                        22px  the 2026 result — the payload of the whole panel
+
+                      The panel title used to be bold, bright and larger than
+                      the figure it introduces, which inverted the hierarchy:
+                      a heading that says "How was this calculated?" is a
+                      label, and the answer is the content.
+                    */}
+                    <p className="font-mono uppercase tracking-widest mb-3.5"
+                      style={{ color: 'rgba(255,255,255,0.52)', fontSize: 11 }}>
                       How was this calculated?
                     </p>
-                    <p className="font-mono text-exp-base leading-relaxed mb-2">
-                      Based on Elon Musk's 2024 net worth increase of ~$63 billion (Bloomberg Billionaires Index):
+
+                    {/* ---- as originally published ---- */}
+                    <p className="font-mono uppercase tracking-widest mb-1.5"
+                      style={{ color: 'rgba(255,255,255,0.44)', fontSize: 11 }}>
+                      As published · 2024
                     </p>
-                    <p className="font-mono text-exp-base mb-2">
-                      $63,000,000,000 ÷ 365 ÷ 24 = <span className="text-exp-bright">$7,191,780 / hr</span>
+                    <p className="font-mono text-exp-muted leading-relaxed mb-1"
+                      style={{ fontSize: 13 }}>
+                      Net worth increase of ~$63 billion, Bloomberg Billionaires Index.
                     </p>
-                    <p className="font-mono text-exp-muted leading-relaxed">
-                      Unrealized stock gains, not a paycheck — his net worth fell ~$200B in 2022.
-                      The year varies. The scale does not.
+                    <p className="font-mono tabular-nums mb-5"
+                      style={{ color: 'rgba(255,255,255,0.62)', fontSize: 15 }}>
+                      $63,000,000,000 ÷ 365 ÷ 24 = $7,191,780 / hr
                     </p>
+
+                    {/* ---- the update ---- */}
+                    <div className="border-t border-white/12 pt-4">
+                      <p className="font-mono uppercase tracking-widest mb-2 flex items-center gap-2"
+                        style={{ color: '#FF6B6B', fontSize: 11 }}>
+                        <span
+                          aria-hidden="true"
+                          style={{
+                            display: 'inline-block', width: 5, height: 5,
+                            borderRadius: '50%', background: '#FF6B6B',
+                          }}
+                        />
+                        Update · September 2026
+                      </p>
+
+                      <p className="font-mono text-exp-base leading-relaxed mb-2.5"
+                        style={{ fontSize: 13 }}>
+                        First trillionaire on 12 June 2026, when SpaceX listed. Bloomberg, 31 Aug:
+                        $888B — a year-to-date gain of $269 billion across 243 days.
+                      </p>
+
+                      {/* The answer. Given room to be the largest thing here. */}
+                      <p className="font-mono tabular-nums mb-1"
+                        style={{ color: 'rgba(255,255,255,0.55)', fontSize: 13 }}>
+                        $269,000,000,000 ÷ 243 ÷ 24 =
+                      </p>
+                      <p className="font-mono tabular-nums text-exp-bright leading-none mb-2.5"
+                        style={{ fontSize: 22, letterSpacing: '-0.015em' }}>
+                        $46,124,829 <span style={{ fontSize: 15, letterSpacing: 0 }}>/ hr</span>
+                      </p>
+
+                      <p className="font-mono mb-3.5" style={{ color: '#FF6B6B', fontSize: 13.5 }}>
+                        6.4&times; the rate this piece launched with, in two years.
+                      </p>
+
+                      <p className="font-mono text-exp-muted leading-relaxed"
+                        style={{ fontSize: 13 }}>
+                        Still unrealized gains, not a paycheck — and 2026 made that plainer than
+                        ever. The figure peaked at $1.32T on 16 June, then fell about $594B from
+                        that peak as SpaceX slid post-IPO. Forbes said $726B on 4 August; Bloomberg
+                        said $888B on the 31st. A number that moves half a trillion dollars in ten
+                        weeks, and that two reputable trackers cannot agree on to within 20%, is not
+                        a wage. Which is rather the point.
+                      </p>
+                    </div>
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -795,7 +1110,7 @@ export default function WageGap() {
 
             {/* Sources */}
             <div className="flex items-center gap-3 mt-2 text-exp-micro">
-              <span className="font-mono text-exp-dim">est. 2024 ·</span>
+              <span className="font-mono text-exp-dim">est. Aug 2026 ·</span>
               <a href="https://www.bloomberg.com/billionaires/" target="_blank" rel="noopener noreferrer"
                 className="font-mono text-exp-muted hover:text-exp-base transition-colors" onClick={e => e.stopPropagation()}>
                 bloomberg billionaires
@@ -863,7 +1178,7 @@ export default function WageGap() {
                 set wage
               </button>
               <p className="font-mono text-exp-muted text-xs tracking-wider">
-                default: ${MEDIAN_WAGE} / hr · US median (BLS 2024)
+                default: ${MEDIAN_WAGE} / hr · US median (BLS Q2 2026)
               </p>
             </motion.div>
           </motion.div>
