@@ -1,0 +1,142 @@
+---
+import { EXPERIENCE } from '../../data/experience';
+import { EDUCATION } from '../../data/education';
+
+/**
+ * Person + WebSite JSON-LD.
+ *
+ * This is the single highest-value SEO item on a personal portfolio, and
+ * it is worth being clear about why. A search for "Frank Young" is an
+ * entity query competing against every other person with that name.
+ * Titles and copy alone give Google strings; this gives it a described
+ * entity — a person, with a job title, an employer history, an alma
+ * mater, and verified profiles elsewhere.
+ *
+ * `sameAs` is the load-bearing property. It is how Google reconciles this
+ * page with the LinkedIn and GitHub profiles carrying the same name, and
+ * it is what lets those three reinforce one identity instead of
+ * splitting rank between three unrelated documents.
+ *
+ * `knowsAbout` is the honest version of a keywords tag. `<meta
+ * name="keywords">` has been ignored by Google since 2009 and by Bing
+ * for nearly as long — it is genuinely dead, and adding one would do
+ * nothing. knowsAbout is read, and unlike the old tag it is a claim
+ * about an entity rather than an unverifiable list, so it stays
+ * defensible: everything below is something the CV and the work on this
+ * site actually support.
+ *
+ * Employers and education come from the same data files that render the
+ * visible page, so the markup cannot drift from what a reader sees —
+ * which is also Google's own requirement: structured data must describe
+ * content that is actually on the page.
+ */
+
+const SITE = 'https://frankyoung.dev';
+
+/*
+ * Real organisations only.
+ *
+ * The list also carries "Earlier roles" as a catch-all row and freelance
+ * entries, neither of which is an organisation — emitting them as one
+ * would be nonsense markup.
+ */
+const employers = EXPERIENCE.filter(
+  (r) => r.co && !/freelance|contract|earlier roles/i.test(r.co)
+).map((r) => ({ '@type': 'Organization', name: r.co }));
+
+// Humboldt State appears twice (degree + certificate); an entity should
+// be listed once.
+const schools = [...new Set(EDUCATION.map((e) => e.school))];
+
+const person = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  '@id': `${SITE}/#frank-young`,
+  name: 'Frank Young',
+  url: SITE,
+  image: `${SITE}/og/home-light.png`,
+  jobTitle: 'Creative Technologist · Design Engineer',
+  description:
+    'Designer and engineer with twenty years on both sides of the line, building data-heavy web products for energy, fleets, healthcare and commerce.',
+  address: {
+    '@type': 'PostalAddress',
+    addressRegion: 'CA',
+    addressCountry: 'US',
+    addressLocality: 'San Francisco Bay Area',
+  },
+  /*
+   * sameAs must contain ONLY profiles that are verified to be his.
+   *
+   * A first draft of this file guessed github.com/frankyoung. Nothing on
+   * this site links to a GitHub account and the handle was invented — and
+   * a wrong sameAs is far worse than a missing one, because the property
+   * is an assertion of identity: pointing it at a stranger's profile asks
+   * Google to merge that person's activity into his entity. Only the
+   * LinkedIn URL below is verified, because it is the one the colophon
+   * actually links to.
+   *
+   * TODO(frank): add GitHub, Bluesky, Read.cv, etc. here as you link them
+   * from the site. Each verified profile strengthens the entity.
+   */
+  sameAs: ['https://linkedin.com/in/frank-young-a77a152'],
+  /*
+   * Deliberately NO `worksFor`.
+   *
+   * The first draft set it to employers[0] — ChargePoint — which would
+   * have told Google he is currently employed there. He was laid off in
+   * April 2026, so it is false, and it directly contradicts the /hire
+   * page and the "available for work" line on the homepage. Structured
+   * data that disagrees with the visible page is worse than none: it is
+   * the thing Google penalises, and here it would have suppressed the
+   * one signal he most needs.
+   *
+   * `hasOccupation` states what he does without asserting where, and
+   * `alumniOf` on the organisations records the history honestly.
+   */
+  hasOccupation: {
+    '@type': 'Occupation',
+    name: 'Creative Technologist',
+    occupationLocation: { '@type': 'City', name: 'San Francisco Bay Area' },
+    skills: 'Product design, front-end engineering, design systems, data visualization',
+  },
+  // Past employers, listed as history rather than as a current position.
+  alumniOf: [
+    ...schools.map((name) => ({ '@type': 'CollegeOrUniversity', name })),
+    ...employers,
+  ],
+  knowsAbout: [
+    'Front-end engineering',
+    'Design engineering',
+    'React',
+    'TypeScript',
+    'Data visualization',
+    'Design systems',
+    'Web accessibility',
+    'WCAG compliance',
+    'User experience design',
+    'WebGL',
+    'Three.js',
+    'Generative art',
+    'EV charging infrastructure',
+    'Energy software',
+    'AI product interfaces',
+  ],
+};
+
+const website = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  '@id': `${SITE}/#website`,
+  url: SITE,
+  name: 'Frank Young — Portfolio',
+  inLanguage: 'en-US',
+  publisher: { '@id': `${SITE}/#frank-young` },
+};
+
+const graph = [person, website];
+---
+
+{/* set:html so Astro emits the JSON unescaped — a serialised object in a
+    normal expression would have its quotes entity-encoded and the block
+    would not parse. */}
+<script type="application/ld+json" set:html={JSON.stringify(graph)} is:inline />

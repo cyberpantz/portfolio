@@ -9,7 +9,9 @@ import Explorations from '../components/v2/Explorations.astro';
 import Colophon from '../components/v2/Colophon.astro';
 ---
 
-<V2Base>
+{/* structuredData on the homepage only — one canonical declaration of the
+    Person entity, rather than the same block repeated site-wide. */}
+<V2Base structuredData>
   <a
     class="absolute top-0 -left-[9999px] z-[200] bg-ink px-6 py-4 text-[13px] tracking-[0.12em]
            uppercase text-paper focus:top-4 focus:left-4"

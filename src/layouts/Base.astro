@@ -14,6 +14,19 @@ const { title = 'Frank Young — Frontend Engineer', description = 'Staff fronte
     <meta name="description" content={description} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>{title}</title>
+
+    {/*
+      This layout is used only by /v1, the previous portfolio. It carries
+      the same name, bio and projects as the current homepage, so letting
+      it be indexed would put the site in competition with itself for
+      searches on "Frank Young" — and leave Google to pick which version
+      of him ranks.
+
+      `follow` rather than `noindex,nofollow`: the page should not appear
+      in results, but any link equity it has picked up should still pass
+      through to the pages that replaced it.
+    */}
+    <meta name="robots" content="noindex,follow" />
   </head>
   <body class="bg-ink text-fg">
     <slot />
