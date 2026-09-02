@@ -1,0 +1,15 @@
+# frankyoung.dev
+
+User-agent: *
+Allow: /
+
+# The previous portfolio. Same name, same bio, same projects as the
+# homepage — indexing it would put the site in competition with itself
+# for searches on "Frank Young". It also carries a robots noindex tag;
+# this is the belt to that pair of braces.
+Disallow: /v1
+
+# Form receipt. No search value and a dead end to land on.
+Disallow: /thanks
+
+Sitemap: https://frankyoung.dev/sitemap-index.xml
