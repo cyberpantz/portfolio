@@ -103,7 +103,7 @@ export const PROJECTS_V2: ProjectV2[] = [
     coverAlt:
       'An annotated photograph of a sourdough crumb cross-section, with six numbered markers labelling the crust, alveoli, cell walls and air pockets.',
     para:
-      'Sourdough has a slow feedback loop — change one variable, wait, observe, repeat. For new bakers it can be overwhelming and hard to know what went wrong when your loaf doesn\'t turn out as expected. With TheCrumb users can log a bake, photograph the loaf, and get a structured read on timing, fermentation, crust and shaping, scored against the numbers, starter, and ingredients you actually used. Around the journal sit useful educational experiments — a fermentation activity curve, a live starter ecosystem, a bulk fermentation simulator — that help explain why the loaf turned out the way it did. Owned product from start to finish. Product, design, front end, backend and deployment.',
+      'Sourdough has a slow feedback loop — change one variable, wait, observe, repeat. For new bakers it can be overwhelming and hard to know what went wrong when your loaf doesn\'t turn out as expected. With TheCrumb, users can log a bake, photograph the loaf, and get a structured read on timing, fermentation, crust and shaping, scored against the numbers, starter, and ingredients you actually used. in addition to the journal, I build several useful educational baking related experiments — a fermentation activity curve, a live starter ecosystem, a bulk fermentation simulator — that help explain why the loaf turned out the way it did. Owned product from start to finish. Product, design, front end, backend and deployment.',
     notes: [
       {
         label: 'The problem',
@@ -180,7 +180,7 @@ export const PROJECTS_V2: ProjectV2[] = [
       },
       {
         label: 'Product decisions',
-        body: 'Establish trust. Make it Bbautiful, but not pretentious. Always show sources. Show links to the airline and bag manufacturer when available. Allow for custom bags. Keept the design clean. Build something useful, then think about monetization. ',
+        body: 'Establish trust. Make it Beautiful, but not pretentious. Always show sources. Show links to the airline and bag manufacturers when available. Allow for custom bags. Keep the design clean and functional. Build something useful, then think about how to monetization. ',
       },
       {
         label: 'Process',
@@ -188,7 +188,7 @@ export const PROJECTS_V2: ProjectV2[] = [
       },
       {
         label: 'Tech',
-        body: 'Astro with Preact islands, Tailwind, ThreeJS for the luggage visualization, deployed static to Cloudflare Workers. The sizing engine is a standalone module with over 600 tests!.',
+        body: 'Astro with Preact islands, Tailwind, ThreeJS for the luggage visualization, deployed static to Cloudflare Workers. The sizing engine is a standalone module with over 600 tests!',
       },
     ],
     stack: 'Astro · TypeScript · Preact · Tailwind · Cloudflare Workers',
