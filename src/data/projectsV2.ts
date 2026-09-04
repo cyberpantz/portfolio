@@ -180,7 +180,7 @@ export const PROJECTS_V2: ProjectV2[] = [
       },
       {
         label: 'Product decisions',
-        body: 'Establish trust. Make it Beautiful, but not pretentious. Always show sources. Show links to the airline and bag manufacturers when available. Allow for custom bags. Keep the design clean and functional. Build something useful, then think about how to monetization. ',
+        body: 'Establish trust. Make it beautiful, but not pretentious. Always show sources. Show links to the airline and bag manufacturers when available. Allow for custom bags. Keep the design clean and functional. Build something useful. ',
       },
       {
         label: 'Process',
