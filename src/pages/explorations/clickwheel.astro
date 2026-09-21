@@ -13,7 +13,7 @@ import ClickWheelPlayer from '../../components/clickwheel/ClickWheelPlayer';
     <figure class="cw-stage">
       {/* client:visible so the boot loop starts when it is scrolled to,
           not on page load — spec §3. */}
-      <ClickWheelPlayer client:visible width={256} theme="blue" />
+      <ClickWheelPlayer client:visible width={256} theme="gold" />
 
       {/*
         Written as a museum wall label, not a README. The engineering
@@ -49,8 +49,11 @@ import ClickWheelPlayer from '../../components/clickwheel/ClickWheelPlayer';
 </ExpBase>
 
 <style>
-  /* The device is a white object — it needs a ground that is neither the
-     page's near-black nor a bright panel competing with it. */
+  /* The device is a pale metal object — it needs a ground that is neither
+     the page's near-black nor a bright panel competing with it. Warm
+     anodised bodies want this slightly cool grey behind them; a warm
+     backdrop and a gold face read as one wash rather than as an object
+     sitting in front of something. */
   .cw-stage {
     min-height: 100%;
     display: flex;
