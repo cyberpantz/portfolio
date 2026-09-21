@@ -1,9 +1,26 @@
 {
   "$comment": [
     "Drop MP3s (or anything <audio> decodes) into public/audio/clickwheel/tracks/",
-    "and add a row here. Paths are site-absolute and PERCENT-ENCODED: several of",
-    "these filenames contain spaces and one contains an accented character, and a",
-    "raw space in a URL is not something every server or browser forgives.",
+    "and add a row here.",
+    "",
+    "FILENAMES ARE lowercase ASCII, digits and hyphens. No spaces, no commas,",
+    "no accents. The display title lives in `title` below, so the file on disk",
+    "never has to be pretty. This is not fussiness — both other spellings were",
+    "tried and both 404'd:",
+    "",
+    "  - A comma percent-encoded as %2C never resolves. Vite's static server",
+    "    decodes with decodeURI, which by specification leaves the reserved",
+    "    characters alone, so it went looking for a file with a literal '%2C'",
+    "    in its name.",
+    "  - An accented character is worse, because it fails in only one place.",
+    "    macOS wrote 'Chevres' decomposed (e + U+0300) while git recorded it",
+    "    precomposed (U+00E8). APFS compares normalisation-insensitively so it",
+    "    resolved locally either way; Linux, which is what Netlify serves from,",
+    "    compares bytes, so the deployed file and the URL in this manifest were",
+    "    two different names. It worked on the laptop and 404'd in production.",
+    "",
+    "Staying inside ASCII means the path needs no encoding at all and cannot",
+    "drift between the filesystem, git and the CDN.",
     "",
     "These tracks were written and titled by the site's author under the name",
     "cyberpantz, and generated with Suno. Both halves matter: the prompting and",
@@ -21,37 +38,37 @@
     {
       "title": "Desert Riyaaz",
       "artist": "cyberpantz",
-      "src": "/audio/clickwheel/tracks/Desert%20Riyaaz.mp3",
+      "src": "/audio/clickwheel/tracks/desert-riyaaz.mp3",
       "duration": 480
     },
     {
       "title": "Desert Roads, Same Drum",
       "artist": "cyberpantz",
-      "src": "/audio/clickwheel/tracks/Desert%20Roads%2C%20Same%20Drum.mp3",
+      "src": "/audio/clickwheel/tracks/desert-roads-same-drum.mp3",
       "duration": 163
     },
     {
       "title": "Dumb Little World",
       "artist": "cyberpantz",
-      "src": "/audio/clickwheel/tracks/Dumb%20Little%20World.mp3",
+      "src": "/audio/clickwheel/tracks/dumb-little-world.mp3",
       "duration": 245
     },
     {
       "title": "Les Chèvres du Village",
       "artist": "cyberpantz",
-      "src": "/audio/clickwheel/tracks/Les%20Che%CC%80vres%20du%20Village.mp3",
+      "src": "/audio/clickwheel/tracks/les-chevres-du-village.mp3",
       "duration": 163
     },
     {
       "title": "Oystertime",
       "artist": "cyberpantz",
-      "src": "/audio/clickwheel/tracks/Oystertime.mp3",
+      "src": "/audio/clickwheel/tracks/oystertime.mp3",
       "duration": 170
     },
     {
       "title": "South Van Ness Second Dinner",
       "artist": "cyberpantz",
-      "src": "/audio/clickwheel/tracks/South%20Van%20Ness%20Second%20Dinner.mp3",
+      "src": "/audio/clickwheel/tracks/south-van-ness-second-dinner.mp3",
       "duration": 147
     }
   ]
