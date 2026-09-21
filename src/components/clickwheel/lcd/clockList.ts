@@ -31,7 +31,12 @@ const HEAD_H = 21;
 export const CLOCK_ROW_H = 36;
 export const CLOCK_VISIBLE = Math.floor((LCD_H - HEAD_H) / CLOCK_ROW_H);
 
-const FACE_R = 11;
+/*
+ * 25px across, centred at 17, so the face occupies x 5..29 and leaves a
+ * 5px gutter before the text column at 34. At 27px it cleared the gutter
+ * by 3px and read as crowding the time.
+ */
+const FACE_R = 12;
 const FACE_CX = 17;
 const TEXT_X = 34;
 const RIGHT_EDGE = LCD_W - 4;
@@ -147,60 +152,88 @@ function fill(img: ImageData, x0: number, y0: number, w: number, h: number, c: R
   }
 }
 
-/** One LOGICAL pixel, which is an s x s block in the raster. */
-function px(img: ImageData, x: number, y: number, c: Rgb, s: number) {
-  fill(img, Math.round(x), Math.round(y), 1, 1, c, s);
+
+/** Filled disc, exact half-width per row — no distance threshold. */
+function disc(img: ImageData, cx: number, cy: number, r: number, c: Rgb, s: number) {
+  for (let dy = -r; dy <= r; dy++) {
+    const half = Math.round(Math.sqrt(Math.max(0, r * r - dy * dy)));
+    fill(img, cx - half, cy + dy, half * 2 + 1, 1, c, s);
+  }
+}
+
+/**
+ * Integer Bresenham, so a hand is exactly one pixel wide along its whole
+ * length.
+ *
+ * The float walk this replaces stepped t by 0.5 and rounded, which set
+ * some pixels twice and skipped others — the hands came out thick at one
+ * end, broken at the other, and different on every row.
+ */
+function line(img: ImageData, x0: number, y0: number, x1: number, y1: number, c: Rgb, s: number) {
+  let x = x0, y = y0;
+  const dx = Math.abs(x1 - x0);
+  const dy = -Math.abs(y1 - y0);
+  const sx = x0 < x1 ? 1 : -1;
+  const sy = y0 < y1 ? 1 : -1;
+  let err = dx + dy;
+  for (;;) {
+    fill(img, x, y, 1, 1, c, s);
+    if (x === x1 && y === y1) break;
+    const e2 = 2 * err;
+    if (e2 >= dy) { err += dy; x += sx; }
+    if (e2 <= dx) { err += dx; y += sy; }
+  }
 }
 
 /**
  * The analogue face.
  *
- * Drawn rather than rasterised from a font: at 22px across, a glyph
+ * Drawn rather than rasterised from a font: at this size a glyph
  * thresholds to a grey smudge, and the hands have to point somewhere
- * specific anyway. Distance-tested rather than Bresenham — the circle is
- * tiny, the loop is 23x23, and an exact ring is worth more here than the
- * cycles saved.
+ * specific anyway.
+ *
+ * The rim is two discs — one in the rim colour, one a pixel smaller in
+ * the interior colour — rather than a distance test against the radius.
+ * A threshold like |d - r| <= 0.9 matches a run of pixels wherever the
+ * curve runs shallow, so the top and bottom came out flat and thick
+ * while the diagonals stayed thin: the circles read as octagons. Two
+ * filled discs give an exactly 1px rim all the way round, for less
+ * arithmetic.
+ *
+ * Day and night are ABSOLUTE, not relative to the row. An earlier version
+ * swapped them along with the selection bar, which inverted the meaning
+ * exactly where it matters — a night city, once highlighted, drew a pale
+ * face and read as daytime. In the reference photo the selected row is
+ * California at 5:24 PM and its face is the same white as an unselected
+ * daytime one. Only the RIM follows the row, because it is the part that
+ * has to stay visible against whichever ground it sits on.
  */
 function face(
   img: ImageData, cx: number, cy: number, hour: number, minute: number,
   fg: Rgb, night: boolean, s: number
 ) {
-  /*
-   * Day and night are ABSOLUTE, not relative to the row.
-   *
-   * The first version swapped these along with the selection bar, which
-   * inverted the meaning exactly where it matters: a night city, once
-   * highlighted, drew a pale face and read as daytime. In the reference
-   * photo the selected row is California at 5:24 PM and its face is
-   * white — the same white as an unselected daytime face. The face
-   * answers "is it dark there", and the answer cannot depend on where
-   * the cursor happens to be.
-   *
-   * Only the RING follows the row, because it is the one part that has
-   * to stay visible against whichever ground it is sitting on.
-   */
   const interior = night ? PALETTE.ink : PALETTE.knock;
   const hands = night ? PALETTE.knock : PALETTE.ink;
 
-  for (let dy = -FACE_R - 1; dy <= FACE_R + 1; dy++) {
-    for (let dx = -FACE_R - 1; dx <= FACE_R + 1; dx++) {
-      const d = Math.sqrt(dx * dx + dy * dy);
-      if (d <= FACE_R - 0.8) px(img, cx + dx, cy + dy, interior, s);
-      else if (Math.abs(d - FACE_R) <= 0.9) px(img, cx + dx, cy + dy, fg, s);
-    }
-  }
+  disc(img, cx, cy, FACE_R, fg, s);
+  disc(img, cx, cy, FACE_R - 1, interior, s);
 
-  // 0 at twelve, growing clockwise — the same convention as the wheel.
+  /*
+   * 0 at twelve, growing clockwise — the same convention as the wheel.
+   *
+   * The hands differ in LENGTH rather than weight: at 25px across a
+   * two-pixel hour hand reads as a blob, not as a hand. 5 against 9 is
+   * roughly the 0.6 ratio a real dial uses, and it is the smallest gap
+   * at which the two are still tellable apart at a glance — 7 against
+   * 10, which this had first, just looked like a bent line.
+   */
   const hand = (angle: number, len: number) => {
-    for (let t = 0; t <= len; t += 0.5) {
-      px(img, cx + Math.sin(angle) * t, cy - Math.cos(angle) * t, hands, s);
-    }
+    line(img, cx, cy,
+      Math.round(cx + Math.sin(angle) * len),
+      Math.round(cy - Math.cos(angle) * len), hands, s);
   };
-  const m = (minute / 60) * Math.PI * 2;
-  const h = (((hour % 12) + minute / 60) / 12) * Math.PI * 2;
-  hand(h, FACE_R - 5);
-  hand(m, FACE_R - 2);
-  px(img, cx, cy, hands, s);
+  hand((((hour % 12) + minute / 60) / 12) * Math.PI * 2, FACE_R - 7);
+  hand((minute / 60) * Math.PI * 2, FACE_R - 3);
 }
 
 export function drawClockList(img: ImageData, state: ClockListState, scale = LCD_S) {

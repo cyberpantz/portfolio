@@ -228,6 +228,23 @@
   top: 4.7%;
   width: 68.75%;
   aspect-ratio: 176 / 132;
+  /*
+   * content-box, and it is load-bearing.
+   *
+   * 68.75% of 256 is 176 — the panel's logical width, so one logical
+   * pixel is one CSS pixel and the 2x raster lands on device pixels 1:1
+   * at DPR 2. Under the inherited border-box the 1.5px padding was
+   * subtracted from that, leaving a 173px content box: the 352px canvas
+   * was being resampled to 346 device pixels, dropping six columns
+   * unevenly across the panel. `image-rendering: pixelated` does not
+   * save you there — it picks nearest, so the dropped columns simply
+   * vanish, which is what was chewing the clock faces and thinning
+   * glyph stems at random.
+   *
+   * The device gets 3px wider overall. That is the cheaper of the two
+   * errors by a wide margin.
+   */
+  box-sizing: content-box;
   padding: 1.5px;
   background: #8d94a6;
   border-radius: 1px;
