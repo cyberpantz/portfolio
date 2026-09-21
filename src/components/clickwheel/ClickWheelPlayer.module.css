@@ -64,7 +64,7 @@
   --face-lo: #e4e5e9;
   --edge: rgba(146, 150, 158, 0.26);
   --wheel: #dcdddf;
-  --wheel-ink: #bcbdc0;
+  --wheel-ink: #7c7c7f;
   --btn-hi: #fcfcfc;
   --btn-lo: #f5f5f6;
   /* Silver's wall: the anodised edge, darker than the face. */
@@ -394,6 +394,19 @@
   cursor: pointer;
 }
 
+/*
+ * The glyphs.
+ *
+ * --wheel-ink is set per colourway to land at 3.05:1 against that
+ * colourway's wheel. The spec asks for glyphs "almost invisible until
+ * you look", and the first pass took that literally: silver sat at
+ * 1.38:1, which is not restraint, it is a label you cannot read. These
+ * name the four controls, so WCAG 1.4.11 wants 3:1, and the reference
+ * device's MENU is plainly legible in any photograph of it.
+ *
+ * Retoned by scaling each ink's LINEAR components uniformly, so every
+ * colourway keeps its hue instead of sliding toward grey.
+ */
 .glyph {
   position: absolute;
   color: var(--wheel-ink);
@@ -473,7 +486,7 @@
   --face-lo: #5f9dc4;
   --edge: rgba(38, 74, 100, 0.42);
   --wheel: #e6ecf0;
-  --wheel-ink: #9fb3c0;
+  --wheel-ink: #798893;
   --btn-hi: #f6f9fb;
   --btn-lo: #eaf0f4;
 }
@@ -491,7 +504,7 @@
   --face-lo: #7da85c;
   --edge: rgba(58, 82, 38, 0.42);
   --wheel: #ebefe6;
-  --wheel-ink: #adbba0;
+  --wheel-ink: #818b77;
   --btn-hi: #f8faf5;
   --btn-lo: #eef2ea;
 }
@@ -509,7 +522,7 @@
   --face-lo: #d3849e;
   --edge: rgba(112, 46, 68, 0.4);
   --wheel: #f2eaed;
-  --wheel-ink: #c9adb6;
+  --wheel-ink: #978188;
   --btn-hi: #fbf6f8;
   --btn-lo: #f4ecef;
 }
@@ -527,7 +540,7 @@
   --face-lo: #c9a86a;
   --edge: rgba(96, 74, 34, 0.42);
   --wheel: #f1ece1;
-  --wheel-ink: #c4b79c;
+  --wheel-ink: #908672;
   --btn-hi: #faf7f0;
   --btn-lo: #f2ede2;
 }
@@ -547,7 +560,7 @@
   --face-lo: #1b1b1e;
   --edge: rgba(0, 0, 0, 0.55);
   --wheel: #232326;
-  --wheel-ink: #55565a;
+  --wheel-ink: #6c6d72;
   --btn-hi: #2e2e31;
   --btn-lo: #232326;
 }
