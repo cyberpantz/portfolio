@@ -105,7 +105,7 @@ export default function AboutScreen() {
     const room = LCD_W - x - 8;
     drawText(img, truncate('Click Wheel', room, TITLE), x, 24, PALETTE.ink, S, TITLE);
     fill(img, x, 45, room, 1, PALETTE.ink, S);
-    drawText(img, truncate('Drawn in a browser', room, BODY), x, 52, PALETTE.ink, S, BODY);
+    drawText(img, truncate('Frank Young', room, BODY), x, 52, PALETTE.ink, S, BODY);
     drawText(img, truncate('No images', room, BODY), x, 67, PALETTE.rule, S, BODY);
 
     // ---- colophon band ----

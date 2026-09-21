@@ -14,13 +14,16 @@ import { MARK_H, MARK_W, markBits } from './lcd/mark';
 const DURATION = 900;
 
 /*
- * Final size as a fraction of the raster mark. The apple is stored at
- * 167x185 device px and is taller than it is wide, so HEIGHT is the
- * binding constraint on a 352x264 panel: 0.75 puts it at 139px, a little
- * over half the panel, which is where the previous mark sat and leaves
- * air on every side rather than pressing against the bezel.
+ * 1, deliberately.
+ *
+ * The mark is stored at exactly the size it is drawn, so the resting
+ * frame is a 1:1 copy of the bitmap. Anything less means this blit —
+ * which samples nearest neighbour — drops rows and columns on the way
+ * down, and at 148px tall that is the difference between a clean edge
+ * and a chewed one. Resize the SOURCE if it should be bigger or smaller;
+ * do not scale it here.
  */
-const MARK_SCALE = 0.75;
+const MARK_SCALE = 1;
 
 /**
  * Penner's ease-out-bounce. Four parabolic arcs of decreasing height,
