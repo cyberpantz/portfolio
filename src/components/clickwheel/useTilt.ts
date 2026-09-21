@@ -25,9 +25,28 @@ import { useEffect, useRef } from 'react';
  */
 
 export type TiltOptions = {
-  /** Degrees at full deflection. */
+  /**
+   * Degrees at full deflection.
+   *
+   * 16, not the 9 this shipped with. The old cap was set by a note
+   * claiming the LCD keystones and moires past about 14 — measured, it
+   * does not: at 14 the panel is clean and at 26 it is only slightly
+   * soft on the receding edge, degrading gradually rather than falling
+   * off a cliff. 16 is comfortably inside that.
+   *
+   * On a near-black stage the payoff is the SIDE WALL. The extrusion is
+   * a quarter of the body width, so every extra degree of turn reveals
+   * more of it — at 9 about 10px showed, at 16 nearly 18. Cast shadows
+   * would do nothing here; they are dark on a dark ground.
+   */
   max?: number;
-  /** How fast the rotation chases the pointer, 0-1 per frame. */
+  /**
+   * How fast the rotation chases the pointer, 0-1 per frame.
+   *
+   * 0.16 rather than 0.09. At 0.09 the pod was still visibly catching up
+   * half a second after the pointer stopped — measured while chasing an
+   * unrelated bug — which reads as lag rather than as weight.
+   */
   ease?: number;
   /** Glass highlight shift at full deflection, px. Spec §8 caps this at 3. */
   parallax?: number;
@@ -44,10 +63,10 @@ export type TiltOptions = {
 };
 
 export function useTilt<T extends HTMLElement>({
-  max = 9,
-  ease = 0.09,
+  max = 16,
+  ease = 0.16,
   parallax = 3,
-  specular = 46,
+  specular = 64,
 }: TiltOptions = {}) {
   const ref = useRef<T>(null);
 
@@ -67,12 +86,17 @@ export function useTilt<T extends HTMLElement>({
       const cy = r.top + r.height / 2;
       /*
        * Normalised against the device's own size, not the viewport: the
-       * tilt should saturate a couple of body-widths out, so the object
-       * reads as responding to the pointer near it rather than to the
-       * cursor's absolute position on a large monitor.
+       * tilt should saturate close to the object, so it reads as
+       * responding to the pointer near it rather than to the cursor's
+       * absolute position on a large monitor.
+       *
+       * 1.5 body-widths, down from 2.2. At 2.2 an ordinary pass of the
+       * mouse near the device only ever reached a fraction of the cap,
+       * so raising the cap by itself would have changed almost nothing
+       * about how this actually feels.
        */
-      const nx = Math.max(-1, Math.min(1, (e.clientX - cx) / (r.width * 2.2)));
-      const ny = Math.max(-1, Math.min(1, (e.clientY - cy) / (r.height * 1.6)));
+      const nx = Math.max(-1, Math.min(1, (e.clientX - cx) / (r.width * 1.5)));
+      const ny = Math.max(-1, Math.min(1, (e.clientY - cy) / (r.height * 1.15)));
       // Pointer right -> the right edge goes AWAY, which is +rotateY.
       // Pointer below -> the bottom goes away, which is -rotateX.
       target.ry = nx * max;

@@ -118,18 +118,30 @@ export default function ClickWheelPlayer({
   /*
    * Depth of the extruded wall, in px, and how many copies build it.
    *
-   * The real device is about 61.8mm wide and 15.7mm thick, so at this
-   * width the wall is ~65px deep. 20 slices covers that at ~3px apart,
-   * which is under the ~4px at which the banding becomes visible at an
-   * 11 degree turn. More slices is just more DOM for no gain.
+   * The real device is about 61.8mm wide and 15.7mm thick, which is a
+   * ratio of 0.254 — and at 0.25 this was accurate and still looked
+   * heavy, because the tilt cap moved to 16 degrees and now reveals
+   * nearly twice as much wall as it used to. 0.19 is a deliberate cheat
+   * against the real proportions, bought to keep the drama of the larger
+   * turn without the object reading as a brick.
+   *
+   * 20 slices covers the depth at under 3px apart, which is inside the
+   * ~4px at which banding becomes visible at this turn. More slices is
+   * just more DOM for no gain.
    */
   const slices = useMemo(() => {
-    const depth = width * 0.25;
+    const depth = width * 0.19;
     const n = 20;
     return Array.from({ length: n }, (_, i) => ({
-      z: -((i + 1) / n) * depth,
       // Darkens toward the back: the wall turning out of the light.
-      dim: 1 - (i / n) * 0.45,
+      //
+      // Steeper than it was. The wall used to hold 55% of the face's
+      // brightness at the very back, which on a white body reads as a
+      // second lit surface — a slab. The real device's sides were
+      // polished metal, which against a near-black stage goes dark and
+      // lets the edge recede instead of adding bulk.
+      z: -((i + 1) / n) * depth,
+      dim: 1 - (i / n) * 0.62,
     }));
   }, [width]);
 
