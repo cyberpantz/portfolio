@@ -242,7 +242,6 @@ export function useWheelInput(opts: WheelOptions = {}) {
         // useCallback is perfectly valid code, so the wheel just went
         // quiet under the mouse while still clicking under the arrow keys.
         click();
-        click();
       }
     };
 
