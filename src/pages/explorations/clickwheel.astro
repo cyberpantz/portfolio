@@ -1,0 +1,103 @@
+---
+import ExpBase from '../../layouts/ExpBase.astro';
+import ExpChrome from '../../components/exp/ExpChrome.astro';
+import ClickWheelPlayer from '../../components/clickwheel/ClickWheelPlayer';
+---
+
+<ExpBase
+  title="Click Wheel — Frank Young"
+  description="Click Wheel, 2026 — a recreation of the third-generation click-wheel iPod in HTML, CSS, canvas and Web Audio. An object that was mostly aluminium and a spinning disk, reproduced in a medium that has neither."
+>
+  <ExpChrome name="Click Wheel" kind="Object" />
+  <main id="main" class="exp-stage">
+    <figure class="cw-stage">
+      {/* client:visible so the boot loop starts when it is scrolled to,
+          not on page load — spec §3. */}
+      <ClickWheelPlayer client:visible width={256} theme="blue" />
+
+      {/*
+        Written as a museum wall label, not a README. The engineering
+        detail that used to live here — superellipse clip paths, the
+        176x132 raster, the 1:1 pixel mapping — is in the source and the
+        spec, where someone who wants it will go looking. A label states
+        the medium and then gets out of the way.
+      */}
+      <figcaption class="cw-label">
+        {/* No artist line — the page already says whose site this is, and
+            a label that names you on your own portfolio reads as a joke
+            about attribution rather than a label. */}
+        <p class="cw-label__title"><cite>Click Wheel</cite>, 2026</p>
+        <p class="cw-label__medium">HTML, CSS, canvas, Web Audio</p>
+        {/*
+            Credits the author AND the instrument, which is the standard
+            form for generated work — the same way a print names both the
+            artist and the press.
+
+            Two earlier drafts were both wrong. "Sound by the artist" hid
+            the tool and claimed composition. "Sound generated with Suno"
+            over-corrected: it credited the instrument and erased the
+            person, when prompting, auditioning and titling is authorship —
+            just not the kind that earns a royalty.
+        */}
+        <p class="cw-label__medium">All music by author, generated with Suno, 2026</p>
+        <p class="cw-label__body">
+          A recreation of the third-generation click-wheel iPod. This generation of ipods were mostly aluminium.
+        </p>
+        <p class="cw-label__body cw-label__body--dim">
+          On view: the housing and the boot screen. Remaining: the wheel, the
+          menus, the sound.
+        </p>
+      </figcaption>
+    </figure>
+  </main>
+</ExpBase>
+
+<style>
+  /* The device is a white object — it needs a ground that is neither the
+     page's near-black nor a bright panel competing with it. */
+  .cw-stage {
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(28px, 4vw, 44px);
+    padding: clamp(40px, 7vw, 88px) 24px;
+    background: radial-gradient(120% 70% at 50% 22%, #2a2a2e 0%, #131315 62%, #0c0c0d 100%);
+  }
+  /* Wall label: left-aligned, narrow measure, the artist line leading and
+     the medium set smaller and quieter beneath it. Museum labels are read
+     standing up at arm's length, so nothing here is centred. */
+  .cw-label {
+    max-width: 46ch;
+    margin: 0;
+    text-align: left;
+  }
+  .cw-label > p { margin: 0; }
+  .cw-label__title {
+    font-family: var(--font-serif, Georgia, serif);
+    font-size: 17px;
+    line-height: 1.35;
+    color: var(--color-exp-bright, #c8c8c8);
+  }
+  .cw-label__title cite { font-style: italic; }
+  .cw-label__medium {
+    font-family: var(--font-mono, ui-monospace, monospace);
+    font-size: 12px;
+    line-height: 1.75;
+    color: var(--color-exp-muted, #9a9a92);
+  }
+  .cw-label > .cw-label__medium:first-of-type { margin-top: 10px; }
+  .cw-label > .cw-label__body {
+    margin-top: 18px;
+    font-family: var(--font-mono, ui-monospace, monospace);
+    font-size: 13px;
+    line-height: 1.75;
+    color: var(--color-exp-base, #999);
+  }
+  .cw-label > .cw-label__body--dim {
+    margin-top: 14px;
+    font-size: 12px;
+    color: var(--color-exp-dim, #7d7d75);
+  }
+</style>

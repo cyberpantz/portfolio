@@ -1,0 +1,533 @@
+/*
+ * Click-wheel player — the object.
+ *
+ * Geometry is measured off a photograph of the white 3rd/4th-gen device
+ * (body 650x1100, ratio 1.692) and expressed as percentages of --pod-w so
+ * the whole thing scales from one number.
+ *
+ * Three deliberate departures from the written spec, because the photo
+ * disagreed with it and the photo won:
+ *   - no chrome bevel: that chrome is the BACK of the device; the face is
+ *     white polycarbonate with a soft lip
+ *   - no brushed texture: the face is glossy, and a brush reads as aluminium
+ *   - the wheel is barely a tone off the face, with no border and no
+ *     shadow, and the centre button is LIGHTER than the ring
+ */
+
+/*
+ * ---- the 3D stack ----------------------------------------------------
+ *
+ *   .mount  carries the cast shadows
+ *   .stage  carries the perspective
+ *   .pod    carries preserve-3d and the tilt
+ *
+ * Three elements rather than one because `filter` and `transform-style:
+ * preserve-3d` cannot share an element: a filter forces the subtree to
+ * flatten, which silently collapses the extrusion back into a rectangle.
+ * The shadows therefore live one level out, where they still follow the
+ * rotated silhouette because drop-shadow reads the rendered result.
+ */
+.mount {
+  display: inline-block;
+  filter:
+    drop-shadow(0 calc(var(--pod-w) * 0.006) calc(var(--pod-w) * 0.004) rgba(10, 10, 14, 0.36))
+    drop-shadow(0 calc(var(--pod-w) * 0.03) calc(var(--pod-w) * 0.03) rgba(18, 18, 24, 0.3))
+    drop-shadow(0 calc(var(--pod-w) * 0.09) calc(var(--pod-w) * 0.14) rgba(18, 18, 24, 0.36));
+}
+.stage {
+  /* Long perspective: the object is small and near, and a short focal
+     length would splay the edges like a wide-angle lens. */
+  perspective: calc(var(--pod-w) * 7);
+  perspective-origin: 50% 42%;
+}
+
+.pod {
+  transform-style: preserve-3d;
+  /*
+   * Driven by useTilt, which writes --rx/--ry from the pointer. Flat at
+   * 0/0, which is where it sits when the pointer is over the centre and
+   * where it returns when the pointer leaves.
+   *
+   * useTilt caps deflection at 9 degrees. Past about 14 the LCD starts to
+   * keystone and its pixel grid moires against the screen's own pixels,
+   * which would undo the 1:1 mapping the whole panel is built on.
+   */
+  transform: rotateY(var(--ry, 0deg)) rotateX(var(--rx, 0deg));
+  will-change: transform;
+
+  /* One number drives everything. 256 keeps the 176px LCD at an exact 1:1
+     pixel mapping (176/256 = 68.75%, and the photo measures 69.2%). */
+  --pod-w: 256px;
+  --pod-h: calc(var(--pod-w) * 1.692);
+
+  --face-hi: #ffffff;
+  --face-lo: #e4e5e9;
+  --edge: rgba(146, 150, 158, 0.26);
+  --wheel: #dcdddf;
+  --wheel-ink: #bcbdc0;
+  --btn-hi: #fcfcfc;
+  --btn-lo: #f5f5f6;
+  /* Silver's wall: the anodised edge, darker than the face. */
+  --side: #a9adb4;
+
+  position: relative;
+  width: var(--pod-w);
+  height: var(--pod-h);
+  /* NO filter here. The shadows moved to .mount: a filter on the same
+     element as transform-style:preserve-3d flattens the subtree, which
+     would collapse the extruded side back into a flat silhouette. */
+}
+
+/* Continuous corners: superellipse arcs at n=4.5, not the circular arcs a
+   plain border-radius gives.
+
+   The clip-path itself is set INLINE per instance, not here: the path is
+   generated in userSpaceOnUse at the component's actual pixel size, and
+   its id is per-instance so two players on one page cannot collide.
+   objectBoundingBox would have avoided the inline style but normalises x
+   and y independently, which on a 1.692-ratio body turns the round
+   corners into ellipses. */
+.body,
+.lip {
+  position: absolute;
+  inset: 0;
+}
+
+/* A fixed clip in the body's shape, holding a sheen that is larger than
+   it and slides around inside. Two elements because the clip must NOT
+   move with the highlight — clipping the moving element would drag the
+   silhouette along with it. */
+.sheenClip {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.sheen {
+  position: absolute;
+  inset: calc(var(--pod-w) * -0.35);
+}
+
+.body {
+  background:
+    radial-gradient(140% 55% at 34% 0%, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0) 55%),
+    linear-gradient(90deg,
+      rgba(178, 182, 190, 0.2) 0%, rgba(178, 182, 190, 0) 9%,
+      rgba(178, 182, 190, 0) 91%, rgba(178, 182, 190, 0.24) 100%),
+    linear-gradient(180deg, var(--face-hi) 0%, #fbfbfc 34%, #f6f6f8 64%, #eeeff2 87%, var(--face-lo) 100%);
+}
+
+/*
+ * The side wall.
+ *
+ * CSS has no extrusion, so the depth is a stack of copies of the
+ * silhouette pushed back in Z one step at a time. Under the tilt above
+ * they read as a continuous machined edge; flat on, they collapse into
+ * exactly the silhouette and cost nothing.
+ *
+ * They darken toward the back, which is both what a real wall does as it
+ * turns out of the light and what stops the stack reading as a stripe.
+ */
+.slice {
+  position: absolute;
+  inset: 0;
+  background: var(--side, #7c8894);
+}
+
+/*
+ * The environment, reflected.
+ *
+ * This is the layer that was missing, and it is the one doing most of the
+ * work. A face-on object cannot show its sides, so depth has to come from
+ * how the surface picks up the ROOM: a broad window reflection sweeping
+ * one way, a weaker bounce coming back the other, and the shell falling
+ * out of the light toward the perimeter.
+ *
+ * Without it the face was a gradient spanning about 7% luminance top to
+ * bottom — which is why every previous attempt at "more depth" (bigger
+ * shadows, sharper chamfers) failed. The edges were describing a solid
+ * that the surface between them flatly contradicted.
+ *
+ * Deliberately white-and-black over the top rather than baked into each
+ * colourway: reflection is a property of the finish, not the dye, so
+ * every anodised colour gets the same lighting for free.
+ */
+.sheen {
+  pointer-events: none;
+  /* Driven by useTilt. This is the whole difference between an object
+     turning and a picture of an object being turned. */
+  transform: translate3d(var(--sx, 0px), var(--sy, 0px), 0);
+  opacity: var(--spec, 1);
+  background:
+    /* 1. the window: a broad, soft sweep across the upper left */
+    linear-gradient(148deg,
+      rgba(255, 255, 255, 0.5) 0%,
+      rgba(255, 255, 255, 0.26) 14%,
+      rgba(255, 255, 255, 0.07) 30%,
+      rgba(255, 255, 255, 0) 46%),
+    /* 2. bounce light returning off whatever the object is sitting on */
+    linear-gradient(318deg,
+      rgba(255, 255, 255, 0.26) 0%,
+      rgba(255, 255, 255, 0.08) 12%,
+      rgba(255, 255, 255, 0) 30%),
+    /* nothing else — see .curve */
+    none;
+}
+
+/*
+ * Curvature, held STILL.
+ *
+ * This was in .sheen and had to come out. The shell turning away from the
+ * light at its edges is a property of the object's SHAPE, so it is fixed
+ * to the body; the reflection is an image of the room, so it slides. Put
+ * them on the same moving layer and the edges appear to melt as the
+ * object turns, which is worse than no lighting at all.
+ */
+.curve {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(128% 104% at 48% 40%,
+    rgba(0, 0, 0, 0) 46%,
+    rgba(0, 0, 0, 0.1) 74%,
+    rgba(0, 0, 0, 0.22) 90%,
+    rgba(0, 0, 0, 0.34) 100%);
+}
+
+/*
+ * The edge, in four layers. This is where the thickness comes from.
+ *
+ * A single 1px inset highlight — which is what this was — describes a
+ * printed outline, not a machined edge. A real shell has a polished
+ * chamfer catching light on the side facing the lamp, a darker one on the
+ * side facing away, and a broad soft darkening just inside the perimeter
+ * where the surface curves out of the light. That last one does most of
+ * the work: it is the difference between a rectangle and a solid.
+ *
+ * One light source, top-left — spec §8.
+ */
+.lip {
+  pointer-events: none;
+  box-shadow:
+    /* 1. polished chamfer facing the light */
+    inset 2px 2px 0 rgba(255, 255, 255, 0.72),
+    /* 2. the underside, facing away */
+    inset -2px -2.5px 0 rgba(0, 0, 0, 0.26),
+    /* 3. the shell rolling away from the light all round */
+    inset 0 0 calc(var(--pod-w) * 0.055) calc(var(--pod-w) * 0.006) rgba(0, 0, 0, 0.2),
+    /* 4. a crisp outline so the silhouette stays a hard edge, not a fade */
+    inset 0 0 0 1px var(--edge);
+}
+
+/* ---- screen ------------------------------------------------------- */
+
+.screen {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  top: 4.7%;
+  width: 68.75%;
+  aspect-ratio: 176 / 132;
+  padding: 1.5px;
+  background: #8d94a6;
+  border-radius: 1px;
+  /* The inner shadow is what puts the glass BELOW the plastic. Without it
+     the screen reads as a rectangle pasted on the face. */
+  box-shadow:
+    /* Deeper well: the glass sits below the face, so the overhang casts
+       down onto it and the lower lip catches a highlight. */
+    inset 0 2.5px 3px rgba(12, 16, 30, 0.5),
+    inset 0 -1px 1px rgba(255, 255, 255, 0.18),
+    0 1px 0 rgba(255, 255, 255, 0.6),
+    0 0 0 0.5px rgba(0, 0, 0, 0.28);
+}
+
+.lcd {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  /* Matches PALETTE.bg — the UNLIT panel. The canvas paints over this, so
+     it shows only for the instant before the first frame. */
+  background: linear-gradient(180deg, #a2aec9 0%, #9aa7c0 55%, #93a0ba 100%);
+}
+
+.lcd canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+}
+
+/*
+ * Edge-lit backlight.
+ *
+ * These panels were lit from the PERIMETER — a lamp along one or more
+ * edges firing into a diffuser — so the border glows and the middle is
+ * very slightly cooler and dimmer. A flat wash over the whole panel, which
+ * is what this was, reads as "someone turned the brightness down" rather
+ * than as a lamp behind glass.
+ *
+ * Two layers: an inset halo hugging the border, and a broad radial that
+ * takes a little light out of the centre so the edges have something to be
+ * brighter THAN.
+ *
+ * The lamp is AMBER, not blue-white. These were electroluminescent panels
+ * with a warm cast, and over a blue-lavender LCD that warmth is most of
+ * what makes the screen look lit from behind rather than tinted. A cool
+ * white halo just looks like the panel colour turned up.
+ */
+.backlight {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: var(--bl, 1);
+  transition: opacity 220ms ease;
+  /* The hotspot moves with the glass, at half the throw — it is behind
+     the panel, so it parallaxes less. Spec §4.2.6. */
+  transform: translate3d(calc(var(--px, 0px) * 0.5), calc(var(--py, 0px) * 0.5), 0);
+
+  /*
+   * `screen` so the lamp ADDS light rather than tinting.
+   *
+   * This was an inset box-shadow halo sitting over an already-bright
+   * ground, which could only ever decorate the rim — the panel looked lit
+   * whether the lamp was on or not. Screen-blending an amber wash over a
+   * dull ground is what actually turns the screen ON: the whole panel
+   * lifts, and lifts most at the edges, which is where the lamp is.
+   */
+  mix-blend-mode: screen;
+  background: radial-gradient(
+    122% 96% at 50% 50%,
+    rgba(255, 198, 104, 0.05) 0%,
+    rgba(255, 198, 104, 0.09) 46%,
+    rgba(255, 202, 112, 0.20) 76%,
+    rgba(255, 210, 132, 0.40) 92%,
+    rgba(255, 218, 150, 0.52) 100%
+  );
+}
+
+
+/* Diagonal specular on the glass — spec §4.2 layer 5, with the layer 6
+   parallax: it drifts against the pointer by at most 3px. Inset by that
+   much on every side so the drift never exposes an edge. */
+.glass {
+  position: absolute;
+  inset: -4px;
+  pointer-events: none;
+  transform: translate3d(var(--px, 0px), var(--py, 0px), 0);
+  background: linear-gradient(126deg,
+    rgba(255, 255, 255, 0.36) 0%,
+    rgba(255, 255, 255, 0.12) 24%,
+    rgba(255, 255, 255, 0) 44%);
+}
+
+/* ---- wheel -------------------------------------------------------- */
+
+.wheel {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  top: 49.8%;
+  width: 60.8%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--wheel);
+  /* Seated INTO the face rather than sitting on it: a hairline of
+     occlusion around the rim, and a soft inner shadow along the top where
+     the face overhangs it. */
+  box-shadow:
+    inset 0 1.5px 2px rgba(0, 0, 0, 0.1),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.5),
+    0 0 0 0.5px rgba(0, 0, 0, 0.12),
+    0 1px 2px rgba(0, 0, 0, 0.1);
+  touch-action: none;
+  /*
+   * One cursor for the whole wheel, and the reason is a bug.
+   *
+   * Only the centre button carried `cursor: pointer`, which put a cursor
+   * BOUNDARY at its rim — and under the tilt that boundary moves: every
+   * frame the pod rotates, the button's projected footprint shifts a
+   * pixel or two, so a cursor resting near the edge crossed in and out of
+   * it continuously and the hand icon strobed.
+   *
+   * Chasing the hit-testing would be the wrong repair. The ring is a
+   * control too — it scrubs, and it has four tap zones — so there should
+   * not have been two cursors here in the first place. With one, there is
+   * no boundary left to flicker across.
+   */
+  cursor: pointer;
+}
+
+.glyph {
+  position: absolute;
+  color: var(--wheel-ink);
+  font: 600 calc(var(--pod-w) * 0.037) / 1 Helvetica, Arial, sans-serif;
+  user-select: none;
+  pointer-events: none;
+}
+.menu { top: 7.5%; left: 50%; transform: translateX(-50%); letter-spacing: 0.16em; }
+.prev { left: 8%; top: 50%; transform: translateY(-50%); }
+.next { right: 8%; top: 50%; transform: translateY(-50%); }
+.play { bottom: 7.5%; left: 50%; transform: translateX(-50%); }
+
+/* A real <button> now, so the UA's own border/padding/font have to go
+   before it can read as a moulded plastic disc. */
+.center {
+  appearance: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 33%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: linear-gradient(178deg, var(--btn-hi), var(--btn-lo));
+  /* Proud of the wheel by a hair: highlight on top, its own cast shadow
+     below, and a contact ring. */
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 1),
+    inset 0 -1px 1px rgba(0, 0, 0, 0.05),
+    0 0 0 0.5px rgba(0, 0, 0, 0.13),
+    0 1.5px 3px rgba(0, 0, 0, 0.16);
+  transition: transform 90ms ease, background 90ms ease, box-shadow 90ms ease;
+}
+/* Press: 1px down and the rim darkens — spec §4.3 */
+.center[data-press='1'] {
+  transform: translate(-50%, calc(-50% + 1px));
+  background: linear-gradient(178deg, #f4f4f5, #ededee);
+  /* Pressed in: the cast shadow collapses, which is what selling a press
+     actually depends on — the 1px move alone reads as a glitch. */
+  box-shadow:
+    inset 0 1.5px 2px rgba(0, 0, 0, 0.14),
+    0 0 0 0.5px rgba(0, 0, 0, 0.15),
+    0 0.5px 1px rgba(0, 0, 0, 0.1);
+}
+
+/* Focus ring as a thin glow on the wheel, not a browser box — spec §9.
+   Deliberately restrained: at 2px solid plus a 10px halo this read as a
+   painted blue ring on the object rather than a focus indicator. It still
+   clears 3:1 against the wheel for WCAG 1.4.11. */
+.wheel:focus-visible {
+  outline: none;
+  box-shadow:
+    inset 0 1px 1.5px rgba(255, 255, 255, 0.6),
+    0 0 0 1.5px rgba(72, 112, 205, 0.75);
+}
+
+/* ---- colourways ---------------------------------------------------
+ *
+ * Anodised aluminium, after the mini. Each one is four tokens: the face
+ * gradient's two ends, the wheel, and the centre button.
+ *
+ * Two rules make them read as anodised metal rather than as tinted
+ * plastic. The face runs light-to-dark vertically but stays SATURATED at
+ * both ends — a gradient that desaturates toward the bottom reads as
+ * paint. And the wheel is always far paler than the face, close to the
+ * white it actually was on those devices, because on the real object the
+ * wheel is a separate plastic part rather than more of the same shell.
+ * ------------------------------------------------------------------- */
+
+.pod[data-theme='blue'] {
+  --side: #3f6f8f;
+  --face-hi: #a8d4e8;
+  --face-lo: #5f9dc4;
+  --edge: rgba(38, 74, 100, 0.42);
+  --wheel: #e6ecf0;
+  --wheel-ink: #9fb3c0;
+  --btn-hi: #f6f9fb;
+  --btn-lo: #eaf0f4;
+}
+.pod[data-theme='blue'] .body {
+  background:
+    radial-gradient(140% 55% at 34% 0%, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0) 55%),
+    linear-gradient(90deg, rgba(30, 62, 88, 0.22) 0%, rgba(30, 62, 88, 0) 10%,
+                           rgba(30, 62, 88, 0) 90%, rgba(30, 62, 88, 0.26) 100%),
+    linear-gradient(180deg, #b6dcee 0%, #8dc0dc 38%, #6ba6c9 72%, #5591b8 100%);
+}
+
+.pod[data-theme='green'] {
+  --side: #5b7f42;
+  --face-hi: #c3dfa6;
+  --face-lo: #7da85c;
+  --edge: rgba(58, 82, 38, 0.42);
+  --wheel: #ebefe6;
+  --wheel-ink: #adbba0;
+  --btn-hi: #f8faf5;
+  --btn-lo: #eef2ea;
+}
+.pod[data-theme='green'] .body {
+  background:
+    radial-gradient(140% 55% at 34% 0%, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0) 55%),
+    linear-gradient(90deg, rgba(50, 72, 32, 0.22) 0%, rgba(50, 72, 32, 0) 10%,
+                           rgba(50, 72, 32, 0) 90%, rgba(50, 72, 32, 0.26) 100%),
+    linear-gradient(180deg, #cde5b3 0%, #a9cd88 38%, #8fb96c 72%, #79a459 100%);
+}
+
+.pod[data-theme='pink'] {
+  --side: #a86279;
+  --face-hi: #f2c3d2;
+  --face-lo: #d3849e;
+  --edge: rgba(112, 46, 68, 0.4);
+  --wheel: #f2eaed;
+  --wheel-ink: #c9adb6;
+  --btn-hi: #fbf6f8;
+  --btn-lo: #f4ecef;
+}
+.pod[data-theme='pink'] .body {
+  background:
+    radial-gradient(140% 55% at 34% 0%, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0) 55%),
+    linear-gradient(90deg, rgba(104, 42, 62, 0.2) 0%, rgba(104, 42, 62, 0) 10%,
+                           rgba(104, 42, 62, 0) 90%, rgba(104, 42, 62, 0.24) 100%),
+    linear-gradient(180deg, #f7d2de 0%, #e9adc1 38%, #dc95ac 72%, #cf839b 100%);
+}
+
+.pod[data-theme='gold'] {
+  --side: #9a7f4c;
+  --face-hi: #efdcb4;
+  --face-lo: #c9a86a;
+  --edge: rgba(96, 74, 34, 0.42);
+  --wheel: #f1ece1;
+  --wheel-ink: #c4b79c;
+  --btn-hi: #faf7f0;
+  --btn-lo: #f2ede2;
+}
+.pod[data-theme='gold'] .body {
+  background:
+    radial-gradient(140% 55% at 34% 0%, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0) 55%),
+    linear-gradient(90deg, rgba(88, 66, 28, 0.22) 0%, rgba(88, 66, 28, 0) 10%,
+                           rgba(88, 66, 28, 0) 90%, rgba(88, 66, 28, 0.26) 100%),
+    linear-gradient(180deg, #f4e3bf 0%, #dfc492 38%, #d0b177 72%, #c2a166 100%);
+}
+
+/* ---- black ---- */
+
+.pod[data-theme='black'] {
+  --side: #141416;
+  --face-hi: #2a2a2d;
+  --face-lo: #1b1b1e;
+  --edge: rgba(0, 0, 0, 0.55);
+  --wheel: #232326;
+  --wheel-ink: #55565a;
+  --btn-hi: #2e2e31;
+  --btn-lo: #232326;
+}
+.pod[data-theme='black'] .body {
+  background:
+    radial-gradient(140% 55% at 34% 0%, rgba(255, 255, 255, 0.13) 0%, rgba(255, 255, 255, 0) 55%),
+    linear-gradient(180deg, #2c2c2f 0%, #232326 60%, #1b1b1e 100%);
+}
+.pod[data-theme='black'] .lip {
+  box-shadow:
+    inset 1px 1px 0 rgba(255, 255, 255, 0.14),
+    inset -1px -1.5px 0 rgba(0, 0, 0, 0.6),
+    inset 0 0 0 1px rgba(0, 0, 0, 0.5);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .center { transition: none; }
+}

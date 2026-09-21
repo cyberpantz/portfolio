@@ -18,6 +18,14 @@ export interface Exploration {
 
 export const EXPLORATIONS: Exploration[] = [
   {
+    id: 'clickwheel',
+    name: 'Click Wheel',
+    type: 'Object',
+    tags: ['CSS', 'Canvas', 'Interaction', 'Audio'],
+    url: '/explorations/clickwheel',
+    desc: 'A recreation of the retro click-wheel iPod, drawn entirely in CSS and canvas — superellipse body, layered glass, a 176×132 one-bit screen. No images.',
+  },
+  {
     id: 'quizzolator',
     name: 'The Quizzolator',
     type: 'Game',

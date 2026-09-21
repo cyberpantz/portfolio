@@ -1,0 +1,58 @@
+{
+  "$comment": [
+    "Drop MP3s (or anything <audio> decodes) into public/audio/clickwheel/tracks/",
+    "and add a row here. Paths are site-absolute and PERCENT-ENCODED: several of",
+    "these filenames contain spaces and one contains an accented character, and a",
+    "raw space in a URL is not something every server or browser forgives.",
+    "",
+    "These tracks were written and titled by the site's author under the name",
+    "cyberpantz, and generated with Suno. Both halves matter: the prompting and",
+    "selection are his, the audio came out of a model. Recorded here so the",
+    "provenance travels with the files rather than living in someone's memory.",
+    "",
+    "Fetched at runtime, so adding a song is editing this file — no rebuild, and",
+    "the deck never enters the JS bundle.",
+    "",
+    "Only `title` and `src` are required. `duration` is in seconds and optional;",
+    "it lets the list show a length before the file has been touched. These were",
+    "read off the files with ffprobe."
+  ],
+  "tracks": [
+    {
+      "title": "Desert Riyaaz",
+      "artist": "cyberpantz",
+      "src": "/audio/clickwheel/tracks/Desert%20Riyaaz.mp3",
+      "duration": 480
+    },
+    {
+      "title": "Desert Roads, Same Drum",
+      "artist": "cyberpantz",
+      "src": "/audio/clickwheel/tracks/Desert%20Roads%2C%20Same%20Drum.mp3",
+      "duration": 163
+    },
+    {
+      "title": "Dumb Little World",
+      "artist": "cyberpantz",
+      "src": "/audio/clickwheel/tracks/Dumb%20Little%20World.mp3",
+      "duration": 245
+    },
+    {
+      "title": "Les Chèvres du Village",
+      "artist": "cyberpantz",
+      "src": "/audio/clickwheel/tracks/Les%20Che%CC%80vres%20du%20Village.mp3",
+      "duration": 163
+    },
+    {
+      "title": "Oystertime",
+      "artist": "cyberpantz",
+      "src": "/audio/clickwheel/tracks/Oystertime.mp3",
+      "duration": 170
+    },
+    {
+      "title": "South Van Ness Second Dinner",
+      "artist": "cyberpantz",
+      "src": "/audio/clickwheel/tracks/South%20Van%20Ness%20Second%20Dinner.mp3",
+      "duration": 147
+    }
+  ]
+}

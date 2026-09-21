@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Click wheel — static shell prototype (step 1)</title>
+<!--
+  Build-plan step 1: the static shell, per docs/clickwheel-player-spec.md §10.
+  "Don't proceed until this looks right; this is where most of the effort goes."
+
+  Open this and judge it against §8. Nothing here is wired to anything — it is
+  materials and geometry only.
+
+  THREE DELIBERATE DEVIATIONS FROM THE SPEC, all because the reference
+  photograph (white 3rd/4th-gen device) disagrees with §4, and the photo wins:
+
+    §4.1 "2-3px chrome bevel, conic-gradient border"
+         Dropped. On that device the chrome is the BACK. From the front it is
+         white polycarbonate with a soft lip. A conic metal ring around the
+         face would be a material that isn't there.
+
+    §4.1 "subtle vertical brushed texture"
+         Dropped. The face is glossy and smooth; a brush reads as aluminium.
+
+    §4.3 "ring #e3e4e6 ... a soft 1px tonal step"
+         Kept the intent but went further: in the photo the wheel is barely a
+         tone off the face, with no border and no shadow, and the centre
+         button is LIGHTER than the ring rather than a convex highlight
+         catcher. Spec §4.3 describes it as raised and catching a highlight;
+         the reference shows it flat and pale.
+
+  GEOMETRY is measured off the photograph, not estimated. The reference body
+  is 650x1100px, a ratio of 1.692, which 260x440 matches exactly. Everything
+  else is a percentage of that:
+
+    screen   top 4.7%   width 69.2%   height 33.6%
+    wheel    top 49.8%  diameter 60.8%
+    centre   33% of the wheel
+
+  OPEN ITEM: the real device screen is 5:4 (220x176). bootBlob.ts is 4:3
+  (176x132), and the well below is drawn at 180x148 to match the photo, which
+  is close to 5:4. Those need reconciling before the LCD renderer goes in —
+  either the raster changes or the well letterboxes.
+-->
+<style>
+  html,body{margin:0}
+  body{background:#e9e9ea;font-family:Helvetica,Arial,sans-serif}
+  .rig{display:flex;gap:40px;align-items:flex-start;padding:24px}
+
+  /* filter:drop-shadow follows the clip-path's alpha; box-shadow cannot,
+     and would draw a rectangle behind a squircle. Two layers: a tight
+     contact shadow and a broad ambient one. */
+  .pod{
+    --w:260px; --h:440px;
+    width:var(--w); height:var(--h); position:relative;
+    filter: drop-shadow(0 1px 1.5px rgba(28,28,34,.22))
+            drop-shadow(0 12px 26px rgba(28,28,34,.22));
+  }
+
+  /* Continuous ("squircle") corners: superellipse arcs at n=4.5, not the
+     circular arcs a plain border-radius would give. Generated at 260x440
+     with r=34. */
+  .pod__body,.pod__lip{
+    clip-path: path('M 226.00 0.00 L 236.52 0.04 L 240.29 0.15 L 243.08 0.35 L 245.36 0.62 L 247.31 0.97 L 249.01 1.40 L 250.52 1.92 L 251.87 2.51 L 253.08 3.20 L 254.17 3.98 L 255.15 4.85 L 256.02 5.83 L 256.80 6.92 L 257.49 8.13 L 258.08 9.48 L 258.60 10.99 L 259.03 12.69 L 259.38 14.64 L 259.65 16.92 L 259.85 19.71 L 259.96 23.48 L 260.00 34.00 L 260.00 406.00 L 259.96 416.52 L 259.85 420.29 L 259.65 423.08 L 259.38 425.36 L 259.03 427.31 L 258.60 429.01 L 258.08 430.52 L 257.49 431.87 L 256.80 433.08 L 256.02 434.17 L 255.15 435.15 L 254.17 436.02 L 253.08 436.80 L 251.87 437.49 L 250.52 438.08 L 249.01 438.60 L 247.31 439.03 L 245.36 439.38 L 243.08 439.65 L 240.29 439.85 L 236.52 439.96 L 226.00 440.00 L 34.00 440.00 L 23.48 439.96 L 19.71 439.85 L 16.92 439.65 L 14.64 439.38 L 12.69 439.03 L 10.99 438.60 L 9.48 438.08 L 8.13 437.49 L 6.92 436.80 L 5.83 436.02 L 4.85 435.15 L 3.98 434.17 L 3.20 433.08 L 2.51 431.87 L 1.92 430.52 L 1.40 429.01 L 0.97 427.31 L 0.62 425.36 L 0.35 423.08 L 0.15 420.29 L 0.04 416.52 L 0.00 406.00 L 0.00 34.00 L 0.04 23.48 L 0.15 19.71 L 0.35 16.92 L 0.62 14.64 L 0.97 12.69 L 1.40 10.99 L 1.92 9.48 L 2.51 8.13 L 3.20 6.92 L 3.98 5.83 L 4.85 4.85 L 5.83 3.98 L 6.92 3.20 L 8.13 2.51 L 9.48 1.92 L 10.99 1.40 L 12.69 0.97 L 14.64 0.62 L 16.92 0.35 L 19.71 0.15 L 23.48 0.04 Z');
+    position:absolute; inset:0;
+  }
+
+  /* Glossy white polycarbonate, lit from the top-left. The side gradient
+     is what stops it reading as a flat CSS card — the face turns away at
+     both edges. */
+  .pod__body{
+    background:
+      radial-gradient(140% 55% at 34% 0%, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 55%),
+      linear-gradient(90deg, rgba(178,182,190,.20) 0%, rgba(178,182,190,0) 9%,
+                             rgba(178,182,190,0) 91%, rgba(178,182,190,.24) 100%),
+      linear-gradient(180deg,#ffffff 0%,#fbfbfc 34%,#f6f6f8 64%,#eeeff2 87%,#e4e5e9 100%);
+  }
+  /* The soft plastic lip: bright along the top-left, shadowed bottom-right.
+     One light source, top-left — §8. */
+  .pod__lip{
+    pointer-events:none;
+    box-shadow:
+      inset 1px 1px 0 rgba(255,255,255,.98),
+      inset -1px -1.5px 0 rgba(154,158,166,.5),
+      inset 0 0 0 1px rgba(146,150,158,.26);
+  }
+
+  /* ---- screen ---------------------------------------------------- */
+  /* Dark frame + inner shadow so the glass sits BELOW the plastic. Without
+     the inset shadow it reads as a rectangle pasted on the face. */
+  .screen{
+    position:absolute; left:50%; transform:translateX(-50%);
+    top:21px; width:180px; height:148px;
+    background:#8d94a6; padding:1.5px; border-radius:1px;
+    box-shadow: inset 0 1.5px 2px rgba(20,24,40,.45),
+                0 1px 0 rgba(255,255,255,.95),
+                0 0 0 .5px rgba(120,126,142,.5);
+  }
+  .lcd{position:relative;width:100%;height:100%;overflow:hidden;
+    background:linear-gradient(180deg,#ced7ea 0%,#c4cfe6 55%,#bcc8e1 100%)}
+  .lcd__head{height:21px;display:flex;align-items:center;justify-content:center;
+    background:linear-gradient(180deg,#c4cde4,#b3bed9);
+    border-bottom:1px solid #838ca6;position:relative}
+  .lcd__title{font:700 13px/1 Helvetica,Arial;color:#252e69}
+  .batt{position:absolute;right:4px;top:6px;width:19px;height:9px;
+    border:1.5px solid #252e69;border-radius:1px}
+  .batt::after{content:'';position:absolute;right:-3.5px;top:2px;width:2px;height:3px;background:#252e69}
+  .batt i{position:absolute;inset:1px;background:#252e69;display:block}
+  .row{height:21px;display:flex;align-items:center;padding:0 5px;
+    font:700 13px/1 Helvetica,Arial;color:#252e69}
+  .row span{margin-left:auto}
+  .row--sel{background:#39418c;color:#e2e6f6}
+  /* Diagonal specular on the glass — §4.2 layer 5 */
+  .lcd__glass{position:absolute;inset:0;pointer-events:none;
+    background:linear-gradient(126deg, rgba(255,255,255,.36) 0%,
+                                       rgba(255,255,255,.12) 24%,
+                                       rgba(255,255,255,0) 44%)}
+
+  /* ---- wheel ------------------------------------------------------ */
+  .wheel{
+    position:absolute; left:50%; transform:translateX(-50%);
+    top:219px; width:158px; height:158px; border-radius:50%;
+    background:#dcdddf;
+    box-shadow: inset 0 1px 1.5px rgba(255,255,255,.6),
+                0 0 0 .5px rgba(176,179,186,.35);
+  }
+  .wheel b{position:absolute;color:#bcbdc0;font:600 9.5px/1 Helvetica,Arial;
+    letter-spacing:.16em;user-select:none}
+  .w-menu{top:12px;left:50%;transform:translateX(-50%)}
+  .w-prev{left:13px;top:50%;transform:translateY(-50%);font-size:12px;letter-spacing:0}
+  .w-next{right:13px;top:50%;transform:translateY(-50%);font-size:12px;letter-spacing:0}
+  .w-play{bottom:12px;left:50%;transform:translateX(-50%);font-size:12px;letter-spacing:0}
+  .center{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+    width:53px;height:53px;border-radius:50%;
+    background:linear-gradient(178deg,#fcfcfc,#f5f5f6);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,1), 0 0 0 .5px rgba(168,171,178,.30)}
+
+  .cap{font:600 11px/1 Helvetica,Arial;color:#7a7a7a;margin-top:14px;text-align:center}
+  .big{zoom:1.75;transform-origin:top left}
+</style>
+</head>
+<body>
+<div class="rig">
+  <div>
+    <div class="pod">
+      <div class="pod__body"></div><div class="pod__lip"></div>
+      <div class="screen"><div class="lcd">
+        <div class="lcd__head"><span class="lcd__title">Frank Young</span><span class="batt"><i></i></span></div>
+        <div class="row">Music <span>&#8250;</span></div>
+        <div class="row">Extras <span>&#8250;</span></div>
+        <div class="row">Settings <span>&#8250;</span></div>
+        <div class="row row--sel">Shuffle Songs</div>
+        <div class="row">Backlight</div>
+        <div class="lcd__glass"></div>
+      </div></div>
+      <div class="wheel">
+        <b class="w-menu">MENU</b><b class="w-prev">&#9668;&#9668;</b>
+        <b class="w-next">&#9658;&#9658;</b><b class="w-play">&#9658;&#10073;&#10073;</b>
+        <div class="center"></div>
+      </div>
+    </div>
+    <div class="cap">1&times;</div>
+  </div>
+
+  <div>
+    <div class="big">
+      <div class="pod">
+        <div class="pod__body"></div><div class="pod__lip"></div>
+        <div class="screen"><div class="lcd">
+          <div class="lcd__head"><span class="lcd__title">Frank Young</span><span class="batt"><i></i></span></div>
+          <div class="row">Music <span>&#8250;</span></div>
+          <div class="row">Extras <span>&#8250;</span></div>
+          <div class="row">Settings <span>&#8250;</span></div>
+          <div class="row row--sel">Shuffle Songs</div>
+          <div class="row">Backlight</div>
+          <div class="lcd__glass"></div>
+        </div></div>
+        <div class="wheel">
+          <b class="w-menu">MENU</b><b class="w-prev">&#9668;&#9668;</b>
+          <b class="w-next">&#9658;&#9658;</b><b class="w-play">&#9658;&#10073;&#10073;</b>
+          <div class="center"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
