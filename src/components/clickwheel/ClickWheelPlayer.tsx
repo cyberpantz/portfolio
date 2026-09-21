@@ -11,6 +11,7 @@ import Screen from './Screen';
 import { frameToState, currentRow, moveSelection, type Frame } from './lcd/tree';
 import { useWheelInput, type WheelButton } from './useWheelInput';
 import { useTilt } from './useTilt';
+import { ZONES } from './zones';
 import s from './ClickWheelPlayer.module.css';
 
 /**
@@ -154,6 +155,15 @@ export default function ClickWheelPlayer({
    * over a bright ground and a true zero swallowed the contrast.
    */
   const [backlight, setBacklight] = useState(0);
+  /*
+   * Which world clock is highlighted.
+   *
+   * Held here rather than inside ClockScreen because the WHEEL moves it,
+   * and the wheel handlers live at this level. ClockScreen derives its
+   * own scroll window from this, so the player never has to know how many
+   * rows fit on the screen.
+   */
+  const [clockSel, setClockSel] = useState(0);
 
   useEffect(() => {
     const t = setTimeout(() => setBooting(false), bootMs);
@@ -195,6 +205,12 @@ export default function ClickWheelPlayer({
     // 2% of the duration per tick, which is a usable scrub on a 3 minute
     // track and still fine on an 8 minute one.
     if (o === 'now') { audioRef.current.seekBy(dir * 0.02); return; }
+    // The clock list scrolls. Clamped rather than wrapping: a short list
+    // that loops makes it impossible to tell the ends apart.
+    if (o === 'clock') {
+      setClockSel((v) => Math.max(0, Math.min(ZONES.length - 1, v + dir)));
+      return;
+    }
     if (o) return;                            // other overlays ignore it
     setStack((st) => {
       const next = [...st];
@@ -330,7 +346,7 @@ export default function ClickWheelPlayer({
               It is a toy, not a loading state, and the boot screen wanted
               the banana. */}
           {!booting && overlay === 'blob' && <BootScreen message={message} />}
-          {!booting && overlay === 'clock' && <ClockScreen />}
+          {!booting && overlay === 'clock' && <ClockScreen selected={clockSel} />}
           {!booting && overlay === 'about' && <AboutScreen />}
           {!booting && overlay === 'now' && nowTrack && (
             <NowPlaying
