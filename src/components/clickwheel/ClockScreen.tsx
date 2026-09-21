@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { LCD_H, LCD_S, LCD_W } from './lcd/menu';
-import { clockRows, drawClockList, reconcileClocks } from './lcd/clockList';
+import { clockRows, drawClockDetail, drawClockList, reconcileClocks } from './lcd/clockList';
 
 /**
  * Extras > Clock.
@@ -16,10 +16,20 @@ import { clockRows, drawClockList, reconcileClocks } from './lcd/clockList';
  * row moves; the signature below covers both, which is why it carries the
  * rendered times rather than a timestamp.
  */
-export default function ClockScreen({ selected = 0 }: { selected?: number }) {
+export default function ClockScreen({
+  selected = 0,
+  detail = false,
+}: { selected?: number; detail?: boolean }) {
   const ref = useRef<HTMLCanvasElement>(null);
+  /*
+   * Both read through refs, because the draw loop is started once with an
+   * empty dependency list. Putting either in the deps would tear down and
+   * rebuild the canvas on every wheel tick.
+   */
   const sel = useRef(selected);
   sel.current = selected;
+  const det = useRef(detail);
+  det.current = detail;
 
   useEffect(() => {
     const el = ref.current;
@@ -49,9 +59,10 @@ export default function ClockScreen({ selected = 0 }: { selected?: number }) {
       const st = reconcileClocks(sel.current, scroll, rows.length);
       scroll = st.scroll;
 
-      const sig = `${st.selected}|${st.scroll}|${rows.map((r) => r.time + r.night).join(',')}`;
+      const sig = `${det.current}|${st.selected}|${st.scroll}|${rows.map((r) => r.time + r.night).join(',')}`;
       if (sig !== last) {
-        drawClockList(img, { rows, selected: st.selected, scroll: st.scroll }, LCD_S);
+        if (det.current) drawClockDetail(img, rows[st.selected], LCD_S);
+        else drawClockList(img, { rows, selected: st.selected, scroll: st.scroll }, LCD_S);
         ctx.putImageData(img, 0, 0);
         last = sig;
       }
@@ -70,9 +81,11 @@ export default function ClockScreen({ selected = 0 }: { selected?: number }) {
       style={{ width: '100%', height: '100%', imageRendering: 'pixelated', display: 'block' }}
       role="img"
       aria-label={
-        here
-          ? `World clocks. ${here.label}, ${here.time}, ${here.weekday} ${here.date}.`
-          : 'World clocks'
+        !here
+          ? 'World clocks'
+          : detail
+            ? `${here.label}. ${here.time}, ${here.weekday} ${here.date}.`
+            : `World clocks. ${here.label}, ${here.time}, ${here.weekday} ${here.date}. Press select to open.`
       }
       aria-live="polite"
     />

@@ -164,6 +164,16 @@ export default function ClickWheelPlayer({
    * rows fit on the screen.
    */
   const [clockSel, setClockSel] = useState(0);
+  /*
+   * Whether the highlighted clock is open full screen.
+   *
+   * A boolean beside the existing index rather than a second index: the
+   * detail screen shows whichever row is selected, so the wheel keeps
+   * moving that ONE selection and stepping through cities works inside
+   * the detail view for free, with the list already in the right place
+   * when MENU comes back to it.
+   */
+  const [clockDetail, setClockDetail] = useState(false);
 
   useEffect(() => {
     const t = setTimeout(() => setBooting(false), bootMs);
@@ -195,8 +205,8 @@ export default function ClickWheelPlayer({
    * also never call a setter from inside another setter's updater —
    * updaters must be pure, and StrictMode invokes them twice.
    */
-  const busy = useRef({ booting, overlay, frame, tracks });
-  busy.current = { booting, overlay, frame, tracks };
+  const busy = useRef({ booting, overlay, frame, tracks, clockDetail });
+  busy.current = { booting, overlay, frame, tracks, clockDetail };
 
   const onTick = useCallback((dir: 1 | -1) => {
     const { booting: b, overlay: o, tracks: tr } = busy.current;
@@ -226,7 +236,10 @@ export default function ClickWheelPlayer({
     if (btn === 'menu') {
       // Back out one level: overlay first, then up the stack. Never both.
       // Audio keeps playing — leaving Now Playing is navigation, not stop.
-      if (o) setOverlay(null);
+      // The clock is two levels deep, so its detail view pops before the
+      // overlay does — otherwise MENU would skip the list entirely.
+      if (o === 'clock' && busy.current.clockDetail) setClockDetail(false);
+      else if (o) setOverlay(null);
       else setStack((st) => (st.length > 1 ? st.slice(0, -1) : st));
       return;
     }
@@ -244,7 +257,11 @@ export default function ClickWheelPlayer({
     setPressed(true);
     setTimeout(() => setPressed(false), 110);
 
-    if (o) return;                            // centre does nothing inside an overlay
+    // The clock list is the one overlay with somewhere to go: centre opens
+    // the highlighted city full screen. Its rows draw a chevron, and a
+    // chevron that did nothing was the complaint this answers.
+    if (o === 'clock') { setClockDetail(true); return; }
+    if (o) return;                            // other overlays ignore the centre
     const row = currentRow(f, busy.current.tracks);
     if (!row?.go) return;                     // a row with nowhere to go stays put
 
@@ -254,6 +271,10 @@ export default function ClickWheelPlayer({
         setStack((st) => [...st, { node: go.node, selected: 0, scroll: 0 }]);
         break;
       case 'screen':
+        // Always enter the clock at the list. Landing straight back in a
+        // detail view because that is where you were last time reads as
+        // the menu having ignored the press.
+        if (go.screen === 'clock') setClockDetail(false);
         setOverlay(go.screen);
         break;
       case 'toggle':
@@ -346,7 +367,9 @@ export default function ClickWheelPlayer({
               It is a toy, not a loading state, and the boot screen wanted
               the banana. */}
           {!booting && overlay === 'blob' && <BootScreen message={message} />}
-          {!booting && overlay === 'clock' && <ClockScreen selected={clockSel} />}
+          {!booting && overlay === 'clock' && (
+            <ClockScreen selected={clockSel} detail={clockDetail} />
+          )}
           {!booting && overlay === 'about' && <AboutScreen />}
           {!booting && overlay === 'now' && nowTrack && (
             <NowPlaying

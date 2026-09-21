@@ -39,7 +39,11 @@ export const CLOCK_VISIBLE = Math.floor((LCD_H - HEAD_H) / CLOCK_ROW_H);
 const FACE_R = 12;
 const FACE_CX = 17;
 const TEXT_X = 34;
-const RIGHT_EDGE = LCD_W - 4;
+/*
+ * Pulled in from the edge to clear the chevron, which sits in the same
+ * right-hand slot the menu uses.
+ */
+const RIGHT_EDGE = LCD_W - 16;
 
 export type ClockRow = {
   label: string;
@@ -209,31 +213,44 @@ function line(img: ImageData, x0: number, y0: number, x1: number, y1: number, c:
  * has to stay visible against whichever ground it sits on.
  */
 function face(
-  img: ImageData, cx: number, cy: number, hour: number, minute: number,
+  img: ImageData, cx: number, cy: number, r: number, hour: number, minute: number,
   fg: Rgb, night: boolean, s: number
 ) {
   const interior = night ? PALETTE.ink : PALETTE.knock;
   const hands = night ? PALETTE.knock : PALETTE.ink;
 
-  disc(img, cx, cy, FACE_R, fg, s);
-  disc(img, cx, cy, FACE_R - 1, interior, s);
+  disc(img, cx, cy, r, fg, s);
+  disc(img, cx, cy, r - 1, interior, s);
+
+  /*
+   * Hour ticks, but only once there is room for them. At the list's 12px
+   * radius twelve marks close into a ring and the face turns into a
+   * doughnut; by 20 they read as marks.
+   */
+  if (r >= 20) {
+    for (let i = 0; i < 12; i++) {
+      const a = (i / 12) * Math.PI * 2;
+      fill(img, Math.round(cx + Math.sin(a) * (r - 3)),
+                Math.round(cy - Math.cos(a) * (r - 3)), 1, 1, hands, s);
+    }
+  }
 
   /*
    * 0 at twelve, growing clockwise — the same convention as the wheel.
    *
    * The hands differ in LENGTH rather than weight: at 25px across a
-   * two-pixel hour hand reads as a blob, not as a hand. 5 against 9 is
-   * roughly the 0.6 ratio a real dial uses, and it is the smallest gap
-   * at which the two are still tellable apart at a glance — 7 against
-   * 10, which this had first, just looked like a bent line.
+   * two-pixel hour hand reads as a blob, not as a hand. Expressed as
+   * fractions of the radius rather than as a fixed inset, because the
+   * detail screen draws this same face at more than twice the size and
+   * a constant inset would put the two hands almost level there.
    */
   const hand = (angle: number, len: number) => {
     line(img, cx, cy,
       Math.round(cx + Math.sin(angle) * len),
       Math.round(cy - Math.cos(angle) * len), hands, s);
   };
-  hand((((hour % 12) + minute / 60) / 12) * Math.PI * 2, FACE_R - 7);
-  hand((minute / 60) * Math.PI * 2, FACE_R - 3);
+  hand((((hour % 12) + minute / 60) / 12) * Math.PI * 2, Math.round(r * 0.5));
+  hand((minute / 60) * Math.PI * 2, Math.round(r * 0.78));
 }
 
 export function drawClockList(img: ImageData, state: ClockListState, scale = LCD_S) {
@@ -266,7 +283,7 @@ export function drawClockList(img: ImageData, state: ClockListState, scale = LCD
     // The face needs the raw numbers, not the formatted string.
     const [hh, mm] = r.time.replace(/\s*[AP]M$/i, '').split(':').map(Number);
     const h12 = r.time.toUpperCase().includes('PM') ? (hh % 12) + 12 : hh % 12;
-    face(img, FACE_CX, top + CLOCK_ROW_H / 2, h12, mm || 0, ink, r.night, scale);
+    face(img, FACE_CX, top + CLOCK_ROW_H / 2, FACE_R, h12, mm || 0, ink, r.night, scale);
 
     /*
      * The right column is measured FIRST and the city truncated to
@@ -282,5 +299,45 @@ export function drawClockList(img: ImageData, state: ClockListState, scale = LCD
 
     drawText(img, r.weekday, RIGHT_EDGE - measure(r.weekday), top + 3, ink, scale);
     drawText(img, r.date, RIGHT_EDGE - measure(r.date), top + 18, ink, scale);
+
+    // Same two-pixel diagonal drawMenu uses, so the two lists agree about
+    // what a chevron looks like. It is a promise there is a screen behind
+    // the row, and since the centre button opens one, it is kept.
+    const chx = LCD_W - 10;
+    const chy = top + Math.floor(CLOCK_ROW_H / 2);
+    for (let k = 0; k < 4; k++) {
+      fill(img, chx + k, chy - 4 + k, 2, 1, ink, scale);
+      fill(img, chx + k, chy + 3 - k, 2, 1, ink, scale);
+    }
   }
+}
+
+const DETAIL_TIME = 'bold 20px Helvetica, Arial, sans-serif';
+
+/**
+ * One clock, full screen — what the chevron on a list row opens.
+ *
+ * The city moves up into the header, where the list's title was, so the
+ * screen names itself the way every other screen here does. Below it the
+ * same face the list draws, at more than twice the radius and with hour
+ * marks, then the time and the date centred under it.
+ */
+export function drawClockDetail(img: ImageData, row: ClockRow, scale = LCD_S, battery = 0.72) {
+  fill(img, 0, 0, LCD_W, LCD_H, PALETTE.bg, scale);
+
+  fill(img, 0, 0, LCD_W, HEAD_H, PALETTE.bar, scale);
+  const tw = measure(row.label);
+  drawText(img, truncate(row.label, LCD_W - 60), Math.round((LCD_W - Math.min(tw, LCD_W - 60)) / 2), 4, PALETTE.knock, scale);
+  drawBattery(img, LCD_W - 26, 6, battery, PALETTE.knock, scale);
+  fill(img, 0, HEAD_H - 1, LCD_W, 1, PALETTE.rule, scale);
+
+  const [hh, mm] = row.time.replace(/\s*[AP]M$/i, '').split(':').map(Number);
+  const h12 = row.time.toUpperCase().includes('PM') ? (hh % 12) + 12 : hh % 12;
+  face(img, 88, 55, 28, h12, mm || 0, PALETTE.ink, row.night, scale);
+
+  const tWidth = measure(row.time, DETAIL_TIME);
+  drawText(img, row.time, Math.round((LCD_W - tWidth) / 2), 87, PALETTE.ink, scale, DETAIL_TIME);
+
+  const when = `${row.weekday} ${row.date}`;
+  drawText(img, when, Math.round((LCD_W - measure(when)) / 2), 110, PALETTE.rule, scale);
 }
