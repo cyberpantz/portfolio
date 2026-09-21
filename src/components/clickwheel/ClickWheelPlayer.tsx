@@ -18,8 +18,8 @@ import s from './ClickWheelPlayer.module.css';
  * Click-wheel player.
  *
  * A recreation of the white 3rd/4th-generation click-wheel iPod, drawn
- * from a photograph. No Apple wordmark, logo or menu copy ships in the
- * product UI.
+ * from a photograph. The boot mark is the original's; the menu copy is
+ * not, because the menus here lead somewhere different.
  *
  * Built so far (spec §10): the object, the wheel, the menus, the audio
  * engine and Now Playing. Still to come: the entrance timeline, dithered

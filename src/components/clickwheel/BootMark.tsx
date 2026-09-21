@@ -3,22 +3,24 @@ import { LCD_H, LCD_S, LCD_W, PALETTE } from './lcd/menu';
 import { MARK_H, MARK_W, markBits } from './lcd/mark';
 
 /**
- * The boot screen: a banana, scaling in with a bounce.
+ * The boot screen: the apple, scaling in with a bounce.
  *
- * Where the original showed a piece of fruit, this shows a different one.
- * It also keeps the screen clear of trade dress — the rule is no wordmark
- * and no logo, and a banana is emphatically neither.
+ * This is an homage piece on a personal site, not a product and not for
+ * sale, and the boot mark is the one moment the whole recreation is
+ * pointing at. A substitute fruit sat here for a while and read as a
+ * joke about the lawyers rather than as the thing being recreated.
  */
 
 const DURATION = 900;
 
 /*
- * Final size as a fraction of the raster mark. The mark is stored at
- * 212x208 device px, which on a 352x264 panel would fill 60% of the width
- * at 1.0 — too big for a boot logo, which should sit in the middle of the
- * screen with air around it rather than press against the bezel.
+ * Final size as a fraction of the raster mark. The apple is stored at
+ * 167x185 device px and is taller than it is wide, so HEIGHT is the
+ * binding constraint on a 352x264 panel: 0.75 puts it at 139px, a little
+ * over half the panel, which is where the previous mark sat and leaves
+ * air on every side rather than pressing against the bezel.
  */
-const MARK_SCALE = 0.68;
+const MARK_SCALE = 0.75;
 
 /**
  * Penner's ease-out-bounce. Four parabolic arcs of decreasing height,

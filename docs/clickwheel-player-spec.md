@@ -2,7 +2,7 @@
 
 Portfolio exploration: a retro click-wheel music player built as a React island for an Astro site. TypeScript, no UI libraries, no runtime CSS-in-JS — the visual work is all CSS modules + one canvas. The goal is a component that looks like a photographed object, not a flat illustration — if it can't hit that bar, it isn't worth shipping.
 
-A note on trade dress: this is *inspired by* the classic click-wheel player, not a replica. No Apple logo, wordmark, or menu copy. The boot screen shows your own mark. Proportions and materials are original interpretations.
+A note on trade dress: this is an homage on a personal site — not a product, not for sale, not passing itself off as one. The boot mark is the original's, because it is the moment the whole recreation is pointing at and a substitute fruit read as a joke about lawyers rather than as the thing being recreated. The menu copy is not the original's, since these menus lead somewhere different. Proportions and materials are original interpretations.
 
 ---
 
