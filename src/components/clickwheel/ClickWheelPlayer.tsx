@@ -99,7 +99,7 @@ function squirclePath(w: number, h: number, r: number, n = 4.5, seg = 32) {
 export default function ClickWheelPlayer({
   width = 256,
   theme = 'blue',
-  message = 'TWERKALIZING... PLEASE WAIT',
+  message = 'TWERKALIZING...',
   clicks = true,
   bootMs = 2600,
   degreesPerTick = 20,

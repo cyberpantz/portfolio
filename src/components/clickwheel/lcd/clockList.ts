@@ -244,13 +244,27 @@ function face(
    * detail screen draws this same face at more than twice the size and
    * a constant inset would put the two hands almost level there.
    */
-  const hand = (angle: number, len: number) => {
-    line(img, cx, cy,
-      Math.round(cx + Math.sin(angle) * len),
-      Math.round(cy - Math.cos(angle) * len), hands, s);
+  const hand = (angle: number, len: number, weight: number) => {
+    const x1 = Math.round(cx + Math.sin(angle) * len);
+    const y1 = Math.round(cy - Math.cos(angle) * len);
+    /*
+     * Thicken ACROSS the hand, never along it. The offset goes on the
+     * axis the hand travels least in — sideways for an upright hand,
+     * vertically for a flat one — because offsetting along the dominant
+     * axis just draws the same hand a pixel longer.
+     */
+    const upright = Math.abs(y1 - cy) > Math.abs(x1 - cx);
+    for (let k = 0; k < weight; k++) {
+      const ox = upright ? k : 0;
+      const oy = upright ? 0 : k;
+      line(img, cx + ox, cy + oy, x1 + ox, y1 + oy, hands, s);
+    }
   };
-  hand((((hour % 12) + minute / 60) / 12) * Math.PI * 2, Math.round(r * 0.5));
-  hand((minute / 60) * Math.PI * 2, Math.round(r * 0.78));
+  // The hour hand carries the extra weight on a big face, as a real dial
+  // does. On the list's 12px face there is no room for the distinction,
+  // and three pixels there closes the gap between the hands entirely.
+  hand((((hour % 12) + minute / 60) / 12) * Math.PI * 2, Math.round(r * 0.5), r >= 20 ? 3 : 2);
+  hand((minute / 60) * Math.PI * 2, Math.round(r * 0.78), 2);
 }
 
 export function drawClockList(img: ImageData, state: ClockListState, scale = LCD_S) {
