@@ -327,7 +327,29 @@
 .wheel {
   position: absolute;
   left: 50%;
-  transform: translateX(-50%);
+  /*
+   * translateZ is not decoration — it is what makes the wheel clickable.
+   *
+   * .pod is transform-style: preserve-3d, so every descendant is a quad
+   * in one 3D space. At z: 0 the wheel is EXACTLY coplanar with .body,
+   * and useTilt rewrites --rx/--ry on .pod every frame, which re-rasters
+   * that layer and re-sorts the depth tie between the two quads. The tie
+   * broke differently frame to frame: measured at the centre button's
+   * own midpoint, hit testing alternated between the button and .body on
+   * roughly a third of frames, with the button's rect completely static.
+   *
+   * Two symptoms, one cause. The cursor strobed between the hand and the
+   * arrow wherever a control sat over the body, and a press whose
+   * pointerdown and pointerup fell on opposite sides of a flip produced
+   * no click event at all — the centre button visibly depressed and did
+   * nothing, so it took a second press. It missed 9 clicks in 20.
+   *
+   * 1px of separation ends the tie. Under the 1792px perspective that is
+   * a 1.0006 scale on the wheel, about 0.09px — invisible, and the wheel
+   * is a plastic disc set into the face, so a hair of depth is true to
+   * the object anyway.
+   */
+  transform: translateX(-50%) translateZ(1px);
   top: 49.8%;
   width: 60.8%;
   aspect-ratio: 1;
@@ -343,18 +365,14 @@
     0 1px 2px rgba(0, 0, 0, 0.1);
   touch-action: none;
   /*
-   * One cursor for the whole wheel, and the reason is a bug.
+   * One cursor for the whole wheel: the ring is a control too — it
+   * scrubs, and it carries four tap zones — so it and the centre button
+   * should never have read as different kinds of thing.
    *
-   * Only the centre button carried `cursor: pointer`, which put a cursor
-   * BOUNDARY at its rim — and under the tilt that boundary moves: every
-   * frame the pod rotates, the button's projected footprint shifts a
-   * pixel or two, so a cursor resting near the edge crossed in and out of
-   * it continuously and the hand icon strobed.
-   *
-   * Chasing the hit-testing would be the wrong repair. The ring is a
-   * control too — it scrubs, and it has four tap zones — so there should
-   * not have been two cursors here in the first place. With one, there is
-   * no boundary left to flicker across.
+   * This was once believed to be the fix for the strobing cursor, on the
+   * theory that the button's rim was a moving boundary. It was not: the
+   * geometry never moved, and the strobe outlived this rule. See the
+   * translateZ above for the actual cause. Worth keeping regardless.
    */
   cursor: pointer;
 }
