@@ -68,7 +68,62 @@ function centred(img: ImageData, str: string, y: number, c: Rgb, s: number, pad 
   drawText(img, t, Math.round((LCD_W - measure(t)) / 2), y, c, s);
 }
 
-export function drawNowPlaying(img: ImageData, st: NowPlayingState, scale = 2) {
+/** Text height to mask when the title slides — the 12px face rasterises to 20. */
+const LINE_H = 20;
+
+/**
+ * How far a too-long title has slid left, in pixels, at time `t`.
+ *
+ * Hold at the start, run left until the last character is flush with the
+ * right edge, hold again, then run back. It never wraps and never shows
+ * two copies of the string: the real device eased out and back, and a
+ * looping banner reads as a web page rather than as a device.
+ *
+ * Pure and exported so the timing can be asserted without a canvas. The
+ * contract that matters: 0 while it fits, never negative, and never more
+ * than `textW - room`, because past that the title has left the screen.
+ */
+export function marqueeOffset(
+  textW: number, room: number, t: number, hold = 1200, speed = 22
+): number {
+  const over = textW - room;
+  if (over <= 0) return 0;
+  const travel = (over / speed) * 1000;
+  const period = hold * 2 + travel * 2;
+  const p = ((t % period) + period) % period;
+  if (p < hold) return 0;                                   // hold at the head
+  if (p < hold + travel) return ((p - hold) / travel) * over;         // out
+  if (p < hold * 2 + travel) return over;                   // hold at the tail
+  return over - ((p - hold * 2 - travel) / travel) * over;            // back
+}
+
+/**
+ * The title line: centred when it fits, sliding when it does not.
+ *
+ * Only the title. The spec is explicit about that, and it is right —
+ * artist and album sliding at the same time turns a calm screen into a
+ * departures board.
+ */
+function titleLine(
+  img: ImageData, str: string, y: number, c: Rgb, s: number, t: number, pad = 8
+) {
+  const room = LCD_W - pad * 2;
+  const w = measure(str);
+  if (w <= room) {
+    drawText(img, str, Math.round((LCD_W - w) / 2), y, c, s);
+    return;
+  }
+  drawText(img, str, Math.round(pad - marqueeOffset(w, room, t)), y, c, s);
+  /*
+   * Mask the margins AFTER drawing. drawText clips to the canvas, not to
+   * a column, so without this the sliding title runs out under the
+   * battery and the n-of-m line instead of disappearing at its own edge.
+   */
+  fill(img, 0, y, pad, LINE_H, PALETTE.bg, s);
+  fill(img, LCD_W - pad, y, pad, LINE_H, PALETTE.bg, s);
+}
+
+export function drawNowPlaying(img: ImageData, st: NowPlayingState, scale = 2, t = 0) {
   const {
     track, index, total, elapsed, duration, playing, buffered,
     source, battery = 0.72, error = null, loading = false,
@@ -91,7 +146,7 @@ export function drawNowPlaying(img: ImageData, st: NowPlayingState, scale = 2) {
 
   // ---- title / artist / album, centred ----
   let y = HEAD_H + 24;
-  centred(img, track.title, y, PALETTE.ink, scale);
+  titleLine(img, track.title, y, PALETTE.ink, scale, t);
   if (track.artist) {
     y += 19;
     centred(img, track.artist, y, PALETTE.ink, scale);

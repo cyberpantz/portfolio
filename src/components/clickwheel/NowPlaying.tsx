@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { LCD_H, LCD_S, LCD_W } from './lcd/menu';
-import { drawNowPlaying, type NowPlayingState } from './lcd/nowPlaying';
+import { measure } from './lcd/text';
+import { drawNowPlaying, marqueeOffset, type NowPlayingState } from './lcd/nowPlaying';
 
 /**
  * Now Playing.
@@ -28,8 +29,22 @@ export default function NowPlaying({ state }: { state: NowPlayingState }) {
 
     let raf = 0;
     let last = '';
+    /*
+     * measure() is a canvas measureText, so the title's width is cached
+     * until the title itself changes rather than remeasured every frame.
+     */
+    let titleOf = '';
+    let titleW = 0;
     const draw = () => {
       const s = st.current;
+      if (s.track.title !== titleOf) {
+        titleOf = s.track.title;
+        titleW = measure(titleOf);
+      }
+      const now = performance.now();
+      // Quantised to whole pixels: the marquee should wake the redraw when
+      // the title actually MOVES, not sixty times a second while it eases.
+      const slide = Math.round(marqueeOffset(titleW, LCD_W - 16, now));
       const sig = [
         s.track.src, s.index, s.total, s.playing,
         Math.floor(s.elapsed), Math.round(s.duration),
@@ -38,9 +53,11 @@ export default function NowPlaying({ state }: { state: NowPlayingState }) {
         // the menu's checkmark went missing: the state changed, the
         // picture did not.
         s.error, s.loading,
+        // Drawn, therefore in the key — same reason as the two above.
+        slide,
       ].join('|');
       if (sig !== last) {
-        drawNowPlaying(img, s, LCD_S);
+        drawNowPlaying(img, s, LCD_S, now);
         ctx.putImageData(img, 0, 0);
         last = sig;
       }

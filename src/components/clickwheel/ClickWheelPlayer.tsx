@@ -22,8 +22,8 @@ import s from './ClickWheelPlayer.module.css';
  * not, because the menus here lead somewhere different.
  *
  * Built so far (spec §10): the object, the wheel, the menus, the audio
- * engine and Now Playing. Still to come: the entrance timeline, dithered
- * album art, and the marquee for long titles.
+ * engine, Now Playing with its title marquee, and the world clocks.
+ * Still to come: the entrance timeline and dithered album art.
  */
 
 export type ClickWheelPlayerProps = {
