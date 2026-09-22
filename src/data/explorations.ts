@@ -1,3 +1,12 @@
+import type { ImageMetadata } from 'astro';
+
+import clickwheelCover from '../assets/explorations/clickwheel.png';
+import weatherVibeCover from '../assets/explorations/weather-vibe.png';
+import fowlPlayCover from '../assets/explorations/kitchen-dodgeball.png';
+import wageGapCover from '../assets/explorations/wage-gap.png';
+import quizzolatorCover from '../assets/explorations/quizzolator.png';
+import patternMatchCover from '../assets/explorations/pattern-match.png';
+
 export interface Exploration {
   id: string;
   name: string;
@@ -14,6 +23,16 @@ export interface Exploration {
   hidden?: boolean;
   /** Warn on small screens where the experiment needs room. */
   needsRoom?: boolean;
+  /**
+   * Thumbnail, captured from the live experiment by `pnpm shots`.
+   *
+   * Imported rather than pointed at public/ so astro:assets optimises it
+   * into responsive webp at build. Composed windows on one characteristic
+   * moment, not whole-page screenshots — at card width a full page is
+   * mush, which is the same conclusion projectsV2 reached about covers.
+   */
+  cover?: ImageMetadata;
+  coverAlt?: string;
 }
 
 export const EXPLORATIONS: Exploration[] = [
@@ -24,6 +43,9 @@ export const EXPLORATIONS: Exploration[] = [
     tags: ['CSS', 'Canvas', 'Interaction', 'Audio'],
     url: '/explorations/clickwheel',
     desc: 'A recreation of the retro click-wheel iPod, drawn entirely in CSS and canvas — superellipse body, layered glass, a 176×132 one-bit screen. No images.',
+    cover: clickwheelCover,
+    coverAlt:
+      'The recreated click-wheel iPod on a dark ground, its screen showing a track playing.',
   },
   {
     id: 'quizzolator',
@@ -32,6 +54,9 @@ export const EXPLORATIONS: Exploration[] = [
     tags: ['Framer Motion', 'React', 'Interaction', 'A11y'],
     url: '/explorations/quizzolator',
     desc: 'A quiz engine built around its transitions — staggered springs, one question at a time. ',
+    cover: quizzolatorCover,
+    coverAlt:
+      'A typography question asking which of two words was kerned, with both specimens shown.',
   },
   {
     id: 'pattern-match',
@@ -40,6 +65,9 @@ export const EXPLORATIONS: Exploration[] = [
     tags: ['Game', 'AudioContext', 'React'],
     url: '/explorations/pattern-match',
     desc: 'Colour and sound sequence memory, after the 1980s Simon. Each colour generates its tone through the AudioContext API rather than playing a file.',
+    cover: patternMatchCover,
+    coverAlt:
+      'A grid of six coloured shape cards, one highlighted, partway through a round.',
   },
   {
     id: 'wage-gap',
@@ -48,6 +76,9 @@ export const EXPLORATIONS: Exploration[] = [
     tags: ['Audio', 'React', 'Data'],
     url: '/explorations/wage-gap',
     desc: 'Enter your hourly rate and watch the money stack up in real time, against the national average and against Elon Musk.',
+    cover: wageGapCover,
+    coverAlt:
+      'A flip counter of earnings climbing beside figures comparing it to the median worker and to Elon Musk.',
   },
   {
     id: 'weather-vibe',
@@ -56,6 +87,9 @@ export const EXPLORATIONS: Exploration[] = [
     tags: ['WebGL', 'Three.js', 'Shaders', 'Web Audio'],
     url: '/explorations/weather-vibe',
     desc: 'A vibe-coded meditative 3D scene that changes with the weather for the current location. Open source ambient soundscapes and shaders for rain, fog and golden hour.',
+    cover: weatherVibeCover,
+    coverAlt:
+      'A low-poly San Francisco street canyon under overcast light, looking toward a distant spire.',
     needsRoom: true,
   },
   // {
@@ -75,6 +109,9 @@ export const EXPLORATIONS: Exploration[] = [
     tags: ['Game', 'Canvas', 'React'],
     url: '/explorations/kitchen-dodgeball',
     desc: 'Hilarious result of late night vibe coding. Dodge falling kitchen items thrown by menacing chickens. Progressively harder waves, and boss fowl that do not play fair. ',
+    cover: fowlPlayCover,
+    coverAlt:
+      'A dark play field with eggs falling toward a chef at the bottom of the screen.',
     needsRoom: true,
   },
 ];
