@@ -165,6 +165,8 @@ const RECIPES = {
      */
     height: 240,
     shiftY: 30,
+    // 320x240 at 5x = 1600x1200, matching the rest of the set.
+    scale: 5,
     async drive(page) {
       await page.waitForTimeout(1200);
     },
@@ -270,7 +272,13 @@ for (const id of ids) {
      * window can hold whole.
      */
     viewport: recipe.viewport ?? { width: 1280, height: 800 },
-    deviceScaleFactor: 2,
+    /*
+     * 2 suits a crop that is already ~800 CSS px wide. A tight crop needs
+     * more: Fowl Play's window is only 320 CSS px across, which at 2 gave
+     * a 640px source — below the 840px variant astro:assets is asked to
+     * emit, so that card shipped soft while every other one was sharp.
+     */
+    deviceScaleFactor: recipe.scale ?? 2,
     // Weather Vibe resolves a real city from this. Without the grant it
     // waits on a permission prompt that never arrives in headless.
     permissions: ['geolocation'],

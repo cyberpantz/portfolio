@@ -179,9 +179,11 @@ const pad = (i: number) => String(i + 1).padStart(2, '0');
    * The zoom is on the IMAGE, inside the frame's overflow, so the tile's
    * edge stays a crisp rectangle while the picture breathes.
    *
-   * Rest is muted, not monochrome. Full grayscale killed the one vivid
-   * thumbnail in the grid, which is the card doing the most work to make
-   * the section look alive.
+   * Rest is nearly monochrome — 0.88, not a token 0.5. The point of the
+   * hover is that colour ARRIVES, and a rest state that already has most
+   * of its colour leaves the reveal nothing to do. Stopping just short
+   * of 1.0 keeps a trace of hue in the one vivid tile so the grid does
+   * not read as a contact sheet.
    */
   .exp-thumb {
     transition:
@@ -206,7 +208,7 @@ const pad = (i: number) => String(i + 1).padStart(2, '0');
    * window across the picture while the frame stays still.
    */
   .exp-thumb :global(img) {
-    filter: grayscale(0.5) brightness(0.84) contrast(1.04);
+    filter: grayscale(0.88) brightness(0.7) contrast(1.06);
     transform: scale(1) translate(0%, 0%);
     transition:
       filter 640ms cubic-bezier(0.22, 0.8, 0.22, 1),
