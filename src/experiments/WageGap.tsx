@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import { useState, useEffect, useLayoutEffect, useRef, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Pencil, Pause, Play } from 'lucide-react';
 import {
@@ -171,16 +171,27 @@ function FlipDigit({ value, cellW }: { value: string; cellW: number }) {
   );
 }
 
-function EarningsDisplay({ earnings }: { earnings: number }) {
-  const [cellW, setCellW] = useState(() =>
+function EarningsDisplay({ earnings, scale = 1 }: { earnings: number; scale?: number }) {
+  const [baseW, setBaseW] = useState(() =>
     typeof window !== 'undefined' ? computeCellW(window.innerWidth - 48) : CELL_W_MAX
   );
 
   useEffect(() => {
-    const update = () => setCellW(computeCellW(window.innerWidth - 48));
+    const update = () => setBaseW(computeCellW(window.innerWidth - 48));
     window.addEventListener('resize', update);
     return () => window.removeEventListener('resize', update);
   }, []);
+
+  /*
+   * Scaled by rank, with a floor.
+   *
+   * The counter sits in a ladder now and takes the size its POSITION
+   * implies, so landing near the bottom genuinely looks small — that is
+   * the argument the piece is making. Truly proportional would be
+   * useless: against Musk's rate a minimum-wage counter works out under
+   * a pixel tall, so 26 is the smallest that still reads as digits.
+   */
+  const cellW = Math.max(26, Math.round(baseW * scale));
 
   const cellH         = Math.round(cellW * (CELL_H_MAX / CELL_W_MAX));
   const separatorSize = Math.round(cellW * (76 / CELL_W_MAX));
@@ -193,7 +204,9 @@ function EarningsDisplay({ earnings }: { earnings: number }) {
   const fracDigits = frac.split('');
 
   return (
-    <div className="flex justify-center">
+    /* Left-aligned: it sits in a ladder now, and a centred counter among
+       left-aligned rows reads as a different component that wandered in. */
+    <div className="flex">
       <div className="flex items-center" style={{ gap: outerGap }}>
         <span className="font-mono font-bold text-exp-base select-none" style={{ fontSize: separatorSize, lineHeight: `${cellH}px` }}>$</span>
         <div className="flex" style={{ gap: innerGap }}>
@@ -267,6 +280,48 @@ const MEDIAN_WAGE = 31.28; // BLS Q2 2026: $1,251/wk ÷ 40
 const ELON_RATE    = 46_124_829; // $269B YTD ÷ 243 days ÷ 24h, Bloomberg 31 Aug 2026
 const MIN_WAGE     = 7.25;       // US federal minimum, unchanged since 2009
 const MEDIAN_LABEL = 'US Median Worker';
+
+export type LadderRow = { id: 'elon' | 'you' | 'median' | 'min'; label: string; rate: number };
+
+/**
+ * Everyone on screen, richest first, with YOU slotted in by rate.
+ *
+ * A sort rather than a chain of conditionals, which is what makes all
+ * FOUR positions fall out for free: above Musk, between Musk and the
+ * median, between the median and the minimum, and below the minimum.
+ * The third is the one that matters most — someone on $12 an hour lands
+ * under the median and over the minimum, and being placed there is the
+ * sharpest thing this piece does.
+ */
+export function ladderRows(wage: number): LadderRow[] {
+  return [
+    { id: 'elon',   label: 'Elon Musk',          rate: ELON_RATE },
+    { id: 'you',    label: 'You',                rate: wage },
+    { id: 'median', label: MEDIAN_LABEL,         rate: MEDIAN_WAGE },
+    { id: 'min',    label: 'Federal Min. Wage',  rate: MIN_WAGE },
+  ].sort((a, b) => b.rate - a.rate) as LadderRow[];
+}
+
+/** Where `wage` lands in the ladder, 0 = top. */
+export const slotFor = (wage: number) => ladderRows(wage).findIndex(r => r.id === 'you');
+
+/**
+ * A rate's position on the ladder, 0 (minimum) to 1 (Musk), logarithmic.
+ *
+ * Linear is meaningless at this spread: on a straight scale every human
+ * wage collapses onto the same point and only Musk has any height. Log
+ * is the only mapping where the difference between $7.25 and $31 is
+ * still visible on the same axis as $46 million.
+ */
+export function rankScale(rate: number): number {
+  const lo = Math.log10(MIN_WAGE);
+  const hi = Math.log10(ELON_RATE);
+  const t = (Math.log10(Math.max(rate, 0.01)) - lo) / (hi - lo);
+  return Math.max(0, Math.min(1, t));
+}
+
+/** Type size for a ladder row's amount, in rem. */
+export const remFor = (rate: number) => 1.15 + rankScale(rate) * 2.45;
 
 // ---------- helpers ----------
 
@@ -701,6 +756,20 @@ export default function WageGap() {
   const [paused, setPaused] = useState(false);
   const [showElonInfo, setShowElonInfo] = useState(false);
 
+  /*
+   * Has a wage been committed yet?
+   *
+   * Seeded from localStorage, so a returning visitor is not asked again —
+   * they land straight in the ladder with their rate already in place.
+   */
+  const [placed, setPlaced] = useState(() => savedWage() !== null);
+
+  const youRowRef   = useRef<HTMLDivElement>(null);
+  const inputBoxRef = useRef<HTMLDivElement>(null);
+  /** Where the counter animates FROM: the input's rect at the moment of commit. */
+  const flipFrom    = useRef<DOMRect | null>(null);
+  const prevSlot    = useRef<number | null>(null);
+
   const startRef    = useRef<number>(Date.now());
   const lastTenRef  = useRef<number>(0);
   const pausedAtRef = useRef<number | null>(null); // elapsed ms when paused
@@ -749,6 +818,72 @@ export default function WageGap() {
       }
     }, 100);
   }, []);
+
+  const rows     = ladderRows(wage);
+  const slot     = rows.findIndex(r => r.id === 'you');
+  // Counter size follows the same log rank as every other amount, floored
+  // by EarningsDisplay so the digits stay readable at the bottom.
+  const youScale = 0.42 + rankScale(wage) * 0.55;
+
+  const commitWage = useCallback(() => {
+    const v = parseFloat(inputWage);
+    if (isNaN(v) || v <= 0) return;
+    // Measure BEFORE the layout changes — this rect is the animation's start.
+    flipFrom.current = inputBoxRef.current?.getBoundingClientRect() ?? null;
+    try { localStorage.setItem(WAGE_KEY, String(v)); } catch {}
+    setWage(v);
+    setPlaced(true);
+    startTimer(v);
+  }, [inputWage, startTimer]);
+
+  /*
+   * FLIP: play the counter into its slot.
+   *
+   * Runs on placement and again whenever the wage crosses a boundary and
+   * moves you in the ladder, so editing your rate down past the median
+   * visibly drops you a rung — the edit path reuses the entrance instead
+   * of needing an idea of its own.
+   *
+   * useLayoutEffect, not useEffect: the end rect has to be read after the
+   * DOM updates but before the browser paints, or the counter is visible
+   * in its final position for a frame before the animation starts.
+   */
+  useLayoutEffect(() => {
+    if (!placed) return;
+    const el = youRowRef.current;
+    if (!el) return;
+
+    const was = prevSlot.current;
+    prevSlot.current = slot;
+    const from  = flipFrom.current;
+    const moved = was !== null && was !== slot;
+    if (!from && !moved) return;
+    flipFrom.current = null;
+
+    if (typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      el.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 220, easing: 'linear' });
+      return;
+    }
+
+    const to = el.getBoundingClientRect();
+    let dx = 0, dy = 0, sc = 1;
+    if (from) {
+      dx = from.left + from.width / 2 - (to.left + to.width / 2);
+      dy = from.top + from.height / 2 - (to.top + to.height / 2);
+      sc = Math.max(0.5, Math.min(2.2, from.width / Math.max(to.width, 1)));
+    } else {
+      // No start rect: this is a re-rank, so come from the side you left.
+      dy = (was as number) < slot ? -64 : 64;
+    }
+
+    el.animate(
+      [
+        { transform: `translate(${dx}px, ${dy}px) scale(${sc})`, opacity: 0.2 },
+        { transform: 'translate(0px, 0px) scale(1)', opacity: 1 },
+      ],
+      { duration: from ? 760 : 520, easing: 'cubic-bezier(0.22, 0.8, 0.22, 1)' }
+    );
+  }, [placed, slot]);
 
   const initialWage = useRef(wage);
   useEffect(() => {
@@ -853,63 +988,32 @@ export default function WageGap() {
 
       {/* ── Body ── */}
       {view === 'counter' ? (
-        <div className="flex flex-col sm:flex-row flex-1 min-h-0">
+        /*
+         * A LADDER, not two columns.
+         *
+         * The old layout put your counter on the left and everyone else
+         * on the right, which gave the page two competing focal points —
+         * and Musk's number, being larger, won. Worse, the three amounts
+         * were set at roughly the same size, so a layout about disparity
+         * rendered a 5,800,000:1 gap as about 1.3:1.
+         *
+         * Now everyone sits in one column ordered by rate, each amount
+         * sized by where it falls on a log scale, and you are placed
+         * among them. The hierarchy IS the argument.
+         */
+        <div className="relative flex-1 min-h-0 overflow-y-auto">
+          <div className="mx-auto w-full max-w-3xl px-6 py-10 sm:px-10 sm:py-14">
 
-          {/* Left: your counter */}
-          <div className="sm:w-[44%] flex flex-col items-center justify-center gap-8 p-6 sm:p-12 border-b sm:border-b-0 sm:border-r border-white/10">
-            <p className="font-mono text-exp-label uppercase tracking-[0.3em] text-exp-muted">
-              you've earned
-            </p>
-
-            <div className="relative">
-              <EarningsDisplay earnings={earnings} />
-              <div className="absolute inset-0" style={{ overflow: 'visible', pointerEvents: 'none' }}>
-                {coins.map(coin => <CoinParticle key={coin.id} {...coin} />)}
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <button
-                onClick={e => { e.stopPropagation(); setInputWage(wage.toFixed(2)); setEditingWage(true); }}
-                className="flex items-center gap-1.5 border border-white/15 rounded px-2.5 py-1.5 text-exp-muted hover:text-exp-bright hover:border-white/30 transition-colors cursor-pointer"
+            {rows.map((row, i) => (
+              <div
+                key={row.id}
+                ref={row.id === 'you' ? youRowRef : undefined}
+                className={`py-7 ${i ? 'border-t border-white/10' : ''} ${
+                  placed ? '' : row.id === 'you' ? 'invisible' : 'opacity-30'
+                }`}
               >
-                <Pencil size={12} strokeWidth={1.5} />
-                <span className="font-mono text-exp-label tracking-[0.06em]">${wage.toFixed(2)}/hr</span>
-              </button>
-              <button
-                onClick={e => { e.stopPropagation(); togglePause(); }}
-                className="flex items-center gap-1.5 border border-white/15 rounded px-2.5 py-1.5 text-exp-muted hover:text-exp-bright hover:border-white/30 transition-colors cursor-pointer"
-                title={paused ? 'Resume' : 'Pause'}
-              >
-                {paused ? <Play size={12} strokeWidth={1.5} /> : <Pause size={12} strokeWidth={1.5} />}
-                <span className="font-mono text-exp-label tracking-[0.06em]">{paused ? 'resume' : 'pause'}</span>
-              </button>
-            </div>
-
-            <p className="font-mono text-exp-label text-exp-muted tabular-nums flex items-center gap-2">
-              <span className="uppercase tracking-[0.15em] text-exp-muted">elapsed</span>
-              {fmtElapsed(elapsed)}
-            </p>
-          </div>
-
-          {/* Right: comparisons */}
-          <div className="flex-1 flex flex-col justify-center px-6 py-6 sm:px-12 sm:py-10 gap-6 overflow-y-auto">
-
-            {/* Context blurb.
-                max-w-sm gave a 43-character measure in a monospace
-                face — a newspaper column inside a much wider one —
-                which ran this to seven lines and pushed every counter
-                below the fold. Widened, and the sentence explaining
-                that the counters "expose the wealth gap in a dramatic
-                way" is gone: they are visibly doing it. */}
-            <p className="font-mono text-exp-body text-exp-muted leading-relaxed max-w-xl">
-              While you work, so does everyone else — from the minimum wage worker to the world's
-              wealthiest person. The federal minimum wage hasn't changed since 2009. Billionaire
-              wealth has grown by trillions. This is not an accident.
-            </p>
-
-            <div className="border-t border-white/10" />
-
+                {row.id === 'elon' && (
+                  <>
             {/* Elon */}
             <div className="flex flex-col gap-2">
               <div className="flex items-center gap-2">
@@ -1058,8 +1162,53 @@ export default function WageGap() {
               </AnimatePresence>
             </div>
 
-            <div className="border-t border-white/10" />
+                  </>
+                )}
 
+                {row.id === 'you' && (
+                  <div className="flex flex-col gap-3.5">
+                    <div className="flex items-center gap-2.5">
+                      <span className="font-mono text-exp-label uppercase tracking-wider text-exp-bright">
+                        You
+                      </span>
+                      {/* The pencil belongs to your row, not to a floating
+                          toolbar — it is your rate, so it lives with your name. */}
+                      <button
+                        onClick={e => { e.stopPropagation(); setInputWage(wage.toFixed(2)); setEditingWage(true); }}
+                        aria-label="Change your hourly rate"
+                        className="text-exp-muted hover:text-exp-bright transition-colors cursor-pointer"
+                      >
+                        <Pencil size={12} strokeWidth={1.5} />
+                      </button>
+                      <span className="font-mono text-exp-note text-exp-dim tabular-nums">
+                        ${wage.toFixed(2)}/hr
+                      </span>
+                    </div>
+
+                    <div className="relative">
+                      <EarningsDisplay earnings={earnings} scale={youScale} />
+                      <div className="absolute inset-0" style={{ overflow: 'visible', pointerEvents: 'none' }}>
+                        {coins.map(coin => <CoinParticle key={coin.id} {...coin} />)}
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-4">
+                      <span className="font-mono text-exp-note text-exp-dim tabular-nums">
+                        elapsed {fmtElapsed(elapsed)}
+                      </span>
+                      <button
+                        onClick={e => { e.stopPropagation(); togglePause(); }}
+                        className="flex items-center gap-1.5 text-exp-muted hover:text-exp-bright transition-colors cursor-pointer"
+                      >
+                        {paused ? <Play size={11} strokeWidth={1.5} /> : <Pause size={11} strokeWidth={1.5} />}
+                        <span className="font-mono text-exp-note">{paused ? 'resume' : 'pause'}</span>
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {row.id === 'median' && (
+                  <>
             {/* Median worker */}
             {(() => {
               const medianEarned = (MEDIAN_WAGE / 3600) * elapsed;
@@ -1084,6 +1233,11 @@ export default function WageGap() {
               );
             })()}
 
+                  </>
+                )}
+
+                {row.id === 'min' && (
+                  <>
             {/* Min wage */}
             {(() => {
               const minEarned = (MIN_WAGE / 3600) * elapsed;
@@ -1108,6 +1262,20 @@ export default function WageGap() {
               );
             })()}
 
+                  </>
+                )}
+              </div>
+            ))}
+
+            {/* The explanation sits BELOW the evidence now. Four lines of
+                prose above the numbers meant the argument arrived before
+                anything had happened. */}
+            <p className="mt-10 font-mono text-exp-note text-exp-muted leading-relaxed max-w-xl">
+              While you work, so does everyone else — from the minimum wage worker to the world's
+              wealthiest person. The federal minimum wage hasn't changed since 2009. Billionaire
+              wealth has grown by trillions. This is not an accident.
+            </p>
+
             {/* Sources */}
             <div className="flex items-center gap-3 mt-2 text-exp-micro">
               <span className="font-mono text-exp-dim">est. Aug 2026 ·</span>
@@ -1128,6 +1296,42 @@ export default function WageGap() {
             </div>
           </div>
 
+          {/* ── Empty state: the ladder is visible behind this, faint, so
+                you can see the hierarchy before you join it. ── */}
+          {!placed && (
+            /* A scrim, not a curtain. The ladder has to stay legible
+               behind this — seeing the hierarchy before you join it is the
+               whole point of the empty state — but without something to
+               separate them the input's digits collide with the row
+               underneath and both become hard to read. */
+            <div className="absolute inset-0 grid place-items-center px-6 bg-black/60 backdrop-blur-[1.5px]">
+              <div ref={inputBoxRef} className="flex flex-col items-center gap-7">
+                <p className="font-mono uppercase tracking-[0.3em] text-exp-base text-sm">
+                  enter your hourly wage
+                </p>
+                <div className="flex items-baseline gap-3">
+                  <span className="font-mono text-exp-bright" style={{ fontSize: 'clamp(2rem, 5vw, 3.6rem)' }}>$</span>
+                  <input
+                    type="number"
+                    value={inputWage}
+                    onChange={e => setInputWage(e.target.value)}
+                    onKeyDown={e => e.key === 'Enter' && commitWage()}
+                    autoFocus
+                    aria-label="Your hourly wage in dollars"
+                    className="font-mono text-exp-bright bg-transparent border-b border-white/30 focus:outline-hidden focus:border-white [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    style={{ fontSize: 'clamp(2rem, 5vw, 3.6rem)', width: '5ch' }}
+                  />
+                  <span className="font-mono text-exp-base" style={{ fontSize: 'clamp(1rem, 2vw, 1.4rem)' }}>/ hr</span>
+                </div>
+                <button
+                  onClick={commitWage}
+                  className="font-mono text-sm tracking-[0.2em] uppercase border border-white/30 px-8 py-3 text-exp-base hover:text-exp-bright hover:border-white/60 transition-colors cursor-pointer"
+                >
+                  begin
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       ) : view === 'chart' ? (
         <div className="flex-1 flex flex-col min-h-0 px-8 py-6">
@@ -1144,22 +1348,28 @@ export default function WageGap() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/95 backdrop-blur-xs flex items-center justify-center z-50"
+            /* Dimmed, not blacked out. This is a small correction to one
+               number, and the ladder behind it is the context for that
+               number — a full takeover hid the thing being changed. */
+            className="fixed inset-0 bg-black/70 backdrop-blur-[2px] flex items-center justify-center z-50"
             onClick={() => setEditingWage(false)}
           >
             <motion.div
-              initial={{ y: 16, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: 16, opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="flex flex-col items-center gap-10"
+              initial={{ y: 10, opacity: 0, scale: 0.97 }}
+              animate={{ y: 0, opacity: 1, scale: 1 }}
+              exit={{ y: 10, opacity: 0, scale: 0.97 }}
+              transition={{ duration: 0.22, ease: [0.22, 0.8, 0.22, 1] }}
+              className="flex flex-col items-center gap-7 rounded-sm border border-white/12 bg-black/80 px-10 py-9 shadow-2xl"
               onClick={e => e.stopPropagation()}
+              role="dialog"
+              aria-modal="true"
+              aria-label="Change your hourly rate"
             >
               <p className="font-mono uppercase tracking-[0.3em] text-exp-base text-sm">
                 your hourly rate
               </p>
               <div className="flex items-baseline gap-3">
-                <span className="font-mono text-exp-bright" style={{ fontSize: 'clamp(2rem, 5vw, 4rem)' }}>$</span>
+                <span className="font-mono text-exp-bright" style={{ fontSize: 'clamp(1.6rem, 3.4vw, 2.6rem)' }}>$</span>
                 <input
                   type="number"
                   value={inputWage}
@@ -1167,7 +1377,7 @@ export default function WageGap() {
                   onKeyDown={e => e.key === 'Enter' && applyWage()}
                   autoFocus
                   className="font-mono text-exp-bright bg-transparent border-b border-white/30 focus:outline-hidden focus:border-white [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                  style={{ fontSize: 'clamp(2rem, 5vw, 4rem)', width: '5ch' }}
+                  style={{ fontSize: 'clamp(1.6rem, 3.4vw, 2.6rem)', width: '5ch' }}
                 />
                 <span className="font-mono text-exp-base" style={{ fontSize: 'clamp(1rem, 2vw, 1.5rem)' }}>/ hr</span>
               </div>
