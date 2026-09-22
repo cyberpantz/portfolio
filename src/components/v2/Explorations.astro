@@ -100,6 +100,38 @@ const MORE = 'mt-auto pt-[18px] text-meta font-medium tracking-[0.16em] uppercas
     perspective: 1200px;
   }
 
+  /*
+   * Dark theme only, on the homepage.
+   *
+   * Five of the six thumbnails are near-black rectangles — the
+   * experiments are themselves dark-ground pieces — and on this
+   * section's paper they stop reading as pictures and start reading as
+   * heavy blocks punched into the grid. In the dark theme they sit in
+   * the page instead of fighting it.
+   *
+   * The explorations index keeps them in both, because that page is
+   * bg-ink regardless of this toggle.
+   *
+   * Written as the same pair v2.css uses for every other themed rule:
+   * the explicit attribute, plus the system query guarded against an
+   * explicit light choice, so this still behaves if the inline theme
+   * script never runs. Hidden with display:none rather than opacity so
+   * the lazy images are never fetched in the light theme at all.
+   */
+  .exp-thumb {
+    display: none;
+  }
+
+  :root[data-theme='dark'] .exp-thumb {
+    display: block;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme='light']) .exp-thumb {
+      display: block;
+    }
+  }
+
   .exp-thumb {
     transform-origin: 50% 68%;
     transition:
