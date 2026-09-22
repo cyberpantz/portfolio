@@ -89,52 +89,6 @@ function clipAround(box, view, { pad = 0, shiftY = 0, height, fitWidth = false }
  * gives up honestly so the caller can restart rather than shoot a defeat
  * message.
  */
-async function spriteCount(page) {
-  return page.evaluate(() => {
-    const field = document.querySelector('main div.max-w-5xl');
-    if (!field) return -1;                       // run ended
-    const bounds = field.getBoundingClientRect();
-    /*
-     * Counts sprites RENDERED INSIDE the field, not emoji found in
-     * innerText. The text version counted birds that had not entered the
-     * frame yet and reported a busy board while the picture showed three
-     * eggs — it was measuring the game's state, not the photograph.
-     */
-    let n = 0;
-    for (const el of field.querySelectorAll('*')) {
-      if (el.children.length) continue;          // leaves only
-      const t = (el.textContent ?? '').trim();
-      if (!/^\p{Extended_Pictographic}/u.test(t)) continue;
-      if (t === '\u2764\ufe0f' || t === '\u{1F5A4}') continue;   // life hearts
-      const r = el.getBoundingClientRect();
-      if (r.width && r.top >= bounds.top && r.bottom <= bounds.bottom) n++;
-    }
-    return n;
-  });
-}
-
-/**
- * Busy enough to read as chaos at thumbnail size.
- *
- * Measured, not guessed. Sampling a run twice a second puts the peak
- * on-screen count at 8 and the median at 3-4, so the first threshold of
- * 7 sat just under the ceiling and was only briefly reachable — which is
- * exactly why captures failed about one run in three. 6 is comfortably
- * inside what Hard produces in its first few seconds.
- */
-const BUSY = 6;
-
-async function busyField(page, budget = 13000) {
-  const deadline = Date.now() + budget;
-  while (Date.now() < deadline) {
-    const n = await spriteCount(page);
-    if (n < 0) return false;                     // run ended; caller restarts
-    if (n >= BUSY) return true;
-    await page.waitForTimeout(300);
-  }
-  return false;
-}
-
 /**
  * One recipe per exploration: how to reach the moment, and what to frame.
  *
@@ -180,54 +134,39 @@ const RECIPES = {
   },
 
   'kitchen-dodgeball': {
-    note: 'Hard, held until the board is genuinely busy.',
-    frame: 'main div.max-w-5xl',
-    async drive(page) {
-      /*
-       * Hard, and held until the board is measurably busy.
-       *
-       * Easy is too sparse to photograph — mostly black with a single
-       * bird. Between the other two the choice came from sampling a run
-       * twice a second rather than from taste: Hard reaches six on-screen
-       * sprites about 2.5s in, where Medium takes eleven. Since nobody is
-       * holding the arrow keys and an unattended run dies in a dozen
-       * seconds, reaching density EARLY matters far more than surviving
-       * long.
-       *
-       * A fixed sleep cannot work here at all. The same wait caught a
-       * busy board on one attempt and a game-over screen on the next.
-       */
-      for (let attempt = 1; attempt <= 4; attempt++) {
-        await click(page, 'Hard');
-        await page.waitForTimeout(300);
-        await click(page, 'START GAME');
-        if (await busyField(page)) return;
-        // The run ended before the field got busy. Reload and try again
-        // rather than shooting whatever happens to be on screen.
-        await page.reload({ waitUntil: 'networkidle' });
-      }
-      throw new Error('Fowl Play never reached a busy board in four runs');
-    },
+    note: 'The title card — the one vivid thing in the grid.',
     /*
-     * Restarts rather than waits.
+     * The TITLE screen, not the game.
      *
-     * Nobody is holding the arrow keys, so the chef takes three hits and
-     * every run ends inside twenty seconds — which makes any delay
-     * between finding a busy board and pressing the shutter a race. The
-     * first version of this polled a dead game until its deadline and
-     * failed with "never became ready"; now a finished run just starts
-     * another one.
+     * Every other recipe here drives past the menu on the principle that
+     * a chooser is not the work. This one is the exception, and the
+     * reason is honest: the playfield is a black rectangle with a few
+     * sprites on it, and at 330px wide that reads as an empty card no
+     * matter how busy the board gets. The title screen is a designed
+     * thing — an emoji row, the wordmark, and the premise in one line —
+     * and it is the only vivid colour in a grid of dark tiles.
+     *
+     * It also deletes the most fragile machinery in this file. Capturing
+     * play meant polling sprite density and restarting runs that died
+     * early, because nobody is holding the arrow keys. A title card is
+     * just there.
      */
-    ready: async (page) => {
-      const n = await spriteCount(page);
-      if (n >= BUSY) return true;
-      if (n < 0) {
-        await page.reload({ waitUntil: 'networkidle' });
-        await click(page, 'Hard');
-        await page.waitForTimeout(250);
-        await click(page, 'START GAME');
-      }
-      return false;
+    frame: 'main div.text-center.mb-12',
+    /*
+     * 320x240, landed between two hard edges.
+     *
+     * The block is 304 wide, so the window cannot be narrower without
+     * clipping the emoji row — which sets the height at 4:3. Vertically
+     * it has to start below the site header (page y 84) and stop before
+     * the difficulty cards (page y 328), or the card tops get sliced and
+     * the thumbnail looks unfinished. 240 tall shifted 30 down lands at
+     * 84..324: header gone, cards excluded, and SELECT DIFFICULTY sits
+     * whole on the bottom line.
+     */
+    height: 240,
+    shiftY: 30,
+    async drive(page) {
+      await page.waitForTimeout(1200);
     },
   },
 
