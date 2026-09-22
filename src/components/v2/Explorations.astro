@@ -1,7 +1,7 @@
 ---
 import SectionHead from './SectionHead.astro';
 import { Image } from 'astro:assets';
-import { VISIBLE_EXPLORATIONS } from '../../data/explorations';
+import { VISIBLE_EXPLORATIONS, driftFor } from '../../data/explorations';
 
 const pad = (i: number) => String(i + 1).padStart(2, '0');
 
@@ -44,7 +44,10 @@ const MORE = 'mt-auto pt-[18px] text-meta font-medium tracking-[0.16em] uppercas
           <span class={KIND}>{exp.type}</span>
         </span>
         {exp.cover && (
-          <span class="exp-thumb mt-1 block aspect-4/3 overflow-hidden border border-rule-2 bg-paper-2">
+          <span
+            class="exp-thumb mt-1 block aspect-4/3 overflow-hidden border border-rule-2 bg-paper-2"
+            style={`--dx:${driftFor(i).x};--dy:${driftFor(i).y}`}
+          >
             <Image
               class="size-full object-cover"
               src={exp.cover}
@@ -161,12 +164,11 @@ const MORE = 'mt-auto pt-[18px] text-meta font-medium tracking-[0.16em] uppercas
    */
   .exp-thumb :global(img) {
     filter: grayscale(0.5) brightness(0.84) contrast(1.04);
-    object-position: 50% 50%;
+    transform: scale(1) translate(0%, 0%);
     transition:
       filter 640ms cubic-bezier(0.22, 0.8, 0.22, 1),
-      transform 5200ms cubic-bezier(0.15, 0.6, 0.25, 1),
-      object-position 5200ms cubic-bezier(0.15, 0.6, 0.25, 1);
-    will-change: filter, transform, object-position;
+      transform 5200ms cubic-bezier(0.15, 0.6, 0.25, 1);
+    will-change: filter, transform;
   }
 
   .exp-card:hover .exp-thumb,
@@ -185,10 +187,18 @@ const MORE = 'mt-auto pt-[18px] text-meta font-medium tracking-[0.16em] uppercas
   .exp-card:hover .exp-thumb :global(img),
   .exp-card:focus-visible .exp-thumb :global(img) {
     filter: none;
-    /* Enough zoom to give the pan somewhere to go without softening the
-       screenshot — these are pixel art at heart. */
-    transform: scale(1.11);
-    object-position: 56% 44%;
+    /*
+     * The zoom exists to CREATE the room the pan moves within: at 1.16
+     * the image overhangs its frame by 8% a side, and the translate
+     * slides inside that. --dx/--dy come from the drift table, so each
+     * card pulls a different way.
+     *
+     * This was object-position before, which did nothing at all: the
+     * images are 4:3 inside a 4:3 frame with object-fit: cover, so there
+     * is no overflow for it to move and the "pan" was only ever a zoom.
+     * translate works on the rendered box and pans for real.
+     */
+    transform: scale(1.16) translate(var(--dx, 0%), var(--dy, 0%));
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -203,7 +213,6 @@ const MORE = 'mt-auto pt-[18px] text-meta font-medium tracking-[0.16em] uppercas
     .exp-card:hover .exp-thumb :global(img),
     .exp-card:focus-visible .exp-thumb :global(img) {
       transform: none;
-      object-position: 50% 50%;
     }
   }
 </style>

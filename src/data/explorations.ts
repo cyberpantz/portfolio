@@ -118,3 +118,29 @@ export const EXPLORATIONS: Exploration[] = [
 
 /** What the homepage and the index actually render. */
 export const VISIBLE_EXPLORATIONS = EXPLORATIONS.filter((e) => !e.hidden);
+
+/**
+ * Ken Burns drift vectors, one per card position.
+ *
+ * A pan needs a DIRECTION, and it needs to differ between neighbours —
+ * six tiles all pulling the same way on hover reads as a canned effect,
+ * which is the thing a Ken Burns move is supposed to avoid. Mixed
+ * left/right/up/down means two adjacent cards never travel together.
+ *
+ * Percentages are of the tile, applied inside the hover scale. The scale
+ * is what creates the overflow the translate slides within: at 1.16 the
+ * image is 8% wider than its frame on each side, so a 5% pull (5.8%
+ * once scaled) stays comfortably inside and never exposes an edge.
+ */
+export const THUMB_DRIFT = [
+  { x: '-5%', y: '0%' },     // pull left
+  { x: '5%', y: '-3%' },     // right, drifting up
+  { x: '0%', y: '5%' },      // sink
+  { x: '-4%', y: '-4%' },    // up and left
+  { x: '5%', y: '3%' },      // right, settling down
+  { x: '0%', y: '-5%' },     // rise
+] as const;
+
+/** Drift for card `i`, wrapping if the list outgrows the table. */
+export const driftFor = (i: number) => THUMB_DRIFT[i % THUMB_DRIFT.length];
+
