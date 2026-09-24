@@ -68,17 +68,30 @@ any help.
 
 > Across the ZIP codes in this dataset, American homeowners insurance collected
 > about **$1.59 in premium for every dollar it paid out in claims**. In
-> California it collected **77 cents**; in Louisiana, **85**. Claims alone
-> exceeded premium there, before a cent of expenses. Five months after the data
-> ends, the largest insurer in California stopped writing new policies.
+> California it collected **77 cents** — claims alone exceeded premium, before
+> a cent of expenses. Five months after the data ends, the largest insurer in
+> the state stopped writing new policies.
+
+**California is the spine, and it is the only state that can be.** Louisiana's
+0.85 is the sharper number and it has to come out of the headline: Louisiana is
+one of eight states whose regulators opted out of the data call (§5.7), so the
+file holds only the national carriers operating there — not the Louisiana
+insurers that actually failed. It survives as corroboration that the threshold
+is not one state's quirk, carrying its caveat. It cannot be a co-headline.
 
 **Three disciplines this sentence has to keep.**
 
-*Claims are not costs.* Everything above 1.0 still has to pay claims handling,
-acquisition, reinsurance and capital on top — commonly 25–30 points. $1.59 is a
-normal claims ratio, not a margin and certainly not a profit. The only thing
-the threshold means is **claims exceeded premium**, and that is the phrase that
-goes on the graphic.
+*Claims are not costs, and the error runs both ways.* Everything above 1.0
+still has to pay claims handling, acquisition, reinsurance and capital on top —
+commonly 25–30 points, so $1.59 is a normal claims ratio and not a margin.
+**And an insurer can be profitable with a loss ratio over 100%**, because
+premium float is invested and investment income is a separate earnings stream.
+Public Citizen makes this point in its own metric notes, and a piece that omits
+it while leaning on the first half is arguing rather than describing.
+
+The threshold means exactly one thing — **claims exceeded premium** — and that
+is the phrase that goes on the graphic. It does not mean below cost, and it
+does not mean losing money.
 
 *It is an average over ZIP codes, not national accounting.* The workbook
 publishes policy-count deciles, not policy counts, so a true dollar-weighted
@@ -200,6 +213,28 @@ residual market is large and is not in this data."*
 A caveat a reader has to scroll to is a caveat that has been designed to be
 missed.
 
+### 5.4.2 The real explanation: states were allowed to opt out
+
+Found by reading the prior art rather than the data (§19). The NAIC let state
+regulators decline the collection, and **Florida, Alabama, Louisiana, Georgia,
+Indiana, Montana, North Dakota and Texas** did. For those states the file holds
+only the *national* carriers that operate there; the state-domiciled insurers
+are absent.
+
+That single mechanism explains every anomaly in §5.4 at once, and it is worse
+than the explanations they replace:
+
+| state | published ZIPs | what is missing |
+|---|---|---|
+| Texas | 1,510 | the column itself — all zeros |
+| Florida | 560 | the Florida-domestic carriers, several of which failed |
+| Louisiana | 337 | the Louisiana carriers — i.e. the eleven that went insolvent |
+
+**This is not a caveat, it is a constraint on the claim.** A state figure for an
+opt-out state is a statement about national carriers operating there, not about
+that state's market. The eight states are flagged in the data, hatched in the
+field (§5.4.1), and excluded from any headline.
+
 ### 5.5 Geometry and crosswalk
 
 - **Counties** for the field: ~3,143 polygons from `us-atlas` (TopoJSON), to be
@@ -265,15 +300,16 @@ Construction A (§6.5), five-year pooled:
 | | premium | paid losses | cents per dollar |
 |---|---|---|---|
 | California | $1,681 | $2,183 | **0.77** |
-| Louisiana | $2,453 | $2,870 | **0.85** |
-| Texas | $2,276 | $1,455 | 1.56 |
+| Louisiana ⚠ | $2,453 | $2,870 | **0.85** |
+| Texas ⚠ | $2,276 | $1,455 | 1.56 |
 | **United States** | **$1,717** | **$1,080** | **1.59** |
 | Oklahoma | $2,572 | $1,498 | 1.72 |
-| Florida | $4,975 | $2,417 | 2.06 |
+| Florida ⚠ | $4,975 | $2,417 | 2.06 |
 | South Carolina | $1,778 | $708 | 2.51 |
 
-Below 1.0 means claims alone exceeded premium, before any expense. It does not
-mean "below cost" (§2) and it is not a margin.
+⚠ = opt-out state (§5.4.2); national carriers only. Below 1.0 means claims
+alone exceeded premium, before any expense. It does not mean "below cost" (§2),
+it is not a margin, and it does not mean the insurer lost money.
 
 ### 6.4 The caveat that must be on screen
 
@@ -600,5 +636,50 @@ readouts.
    stands: county for the field, ZIP for the lookup.
 3. **Which crosswalk**, and how to report unmatched ZIPs.
 4. **Does the crossing survive Phase 2?**
-5. **Is `ratio` or `gap` the extrusion?** `ratio` is more interpretable, `gap`
-   is better behaved at the tails. Decide on the prototype.
+5. **Settled by §17 Phase 2:** extrude two dollar surfaces; `cents` and `gap`
+   are readouts.
+6. **Chase the Senate Budget Committee data** (§19.1) — county-level
+   non-renewal through 2023, which would put a real year into the gap.
+7. **How to credit Public Citizen** in the piece itself, not only in the spec.
+
+---
+
+## 19. Prior art
+
+**This dataset has already been mapped.** [Public Citizen and the Revolving
+Door Project, *Mapping the Home Insurance Crisis*][pc] (April 2025) is an
+open-source ZIP-level interactive on this exact FIO release, with seven metrics
+in a dropdown — non-renewal, both cancellation rates, claim frequency, average
+claim, paid loss ratio, average premium — plus per-metric searchable tables and
+a second map on Senate Budget Committee data.
+
+Read it before building. Three things follow.
+
+**1. The obvious version of this piece exists, and it is good.** A map extruded
+by any single FIO metric is a prettier restatement of an advocacy tool that
+already covers the whole country and lets you search your own ZIP. That is not
+a reason to abandon this; it is the reason §7 has to hold. The crossing of two
+measures is the only thing here that is not already on their map.
+
+**2. Their framing is explicitly advocacy; this one should not be.** They write
+that insurers are "scrambling to shift those costs to the public" and generate
+"record profits". That may well be right, and it is a position. This piece
+describes a mechanism and stops (§14), which is a genuine difference rather
+than timidity — and it means carrying the inconvenient half of the loss-ratio
+caveat, the investment-income point that Public Citizen states plainly in its
+own metric notes and that cuts against my framing (§2).
+
+**3. They found the thing I could not.** §5.4.2 — the state opt-out — is from
+their writeup, not from the data. I had inferred a plausible-sounding but wrong
+explanation for the Texas zeros and the Florida anomaly. **Credit them in the
+piece, not only in this file.**
+
+### 19.1 The Senate Budget Committee dataset
+
+Worth following up (§18.6). County-level non-renewal, **2018–2023**, ~24
+companies, ~65% of the market, published December 2024. It extends a year past
+FIO and arrives already at county level, so no crosswalk is needed for that
+measure. It could put one real year into the gap between the data ending and
+the rupture — which the timeline in §9.1 currently has to cross in prose.
+
+[pc]: https://www.citizen.org/article/mapping-the-home-insurance-crisis/
