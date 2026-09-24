@@ -7,10 +7,14 @@
  * from the data that produced it and nothing noticed for two years.
  */
 
-import { useMemo, useState } from 'react';
+import { Component, lazy, Suspense, useEffect, useMemo, useState, type ReactNode } from 'react';
 import data from '../../data/tilt.json';
 import counties from '../../data/tilt-counties.json';
 import { Frame, EndLabel, makeScales, path, band, W, H } from './charts';
+
+/* Only chapter three loads three.js, and only when it is actually shown.
+   Bundling ~600KB of WebGL into a page of line charts would be absurd. */
+const Surface = lazy(() => import('./Surface'));
 import s from './tilt.module.css';
 
 const YEARS = data.ch1.years;
@@ -30,7 +34,8 @@ export function ChapterDecline() {
   return (
     <Frame title="US county jail population, 2002 to 2019"
            desc={`Rises from ${fmt(v[0])} in 2002 to a peak of ${fmt(v[peak])} in ${YEARS[peak]}, then falls to ${fmt(v.at(-1)!)} by 2019.`}
-           yTicks={[560_000, 640_000, 720_000]} xTicks={XT} sx={sc.x} sy={sc.y} fmtY={k}>
+           yTicks={[560_000, 640_000, 720_000]} xTicks={XT} sx={sc.x} sy={sc.y} fmtY={k}
+           hover={{ xs: YEARS, rows: [{ label: 'in jail', values: v }] }}>
       <path d={path(YEARS, v, sc.x, sc.y)} fill="none" stroke="currentColor" strokeWidth={2.5} />
       <circle cx={sc.x(YEARS[peak])} cy={sc.y(v[peak])} r={4} fill="currentColor" />
       <text x={sc.x(YEARS[peak])} y={sc.y(v[peak]) - 14} textAnchor="middle" fontSize="12" fill="currentColor">
@@ -59,7 +64,9 @@ export function ChapterBands({ mode }: { mode: 'count' | 'rate' }) {
       desc={mode === 'count'
         ? 'Seven size bands. The largest counties hold most people, which conceals the divergence in the rates.'
         : `In 2002 the smallest counties jailed at ${bands[0].rate[0]} per 100,000 against ${bands.at(-1)!.rate[0]} in the largest. By 2019 it is ${bands[0].rate.at(-1)} against ${bands.at(-1)!.rate.at(-1)}.`}
-      yTicks={yTicks} xTicks={XT} sx={sc.x} sy={sc.y} fmtY={mode === 'count' ? k : fmt}>
+      yTicks={yTicks} xTicks={XT} sx={sc.x} sy={sc.y} fmtY={mode === 'count' ? k : fmt}
+      hover={{ xs: YEARS, fmt: mode === 'count' ? k : fmt,
+               rows: bands.map((b, i) => ({ label: b.label, values: series[i], ink: RAMP[i] })) }}>
       {bands.map((b, i) => (
         <path key={b.key} d={path(YEARS, series[i], sc.x, sc.y)} fill="none"
               stroke={RAMP[i]} strokeWidth={2} opacity={0.92} />
@@ -70,6 +77,76 @@ export function ChapterBands({ mode }: { mode: 'count' | 'rate' }) {
       ))}
     </Frame>
   );
+}
+
+/* ── 3, in three dimensions ────────────────────────────────────────────
+ *
+ * The same seven bands and eighteen years as ChapterBands, as a surface.
+ * Size runs one way, time the other, rate is height — so the near edge is
+ * 2002 lying nearly flat and the far edge is 2019 as a ramp, and the twist
+ * between them is the finding in one object.
+ *
+ * It degrades to the 2D chart, which is not a consolation prize: that chart
+ * carries the same numbers, is keyboard-readable and has a hover readout the
+ * surface does not. Three reasons to fall back, checked in this order:
+ *
+ *   reduced motion  — an orbitable object is motion the reader did not ask for
+ *   no WebGL        — old hardware, blocklisted drivers, some VMs
+ *   a render error  — a WebGL context can be lost at any moment
+ */
+export function ChapterTilt() {
+  const [use3d, setUse3d] = useState(false);
+  const [failed, setFailed] = useState(false);
+
+  useEffect(() => {
+    if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
+    try {
+      const c = document.createElement('canvas');
+      const gl = c.getContext('webgl2') ?? c.getContext('webgl');
+      if (gl) setUse3d(true);
+    } catch { /* stays 2D */ }
+  }, []);
+
+  if (!use3d || failed) return <ChapterBands mode="rate" />;
+
+  const surface = {
+    years: YEARS,
+    bands: data.bands.map((b) => ({ label: b.label, rate: b.rate })),
+  };
+  return (
+    <figure className={s.figure}>
+      <div className={s.canvas}>
+        <ErrorBoundary onError={() => setFailed(true)}>
+          <Suspense fallback={<div className={s.loading}>Drawing the surface…</div>}>
+            <Surface data={surface} />
+          </Suspense>
+        </ErrorBoundary>
+      </div>
+      <div className={s.axes} aria-hidden="true">
+        <span>← smaller counties</span>
+        <span>height = jail rate</span>
+        <span>2002 → 2019 →</span>
+      </div>
+      <figcaption>
+        <span className={s.hint}>Drag to turn it</span>
+        <button type="button" className={s.linkish} onClick={() => setUse3d(false)}>
+          Show as a chart
+        </button>
+      </figcaption>
+      {/* The numbers, for anyone the canvas cannot serve. A <canvas> is opaque
+          to assistive technology no matter how it is labelled. */}
+      <div className={s.srOnlyInline}>
+        <ChapterBands mode="rate" />
+      </div>
+    </figure>
+  );
+}
+
+class ErrorBoundary extends Component<{ children: ReactNode; onError: () => void }, { dead: boolean }> {
+  state = { dead: false };
+  static getDerivedStateFromError() { return { dead: true }; }
+  componentDidCatch() { this.props.onError(); }
+  render() { return this.state.dead ? null : this.props.children; }
 }
 
 /* ── 4 ─────────────────────────────────────────────────────────────────
@@ -117,7 +194,10 @@ export function ChapterCapacity() {
   return (
     <Frame title="People in jail against rated capacity"
            desc={`Capacity rises from ${fmt(beds[0])} to ${fmt(beds.at(-1)!)} while population falls from its peak to ${fmt(people.at(-1)!)}. Spare beds grow from ${fmt(spare[0])} to ${fmt(spare.at(-1)!)}.`}
-           yTicks={[600_000, 700_000, 800_000]} xTicks={XT} sx={sc.x} sy={sc.y} fmtY={k}>
+           yTicks={[600_000, 700_000, 800_000]} xTicks={XT} sx={sc.x} sy={sc.y} fmtY={k}
+           hover={{ xs: YEARS, fmt, rows: [
+             { label: 'beds', values: beds }, { label: 'people', values: people },
+             { label: 'empty', values: spare }] }}>
       <path d={band(YEARS, beds, people, sc.x, sc.y)} fill="currentColor" opacity={0.12} />
       <path d={path(YEARS, beds, sc.x, sc.y)} fill="none" stroke="currentColor" strokeWidth={2.5} opacity={0.75} />
       <path d={path(YEARS, people, sc.x, sc.y)} fill="none" stroke="currentColor" strokeWidth={2.5} />
@@ -137,7 +217,9 @@ export function ChapterConstruction() {
     <Frame title="Jail construction projects per year, 2002 to 2022"
            desc={`Falls to ${Math.min(...c.count)} in ${c.years[c.count.indexOf(Math.min(...c.count))]} then rises to ${max} in ${c.years[c.count.indexOf(max)]}. ${c.total.toLocaleString()} projects in total.`}
            yTicks={[0, 100, 200]} xTicks={[2002, 2012, 2022]}
-           sx={makeScales(c.years, 0, max).x} sy={makeScales(c.years, 0, max * 1.1).y}>
+           sx={makeScales(c.years, 0, max).x} sy={makeScales(c.years, 0, max * 1.1).y}
+           sourceId="vera-construction"
+           hover={{ xs: c.years, rows: [{ label: 'projects', values: c.count }] }}>
       {c.count.map((v, i) => {
         const sc = makeScales(c.years, 0, max * 1.1);
         return <rect key={c.years[i]} x={sc.x(c.years[i]) - bw * 0.35} width={bw * 0.7}
@@ -162,7 +244,8 @@ export function ChapterPretrial() {
   return (
     <Frame title="Pretrial jail rate per 100,000 residents, by county type"
            desc={`Rural rises from ${u.rural.pretrialRate[0]} to ${u.rural.pretrialRate.at(-1)}. Urban falls from ${u.urban.pretrialRate[0]} to ${u.urban.pretrialRate.at(-1)}.`}
-           yTicks={[150, 200, 250, 300, 350]} xTicks={XT} sx={sc.x} sy={sc.y} fmtY={fmt}>
+           yTicks={[150, 200, 250, 300, 350]} xTicks={XT} sx={sc.x} sy={sc.y} fmtY={fmt}
+           hover={{ xs: YEARS, rows: keys.map((key, i) => ({ label: key, values: u[key].pretrialRate, ink: ink[i] })) }}>
       {keys.map((key, i) => (
         <path key={key} d={path(YEARS, u[key].pretrialRate, sc.x, sc.y)} fill="none"
               stroke={ink[i]} strokeWidth={2.2} />

@@ -266,3 +266,87 @@
 .pub { font-size: 12px; color: var(--mute); }
 .supports { font-size: 13px; line-height: 1.6; }
 .caveat { font-size: 0.86rem; line-height: 1.7; color: var(--mute); }
+
+/* ------------------------------------------------- figures and sources */
+
+/*
+ * Every chart carries its own source line. A single bibliography at the foot
+ * of the page is a promise that the reader has to go and check; a citation
+ * under the figure is one they can act on while the number is still in front
+ * of them, which is the only moment they actually want it.
+ */
+.figure { margin: 0; color: var(--ink); }
+.figure figcaption {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+  margin-top: 8px;
+  font-size: 11.5px;
+  color: var(--mute);
+}
+.figure figcaption a { color: var(--mute); text-decoration: underline; text-underline-offset: 3px; }
+.figure figcaption a:hover { color: var(--ink); }
+.hint { font-variant: all-small-caps; letter-spacing: 0.06em; }
+
+.interactive { cursor: crosshair; }
+.interactive:focus-visible { outline: 2px solid var(--ink); outline-offset: 4px; border-radius: 4px; }
+
+.linkish {
+  font: inherit;
+  color: var(--mute);
+  background: none;
+  border: 0;
+  padding: 0;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+.linkish:hover { color: var(--ink); }
+
+/* ------------------------------------------------------- the surface */
+
+.canvas {
+  position: relative;
+  width: 100%;
+  /* Taller than the flat charts. A surface viewed from near the horizon needs
+     vertical room or the tilt is squashed into nothing, which defeats it. */
+  aspect-ratio: 5 / 4;
+  max-height: 60vh;
+  border-radius: 10px;
+  overflow: hidden;
+  background: rgb(255 255 255 / 2.5%);
+  touch-action: none;
+}
+.loading {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: 12px;
+  color: var(--mute);
+}
+.axes {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 8px;
+  font: 600 10.5px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--mute);
+}
+
+/* The 2D chart, kept in the accessibility tree beneath the canvas.
+   A <canvas> is opaque to assistive technology however it is labelled. */
+.srOnlyInline {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}

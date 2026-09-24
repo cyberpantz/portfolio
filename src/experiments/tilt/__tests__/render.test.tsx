@@ -13,7 +13,7 @@ import data from '../../../data/tilt.json';
 import counties from '../../../data/tilt-counties.json';
 import { SOURCES, assertNoUnverifiedClaims } from '../../../data/incarceration-sources';
 import {
-  ChapterDecline, ChapterBands, ChapterEliminations, ChapterCapacity,
+  ChapterDecline, ChapterBands, ChapterTilt, ChapterEliminations, ChapterCapacity,
   ChapterConstruction, ChapterPretrial, ChapterLookup,
 } from '../chapters';
 
@@ -26,6 +26,10 @@ const CH: [string, ReactElement][] = [
   ['decline', <ChapterDecline />],
   ['bands/count', <ChapterBands mode="count" />],
   ['bands/rate', <ChapterBands mode="rate" />],
+  /* Server-rendered, so the WebGL probe in useEffect has not run and this
+     exercises the 2D fallback — which is the path that has to work when
+     WebGL is absent, reduced motion is set, or the canvas throws. */
+  ['tilt/fallback', <ChapterTilt />],
   ['eliminations', <ChapterEliminations />],
   ['capacity', <ChapterCapacity />],
   ['construction', <ChapterConstruction />],
@@ -108,8 +112,17 @@ ok(counties.length === data.ch1.panel,
    `lookup has ${counties.length} counties but the panel is ${data.ch1.panel}`);
 console.log(`  ${data.ch1.panel.toLocaleString()} counties, lookup matches`);
 
+/* The fallback must be the real chart, not an apology. If chapter three
+   server-renders to a placeholder, a reader without WebGL gets nothing. */
+ok(/<svg/.test(html['tilt/fallback'] ?? ''), 'chapter 3 fallback did not render an SVG chart');
+ok((html['tilt/fallback'] ?? '').includes('over 500k'),
+   'chapter 3 fallback is missing the band labels — it is not the real chart');
+console.log('  chapter 3 falls back to the real 2D chart');
+
 /* ---- sourcing ------------------------------------------------------- */
 console.log('\nSources');
+/* Every sourceId a chart actually cites, so a figure can never quietly
+   point at something nobody opened. */
 const RENDERED = ['vera-data', 'vera-codebook', 'vera-construction', 'vera-build-it', 'vera-trends-tool'];
 try {
   assertNoUnverifiedClaims(RENDERED);

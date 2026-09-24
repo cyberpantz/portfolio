@@ -21,7 +21,7 @@ import { useEffect, useRef, useState } from 'react';
 import data from '../../data/tilt.json';
 import { SOURCES } from '../../data/incarceration-sources';
 import {
-  ChapterDecline, ChapterBands, ChapterEliminations, ChapterCapacity,
+  ChapterDecline, ChapterBands, ChapterTilt, ChapterEliminations, ChapterCapacity,
   ChapterConstruction, ChapterPretrial, ChapterLookup,
 } from './chapters';
 import s from './tilt.module.css';
@@ -48,7 +48,7 @@ const CHAPTERS = [
     kicker: 'The finding',
     title: 'Measured per resident, the country tilts.',
     body: `In 2002 a county of three thousand people jailed at roughly the same rate as a county of a million — 1.31 times, close enough to call flat. By 2019 it was 2.61 times. From counties of five thousand downward through the largest, the ladder descends without a step out of place. The very smallest counties are the one exception, sitting below their neighbours: over a third of them share a regional jail rather than running their own, so their rate is measured on a different basis.`,
-    figure: <ChapterBands mode="rate" />,
+    figure: <ChapterTilt />,
   },
   {
     id: 'eliminations',
