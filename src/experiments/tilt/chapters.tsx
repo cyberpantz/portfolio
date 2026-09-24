@@ -7,9 +7,8 @@
  * from the data that produced it and nothing noticed for two years.
  */
 
-import { Component, lazy, Suspense, useEffect, useMemo, useState, type ReactNode } from 'react';
+import { Component, lazy, Suspense, useEffect, useState, type ReactNode } from 'react';
 import data from '../../data/tilt.json';
-import counties from '../../data/tilt-counties.json';
 import { Frame, EndLabel, makeScales, path, band, W, H } from './charts';
 
 /* Only chapter three loads three.js, and only when it is actually shown.
@@ -278,51 +277,12 @@ export function ChapterPretrial() {
   );
 }
 
-/* ── 7 ─────────────────────────────────────────────────────────────────── */
-type County = { fips: string; name: string; state: string; urb: string; band: string; pop: number; r0: number; r1: number };
+/* ── 7 ──────────────────────────────────────────────────────────────── */
 
-export function ChapterLookup() {
-  const [q, setQ] = useState('');
-  const [picked, setPicked] = useState<County | null>(null);
-  const list = counties as County[];
-  const hits = useMemo(() => {
-    const t = q.trim().toLowerCase();
-    if (t.length < 2) return [];
-    return list.filter((c) => `${c.name} ${c.state}`.toLowerCase().includes(t)).slice(0, 8);
-  }, [q, list]);
-  const nat = data.bands;
-  return (
-    <div className={s.lookup}>
-      <label htmlFor="tilt-county">Find a county</label>
-      <input id="tilt-county" type="search" value={q} autoComplete="off"
-             placeholder="Grant County, KY" onChange={(e) => { setQ(e.target.value); setPicked(null); }} />
-      {!picked && hits.length > 0 && (
-        <ul className={s.hits}>
-          {hits.map((c) => (
-            <li key={c.fips}>
-              <button type="button" onClick={() => { setPicked(c); setQ(`${c.name}, ${c.state}`); }}>
-                {c.name}, {c.state}
-              </button>
-            </li>
-          ))}
-        </ul>
-      )}
-      {picked && (
-        <dl className={s.readout}>
-          <div><dt>Residents 15–64</dt><dd>{fmt(picked.pop)}</dd></div>
-          <div><dt>Jail rate, 2002</dt><dd>{picked.r0}</dd></div>
-          <div><dt>Jail rate, 2019</dt><dd>{picked.r1}</dd></div>
-          <div><dt>Change</dt><dd>{picked.r0 ? `${picked.r1 > picked.r0 ? '+' : ''}${Math.round((picked.r1 / picked.r0 - 1) * 100)}%` : '—'}</dd></div>
-          <div><dt>Size band</dt><dd>{nat.find((b) => b.key === picked.band)?.label}</dd></div>
-          <div><dt>Vera classes it</dt><dd>{picked.urb}</dd></div>
-        </dl>
-      )}
-      {q.trim().length >= 2 && hits.length === 0 && !picked && (
-        <p className={s.none}>
-          No match. {list.length.toLocaleString()} counties are in the panel — the rest did not report
-          in every year between 2002 and 2019 and were left out rather than interpolated.
-        </p>
-      )}
-    </div>
-  );
-}
+/*
+ * The county lookup lives in its own file. It is the only chapter that
+ * fetches at runtime — eighteen years for 2,513 counties is heavier than the
+ * whole of the rest of the piece — and keeping that apparatus out of here
+ * stops a page of line charts from inheriting a loading state it never needs.
+ */
+export { ChapterLookup } from './Lookup';

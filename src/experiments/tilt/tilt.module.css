@@ -220,26 +220,77 @@
 }
 .hits button:hover { color: var(--ink); border-color: rgb(255 255 255 / 34%); }
 
-.readout {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 12px;
-  margin: 18px 0 0;
+.none { margin-top: 12px; font-size: 0.9rem; line-height: 1.6; color: var(--mute); min-height: 1.4em; }
+
+/*
+ * The result.
+ *
+ * This replaced a six-cell definition list. Stat cards answer "what is the
+ * value"; almost nobody searching for their own county is asking that. They
+ * are asking whether it is bad, which is a question about position — so the
+ * numbers here are a header on two charts that place the county rather than
+ * the payoff themselves.
+ */
+.report { margin-top: 20px; }
+.reportHead h3 {
+  margin: 0 0 4px;
+  font-size: 1.35rem;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  color: var(--ink);
 }
-.readout div {
-  background: rgb(255 255 255 / 4%);
-  border-radius: 8px;
-  padding: 12px 14px;
+.reportHead p { margin: 0; font-size: 0.86rem; color: var(--mute); }
+
+.bigRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 32px;
+  margin: 18px 0 4px;
 }
-.readout dt { font-size: 11px; color: var(--mute); margin-bottom: 4px; }
-.readout dd {
-  margin: 0;
-  font-size: 1.3rem;
+.bigRow div { display: flex; flex-direction: column; gap: 2px; }
+.bigRow b {
+  font-size: clamp(1.8rem, 5vw, 2.4rem);
   font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.02em;
   color: var(--ink);
   font-variant-numeric: tabular-nums;
 }
-.none { margin-top: 14px; font-size: 0.9rem; color: var(--mute); }
+.bigRow i { font-size: 0.5em; font-style: normal; vertical-align: super; opacity: 0.6; }
+.bigRow span { font-size: 11px; letter-spacing: 0.04em; color: var(--mute); }
+
+/* Where this county sits in the national distribution, at a glance. The rail
+   is the whole panel; the mark is one place in it. */
+.pctWrap { margin: 16px 0 26px; }
+.pctTrack {
+  position: relative;
+  height: 6px;
+  border-radius: 3px;
+  background: linear-gradient(90deg, #4a7ab8 0%, #6d9a8c 40%, #c9975c 72%, #e8734a 100%);
+  opacity: 0.55;
+}
+.pctMark {
+  position: absolute;
+  top: -5px;
+  width: 3px;
+  height: 16px;
+  margin-left: -1.5px;
+  border-radius: 2px;
+  background: var(--ink);
+  box-shadow: 0 0 0 2px #131315;
+}
+.pctWrap p { margin: 9px 0 0; font-size: 0.86rem; color: var(--mute); }
+.pctWrap b { color: var(--ink); font-weight: 500; }
+
+/* A note that belongs to the chart above it — why an axis is shaped as it is,
+   or why a line is absent. Never an apology for the chart. */
+.aside {
+  margin: 10px 0 26px;
+  font-size: 0.84rem;
+  line-height: 1.65;
+  color: var(--mute);
+}
+.report :global(figure) { margin-bottom: 26px; }
 
 /* ------------------------------------------------------------- sources */
 

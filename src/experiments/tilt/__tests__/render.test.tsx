@@ -10,7 +10,6 @@
 import type { ReactElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import data from '../../../data/tilt.json';
-import counties from '../../../data/tilt-counties.json';
 import { SOURCES, assertNoUnverifiedClaims } from '../../../data/incarceration-sources';
 import {
   ChapterDecline, ChapterBands, ChapterTilt, ChapterEliminations, ChapterCapacity,
@@ -108,9 +107,52 @@ console.log(`  ICE = ${rural.iceShareOfPretrialChange}% of the rural pretrial ch
 /* ---- panels are stated, and real ------------------------------------ */
 console.log('\nPanels');
 ok(data.ch1.panel > 2000, `rate panel is only ${data.ch1.panel} counties`);
+/* The lookup index is fetched from public/ at runtime rather than bundled, so
+   nothing at build time would notice if the pipeline stopped writing it, or
+   wrote a shape the component cannot read. Read it off disk and check both. */
+const counties: import('../Lookup').County[] = JSON.parse(require('fs').readFileSync(__dirname + '/../../../../public/tilt-counties.json', 'utf8'));
 ok(counties.length === data.ch1.panel,
    `lookup has ${counties.length} counties but the panel is ${data.ch1.panel}`);
-console.log(`  ${data.ch1.panel.toLocaleString()} counties, lookup matches`);
+ok(counties.every((c) => c.rate.length === data.ch1.years.length),
+   'some counties do not carry one rate per year — the chart would draw a short line');
+ok(counties.every((c) => c.pct >= 0 && c.pct <= 100), 'a percentile is outside 0–100');
+ok(counties.every((c) => (c.beds === undefined) === (c.people === undefined)),
+   'a county has beds without people or people without beds — the bed chart draws both or neither');
+ok(counties.every((c) => !c.beds || c.beds.length === data.ch1.years.length),
+   'a capacity series is short, which would draw as capacity vanishing');
+/* The percentile has to be a real rank, or the strip under the headline is
+   decoration. Check the extremes against the panel the ranks came from. */
+{
+  const sorted = [...counties].sort((a, b) => a.rate.at(-1)! - b.rate.at(-1)!);
+  ok(sorted[0].pct <= 1 && sorted.at(-1)!.pct >= 99,
+     `percentiles do not span the panel: lowest rate is p${sorted[0].pct}, highest p${sorted.at(-1)!.pct}`);
+}
+console.log(`  ${data.ch1.panel.toLocaleString()} counties, ${counties.filter((c) => c.beds).length.toLocaleString()} with capacity, series and ranks intact`);
+
+/* ---- the county report, which no search runs under test ---------------
+ * The axis under the county line is computed from that county's own maximum,
+ * because 373 counties exceed 1,000 per 100,000 and one reaches 56,757. A
+ * fixed axis would clip them silently. A dynamic one can divide by zero, take
+ * the log of nothing, or emit a NaN into a path — so every county in the
+ * panel is rendered here, not a sample of three.
+ */
+console.log('\nEvery county renders');
+{
+  const { CountyReport } = require('../Lookup') as typeof import('../Lookup');
+  let bad = 0, worst = '';
+  for (const c of counties) {
+    let m = '';
+    try { m = renderToStaticMarkup(<CountyReport c={c} />); }
+    catch (e) { bad++; worst ||= `${c.name} threw: ${(e as Error).message}`; continue; }
+    if (/NaN|Infinity/.test(m)) { bad++; worst ||= `${c.name} drew a NaN`; }
+  }
+  ok(bad === 0, `${bad} counties failed to render — first: ${worst}`);
+  /* The outlier is the case the fixed axis got wrong, so name it. */
+  const top = [...counties].sort((a, b) => b.rate.at(-1)! - a.rate.at(-1)!)[0];
+  ok(renderToStaticMarkup(<CountyReport c={top} />).includes(top.rate.at(-1)!.toLocaleString()),
+     `the highest-rate county (${top.name}, ${top.rate.at(-1)}) does not print its own 2019 rate`);
+  console.log(`  ${counties.length.toLocaleString()} rendered clean, including ${top.name} at ${top.rate.at(-1)!.toLocaleString()} per 100,000`);
+}
 
 /* The 2D/3D switch works in BOTH directions.
  *

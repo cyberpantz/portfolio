@@ -33,6 +33,15 @@ import { fileURLToPath } from 'node:url';
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const RAW = join(ROOT, 'src', 'data', 'raw');
 const OUT = join(ROOT, 'src', 'data');
+/*
+ * The county file goes to public/ rather than src/, and is fetched on demand.
+ *
+ * With eighteen years per county it is ~240KB gzipped — more than the rest of
+ * the piece put together. Bundling it would make six chapters of line charts
+ * wait on a search index that most readers never open. It is fetched the
+ * first time somebody actually uses the lookup.
+ */
+const PUB = join(ROOT, 'public');
 
 const Y0 = 2002, Y1 = 2019;
 const YEARS = Array.from({ length: Y1 - Y0 + 1 }, (_, i) => Y0 + i);
@@ -213,12 +222,48 @@ const anchor = (fips) => {
     held: ys.map((y) => { const r = years.get(y); return (r.oth ?? 0) + (r.pri ?? 0) + (r.fed ?? 0); }) };
 };
 
-/* ── ch7 — the lookup ──────────────────────────────────────────────────── */
+/* ── ch7 — the lookup ──────────────────────────────────────────────────
+ *
+ * Six numbers in boxes was a thin reward for going to the trouble of
+ * searching. To draw anything worth looking at, a county needs its whole
+ * series rather than its endpoints — so each one carries eighteen years of
+ * rate, and its population and beds where it reported both.
+ *
+ * Rates are rounded to whole numbers and beds to hundreds. At 2,513 counties
+ * the difference between one decimal place and none is about 25KB, and
+ * nobody reads a jail rate to a tenth.
+ */
+const capByFips = new Set(pCap);
 const counties = pRate.map((f) => {
-  const a = byFips.get(f).get(Y0), b = byFips.get(f).get(Y1);
-  return { fips: f, name: a.name, state: a.state, urb: a.urb, band: bandOfFips.get(f),
-    pop: round(b.pop), r0: round((a.jail / a.pop) * 1e5, 1), r1: round((b.jail / b.pop) * 1e5, 1) };
+  const yrs = byFips.get(f);
+  const a = yrs.get(Y0), b = yrs.get(Y1);
+  const rate = YEARS.map((y) => {
+    const r = yrs.get(y);
+    return Math.round((r.jail / r.pop) * 1e5);
+  });
+  const out = {
+    fips: f, name: a.name, state: a.state, urb: a.urb, band: bandOfFips.get(f),
+    pop: round(b.pop), rate,
+  };
+  /* Only where the county reported capacity in every year — an incomplete
+     bed line next to a complete population line would read as beds vanishing. */
+  if (capByFips.has(f)) {
+    out.people = YEARS.map((y) => Math.round(yrs.get(y).jail));
+    out.beds = YEARS.map((y) => Math.round(yrs.get(y).cap));
+  }
+  return out;
 });
+
+/* National percentile of the 2019 rate, so a county can be placed in the
+   field rather than just described. Computed here because doing it in the
+   browser means shipping the sort as well as the data. */
+const sorted = counties.map((c) => c.rate[c.rate.length - 1]).sort((x, y) => x - y);
+for (const c of counties) {
+  const v = c.rate[c.rate.length - 1];
+  let lo = 0, hi = sorted.length;
+  while (lo < hi) { const m = (lo + hi) >> 1; if (sorted[m] < v) lo = m + 1; else hi = m; }
+  c.pct = Math.round((lo / (sorted.length - 1)) * 100);
+}
 
 mkdirSync(OUT, { recursive: true });
 const bundle = {
@@ -231,11 +276,12 @@ const bundle = {
   anchors: { grant: anchor('21081'), terrebonne: anchor('22109') },
 };
 writeFileSync(join(OUT, 'tilt.json'), JSON.stringify(bundle));
-writeFileSync(join(OUT, 'tilt-counties.json'), JSON.stringify(counties));
+mkdirSync(PUB, { recursive: true });
+writeFileSync(join(PUB, 'tilt-counties.json'), JSON.stringify(counties));
 
-const kb = (p) => `${(readFileSync(join(OUT, p)).length / 1024).toFixed(0)} KB`;
-console.log(`\nwrote src/data/tilt.json (${kb('tilt.json')})`);
-console.log(`wrote src/data/tilt-counties.json (${kb('tilt-counties.json')}, ${counties.length.toLocaleString()} counties)\n`);
+const kb = (d, p) => `${(readFileSync(join(d, p)).length / 1024).toFixed(0)} KB`;
+console.log(`\nwrote src/data/tilt.json (${kb(OUT, 'tilt.json')})`);
+console.log(`wrote public/tilt-counties.json (${kb(PUB, 'tilt-counties.json')}, ${counties.length.toLocaleString()} counties, fetched on demand)\n`);
 console.log(`  panels   rate ${pRate.length}  capacity ${pCap.length}  pretrial+ICE ${pPre.length}  held-for ${heldRural.length} rural`);
 console.log(`  gradient ${bandSeries[0].rate[0]} → ${bandSeries[0].rate.at(-1)} (smallest)   ` +
             `${bandSeries.at(-1).rate[0]} → ${bandSeries.at(-1).rate.at(-1)} (largest)`);

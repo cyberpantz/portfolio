@@ -39,3 +39,7 @@ src/assets/explorations/FAILED-*.png
 # stops every data module in the project from being tracked.
 /data/
 src/data/raw/
+
+# esbuild side-output from the test bundler. It was committed once by
+# accident and then showed up as a diff on every test run.
+src/experiments/*/__tests__/.bundle.*
