@@ -112,6 +112,28 @@ ok(counties.length === data.ch1.panel,
    `lookup has ${counties.length} counties but the panel is ${data.ch1.panel}`);
 console.log(`  ${data.ch1.panel.toLocaleString()} counties, lookup matches`);
 
+/* The 2D/3D switch works in BOTH directions.
+ *
+ * The first version had a single flag doing two jobs, so "show as a chart"
+ * overwrote the WebGL capability check and there was no state left that
+ * remembered 3D had ever been possible. One-way. This renders the fallback
+ * path and asserts the way back is present and labelled as a return.
+ */
+console.log('\nThe surface toggle is two-way');
+{
+  const f = html['tilt/fallback'] ?? '';
+  /* Server-rendered, so the capability probe has not run: can3d is false and
+     no switch should be offered at all rather than a dead one. */
+  ok(!/Show as a/.test(f),
+     'the fallback offers a 3D switch before WebGL has been confirmed — it would be dead on click');
+  const src = require('fs').readFileSync(__dirname + '/../chapters.tsx', 'utf8');
+  ok(/Show as a flat chart/.test(src) && /Show as a surface/.test(src),
+     'chapters.tsx has no return path from the flat chart to the surface');
+  ok(/aria-pressed=\{showing3d\}/.test(src),
+     'the switch does not announce its state');
+}
+console.log('  both labels present, and none offered before WebGL is confirmed');
+
 /* No <title> inside any chart SVG.
  *
  * It renders as a native browser tooltip that trails the cursor across the

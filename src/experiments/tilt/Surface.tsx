@@ -6,32 +6,37 @@
  * The finding is not "rates went up". It is that a relationship which barely
  * existed in 2002 — between how small a county is and how much it jails —
  * had become strong by 2019. That is a property of a SURFACE: county size on
- * one axis, year on the other, rate as height.
+ * one axis, year on the other, rate as height. Seen whole, the near edge is
+ * almost level and the far edge is a ramp, and the object between them twists.
  *
- * Seen whole, the near edge (2002) is almost level and the far edge (2019) is
- * a ramp, and the object between them twists. A line chart can show the same
- * numbers but makes the reader assemble the twist from seven separate slopes.
- * Here it is one shape, and you can walk around it.
+ * ── Why it is labelled the way it is ─────────────────────────────────────
  *
- * Every other chapter is deliberately flat. This is the only place the third
- * dimension is carrying information rather than decorating two.
+ * The first version had three static hints printed under the canvas — "←
+ * smaller counties", "height = jail rate", "2002 → 2019 →". Useless, and
+ * worse than useless the moment anyone dragged it: the labels kept claiming
+ * a left and a right that the object no longer had. A 3D chart cannot have
+ * 2D axis labels.
  *
- * ── What it refuses to do ────────────────────────────────────────────────
+ * So the labels live IN the scene, pinned to the ends of the axes they
+ * describe, and they travel with the geometry. Turn it around and "2019" is
+ * still at the 2019 end. Every band is named at its own edge, and hovering
+ * the surface reads out the exact county size, year and rate under the
+ * cursor — which is the thing a picture of a landscape cannot otherwise
+ * tell you.
  *
- * No auto-rotation. A surface that spins on its own is a screensaver, and it
- * moves while you are trying to read a value off it. The camera only moves
- * when the reader moves it, and the orbit is clamped so the thing cannot be
- * turned upside down or edge-on into invisibility.
+ * ── What it still refuses to do ──────────────────────────────────────────
  *
- * Falls back to the 2D chart whenever WebGL is unavailable or reduced motion
- * is set — the caller handles that, because the fallback is a real chart and
- * not this component's business.
+ * No auto-rotation beyond a short settle. A surface that spins by itself is
+ * a screensaver, and it moves while you are trying to read a value off it.
+ * Orbit is clamped so it cannot be turned edge-on or viewed from beneath,
+ * both of which make it unreadable and look broken.
  */
 
-import { useMemo, useRef } from 'react';
-import { Canvas, useFrame, type ThreeElements } from '@react-three/fiber';
-import { OrbitControls } from '@react-three/drei';
+import { useMemo, useRef, useState } from 'react';
+import { Canvas, useFrame, type ThreeEvent } from '@react-three/fiber';
+import { OrbitControls, Html } from '@react-three/drei';
 import * as THREE from 'three';
+import s from './tilt.module.css';
 
 export type SurfaceData = {
   /** One entry per size band, smallest first. */
@@ -39,32 +44,34 @@ export type SurfaceData = {
   years: number[];
 };
 
-/* Matches the 2D ramp so a reader moving between them is not relearning. */
-const RAMP = ['#e8734a', '#e08a4e', '#c9975c', '#9c9a6e', '#6d9a8c', '#4f8fa8', '#4a7ab8'];
+/* Matches the 2D ramp exactly, so a reader moving between the two charts is
+   not relearning which colour is which. */
+export const RAMP = ['#e8734a', '#e08a4e', '#c9975c', '#9c9a6e', '#6d9a8c', '#4f8fa8', '#4a7ab8'];
 
-const SX = 3.2;   // width across the size axis
-const SZ = 4.4;   // depth across the years
-const SY = 2.6;   // height
+const SX = 3.2, SZ = 4.4, SY = 2.6;
 
-function Mesh({ data }: { data: SurfaceData }) {
-  const { geometry, wire } = useMemo(() => {
-    const nx = data.bands.length, nz = data.years.length;
+type Pick = { band: number; year: number; rate: number; pos: [number, number, number] } | null;
+
+function Surface3D({ data, onPick, picked }:
+  { data: SurfaceData; onPick: (p: Pick) => void; picked: Pick }) {
+  const nx = data.bands.length, nz = data.years.length;
+
+  const { geometry, wire, lo, hi, vertex } = useMemo(() => {
     const all = data.bands.flatMap((b) => b.rate);
     const lo = Math.min(...all), hi = Math.max(...all);
-
+    const vertex = (x: number, z: number): [number, number, number] => ([
+      (x / (nx - 1) - 0.5) * SX,
+      ((data.bands[x].rate[z] - lo) / (hi - lo)) * SY,
+      (z / (nz - 1) - 0.5) * SZ,
+    ]);
     const pos: number[] = [], col: number[] = [], idx: number[] = [];
     const c = new THREE.Color();
     for (let z = 0; z < nz; z++) {
       for (let x = 0; x < nx; x++) {
-        const v = data.bands[x].rate[z];
-        pos.push(
-          (x / (nx - 1) - 0.5) * SX,
-          ((v - lo) / (hi - lo)) * SY,
-          (z / (nz - 1) - 0.5) * SZ
-        );
+        pos.push(...vertex(x, z));
         /* Colour by BAND, not by height. Height already encodes the rate;
-           colouring by it again would say one thing twice and leave the size
-           axis unlabelled from every angle. */
+           using it twice would leave the size axis unreadable from most
+           angles, which is exactly the axis the chapter is about. */
         c.set(RAMP[x % RAMP.length]);
         col.push(c.r, c.g, c.b);
       }
@@ -80,25 +87,68 @@ function Mesh({ data }: { data: SurfaceData }) {
     g.setAttribute('color', new THREE.Float32BufferAttribute(col, 3));
     g.setIndex(idx);
     g.computeVertexNormals();
-    return { geometry: g, wire: new THREE.WireframeGeometry(g) };
-  }, [data]);
+    return { geometry: g, wire: new THREE.WireframeGeometry(g), lo, hi, vertex };
+  }, [data, nx, nz]);
+
+  /* The grid is regular, so the nearest vertex is arithmetic rather than a
+     second raycast against 126 points. */
+  const move = (e: ThreeEvent<PointerEvent>) => {
+    e.stopPropagation();
+    const x = Math.round((e.point.x / SX + 0.5) * (nx - 1));
+    const z = Math.round((e.point.z / SZ + 0.5) * (nz - 1));
+    const bx = Math.min(Math.max(x, 0), nx - 1), bz = Math.min(Math.max(z, 0), nz - 1);
+    onPick({ band: bx, year: bz, rate: data.bands[bx].rate[bz], pos: vertex(bx, bz) });
+  };
 
   return (
     <group>
-      <mesh geometry={geometry}>
+      <mesh geometry={geometry} onPointerMove={move} onPointerOut={() => onPick(null)}>
         <meshStandardMaterial vertexColors side={THREE.DoubleSide} roughness={0.85} metalness={0.05} />
       </mesh>
-      {/* The wireframe is not decoration: on a smooth surface with no gridlines
-          there is nothing to judge the slope against, and the tilt stops being
-          legible as soon as the camera moves off axis. */}
+      {/* Not decoration: on a smooth surface with no gridlines there is
+          nothing to judge the slope against, and the tilt stops being legible
+          as soon as the camera moves off axis. */}
       <lineSegments geometry={wire}>
         <lineBasicMaterial color="#e8e8e0" transparent opacity={0.16} />
       </lineSegments>
+
+      {picked && (
+        <group position={picked.pos}>
+          <mesh>
+            <sphereGeometry args={[0.055, 16, 16]} />
+            <meshBasicMaterial color="#ffffff" />
+          </mesh>
+          <Html center distanceFactor={9} zIndexRange={[20, 0]}>
+            <div className={s.pick}>
+              <b>{Math.round(picked.rate)}</b>
+              <span>per 100k</span>
+              <em>{data.bands[picked.band].label} &middot; {data.years[picked.year]}</em>
+            </div>
+          </Html>
+        </group>
+      )}
+
+      {/* Axis labels live in the scene and travel with it. Turn the surface
+          around and 2019 is still at the 2019 end. */}
+      {data.bands.map((b, i) => (
+        <Html key={b.label} position={[(i / (nx - 1) - 0.5) * SX, -0.12, -SZ / 2 - 0.34]}
+              center zIndexRange={[10, 0]}>
+          <span className={s.axisTick} style={{ color: RAMP[i] }}>{b.label}</span>
+        </Html>
+      ))}
+      <Html position={[SX / 2 + 0.46, -0.1, -SZ / 2]} center zIndexRange={[10, 0]}>
+        <span className={s.axisTick}>{data.years[0]}</span>
+      </Html>
+      <Html position={[SX / 2 + 0.46, -0.1, SZ / 2]} center zIndexRange={[10, 0]}>
+        <span className={s.axisTick}>{data.years[data.years.length - 1]}</span>
+      </Html>
+      <Html position={[-SX / 2 - 0.5, SY / 2, -SZ / 2]} center zIndexRange={[10, 0]}>
+        <span className={s.axisName}>jail rate &middot; {Math.round(lo)}&ndash;{Math.round(hi)} per 100k</span>
+      </Html>
     </group>
   );
 }
 
-/** A faint floor so the surface has something to be tilted relative to. */
 function Floor() {
   return (
     <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.02, 0]}>
@@ -108,8 +158,8 @@ function Floor() {
   );
 }
 
-/* A very slow drift on first load only, so the shape reads as an object
-   rather than a picture — then it stops and stays where the reader leaves it. */
+/* A brief drift on load so the shape reads as an object rather than a
+   picture, then it stops and stays where the reader leaves it. */
 function Settle({ done }: { done: React.MutableRefObject<boolean> }) {
   const t = useRef(0);
   useFrame((state, dt) => {
@@ -124,30 +174,20 @@ function Settle({ done }: { done: React.MutableRefObject<boolean> }) {
 
 export default function Surface({ data }: { data: SurfaceData }) {
   const settled = useRef(false);
+  const [picked, setPicked] = useState<Pick>(null);
   return (
-    <Canvas
-      camera={{ position: [4.6, 3.1, 5.0], fov: 38 }}
-      dpr={[1, 2]}
-      style={{ width: '100%', height: '100%', display: 'block' }}
-      gl={{ antialias: true }}
-    >
+    <Canvas camera={{ position: [4.6, 3.1, 5.0], fov: 38 }} dpr={[1, 2]}
+            style={{ width: '100%', height: '100%', display: 'block' }}
+            gl={{ antialias: true }}>
       <ambientLight intensity={0.85} />
       <directionalLight position={[4, 8, 6]} intensity={1.15} />
       <directionalLight position={[-6, 3, -4]} intensity={0.35} />
       <Floor />
-      <Mesh data={data} />
+      <Surface3D data={data} onPick={setPicked} picked={picked} />
       <Settle done={settled} />
-      <OrbitControls
-        enablePan={false}
-        enableZoom
-        minDistance={4.5}
-        maxDistance={11}
-        /* Clamped so the surface cannot be turned edge-on or viewed from
-           underneath, both of which make it unreadable and look broken. */
-        minPolarAngle={0.25}
-        maxPolarAngle={Math.PI / 2.35}
-        onStart={() => { settled.current = true; }}
-      />
+      <OrbitControls enablePan={false} enableZoom minDistance={4.5} maxDistance={11}
+                     minPolarAngle={0.25} maxPolarAngle={Math.PI / 2.35}
+                     onStart={() => { settled.current = true; }} />
     </Canvas>
   );
 }

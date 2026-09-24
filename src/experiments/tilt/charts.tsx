@@ -54,13 +54,15 @@ export type HoverSpec = {
 
 export function Frame({
   title, desc, children, yTicks, xTicks, sx, sy, fmtY = (n: number) => `${n}`,
-  sourceId = 'vera-data', hover,
+  sourceId = 'vera-data', hover, extra,
 }: {
   title: string; desc: string; children: ReactNode;
   yTicks: number[]; xTicks: number[]; sx: Scale; sy: Scale;
   fmtY?: (n: number) => string;
   sourceId?: string;
   hover?: HoverSpec;
+  /** An extra control for the caption — the 2D/3D switch in chapter three. */
+  extra?: ReactNode;
 }) {
   const [at, setAt] = useState<number | null>(null);
   const src = byId(sourceId);
@@ -161,6 +163,7 @@ export function Frame({
       </svg>
       <figcaption>
         {hover && <span className={s.hint}>Hover, or focus and use ← →</span>}
+        {extra}
         <a href={src.url} target="_blank" rel="noopener noreferrer">{src.publisher}{src.date ? `, ${src.date}` : ''}</a>
       </figcaption>
     </figure>

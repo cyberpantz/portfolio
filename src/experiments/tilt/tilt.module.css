@@ -326,16 +326,7 @@
   font-size: 12px;
   color: var(--mute);
 }
-.axes {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  margin-top: 8px;
-  font: 600 10.5px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--mute);
-}
+
 
 /* The 2D chart, kept in the accessibility tree beneath the canvas.
    A <canvas> is opaque to assistive technology however it is labelled. */
@@ -358,3 +349,48 @@
 /* The hint can wrap at narrow widths rather than overflowing the figure,
    which it did — the caption is a flex row and the row had nowhere to go. */
 .figure figcaption { flex-wrap: wrap; }
+
+/* --------------------------------------------- labels inside the scene */
+
+/*
+ * Rendered as DOM through drei's <Html>, positioned at points in the scene,
+ * so they travel with the geometry. The first version printed axis hints
+ * under the canvas in fixed positions, which stopped being true the instant
+ * anyone dragged the surface — a label insisting on a left and a right the
+ * object no longer had.
+ *
+ * pointer-events: none throughout, or the labels would swallow the drags and
+ * hovers meant for the surface behind them.
+ */
+.axisTick,
+.axisName {
+  pointer-events: none;
+  user-select: none;
+  white-space: nowrap;
+  font: 600 10px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--mute);
+  text-shadow: 0 0 4px #131315, 0 0 8px #131315;
+}
+.axisName { text-transform: none; letter-spacing: 0.04em; }
+
+/* The hover readout, pinned to the point it describes. Scales with distance
+   via distanceFactor so it stays attached rather than floating free. */
+.pick {
+  pointer-events: none;
+  user-select: none;
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+  padding: 5px 9px;
+  border-radius: 7px;
+  background: #e8e8e0;
+  color: #131315;
+  font: 500 12px/1.2 -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+  white-space: nowrap;
+  transform: translateY(-26px);
+}
+.pick b { font-size: 15px; font-weight: 600; }
+.pick span { opacity: 0.6; }
+.pick em { font-style: normal; opacity: 0.75; border-left: 1px solid rgb(0 0 0 / 20%); padding-left: 6px; }

@@ -52,7 +52,7 @@ export function ChapterDecline() {
  * where it is not. Putting them in one component keeps the geometry
  * registered between the two, so the transition is the argument.
  */
-export function ChapterBands({ mode }: { mode: 'count' | 'rate' }) {
+export function ChapterBands({ mode, toggle }: { mode: 'count' | 'rate'; toggle?: ReactNode }) {
   const bands = data.bands;
   const series = bands.map((b) => (mode === 'count' ? b.count : b.rate));
   const all = series.flat();
@@ -66,7 +66,8 @@ export function ChapterBands({ mode }: { mode: 'count' | 'rate' }) {
         : `In 2002 the smallest counties jailed at ${bands[0].rate[0]} per 100,000 against ${bands.at(-1)!.rate[0]} in the largest. By 2019 it is ${bands[0].rate.at(-1)} against ${bands.at(-1)!.rate.at(-1)}.`}
       yTicks={yTicks} xTicks={XT} sx={sc.x} sy={sc.y} fmtY={mode === 'count' ? k : fmt}
       hover={{ xs: YEARS, fmt: mode === 'count' ? k : fmt,
-               rows: bands.map((b, i) => ({ label: b.label, values: series[i], ink: RAMP[i] })) }}>
+               rows: bands.map((b, i) => ({ label: b.label, values: series[i], ink: RAMP[i] })) }}
+      extra={toggle}>
       {bands.map((b, i) => (
         <path key={b.key} d={path(YEARS, series[i], sc.x, sc.y)} fill="none"
               stroke={RAMP[i]} strokeWidth={2} opacity={0.92} />
@@ -95,19 +96,44 @@ export function ChapterBands({ mode }: { mode: 'count' | 'rate' }) {
  *   a render error  — a WebGL context can be lost at any moment
  */
 export function ChapterTilt() {
-  const [use3d, setUse3d] = useState(false);
+  /*
+   * Three separate facts, and conflating any two of them is how the toggle
+   * ended up one-way in the first version.
+   *
+   *   can3d   — WebGL exists and the reader has not asked for reduced motion
+   *   want3d  — what the reader last chose
+   *   failed  — the canvas threw, which no preference should be able to undo
+   *
+   * The old code had only one flag, so "show as a chart" overwrote the
+   * capability check and there was no state left that remembered 3D had ever
+   * been possible. A control with no inverse is a trap, however small.
+   */
+  const [can3d, setCan3d] = useState(false);
+  const [want3d, setWant3d] = useState(true);
   const [failed, setFailed] = useState(false);
 
   useEffect(() => {
     if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
     try {
       const c = document.createElement('canvas');
-      const gl = c.getContext('webgl2') ?? c.getContext('webgl');
-      if (gl) setUse3d(true);
+      if (c.getContext('webgl2') ?? c.getContext('webgl')) setCan3d(true);
     } catch { /* stays 2D */ }
   }, []);
 
-  if (!use3d || failed) return <ChapterBands mode="rate" />;
+  const showing3d = can3d && want3d && !failed;
+
+  /* The switch is offered whenever 3D is possible, in both directions, and
+     disappears entirely when it is not — rather than sitting there dead. */
+  const toggle = can3d && !failed ? (
+    <button type="button" className={s.linkish} onClick={() => setWant3d((v) => !v)}
+            aria-pressed={showing3d}>
+      {showing3d ? 'Show as a flat chart' : 'Show as a surface'}
+    </button>
+  ) : null;
+
+  if (!showing3d) {
+    return <ChapterBands mode="rate" toggle={toggle} />;
+  }
 
   const surface = {
     years: YEARS,
@@ -122,16 +148,9 @@ export function ChapterTilt() {
           </Suspense>
         </ErrorBoundary>
       </div>
-      <div className={s.axes} aria-hidden="true">
-        <span>← smaller counties</span>
-        <span>height = jail rate</span>
-        <span>2002 → 2019 →</span>
-      </div>
       <figcaption>
-        <span className={s.hint}>Drag to turn it</span>
-        <button type="button" className={s.linkish} onClick={() => setUse3d(false)}>
-          Show as a chart
-        </button>
+        <span className={s.hint}>Drag to turn it &middot; hover to read a value</span>
+        {toggle}
       </figcaption>
       {/* The numbers, for anyone the canvas cannot serve. A <canvas> is opaque
           to assistive technology no matter how it is labelled. */}
