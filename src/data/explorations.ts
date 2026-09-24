@@ -1,5 +1,6 @@
 import type { ImageMetadata } from 'astro';
 
+import tiltCover from '../assets/explorations/tilt.png';
 import chatbotsCover from '../assets/explorations/chatbots.png';
 import clickwheelCover from '../assets/explorations/clickwheel.png';
 import weatherVibeCover from '../assets/explorations/weather-vibe.png';
@@ -37,6 +38,17 @@ export interface Exploration {
 }
 
 export const EXPLORATIONS: Exploration[] = [
+  {
+    id: 'tilt',
+    name: 'The Tilt',
+    type: 'Data',
+    tags: ['Scrollytelling', 'SVG', 'React', 'Public data'],
+    url: '/explorations/tilt',
+    desc: 'Between 2002 and 2019 America did not stop putting people in jail — it moved the practice to its smallest places. A county of three thousand once jailed at about the same rate as a county of a million. Now it is more than double. Built from the Vera Institute\u2019s data, with every figure computed from the source rather than typed.',
+    cover: tiltCover,
+    coverAlt:
+      'Seven lines showing jail rates by county size, fanning apart between 2002 and 2019 as the smallest counties rise and the largest fall.',
+  },
   {
     id: 'chatbots',
     name: 'Chatbots',

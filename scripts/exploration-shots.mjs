@@ -244,6 +244,27 @@ const RECIPES = {
     },
   },
 
+  tilt: {
+    note: 'The gradient chapter — seven bands fanning apart.',
+    /*
+     * Framed on the sticky stage, not the page.
+     *
+     * The piece is a scrolling article; a screenshot of it from the top is
+     * a headline and a paragraph. The thing worth photographing is the
+     * chapter where the seven size bands have visibly separated, which is
+     * also the only frame that states the finding without a caption.
+     */
+    frame: '[class*="_stageInner_"]',
+    viewport: { width: 1280, height: 900 },
+    pad: 24,
+    async drive(page) {
+      // Scroll to the third chapter and let the observer settle on it.
+      await page.waitForSelector('[class*="_stageInner_"]', { timeout: 20000 });
+      await page.locator('#tilt').scrollIntoViewIfNeeded();
+      await page.waitForTimeout(1200);
+    },
+  },
+
   chatbots: {
     note: 'The sofa picker, mid-consultation.',
     /*
@@ -297,7 +318,7 @@ const RECIPES = {
        * its tab stops the run rather than photographing whichever
        * scenario happened to be showing.
        */
-      const tab = page.getByRole('tab', { name: 'Feline' });
+      const tab = page.getByRole('tab', { name: 'Cats' });
       await tab.waitFor({ state: 'visible', timeout: 15000 });
       await tab.click();
       await page.waitForTimeout(500);

@@ -54,6 +54,6 @@ export const SCENARIOS: Record<string, Scenario> = { care: CARE, feline: FELINE,
  */
 export const SCENARIO_LIST: { id: ScenarioId; label: string }[] = [
   { id: 'cancel', label: 'Cancel Anytime' },
-  { id: 'care', label: 'Care' },
-  { id: 'feline', label: 'Feline' },
+  { id: 'care', label: 'Medical' },
+  { id: 'feline', label: 'Cats' },
 ];
