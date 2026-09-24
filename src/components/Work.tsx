@@ -52,7 +52,7 @@ function WorkRow({ item, defaultOpen }: { item: Role; defaultOpen?: boolean }) {
       <div className={open ? 'expand-open' : 'expand-closed'}>
         <div className="pl-6 pb-5">
           {item.blurb && (
-            <p className="text-sm text-fg-sub leading-[1.65] mb-4">{item.blurb}</p>
+            <p className="text-sm text-fg-sub leading-[1.65] mb-4" dangerouslySetInnerHTML={{ __html: item.blurb }} />
           )}
           {item.bullets.map((raw, i) => {
             const { text, dates } = normalizeBullet(raw);

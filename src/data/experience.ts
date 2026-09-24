@@ -64,8 +64,8 @@ export const EXPERIENCE: Role[] = [
     yr: '2015–2019',
     tags: ['React', 'Redux', 'Node', 'Express', 'ElasticSearch'],
     bullets: [
-      "Tech lead on Tesla's vehicle configurator — consumer-facing discovery, customization and purchase, shipped across global markets.",
-      'Built A/B testing and controlled-rollout workflows with LaunchDarkly, letting teams test consumer experiences and ship changes incrementally across markets.',
+      "One of the leads on Tesla's vehicle configurator — consumer-facing discovery, customization and purchase, shipped across global markets.",
+      'Built A/B testing and controlled-rollout workflows, established testing practices, integrated with CI/CD pipelines.',
       'Partnered with design, product, localization and accessibility on brand-critical commerce experiences.',
     ],
   },
@@ -94,7 +94,7 @@ export const EXPERIENCE: Role[] = [
     yr: '2005–2009',
     tags: ['Flash', 'Motion', 'Audio', 'Interactive Advertising'],
     blurb:
-      'A two-person interactive agency. I was the entire technical half - Bela Spohrer was the design half. Go check out his work https://bela-sf.com/',
+      'A two-person interactive agency. I was the entire technical half - Bela Spohrer was the design half. Go check out his work <a href="https://bela-sf.com/" target="_blank">here</a>.',
     bullets: [
       'Built Flash campaign sites for Warner Bros. Records — deeply interactive artist and release sites with embedded music players and cinematic scenes.',
       'Motion and audio were the medium, not decoration: the whole experience was timeline, sound and state.'
@@ -106,7 +106,7 @@ export const EXPERIENCE: Role[] = [
     yr: '2002–2006',
     tags: ['Flash', 'PHP', 'JavaScript', 'Instructional Design'],
     blurb:
-      'Where the interactive and motion work started.',
+      'Foundational work that laid the groundwork for my career.',
     bullets: [
       {
         text: 'CaratFusion — Senior Flash / PHP / JavaScript Developer. Agency-side interactive advertising; animation and motion-driven brand experiences.',
