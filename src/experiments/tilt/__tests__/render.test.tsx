@@ -198,6 +198,43 @@ ok((html['tilt/fallback'] ?? '').includes('over 500k'),
    'chapter 3 fallback is missing the band labels — it is not the real chart');
 console.log('  chapter 3 falls back to the real 2D chart');
 
+/* ---- the prose quotes the data it is printed next to -----------------
+ *
+ * Chapter one read "peaked in 2008" for months. The panel peaks in 2007 —
+ * 734,475 against 733,116 — and the sentence was not invented: 2008 is the
+ * nationally reported peak, so a true fact about a different population was
+ * standing in for this one, beside a chart that disagreed with it.
+ *
+ * It survived review because it was a string. Anything a chapter asserts
+ * about a turning point or a direction is checked against the series here,
+ * so a figure can go stale in the pipeline but not in the copy.
+ */
+console.log('\nProse agrees with the series');
+{
+  /* Comments stripped first. The first version of this check failed on the
+     note explaining WHY the year is no longer typed — a test that forbids
+     discussing the bug it guards is a test nobody will keep. */
+  const src = (require('fs').readFileSync(__dirname + '/../Tilt.tsx', 'utf8') as string)
+    .replace(/\/\*[\s\S]*?\*\//g, '')
+    .replace(/^\s*\/\/.*$/gm, '');
+  ok(!/peaked in (19|20)\d\d/.test(src),
+     'a peak year is typed into the prose rather than derived from ch1.count');
+
+  const count = data.ch1.count;
+  const peak = data.ch1.years[count.indexOf(Math.max(...count))];
+  ok(peak === 2007, `the panel now peaks in ${peak}; chapter one is written around a single turning point`);
+
+  /* The standfirst is the one claim every reader sees, and it is a direction:
+     small counties up, large counties down. If that ever reverses the opening
+     sentence is wrong, and no chart further down would say so. */
+  const small = data.bands[0].rate, large = data.bands.at(-1)!;
+  ok(small.at(-1)! > small[0], 'the smallest counties no longer rise — the standfirst claims they do');
+  ok(large.rate.at(-1)! < large.rate[0], 'the largest counties no longer fall — the standfirst claims they do');
+  ok(!/did not stop putting|moved the practice/.test(src),
+     'the old "not X, but Y" standfirst is back; it asserts a transfer that chapter four disproves');
+  console.log(`  peak ${peak}, smallest +${Math.round((small.at(-1)! / small[0] - 1) * 100)}%, largest ${Math.round((large.rate.at(-1)! / large.rate[0] - 1) * 100)}%`);
+}
+
 /* ---- sourcing ------------------------------------------------------- */
 console.log('\nSources');
 /* Every sourceId a chart actually cites, so a figure can never quietly

@@ -19,7 +19,7 @@ the same, one of them is not a chapter.
 
 | # | Chapter | The claim | Form |
 |---|---|---|---|
-| 1 | **The number you know** | Jail population peaked 2008, fell 7% | One line, falling |
+| 1 | **The number you know** | Jail population peaked 2007, fell 7% | One line, falling |
 | 2 | **An average of opposites** | 61 counties falling outweigh 1,460 rising | That line separating into bands |
 | 3 | **The tilt** | Rate by county size: 1.31× → **2.61×**, monotonic | **3D. The centrepiece.** |
 | 4 | **Not the obvious answers** | Transfers flat, rural population −1%, demography 3pt | Three small flat charts |

@@ -28,12 +28,30 @@ import s from './tilt.module.css';
 
 const fmt = (n: number) => n.toLocaleString();
 
+/*
+ * Figures the prose quotes, computed rather than typed.
+ *
+ * Chapter one said "peaked in 2008" for months. In this panel the peak is
+ * 2007 — 734,475 against 733,116 the following year, a gap of about 1,300
+ * people out of three quarters of a million. The nationally reported peak IS
+ * 2008, so the sentence was not plucked out of the air; it was a true fact
+ * about a different population quietly standing in for this one. That is the
+ * exact failure this file's header warns about, and it survived because the
+ * number was a string rather than an expression. Now it cannot.
+ */
+const COUNT = data.ch1.count;
+const PEAK = data.ch1.years[COUNT.indexOf(Math.max(...COUNT))];
+const SINCE_PEAK = Math.abs(Math.round((COUNT[COUNT.length - 1] / Math.max(...COUNT) - 1) * 100));
+const pctChange = (r: number[]) => Math.round((r[r.length - 1] / r[0] - 1) * 100);
+const SMALLEST = pctChange(data.bands[0].rate);
+const LARGEST = pctChange(data.bands[data.bands.length - 1].rate);
+
 const CHAPTERS = [
   {
     id: 'decline',
     kicker: 'What you already know',
     title: 'American jails emptied out.',
-    body: `The county jail population peaked in 2008 and fell about 7 percent by 2019. That is true, it is well reported, and it is the number most people carry around. It is also the last thing in this piece that will behave the way you expect.`,
+    body: `The county jail population peaked in ${PEAK} and fell about ${SINCE_PEAK} percent by 2019. That is true, it is well reported, and it is the number most people carry around. It is also the last thing in this piece that will behave the way you expect.`,
     figure: <ChapterDecline />,
   },
   {
@@ -173,9 +191,20 @@ function Intro() {
   return (
     <header className={s.intro}>
       <h1>The Tilt</h1>
+      {/*
+        This read "the United States did not stop putting people in jail — it
+        moved the practice to its smallest places." Two things wrong with it.
+        The first is rhetorical: "not X, but Y" only lands if somebody believed
+        X, and nobody has ever believed America stopped jailing people. The
+        second is factual. "Moved" implies a transfer, a fixed quantity going
+        somewhere else — and chapter four spends its whole length proving that
+        is not what happened. Rural rates rose while urban rates fell; the two
+        are not the same people relocated.
+      */}
       <p className={s.standfirst}>
-        Between 2002 and 2019 the United States did not stop putting people in jail.
-        It moved the practice to its smallest places.
+        Between 2002 and 2019 rural America began jailing people at a far faster rate
+        than urban America. In the smallest counties the rate rose by {SMALLEST} percent.
+        In the largest it fell by {Math.abs(LARGEST)}.
       </p>
       <p className={s.credit}>
         The finding is the Vera Institute&rsquo;s, from <i>Out of Sight</i> (2017). What is new here
