@@ -1,0 +1,104 @@
+---
+import ExpBase from '../../layouts/ExpBase.astro';
+import ExpChrome from '../../components/exp/ExpChrome.astro';
+import Chatbots from '../../experiments/chatbots/Chatbots';
+---
+
+<ExpBase
+  title="Chatbots — Frank Young"
+  description="Chatbots, 2026 — three simulated conversations sharing one set of components: medical triage, a cat behaviour consultation, and a subscription you cannot cancel. Every response is written by hand, because the subject is the manner of the interface rather than a model behind it. Thinking, no-results, out-of-scope and safety states designed to the same finish as the happy path."
+>
+  <ExpChrome name="Chatbots" kind="Interface" />
+  <main id="main" class="exp-stage">
+    <figure class="sb-stage">
+      {/* client:visible so the conversation starts when it is scrolled
+          to, not on page load — nothing should be halfway through a
+          nine-second think before anyone has seen it. */}
+      <Chatbots client:visible />
+
+      {/*
+        A wall label, not a README. The engineering — the beat union, the
+        motive classifier, the three clocks — is in the source and the
+        spec, where anyone who wants it will go looking.
+      */}
+      <figcaption class="sb-label">
+        <p class="sb-label__title"><cite>Chatbots</cite>, 2026</p>
+        <p class="sb-label__medium">React, CSS modules, no API</p>
+        <p class="sb-label__body">
+          Three simulated conversations — no actual LLMs were used or consulted in the making.
+        </p>
+        <p class="sb-label__body">
+          The point was to explore how different layouts and components behave inside a
+          conversational UI, and to design the awkward states — a wait, a dead end, a
+          refusal — to the same finish as the happy path.
+        </p>
+        {/*
+          The engine claim belongs here, a level above the device.
+
+          It was inside the demo, as the cat scenario's own description,
+          where it was both the wrong register and the wrong altitude: a
+          wall label says what the work IS, and "voice and lexicon are
+          data" is a note about how it was made. One level up, addressed
+          to someone deciding whether to look, it is exactly the right
+          thing to say — and it is only worth saying now that there are
+          scripts to prove it.
+
+          The third one is what turns it from a claim into an argument.
+          Two cooperative bots look like one bot with two palettes; a
+          third that is working against you cannot be explained that
+          way, because nothing changed except the authoring.
+        */}
+        <p class="sb-label__body sb-label__body--dim">
+         Always awake, endlessly patient, often useful — and, the second it stops understanding you, this shareholder-friendly design becomes absolutely infuriating. Helpfulness turns out to be a setting, and not always the one shareholders prefer. Three conversations on one engine, and one of them is not on your side. Enjoy the future.
+        </p>
+      </figcaption>
+    </figure>
+  </main>
+</ExpBase>
+
+<style>
+  /* The device is a white object on a neutral workbench — the ground has
+     to be neither the page's near-black nor a panel competing with it. */
+  .sb-stage {
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(28px, 4vw, 44px);
+    padding: clamp(32px, 6vw, 80px) 16px;
+    background: radial-gradient(120% 70% at 50% 18%, #2a2a2e 0%, #131315 62%, #0c0c0d 100%);
+  }
+  .sb-label {
+    max-width: 46ch;
+    margin: 0;
+    text-align: left;
+  }
+  .sb-label > p { margin: 0; }
+  .sb-label__title {
+    font-family: var(--font-serif, Georgia, serif);
+    font-size: 17px;
+    line-height: 1.35;
+    color: var(--color-exp-bright, #c8c8c8);
+  }
+  .sb-label__title cite { font-style: italic; }
+  .sb-label__medium {
+    margin-top: 10px !important;
+    font-family: var(--font-mono, ui-monospace, monospace);
+    font-size: 12px;
+    line-height: 1.75;
+    color: var(--color-exp-muted, #9a9a92);
+  }
+  .sb-label__body {
+    margin-top: 18px !important;
+    font-family: var(--font-mono, ui-monospace, monospace);
+    font-size: 13px;
+    line-height: 1.75;
+    color: var(--color-exp-base, #999);
+  }
+  .sb-label__body--dim {
+    margin-top: 14px !important;
+    font-size: 12px;
+    color: var(--color-exp-dim, #7d7d75);
+  }
+</style>

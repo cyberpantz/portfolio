@@ -1,0 +1,188 @@
+/*
+ * Skin tokens. Every value here is scenario data.
+ *
+ * `--s-tempo` re-times the whole feedback clock from one number, so
+ * family reads as patient and feline as brisk without a single animation
+ * being re-timed by hand. Authored time (think.ms) and perceptual
+ * thresholds (the nudge rungs) deliberately do NOT scale — a calm skin
+ * does not earn the right to postpone honesty by four seconds.
+ *
+ * Two things in this system take no tokens at all, for opposite reasons:
+ * safety states, because they must be recognised identically in every
+ * world, and the apparatus, because it was never in any of them.
+ */
+
+.sb-skin {
+  --s-accent: #2f5fd0;
+  --s-accent-ink: #ffffff;
+  --s-accent-soft: #f2f6ff;
+  --s-ai: #f2f2ee;
+  --s-ai-line: #e8e8e2;
+  --s-ai-ink: #17171a;
+  --s-surface: #ffffff;
+  --s-edge: #dededa;
+  --s-rule: #ebebe6;
+  --s-mute: #75757e;
+
+  --s-r: 13px;
+  --s-r-sm: 8px;
+  --s-r-shell: 20px;
+
+  --s-font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+  --s-size: 17px;
+  --s-lh: 1.5;
+  --s-gap: 9px;
+  --s-pad: 11px 14px;
+
+  --s-tempo: 1;
+}
+
+.sb-skin[data-skin='family'] {
+  --s-accent: #5b4b8a;
+  --s-accent-soft: #f6f4fb;
+  --s-ai: #f5f4f9;
+  --s-ai-line: #e9e6f1;
+  --s-edge: #ded9ec;
+  --s-rule: #ebe7f3;
+
+  --s-r: 16px;
+  --s-r-sm: 11px;
+  --s-r-shell: 24px;
+
+  --s-font: 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, serif;
+  --s-size: 17.5px;
+  --s-lh: 1.62;
+  --s-gap: 12px;
+  --s-pad: 13px 17px;
+
+  /* Slower. Air and an unhurried pulse read as patience. */
+  --s-tempo: 1.35;
+}
+
+/*
+ * Feline — deep teal on warm paper, and deliberately nothing like care.
+ *
+ * The old feline block was a sandy brown a couple of steps from the care
+ * blue in temperature and identical in structure, so switching scenarios
+ * looked like a filter rather than a different world. Teal is the
+ * furthest useful hue from a medical blue that still reads as calm, and
+ * the paper underneath it is warm rather than white — a vet's waiting
+ * room, not a clinic's.
+ *
+ * Softer corners and a slower tempo carry the rest. Nothing here is
+ * urgent by construction, which is exactly why the one screen that IS
+ * urgent has to refuse all of it.
+ */
+.sb-skin[data-skin='feline'] {
+  --s-accent: #1f6f63;
+  --s-accent-ink: #ffffff;
+  --s-accent-soft: #eef6f3;
+  --s-surface: #fffdf9;
+  --s-ai: #f3f0e8;
+  --s-ai-line: #e7e2d6;
+  --s-ai-ink: #17171a;
+  --s-edge: #e3ddd0;
+  --s-rule: #eee9dd;
+  --s-mute: #6b7670;
+
+  --s-r: 18px;
+  --s-r-sm: 12px;
+  --s-r-shell: 22px;
+
+  --s-size: 17px;
+  --s-lh: 1.45;
+  --s-gap: 8px;
+  --s-pad: 11px 15px;
+
+  /* Unhurried. A cat problem at 4am is still not an emergency. */
+  --s-tempo: 0.85;
+}
+
+/*
+ * Cancel Anytime — and this is the one that should look the best.
+ *
+ * The temptation with a hostile scenario is to dress it as a villain:
+ * grey, cramped, slightly broken, so the viewer knows how to feel before
+ * reading a word. That would be a lie about how these interfaces
+ * actually present, and it would let the pattern off the hook — nobody
+ * is fooled by an obviously nasty screen.
+ *
+ * So this skin is the friendliest of the three by some distance. The
+ * most saturated accent, the roundest corners in the system, generous
+ * padding, and the only skin with a tempo ABOVE 1 — it is quicker off
+ * the mark than either of the others, because eagerness is the whole
+ * performance. It is delighted to see you. It is delighted the entire
+ * time. That is the horror.
+ *
+ * Violet rather than another blue, for the same reason feline went
+ * teal: at a glance the three scenarios must not look like a filter
+ * applied to one screen. It also happens to be the house colour of
+ * roughly every consumer subscription, which is not an accident.
+ *
+ * Contrast measured, not eyeballed: white on #5b3fd6 is 6.72:1, and the
+ * mute on surface is 5.11:1. Both are in the lint.
+ */
+.sb-skin[data-skin='cancel'] {
+  --s-accent: #5b3fd6;
+  --s-accent-ink: #ffffff;
+  --s-accent-soft: #f2efff;
+  --s-surface: #fffdff;
+  --s-ai: #f6f4ff;
+  --s-ai-line: #e6e1f7;
+  --s-ai-ink: #17171a;
+  --s-edge: #e2ddf2;
+  --s-rule: #edeafa;
+  --s-mute: #6e6a85;
+
+  /* The roundest thing in the system. Nothing this shape has ever
+     refused anybody anything. */
+  --s-r: 20px;
+  --s-r-sm: 14px;
+  --s-r-shell: 24px;
+
+  --s-size: 17px;
+  --s-lh: 1.5;
+  --s-gap: 9px;
+  --s-pad: 12px 16px;
+
+  /*
+   * The only skin faster than real time. Care is 1.0 and feline is 0.85
+   * — both of those are interfaces willing to let you think. This one
+   * is always already replying.
+   */
+  --s-tempo: 1.15;
+}
+
+/*
+ * The morph.
+ *
+ * Unregistered custom properties are strings to the animation engine, so
+ * tokens snap. The CONSUMERS transition instead, which gets the same
+ * result more cheaply than registering every token with @property and
+ * degrades identically where that is unsupported.
+ */
+.sb-morph,
+.sb-morph :where(button, [data-bubble], [data-card], [data-opt], [data-composer]) {
+  transition:
+    background-color 420ms ease,
+    border-color 420ms ease,
+    color 420ms ease,
+    border-radius 420ms cubic-bezier(0.3, 0, 0.2, 1),
+    padding 420ms ease,
+    gap 420ms ease,
+    font-size 420ms ease,
+    line-height 420ms ease;
+}
+
+/* Safety never morphs, and neither does anything inside it. */
+.sb-morph [data-locked],
+.sb-morph [data-locked] * {
+  transition: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sb-morph,
+  .sb-morph * {
+    transition: none !important;
+  }
+}

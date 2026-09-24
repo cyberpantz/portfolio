@@ -1,5 +1,6 @@
 import type { ImageMetadata } from 'astro';
 
+import chatbotsCover from '../assets/explorations/chatbots.png';
 import clickwheelCover from '../assets/explorations/clickwheel.png';
 import weatherVibeCover from '../assets/explorations/weather-vibe.png';
 import fowlPlayCover from '../assets/explorations/kitchen-dodgeball.png';
@@ -36,6 +37,23 @@ export interface Exploration {
 }
 
 export const EXPLORATIONS: Exploration[] = [
+  {
+    id: 'chatbots',
+    name: 'Chatbots',
+    type: 'Interface',
+    tags: ['React', 'Conversational UI', 'A11y', 'Motion'],
+    url: '/explorations/chatbots',
+    desc: 'Always awake, endlessly patient, often useful — and, the second it stops understanding you, this shareholder-friendly design becomes absolutely infuriating. Helpfulness turns out to be a setting, and not always the one shareholders prefer. Three conversations on one engine, and one of them is not on your side. Enjoy the future.',
+    cover: chatbotsCover,
+    /*
+     * The alt describes what is in the picture, not what the piece is
+     * about — the card's own name and description already say that, and
+     * a screen reader reading all three gets the same sentence three
+     * times.
+     */
+    coverAlt:
+      'A chat interface asking "Show me where. Be honest." above a line drawing of a sofa, with options to tap the arms, back, cushions or underneath.',
+  },
   {
     id: 'clickwheel',
     name: 'Click Wheel',

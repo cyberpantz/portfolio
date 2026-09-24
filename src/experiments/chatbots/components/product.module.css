@@ -1,0 +1,1037 @@
+/*
+ * The product surface — everything inside the bezel.
+ *
+ * Reads only from skin tokens (--s-*), never from literals, so a scenario
+ * can restyle all of it. Safety is the exception and lives in its own
+ * file, which declares no tokens at all.
+ *
+ * Scale, declared once. Nothing below uses a value that is not on it.
+ *   space  4 · 6 · 9 · 12 · 16 · 22 · 30
+ *   type   10 · 12 · 13 · 15.5 · 17 · 19 · 22
+ *
+ * It was built on a 14px body, which is a dense-web-app size — correct
+ * for a settings panel, wrong for a chat. Every real messaging surface
+ * sits at 16–17px, and this device is 430px wide, which is a phone. At
+ * 14px it read as a screenshot of an app rather than a conversation.
+ *
+ * The first pass at this lifted the device and deliberately held the
+ * apparatus back, to widen the gap between label and body. That was the
+ * right instinct applied to the wrong measurement: the tray is the
+ * largest block of type on the page, so the PAGE reads at the size of
+ * the type outside the bezel, not inside it. The device can be perfect
+ * and the thing still looks small. Both moved in the end, and only the
+ * genuine micro-labels — word counts, eyebrows — stayed put.
+ */
+
+.device {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  /*
+   * Sized by its contents, capped once there are enough of them.
+   *
+   * It had a fixed height, so the opening frame reserved a whole
+   * conversation's worth of space for one sentence and sat there as a
+   * tall empty box. A chat window that is mostly nothing is claiming the
+   * conversation stalled before it started.
+   */
+  max-height: clamp(440px, 66vh, 600px);
+  /*
+   * The product is a LIGHT surface sitting on a page that declares
+   * color-scheme: dark. Without this, the browser paints every form
+   * control inside it in dark-mode colours — which is where the black bar
+   * at the edge of the composer came from: a dark scrollbar on a white
+   * input. Same fix covers the caret, the selection highlight and
+   * autofill.
+   */
+  color-scheme: light;
+  background: var(--s-surface);
+  border: 1px solid var(--s-edge);
+  border-radius: var(--s-r-shell);
+  font-family: var(--s-font);
+  color: var(--s-ai-ink);
+  overflow: hidden;
+  /*
+   * Seated rather than floating. The apparatus around it has no surface
+   * of its own now, so this shadow is the only thing separating the
+   * device from the page — it has to read on a dark ground, where a
+   * shallow one disappears entirely.
+   */
+  box-shadow:
+    0 1px 2px rgb(0 0 0 / 8%),
+    0 24px 60px -24px rgb(0 0 0 / 60%);
+}
+
+/* ------------------------------------------------------------ outcome */
+/*
+ * Nothing until there is an answer, then one badge.
+ *
+ * Accent is safe here in a way it was not on the old strip: there is only
+ * ever one of these and nothing beside it to be "selected" against, so it
+ * cannot read as a chosen tab.
+ */
+
+.badgeBar {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--s-rule);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px 6px 10px;
+  border-radius: 999px;
+  background: var(--s-accent-soft);
+  border: 1px solid color-mix(in srgb, var(--s-accent) 30%, transparent);
+  color: var(--s-accent);
+  font-size: 15.5px;
+  font-weight: 600;
+  line-height: 1.2;
+  cursor: default;
+  /* It arrives. The only moment in the conversation worth marking is the
+     one where the question is settled. */
+  animation: land calc(280ms * var(--s-tempo)) cubic-bezier(0.2, 0.9, 0.3, 1) both;
+}
+.badge::before {
+  content: '';
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: currentColor;
+  flex: none;
+}
+@keyframes land {
+  from { opacity: 0; transform: scale(0.94) translateY(-3px); }
+  to { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .badge { animation: none; }
+}
+
+/* -------------------------------------------------------- transcript */
+
+.log {
+  /*
+   * `0 1 auto`, not `1`: take only the height the transcript needs, and
+   * shrink to scroll once the device hits its cap. `flex: 1` would fill
+   * whatever the device was given, which is what produced the empty box.
+   */
+  flex: 0 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-gap);
+  padding: 16px 14px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--s-edge) transparent;
+}
+.log::-webkit-scrollbar { width: 9px; }
+.log::-webkit-scrollbar-thumb {
+  background: var(--s-edge);
+  border-radius: 9px;
+  border: 3px solid var(--s-surface);
+}
+
+.turn {
+  display: flex;
+  flex-direction: column;
+  animation: arrive calc(180ms * var(--s-tempo)) ease-out both;
+}
+/*
+ * Whole bubbles, 8px rise. No type-on: a typing assistant is suspense
+ * charged to the reader. The composer types, because that is about
+ * authorship; the assistant does not, because that would be theatre.
+ */
+@keyframes arrive {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+
+.ai,
+.me {
+  max-width: 88%;
+  padding: var(--s-pad);
+  font-size: var(--s-size);
+  line-height: var(--s-lh);
+  border-radius: var(--s-r);
+  hyphens: auto;
+}
+.ai {
+  align-self: flex-start;
+  background: var(--s-ai);
+  border: 1px solid var(--s-ai-line);
+  border-bottom-left-radius: var(--s-r-sm);
+}
+.me {
+  align-self: flex-end;
+  background: var(--s-accent);
+  color: var(--s-accent-ink);
+  border: 1px solid var(--s-accent);
+  border-bottom-right-radius: var(--s-r-sm);
+  white-space: pre-wrap;
+}
+/* Adjacent bubbles from the same speaker read as one thought. */
+.grouped {
+  border-top-left-radius: var(--s-r-sm);
+  margin-top: -4px;
+}
+
+.ack {
+  align-self: flex-start;
+  max-width: 88%;
+  padding: var(--s-pad);
+  font-size: var(--s-size);
+  line-height: var(--s-lh);
+  color: var(--s-ai-ink);
+  border-left: 2px solid var(--s-accent);
+  padding-left: 12px;
+}
+
+/* ---------------------------------------------------------- thinking */
+
+.think {
+  align-self: flex-start;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 2px 0 2px 2px;
+  font-size: 15.5px;
+  color: var(--s-mute);
+}
+.stage {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  flex: none;
+}
+.done { background: #1d7a4f; }
+.todo { opacity: 0.3; }
+.failed { background: #b4321f; }
+/*
+ * The word, beside the dot.
+ *
+ * Small-caps mono rather than sentence case, so it reads as a status
+ * tag on a log line rather than as the assistant saying "failed" to
+ * you — the stage list is a readout, not dialogue, and the moment it
+ * starts speaking it stops being a readout.
+ *
+ * #b4321f on the AI bubble is the same red the safety screen uses and
+ * is in the contrast lint.
+ */
+.stageFailed {
+  font: 600 10px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #b4321f;
+}
+/*
+ * Available to a screen reader, absent to everyone else. The clip-path
+ * pairing rather than `display: none` or `visibility: hidden`, both of
+ * which remove it from the accessibility tree as well and would defeat
+ * the entire purpose.
+ */
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Liveness: never stops while thinking. 1500ms base. */
+.now {
+  background: var(--s-accent);
+  animation: breathe calc(1500ms * var(--s-tempo)) ease-in-out infinite;
+}
+@keyframes breathe {
+  0%, 100% { opacity: 0.3; transform: scale(0.82); }
+  50% { opacity: 1; transform: scale(1); }
+}
+
+/* Working: a different rhythm on purpose, so they never sync. 2100ms. */
+.sweep {
+  background-image: linear-gradient(
+    90deg,
+    var(--s-mute) 8%,
+    var(--s-ai-ink) 42%,
+    var(--s-mute) 76%
+  );
+  background-size: 240% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: sweep calc(2100ms * var(--s-tempo)) linear infinite;
+}
+@keyframes sweep {
+  from { background-position: 210% 0; }
+  to { background-position: -60% 0; }
+}
+
+/* Indeterminate on purpose. A percentage bar here would be a lie. */
+.rail {
+  height: 1px;
+  max-width: 150px;
+  margin: 3px 0 1px 14px;
+  border-radius: 1px;
+  background: var(--s-rule);
+  overflow: hidden;
+}
+.rail > i {
+  display: block;
+  width: 30%;
+  height: 100%;
+  background: var(--s-accent);
+  opacity: 0.55;
+  animation: travel calc(1900ms * var(--s-tempo)) cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+@keyframes travel {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(320%); }
+}
+
+.facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 2px 0 2px 14px;
+}
+.fact {
+  font-size: 12px;
+  padding: 3px 7px;
+  border-radius: 5px;
+  border: 1px solid color-mix(in srgb, var(--s-accent) 22%, var(--s-rule));
+  background: var(--s-accent-soft);
+  color: var(--s-accent);
+  animation: settle calc(260ms * var(--s-tempo)) ease-out both;
+}
+@keyframes settle {
+  from { opacity: 0; transform: translateY(3px) scale(0.94); }
+  to { opacity: 1; transform: none; }
+}
+
+.patient {
+  margin-left: 14px;
+  font-size: 14px;
+  font-style: italic;
+  color: var(--s-mute);
+}
+.elapsed {
+  font-variant-numeric: tabular-nums;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+}
+
+/*
+ * Reduced motion. Every liveness channel above is motion, so without
+ * this the signal disappears entirely — and vestibular sensitivity is
+ * MORE common among people using a medical product, not less.
+ *
+ * Liveness moves to weight plus a ticking seconds counter.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .now,
+  .sweep,
+  .rail > i,
+  .fact,
+  .turn {
+    animation: none !important;
+  }
+  .sweep {
+    color: var(--s-ai-ink);
+    font-weight: 600;
+    background: none;
+    -webkit-text-fill-color: currentColor;
+  }
+  .opt,
+  .gauge > i {
+    transition: none !important;
+  }
+}
+
+/* ------------------------------------------------------------- chips */
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-self: flex-start;
+  max-width: 100%;
+}
+.chip {
+  font: inherit;
+  font-size: 15.5px;
+  min-height: 44px;
+  padding: 6px 14px;
+  border: 1px solid var(--s-edge);
+  border-radius: 999px;
+  background: var(--s-surface);
+  color: var(--s-ai-ink);
+  cursor: pointer;
+}
+.chip:hover { border-color: var(--s-accent); color: var(--s-accent); }
+/*
+ * Pressed: a real one, not a half-pixel nudge.
+ *
+ * `translateY(0.5px)` is below the threshold where anything is felt —
+ * on a trackpad the button simply did not acknowledge the press. This
+ * fills to the accent for the duration of the press, which is the one
+ * moment a filled chip is honest: it IS selected, right now, under your
+ * finger.
+ */
+.chip:active:not(:disabled) {
+  background: var(--s-accent);
+  border-color: var(--s-accent);
+  color: var(--s-accent-ink);
+  transform: translateY(1px);
+}
+
+/* ---------------------------------------------------- settled controls
+ *
+ * Chips stay in the transcript after they are answered — a chat keeps
+ * its history, and the row belongs to the turn it was part of. But they
+ * stayed fully lit and fully clickable, so a question settled four turns
+ * back still looked live and would re-fire if clicked. Three turns of
+ * identically bright buttons also made the transcript hard to scan: no
+ * way to see, at a glance, which way the conversation had gone.
+ *
+ * Taken keeps the outline and gains a tick. NOT a fill — the answer is
+ * already sitting underneath as your own blue bubble, and two accent
+ * objects saying the same thing is one too many.
+ */
+.chip[data-state='taken'],
+.pickBtn[data-state='taken'] {
+  border-color: var(--s-accent);
+  color: var(--s-accent);
+  font-weight: 600;
+  opacity: 1;
+}
+.chip[data-state='taken']::after,
+.pickBtn[data-state='taken']::after {
+  content: '✓';
+  margin-left: 7px;
+  font-weight: 700;
+}
+/* Passed over. Dim enough to recede, legible enough to still read —
+   the options you did not take are part of the record. */
+.chip[data-state='passed'],
+.pickBtn[data-state='passed'] {
+  opacity: 0.42;
+}
+.chip:disabled,
+.pickBtn:disabled {
+  cursor: default;
+}
+.chipPrimary {
+  border-color: var(--s-accent);
+  background: var(--s-accent);
+  color: var(--s-accent-ink);
+  font-weight: 600;
+}
+.chipPrimary:hover { color: var(--s-accent-ink); filter: brightness(1.06); }
+/*
+ * Room between a stage list and the controls under it.
+ *
+ * These are siblings inside one beat, so the transcript's own gap never
+ * applied — and while the error carried a sentence between them, nothing
+ * needed to. Cutting that sentence left the recovery buttons sitting on
+ * the failed stage, which reads as one block: a red line and a blue
+ * button touching look like a single alarming object rather than a
+ * report and a response to it.
+ *
+ * Bigger than the transcript gap on purpose. This is the join between
+ * what happened and what you can do about it, and that is a bigger
+ * change of subject than one message to the next.
+ */
+.think + .chips { margin-top: 16px; }
+
+/*
+ * The empty state has the same shape — a sentence, then a card of
+ * alternatives — and the same problem, at a smaller size. Less room
+ * than the error gets, because the constraint and the alternatives are
+ * one thought ("nothing is open, so here is what is left"), where the
+ * error is two ("this broke" / "do something about it").
+ */
+.ai + .card { margin-top: 12px; }
+
+.pulse { animation: pulse 900ms ease-out 1; }
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 0 0 transparent; }
+  40% { box-shadow: 0 0 0 4px color-mix(in srgb, var(--s-accent) 22%, transparent); }
+}
+
+/* ------------------------------------------------------------- cards */
+
+.card {
+  align-self: flex-start;
+  width: 100%;
+  border: 1px solid var(--s-edge);
+  border-radius: var(--s-r);
+  background: var(--s-surface);
+  padding: 12px;
+  font-size: 15.5px;
+}
+.cardTitle {
+  margin: 0 0 9px;
+  font-size: 15.5px;
+  font-weight: 600;
+}
+.row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 7px 0;
+  border-top: 1px solid var(--s-rule);
+  color: var(--s-mute);
+}
+.row:first-of-type { border-top: 0; }
+.row b { color: var(--s-ai-ink); font-weight: 500; }
+
+/*
+ * The comparison table.
+ *
+ * `auto`, not the `fixed` the time grid uses. The grid's columns are
+ * days and deserve equal width; these hold a price, a duration and a
+ * verdict, and equal columns would give "$40" the same room as "An
+ * afternoon" — padding the short column while wrapping the long one.
+ */
+.compare {
+  width: 100%;
+  border-collapse: collapse;
+  /* So 40 and 120 line up on the digit inside their column. */
+  font-variant-numeric: tabular-nums;
+}
+/*
+ * The rule goes on every header cell, including the empty corner one.
+ * Putting it only on the axis headers would run the line under three
+ * of the four columns and stop dead above the option names — a rule
+ * that quits partway across reads as a rendering fault, not restraint.
+ */
+.compare thead th {
+  border-bottom: 1px solid var(--s-rule);
+}
+.compareAxis {
+  padding: 0 0 6px 14px;
+  text-align: left;
+  vertical-align: baseline;
+  font: 600 10.5px/1.3 ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  /* The axis names label the columns; they are not data, and at full
+     ink they would out-shout the values sitting under them. */
+  color: var(--s-mute);
+  white-space: nowrap;
+}
+/*
+ * The label column takes what is left after the value columns have
+ * taken what they need. Without a width it competes with them, and
+ * `auto` layout resolves that by wrapping whichever it likes.
+ */
+.compareLabel {
+  width: 99%;
+  padding: 8px 14px 8px 0;
+  text-align: left;
+  vertical-align: baseline;
+  font-weight: 500;
+  color: var(--s-ai-ink);
+  border-top: 1px solid var(--s-rule);
+}
+.compare thead + tbody tr:first-child .compareLabel,
+.compare thead + tbody tr:first-child .compareCell {
+  /* The header's own bottom rule already separates the first row. */
+  border-top: 0;
+}
+.compareCell {
+  padding: 8px 0 8px 14px;
+  vertical-align: baseline;
+  color: var(--s-mute);
+  border-top: 1px solid var(--s-rule);
+  /*
+   * Values do not wrap. "An afternoon" breaking across two lines
+   * inside a cell destroys the row alignment that is the entire reason
+   * for the table; at a width where that would happen the card should
+   * scroll sideways instead, which is the rule below.
+   */
+  white-space: nowrap;
+}
+/*
+ * Below roughly a phone's width, three value columns plus a label stop
+ * fitting. Scrolling the table is honest — it keeps the columns and
+ * admits there is more than fits. Stacking each row into a list would
+ * be the joined-string layout again, wearing a different hat.
+ */
+.compareScroll {
+  overflow-x: auto;
+  /* Room for the scrollbar so it never sits on top of the last rule. */
+  margin-bottom: -2px;
+  padding-bottom: 2px;
+}
+
+.pickWrap {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+}
+/*
+ * The drawing gets a budget, not whatever it can take.
+ *
+ * The SVG is `width="100%"`, and inside a flex item with no basis that
+ * resolves against whatever the item grabs — which was most of the
+ * card. The option list was left in a column too narrow for its own
+ * labels, so "The cushions" and "Underneath, somehow" each broke across
+ * two lines. A list of controls where half the entries wrap stops
+ * reading as a list of controls.
+ *
+ * 190px is the sofa's own 200×128 at roughly natural size. It shrinks
+ * below that if it must, and disappears entirely under 420px, where the
+ * buttons take the full width.
+ */
+.pickDiagram {
+  flex: 0 1 190px;
+  min-width: 0;
+}
+.pickList {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+/*
+ * These look like controls at rest.
+ *
+ * They were `border: 1px solid transparent; background: none`, and drew
+ * a border only on hover — so until you happened to point at one, four
+ * buttons rendered as four lines of prose. On a touch screen there is
+ * no hover at all, and the affordance never appeared under any
+ * circumstances.
+ *
+ * It is the same failure the chips had, arrived at from the opposite
+ * direction: the chips said "pick one of these" too quietly, and these
+ * did not say it at all.
+ *
+ * Border, no fill. The chips need a fill because they sit on the
+ * transcript's own ground; these sit inside a card that is already
+ * `--s-surface`, so a filled button would be a shape with no edges.
+ */
+.pickBtn {
+  font: inherit;
+  font-size: 15.5px;
+  text-align: left;
+  min-height: 44px;
+  padding: 6px 12px;
+  border: 1px solid var(--s-edge);
+  border-radius: var(--s-r-sm);
+  background: none;
+  color: var(--s-ai-ink);
+  cursor: pointer;
+}
+.pickBtn:hover { border-color: var(--s-accent); color: var(--s-accent); }
+
+.confidence {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 9px;
+}
+.confidence svg { flex: none; }
+.confidence span {
+  font: 600 12px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: 0.08em;
+  color: var(--s-accent);
+  font-variant-numeric: tabular-nums;
+}
+
+.disclose { width: 100%; }
+.discloseSummary {
+  cursor: pointer;
+  font-size: 15.5px;
+  font-weight: 500;
+  list-style: none;
+  padding: 4px 0;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.discloseSummary::-webkit-details-marker { display: none; }
+.discloseSummary::after {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: rotate(45deg) translateY(-1px);
+  transition: transform calc(180ms * var(--s-tempo)) ease;
+}
+.disclose[open] .discloseSummary::after { transform: rotate(-135deg) translateY(-1px); }
+
+/* ------------------------------------------------------ appointment */
+
+.appt {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+/* The torn-off date block. Recognisable before a word is read. */
+.apptDate {
+  flex: none;
+  width: 46px;
+  border: 1px solid color-mix(in srgb, var(--s-accent) 28%, transparent);
+  border-radius: var(--s-r-sm);
+  background: var(--s-accent-soft);
+  color: var(--s-accent);
+  text-align: center;
+  overflow: hidden;
+  line-height: 1;
+}
+.apptDate span {
+  display: block;
+  padding: 3px 0;
+  font: 600 10px/1.2 ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  background: color-mix(in srgb, var(--s-accent) 12%, transparent);
+}
+.apptDate b {
+  display: block;
+  padding: 5px 0 6px;
+  font-size: 22px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.apptBody { flex: 1; min-width: 0; }
+.apptTitle {
+  margin: 0 0 3px;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+.apptMeta {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--s-mute);
+  font-variant-numeric: tabular-nums;
+}
+
+.apptActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 12px;
+}
+.apptBtn {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 8px 13px;
+  border: 1px solid var(--s-edge);
+  border-radius: var(--s-r-sm);
+  background: var(--s-surface);
+  color: var(--s-ai-ink);
+  font: 500 14px/1.2 inherit;
+  text-decoration: none;
+  cursor: pointer;
+}
+.apptBtn:hover { border-color: var(--s-accent); color: var(--s-accent); }
+/* Not yet resolved on the client — dim, never hidden. */
+.apptBtn[aria-disabled='true'] { opacity: 0.5; pointer-events: none; }
+
+/* ------------------------------------------------------------ scale */
+/*
+ * A segmented control, not a meter.
+ *
+ * The previous pass drew five anonymous 16px bars with the anchors
+ * written underneath — which is precisely what a progress readout looks
+ * like, so it never announced itself as something to touch. Nobody
+ * hovers a status bar.
+ *
+ * Named steps in joined segments carry both jobs at once: obviously a
+ * SET OF CHOICES because there is text in each one, obviously a SCALE
+ * because they are in order, abutted, and fill from the left. The fill
+ * is the only part that behaves like a meter, and it only does so once
+ * you are already pointing at it.
+ */
+.scale {
+  align-self: flex-start;
+  display: flex;
+  width: 100%;
+  border: 1px solid var(--s-edge);
+  border-radius: 10px;
+  /* One rounded outline around the set, so it reads as one control with
+     divisions rather than four buttons that happen to touch. */
+  overflow: hidden;
+  background: var(--s-surface);
+}
+.scaleStep {
+  flex: 1;
+  min-height: 46px;
+  padding: 10px 6px;
+  border: 0;
+  /* Hairlines between, not around — the outer edge belongs to the set. */
+  border-left: 1px solid var(--s-edge);
+  background: none;
+  color: var(--s-mute);
+  font: inherit;
+  font-size: 13px;
+  line-height: 1.25;
+  cursor: pointer;
+  transition: background-color 120ms ease, color 120ms ease;
+}
+.scaleStep:first-child { border-left: 0; }
+/*
+ * Everything up to the pointer lights, because the question is how far
+ * along — not which box. The lit run is what makes four buttons read as
+ * one spectrum.
+ */
+.scaleStep[data-lit='1'] {
+  background: var(--s-accent-soft);
+  color: var(--s-accent);
+  font-weight: 600;
+}
+/* The end of the run gets the solid, so the ANSWER is distinguishable
+   from the run leading to it. */
+.scaleStep[data-taken='1'] {
+  background: var(--s-accent);
+  color: var(--s-accent-ink);
+}
+.scaleStep:disabled { cursor: default; }
+.scaleStep:focus-visible {
+  outline: 2px solid var(--s-accent);
+  outline-offset: -3px;
+  border-radius: 8px;
+}
+
+/* ------------------------------------------------------------- grid */
+/*
+ * Days across, times down. Borderless — the alignment IS the structure,
+ * and ruling every cell would put more lines on screen than data.
+ */
+.gridCard { padding-bottom: 6px; }
+.grid {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+.grid th {
+  padding: 0 0 8px;
+  text-align: left;
+  vertical-align: baseline;
+  border-bottom: 1px solid var(--s-rule);
+}
+.gridDay {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--s-ai-ink);
+}
+.gridNote {
+  margin-left: 5px;
+  font: 10px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--s-mute);
+}
+.grid td { padding: 5px 4px 0 0; }
+.gridTime {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 6px;
+  border: 1px solid var(--s-edge);
+  border-radius: var(--s-r-sm);
+  background: var(--s-surface);
+  color: var(--s-ai-ink);
+  font: inherit;
+  font-size: 15px;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+  transition: border-color 140ms ease, color 140ms ease, background-color 140ms ease;
+}
+.gridTime:hover:not(:disabled) { border-color: var(--s-accent); color: var(--s-accent); }
+.gridTime:active:not(:disabled) {
+  background: var(--s-accent);
+  border-color: var(--s-accent);
+  color: var(--s-accent-ink);
+}
+/*
+ * Gone, not hidden. A booked-out morning and a morning with nothing in
+ * it look identical if you only draw what is free — so the taken slots
+ * stay, struck through, and the column keeps its real shape.
+ */
+.gridTime[data-gone='1'] {
+  border-color: transparent;
+  background: none;
+  color: var(--s-mute);
+  text-decoration: line-through;
+  opacity: 0.55;
+  cursor: default;
+}
+.gridTime[data-state='taken'] {
+  border-color: var(--s-accent);
+  color: var(--s-accent);
+  font-weight: 600;
+}
+.gridTime[data-state='passed'] { opacity: 0.4; }
+.gridTime:disabled { cursor: default; }
+
+/* --------------------------------------------------------- composer */
+
+/*
+ * Slimmer at rest.
+ *
+ * The empty composer was the largest single element inside the device —
+ * a box you cannot type into, taking more room than the conversation.
+ * It is not the textarea that made it tall: it is the 44px send button
+ * plus two layers of padding. The button stays 44px, because a touch
+ * target is not a styling decision, so the padding is what gives.
+ */
+.composerWrap {
+  border-top: 1px solid var(--s-rule);
+  padding: 8px 10px;
+  background: var(--s-surface);
+}
+.composer {
+  display: flex;
+  align-items: flex-end;
+  gap: 9px;
+  border: 1px solid var(--s-edge);
+  border-radius: var(--s-r);
+  padding: 4px 4px 4px 13px;
+  background: var(--s-surface);
+}
+/*
+ * Stood down: the node is waiting on one of its own answers, or safety
+ * has taken the field.
+ *
+ * Recessive rather than crossed out. The box has to read as "not your
+ * turn", which is a quieter statement than "broken" — so it loses its
+ * border contrast and its fill, and the chips above become the only lit
+ * controls in the frame. Nothing is struck through and nothing greys to
+ * the point of failing contrast: the placeholder still has to be read,
+ * because it is the sentence saying what to do instead.
+ */
+.composer[data-quiet='1'] {
+  border-color: var(--s-rule);
+  background: color-mix(in srgb, var(--s-rule) 22%, var(--s-surface));
+}
+.composer[data-quiet='1'] .input { cursor: default; }
+.composer:focus-within {
+  border-color: var(--s-accent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--s-accent) 28%, transparent);
+}
+.input {
+  flex: 1;
+  border: 0;
+  outline: 0;
+  resize: none;
+  background: none;
+  font: inherit;
+  font-size: var(--s-size);
+  line-height: 1.45;
+  color: var(--s-ai-ink);
+  max-height: 96px;
+  padding: 6px 0;
+  /* Hidden until the value actually exceeds max-height; the auto-grow in
+     Composer.tsx flips this to `auto` at the cap. */
+  overflow-y: hidden;
+}
+.input::placeholder { color: color-mix(in srgb, var(--s-mute) 70%, transparent); }
+/*
+ * The composer's own scrollbar, drawn rather than inherited.
+ *
+ * `color-scheme: light` on the device was supposed to settle this, and on
+ * the transcript it did. It did not on the textarea: with a long paste the
+ * browser still painted a black bar down the right edge of a white input.
+ * The transcript was never affected because it styles its scrollbar
+ * explicitly — so the fix is to stop relying on the colour scheme here and
+ * do the same. Drawn beats inherited for anything sitting on a surface
+ * whose lightness the page disagrees with.
+ */
+.input {
+  scrollbar-width: thin;
+  scrollbar-color: var(--s-edge) transparent;
+}
+.input::-webkit-scrollbar { width: 10px; }
+.input::-webkit-scrollbar-track { background: transparent; }
+.input::-webkit-scrollbar-thumb {
+  background: var(--s-edge);
+  border-radius: 10px;
+  /* Inset by the surface colour so the thumb reads as a slim rule, not a
+     bar wedged against the text. */
+  border: 3px solid var(--s-surface);
+}
+.input::-webkit-scrollbar-corner { background: transparent; }
+.send {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 999px;
+  background: var(--s-rule);
+  color: var(--s-mute);
+  cursor: pointer;
+}
+.send[data-armed='1'] {
+  background: var(--s-accent);
+  color: var(--s-accent-ink);
+}
+/* Dims rather than vanishing — a control that disappears is worse than
+   one that is visibly unavailable. */
+.send:disabled { cursor: not-allowed; opacity: 0.55; }
+
+.newPill {
+  position: absolute;
+  left: 50%;
+  bottom: 74px;
+  transform: translateX(-50%);
+  font: 600 12px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: 0.06em;
+  padding: 8px 12px;
+  min-height: 34px;
+  border-radius: 999px;
+  border: 1px solid var(--s-edge);
+  background: var(--s-surface);
+  color: var(--s-ai-ink);
+  cursor: pointer;
+  box-shadow: 0 4px 14px -6px rgb(0 0 0 / 30%);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ------------------------------------------------------------- focus */
+
+/* The textarea is excluded: the composer draws the ring for it, and two
+   nested rings on one control read as a rendering fault. */
+.device :where(button, a, summary):focus-visible {
+  outline: 2px solid var(--s-accent);
+  outline-offset: 2px;
+  border-radius: var(--s-r-sm);
+}
+
+/* ------------------------------------------------------ 380px reflow */
+
+@media (max-width: 420px) {
+  /* No collapse needed any more: a wrapped list of four short labels
+     fits where four cards did not. The component that needed a
+     responsive escape hatch was the one drawn as boxes. */
+  .ai, .me { max-width: 92%; }
+  /* The diagram was always decoration; the text controls are the real
+     controls at every width. */
+  .pickDiagram { display: none; }
+}

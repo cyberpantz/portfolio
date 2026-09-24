@@ -1,0 +1,471 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Chatbots — tray & composer options</title>
+<style>
+  /* Real tokens, lifted from skins.css so this is a like-for-like
+     comparison rather than an impression of one. */
+  :root {
+    --s-accent: #2f5fd0;
+    --s-accent-ink: #fff;
+    --s-ai: #f2f2ee;
+    --s-ai-line: #e8e8e2;
+    --s-ai-ink: #17171a;
+    --s-surface: #fff;
+    --s-edge: #dededa;
+    --s-rule: #ebebe6;
+    --s-mute: #75757e;
+    --s-r: 13px;
+    --s-r-sm: 8px;
+    --s-r-shell: 20px;
+    --s-size: 17px;
+    --s-lh: 1.5;
+    --s-pad: 11px 14px;
+
+    --rig-ink: #e8e8e0;
+    --rig-body: #b8b8b0;
+    --rig-mute: #9d9d95;
+    --rig-line: rgb(255 255 255 / 15%);
+
+    --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    --mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  * { box-sizing: border-box; }
+  html { color-scheme: dark; }
+  body {
+    margin: 0;
+    background: #0c0c0d;
+    color: var(--rig-body);
+    font-family: var(--sans);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  header {
+    max-width: 1500px;
+    margin: 0 auto;
+    padding: 40px 24px 8px;
+  }
+  h1 { margin: 0 0 8px; font-size: 22px; color: var(--rig-ink); letter-spacing: -0.015em; }
+  header p { margin: 0; font-size: 15px; line-height: 1.6; max-width: 66ch; }
+  header code {
+    font-family: var(--mono); font-size: 13px;
+    background: rgb(255 255 255 / 8%); padding: 1px 5px; border-radius: 4px;
+  }
+
+  .rail {
+    display: flex;
+    gap: 22px;
+    align-items: flex-start;
+    overflow-x: auto;
+    padding: 28px 24px 56px;
+    max-width: 1500px;
+    margin: 0 auto;
+    scrollbar-width: thin;
+  }
+
+  .col { flex: 0 0 340px; }
+  .colHead { margin-bottom: 14px; }
+  .tag {
+    display: inline-block;
+    font: 600 10px/1 var(--mono);
+    letter-spacing: 0.12em; text-transform: uppercase;
+    padding: 5px 8px; border-radius: 5px; margin-bottom: 8px;
+  }
+  .tag--now { background: rgb(255 255 255 / 10%); color: var(--rig-mute); }
+  .tag--rec { background: #1d7a4f; color: #eafff4; }
+  .tag--alt { background: rgb(47 95 208 / 26%); color: #b9cdff; }
+  .colHead h2 { margin: 0 0 4px; font-size: 16px; color: var(--rig-ink); }
+  .colHead p { margin: 0; font-size: 13.5px; line-height: 1.55; color: var(--rig-mute); }
+
+  /* The workbench ground, same radial as the real page. */
+  .stage {
+    background: radial-gradient(120% 70% at 50% 18%, #2a2a2e 0%, #131315 62%, #0c0c0d 100%);
+    border: 1px solid rgb(255 255 255 / 7%);
+    border-radius: 14px;
+    padding: 24px 18px 22px;
+    margin-top: 14px;
+  }
+
+  /* ---------------------------------------------------------- device */
+  .device {
+    color-scheme: light;
+    background: var(--s-surface);
+    border: 1px solid var(--s-edge);
+    border-radius: var(--s-r-shell);
+    font-size: var(--s-size);
+    color: var(--s-ai-ink);
+    overflow: hidden;
+    box-shadow: 0 1px 2px rgb(0 0 0 / 8%), 0 24px 60px -24px rgb(0 0 0 / 60%);
+  }
+  .log { padding: 16px 14px; display: flex; flex-direction: column; gap: 9px; }
+  .ai {
+    align-self: flex-start; max-width: 88%;
+    padding: var(--s-pad);
+    font-size: var(--s-size); line-height: var(--s-lh);
+    background: var(--s-ai); border: 1px solid var(--s-ai-line);
+    border-radius: var(--s-r); border-bottom-left-radius: var(--s-r-sm);
+  }
+  .me {
+    align-self: flex-end; max-width: 88%;
+    padding: var(--s-pad);
+    font-size: var(--s-size); line-height: var(--s-lh);
+    background: var(--s-accent); color: var(--s-accent-ink);
+    border: 1px solid var(--s-accent);
+    border-radius: var(--s-r); border-bottom-right-radius: var(--s-r-sm);
+  }
+
+  .composerWrap { border-top: 1px solid var(--s-rule); padding: 10px 12px; }
+  .composer {
+    display: flex; align-items: center; gap: 9px;
+    border: 1px solid var(--s-edge); border-radius: var(--s-r);
+    padding: 7px 7px 7px 12px;
+    background: var(--s-surface);
+  }
+  /* CURRENT: auto-grow min-height leaves a tall empty box. */
+  .composer--tall { align-items: flex-end; padding: 7px 7px 7px 12px; }
+  .composer--tall .ph { padding: 18px 0 26px; }
+  .composer--short .ph { padding: 5px 0; }
+  .ph { flex: 1; color: #a3a3ab; font-size: var(--s-size); }
+  .send {
+    flex: none; width: 44px; height: 44px; border-radius: 50%;
+    background: #f1f1ee; color: #9a9aa2;
+    display: grid; place-items: center; font-size: 17px;
+  }
+  .send--armed { background: var(--s-accent); color: #fff; }
+  .composer--short { padding: 5px 5px 5px 12px; }
+  .composer--short .send { width: 36px; height: 36px; font-size: 15px; }
+
+  /* ----------------------------------------------------------- tray */
+  .tray { margin-top: 14px; }
+  .trayHead {
+    margin: 0 0 4px;
+    font: 600 10px/1 var(--mono);
+    letter-spacing: 0.12em; text-transform: uppercase; color: var(--rig-mute);
+  }
+  .trayLead {
+    margin: 0 0 9px; font-size: 15.5px; line-height: 1.5; color: var(--rig-body);
+  }
+
+  /* CURRENT — message-card grammar */
+  .lineCard {
+    display: flex; gap: 9px; align-items: flex-start;
+    width: 100%; min-height: 44px; margin-bottom: 5px; padding: 9px 11px;
+    border: 1px solid rgb(160 185 240 / 26%); border-radius: 10px;
+    background: rgb(120 150 220 / 9%);
+    color: #c3cfe8; font-size: 15.5px; line-height: 1.45; text-align: left;
+  }
+  .lineCard > span:first-child { flex: 1; }
+  .len { flex: none; font: 10px/1 var(--mono); color: #93a2c6; padding-top: 4px; }
+  .go { flex: none; color: #93a2c6; padding-top: 2px; }
+
+  /* PROPOSED — option-list grammar: rules, not cards */
+  .optList { border-top: 1px solid rgb(160 185 240 / 18%); }
+  .opt {
+    display: flex; gap: 10px; align-items: baseline;
+    width: 100%; min-height: 44px; padding: 11px 2px 11px 0;
+    border: 0; border-bottom: 1px solid rgb(160 185 240 / 18%);
+    background: none; color: #c3cfe8;
+    font-family: var(--sans); font-size: 15.5px; line-height: 1.45;
+    text-align: left; cursor: pointer;
+  }
+  .opt:hover { color: #e6eeff; }
+  .opt .bullet { flex: none; color: #7d8cb0; font-size: 13px; }
+  .opt .txt { flex: 1; }
+  .opt .arrow { flex: none; color: #7d8cb0; }
+  .opt--long .txt::after {
+    content: 'longer';
+    display: inline-block; margin-left: 7px;
+    font: 600 9px/1 var(--mono); letter-spacing: 0.1em; text-transform: uppercase;
+    color: #7d8cb0; border: 1px solid rgb(160 185 240 / 30%);
+    border-radius: 4px; padding: 3px 5px; vertical-align: 1px;
+  }
+
+  /* DRAWER — docked under the device */
+  .dock {
+    margin: -14px 10px 0;
+    padding: 24px 14px 12px;
+    background: rgb(120 150 220 / 7%);
+    border: 1px solid rgb(160 185 240 / 18%);
+    border-top: 0;
+    border-radius: 0 0 16px 16px;
+  }
+  .dock .trayHead { margin-bottom: 8px; }
+
+  .modeRow { display: flex; gap: 6px; align-items: center; margin-top: 16px; flex-wrap: wrap; }
+  .modeLabel { font: 600 10px/1 var(--mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--rig-mute); margin-right: 3px; }
+  .tab {
+    font: 500 14px/1 var(--sans); min-height: 34px; padding: 9px 12px;
+    border: 1px solid var(--rig-line); border-radius: 8px;
+    background: transparent; color: var(--rig-mute);
+  }
+  .tab--up { color: var(--rig-ink); border-color: rgb(255 255 255 / 34%); }
+
+  .wall { margin-bottom: 18px; }
+  .wallHead { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; margin-bottom: 6px; }
+  .wallTitle { font-size: 24px; font-weight: 600; letter-spacing: -0.015em; color: var(--rig-ink); }
+  .themeLink { font-size: 15px; font-weight: 500; color: var(--rig-body); text-decoration: underline; text-decoration-color: rgb(255 255 255 / 30%); text-underline-offset: 3px; }
+  .wallBody { margin: 0; font-size: 16.5px; line-height: 1.6; color: var(--rig-body); }
+
+  .note {
+    margin: 14px 0 0; padding: 11px 13px;
+    border-left: 2px solid rgb(255 255 255 / 22%);
+    font-size: 13.5px; line-height: 1.6; color: var(--rig-mute);
+  }
+  .note b { color: var(--rig-body); font-weight: 600; }
+  .metric { font-family: var(--mono); font-size: 12px; color: #8fb0ff; }
+  /* --------------------------------------------- vertical rhythm ----
+   *
+   * The current build has no spacing tiers: every gap is somewhere
+   * between 4 and 18px, so nothing groups and everything reads as one
+   * undifferentiated column. Three tiers, applied only to the proposals
+   * so the difference is visible against column 1.
+   *
+   *   6px   inside a thing      (title → its subtitle)
+   *   12px  between siblings    (one option and the next)
+   *   26px  between groups      (device → tray → mode)
+   *   36px  between sections    (wall → device)
+   */
+  .col--new .wall { margin-bottom: 36px; }
+  .col--new .wallHead { margin-bottom: 10px; }
+  .col--new .log { padding: 20px 16px; gap: 12px; }
+  .col--new .composerWrap { padding: 12px 12px; }
+  .col--new .tray, .col--new .dock { margin-top: 26px; }
+  .col--new .trayHead { margin-bottom: 10px; }
+  .col--new .opt { padding-top: 13px; padding-bottom: 13px; }
+  .col--new .modeRow { margin-top: 26px; gap: 8px; }
+  .col--new .stage { padding: 30px 22px 28px; }
+  .col--new .dock { margin: -14px 10px 0; padding: 30px 16px 16px; }
+
+  footer { max-width: 1500px; margin: 0 auto; padding: 0 24px 64px; font-size: 14px; line-height: 1.7; }
+  footer h3 { color: var(--rig-ink); font-size: 15px; margin: 26px 0 6px; }
+  footer ul { margin: 0; padding-left: 18px; }
+  footer li { margin-bottom: 5px; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Chatbots — composer &amp; tray, four ways</h1>
+  <p>
+    Same tokens, same copy, same widths as the live page. Column&nbsp;1 is what is on screen now;
+    the rest are proposals. Heights under each show how much vertical space the apparatus takes
+    versus the device — the number I think is the actual problem.
+  </p>
+</header>
+
+<div class="rail">
+
+  <!-- ============================================ 1 · CURRENT -->
+  <section class="col">
+    <div class="colHead">
+      <span class="tag tag--now">Current</span>
+      <h2>As built</h2>
+      <p>Two-step, message-card tray, three pieces of instruction.</p>
+    </div>
+
+    <div class="stage">
+      <div class="wall">
+        <div class="wallHead"><span class="wallTitle">Care Navigator</span><span class="themeLink">Care ⌄</span></div>
+        <p class="wallBody">A simulated AI driven triage conversation; a demonstration usage of various components and states used in conversational UI.</p>
+      </div>
+
+      <div class="device">
+        <div class="log"><div class="ai">Tell me what’s going on.</div></div>
+        <div class="composerWrap">
+          <div class="composer composer--tall">
+            <span class="ph">Pick a line below to send</span>
+            <span class="send">→</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="tray">
+        <p class="trayHead">Your line</p>
+        <p class="trayLead">Tap one to drop it in the message box, then send it yourself.</p>
+        <div class="lineCard"><span>My ear hurts.</span><span class="len">3w</span><span class="go">↑</span></div>
+        <div class="lineCard"><span>ok so. my ear has been doing a Thing for two days…</span><span class="len">58w</span><span class="go">↑</span></div>
+        <div class="lineCard"><span>everything hurts and i don’t know why</span><span class="len">7w</span><span class="go">↑</span></div>
+        <div class="lineCard"><span>my year hurts and it has been like four days…</span><span class="len">14w</span><span class="go">↑</span></div>
+        <div class="lineCard"><span>🦴🔥😭</span><span class="go">↑</span></div>
+      </div>
+
+      <div class="modeRow">
+        <span class="modeLabel">Mode</span>
+        <span class="tab">▶ Watch it play</span><span class="tab">All states</span><span class="tab">Replay</span>
+      </div>
+    </div>
+
+    <p class="note">
+      <b>Device ≈ 320px. Apparatus ≈ 620px.</b> <span class="metric">ratio 1 : 1.9</span><br />
+      The explanation is twice the size of the thing it explains, and the largest single element
+      inside the device is an empty box you cannot type into.
+    </p>
+  </section>
+
+  <!-- ============================================ 2 · ONE STEP -->
+  <section class="col col--new">
+    <div class="colHead">
+      <span class="tag tag--rec">Option A</span>
+      <h2>One step — tap sends</h2>
+      <p>No composer at all. The tray becomes the input, and every word of instruction disappears with it.</p>
+    </div>
+
+    <div class="stage">
+      <div class="wall">
+        <div class="wallHead"><span class="wallTitle">Care Navigator</span><span class="themeLink">Care ⌄</span></div>
+        <p class="wallBody">A simulated AI triage conversation, built to show the states a chat interface has to handle.</p>
+      </div>
+
+      <div class="device">
+        <div class="log"><div class="ai">Tell me what’s going on.</div></div>
+      </div>
+
+      <div class="tray">
+        <p class="trayHead">Say</p>
+        <div class="optList">
+          <button class="opt"><span class="bullet">▸</span><span class="txt">My ear hurts.</span><span class="arrow">↑</span></button>
+          <button class="opt opt--long"><span class="bullet">▸</span><span class="txt">ok so. my ear has been doing a Thing for two days…</span><span class="arrow">↑</span></button>
+          <button class="opt"><span class="bullet">▸</span><span class="txt">everything hurts and i don’t know why</span><span class="arrow">↑</span></button>
+          <button class="opt"><span class="bullet">▸</span><span class="txt">my year hurts and it has been like four days…</span><span class="arrow">↑</span></button>
+          <button class="opt"><span class="bullet">▸</span><span class="txt">🦴🔥😭</span><span class="arrow">↑</span></button>
+        </div>
+      </div>
+
+      <div class="modeRow">
+        <span class="modeLabel">Mode</span>
+        <span class="tab tab--up">All states</span><span class="tab">▶ Watch it play</span><span class="tab">Replay</span>
+      </div>
+    </div>
+
+    <p class="note">
+      <b>Device ≈ 150px. Apparatus ≈ 380px.</b> <span class="metric">ratio 1 : 2.5</span><br />
+      Tighter overall, but note the ratio gets <em>worse</em> at the cold open, because removing the
+      composer shrinks the device too. It inverts as soon as two messages exist. <b>Cost:</b> you lose
+      the beat where the 58-word paste sits in your own box before you commit to it.
+    </p>
+  </section>
+
+  <!-- ============================================ 3 · TRIMMED TWO-STEP -->
+  <section class="col col--new">
+    <div class="colHead">
+      <span class="tag tag--alt">Option B</span>
+      <h2>Two-step, chrome cut</h2>
+      <p>Keeps the staging beat. Single-row composer, and the placeholder is the only instruction.</p>
+    </div>
+
+    <div class="stage">
+      <div class="wall">
+        <div class="wallHead"><span class="wallTitle">Care Navigator</span><span class="themeLink">Care ⌄</span></div>
+        <p class="wallBody">A simulated AI triage conversation, built to show the states a chat interface has to handle.</p>
+      </div>
+
+      <div class="device">
+        <div class="log"><div class="ai">Tell me what’s going on.</div></div>
+        <div class="composerWrap">
+          <div class="composer composer--short">
+            <span class="ph">Tap a line below</span>
+            <span class="send">→</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="tray">
+        <p class="trayHead">Your line</p>
+        <div class="optList">
+          <button class="opt"><span class="bullet">▸</span><span class="txt">My ear hurts.</span><span class="arrow">↑</span></button>
+          <button class="opt opt--long"><span class="bullet">▸</span><span class="txt">ok so. my ear has been doing a Thing for two days…</span><span class="arrow">↑</span></button>
+          <button class="opt"><span class="bullet">▸</span><span class="txt">everything hurts and i don’t know why</span><span class="arrow">↑</span></button>
+          <button class="opt"><span class="bullet">▸</span><span class="txt">my year hurts and it has been like four days…</span><span class="arrow">↑</span></button>
+          <button class="opt"><span class="bullet">▸</span><span class="txt">🦴🔥😭</span><span class="arrow">↑</span></button>
+        </div>
+      </div>
+
+      <div class="modeRow">
+        <span class="modeLabel">Mode</span>
+        <span class="tab tab--up">All states</span><span class="tab">▶ Watch it play</span><span class="tab">Replay</span>
+      </div>
+    </div>
+
+    <p class="note">
+      <b>Device ≈ 215px. Apparatus ≈ 390px.</b> <span class="metric">ratio 1 : 1.8</span><br />
+      Keeps the joke beat and the send affordance. The filled state explains the mechanic better than
+      any sentence did — once a line is sitting in the box with the arrow lit, nothing needs saying.
+    </p>
+  </section>
+
+  <!-- ============================================ 4 · DRAWER -->
+  <section class="col col--new">
+    <div class="colHead">
+      <span class="tag tag--alt">Option C</span>
+      <h2>Hybrid + docked drawer</h2>
+      <p>Short lines send on tap; only the long paste stages. Tray tucked under the device as one object.</p>
+    </div>
+
+    <div class="stage">
+      <div class="wall">
+        <div class="wallHead"><span class="wallTitle">Care Navigator</span><span class="themeLink">Care ⌄</span></div>
+        <p class="wallBody">A simulated AI triage conversation, built to show the states a chat interface has to handle.</p>
+      </div>
+
+      <div class="device">
+        <div class="log"><div class="ai">Tell me what’s going on.</div></div>
+        <div class="composerWrap">
+          <div class="composer composer--short">
+            <span class="ph">Tap a line below</span>
+            <span class="send">→</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="dock">
+        <p class="trayHead">Your line</p>
+        <div class="optList">
+          <button class="opt"><span class="bullet">▸</span><span class="txt">My ear hurts.</span><span class="arrow">↑</span></button>
+          <button class="opt opt--long"><span class="bullet">▸</span><span class="txt">ok so. my ear has been doing a Thing for two days…</span><span class="arrow">↑</span></button>
+          <button class="opt"><span class="bullet">▸</span><span class="txt">everything hurts and i don’t know why</span><span class="arrow">↑</span></button>
+          <button class="opt"><span class="bullet">▸</span><span class="txt">my year hurts and it has been like four days…</span><span class="arrow">↑</span></button>
+          <button class="opt"><span class="bullet">▸</span><span class="txt">🦴🔥😭</span><span class="arrow">↑</span></button>
+        </div>
+      </div>
+
+      <div class="modeRow">
+        <span class="modeLabel">Mode</span>
+        <span class="tab tab--up">All states</span><span class="tab">▶ Watch it play</span><span class="tab">Replay</span>
+      </div>
+    </div>
+
+    <p class="note">
+      <b>Device + drawer read as one object.</b> <span class="metric">ratio 1 : 1.8</span><br />
+      Strongest composition of the four — but it softens the inside/outside rule the piece has been
+      built on, since the visitor's own lines now appear attached to the product. I would only take
+      this if you think that rule is costing more than it earns.
+    </p>
+  </section>
+
+</div>
+
+<footer>
+  <h3>Applied in all three proposals, independent of which you pick</h3>
+  <ul>
+    <li><b>Tray as an option list, not message cards.</b> Rules instead of filled rounded rectangles. Five stacked cards read as a second transcript competing with the real one; rules read as a menu.</li>
+    <li><b>Word counts gone.</b> <code>3w</code> / <code>58w</code> was jargon, and the truncated preview already signals length. One <code>LONGER</code> tag on the paste does the job it was actually there to do, and the right column stops being ragged where the emoji line had no count.</li>
+    <li><b>One instruction, not three.</b> Placeholder only, or nothing.</li>
+    <li><b>Vertical rhythm.</b> The current build has no spacing tiers — every gap sits between 4px and 18px, so nothing groups and the whole column reads as one undifferentiated stack. That is why it feels jammed. The proposals use four steps: <code>6</code> inside a thing, <code>12</code> between siblings, <code>26</code> between groups, <code>36</code> between sections. Most visible at the eyebrow → list joint, which is currently 4px, and at device → tray, which is currently the same 14px as tray → mode and so reads as one long list rather than two blocks.</li>
+    <li><b>Mode row reordered</b> so <b>All states</b> leads and is the one lit control. It is the most interesting thing on the page and currently sits third, in the weakest weight.</li>
+    <li><b>Description rewritten.</b> "A demonstration usage of various components and states" is three abstract nouns deep; "AI driven" wants a hyphen. Proposed: <em>"A simulated AI triage conversation, built to show the states a chat interface has to handle."</em></li>
+  </ul>
+
+  <h3>My recommendation</h3>
+  <p style="max-width:74ch">
+    <b>Option B.</b> It fixes the real problem — the apparatus outweighing the device — without
+    spending the one genuinely good idea in the interaction. Option A is cleaner on this frame
+    and worse on every frame after it, because the composer is what gives the device its body.
+    Option C composes best but I would not trade the inside/outside separation for it without you
+    saying so explicitly, since that rule is load-bearing in the spec.
+  </p>
+</footer>
+
+</body>
+</html>

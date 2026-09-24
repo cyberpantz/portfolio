@@ -1,0 +1,188 @@
+/*
+ * SAFETY — NOT SKINNABLE. This file must never reference a --s-* token.
+ *
+ * Enforced, not remembered: __tests__/lint.mjs greps this file for
+ * `var(--s-` and fails the build on a match.
+ *
+ * The reason is the whole argument. A user has to recognise this state
+ * instantly and identically every time they meet it, in any scenario, in
+ * any skin. A theming system that can restyle a 911 screen is a bug, and
+ * declaring no custom properties is an architectural guarantee rather
+ * than a convention someone has to remember.
+ *
+ * Every value below is a literal on purpose.
+ */
+
+.alert {
+  align-self: stretch;
+  border: 1.5px solid #b4321f;
+  border-radius: 11px;
+  background: #fdf6f5;
+  padding: 14px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+  color: #1a1a1a;
+}
+
+.headline {
+  margin: 0 0 7px;
+  font-size: 17px;
+  line-height: 1.25;
+  font-weight: 600;
+  color: #b4321f;
+  /* No widows in a headline anyone reads under stress. */
+  text-wrap: balance;
+}
+
+.body {
+  margin: 0 0 12px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 48px;
+  padding: 12px 16px;
+  border: 0;
+  border-radius: 8px;
+  background: #b4321f;
+  color: #ffffff;
+  font: 600 15px/1 -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+  text-decoration: none;
+  cursor: pointer;
+}
+.action:hover { background: #9c2a19; }
+.action:focus-visible {
+  outline: 3px solid #1a1a1a;
+  outline-offset: 2px;
+}
+
+.alt {
+  display: block;
+  width: 100%;
+  margin-top: 8px;
+  min-height: 44px;
+  padding: 10px 14px;
+  border: 1px solid #d8bdb7;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #1a1a1a;
+  font: 500 13px/1.3 -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+  cursor: pointer;
+}
+.alt:focus-visible { outline: 3px solid #1a1a1a; outline-offset: 2px; }
+
+.footnote {
+  margin: 10px 0 0;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: #5c4a47;
+}
+
+.stilled {
+  margin-top: 10px;
+  text-align: center;
+  font: 9px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: #b4321f;
+}
+
+/*
+ * Tempo 2 — Hold. Crisis acuity, calibrated treatment.
+ *
+ * Deliberately not red. A parent who gets an ambulance screen for
+ * something she is still weighing closes the tab and tells no one, so the
+ * interface must not outrun her certainty. Escalation stays one tap away.
+ */
+.tempo2 { border-color: #5b4b8a; background: #f7f5fc; }
+.tempo2 .headline { color: #4a3d73; }
+.tempo2 .action { background: #5b4b8a; }
+.tempo2 .action:hover { background: #4a3d73; }
+.tempo2 .alt { border-color: #d3cce6; }
+.tempo2 .footnote { color: #4f4866; }
+
+/*
+ * Tempo 3 — Redirect. Urgent, can become emergent, but the work is
+ * changing someone's mind rather than raising an alarm.
+ */
+.tempo3 { border-color: #a5601c; background: #fdf5ec; }
+.tempo3 .headline { color: #8a4e16; }
+.tempo3 .action { background: #a5601c; }
+.tempo3 .action:hover { background: #8a4e16; }
+.tempo3 .alt { border-color: #e8d3b8; }
+.tempo3 .footnote { color: #6b5334; }
+
+/*
+ * Reframe — amber, and visibly NOT the red of tempo 1.
+ *
+ * A check, not yet an alarm. Crying wolf on a genuine typo has its own
+ * cost, and the colour is where that distinction is carried.
+ */
+/*
+ * Reframe — amber, and visibly NOT the red of tempo 1.
+ *
+ * The emphasis mechanism changed here, and only here.
+ *
+ * Every other tempo has ONE action: call, or go. A filled slab is right
+ * for that, because there is one thing to do. The reframe has three
+ * answers, two of which share a destination — so the filled treatment
+ * produced two mustard blocks stacked above a white one, which is a lot
+ * of shouting for a screen whose whole job is to be a check rather than
+ * an alarm. Dark yellow at that size also stops reading as caution and
+ * starts reading as sludge.
+ *
+ * So the cautious pair is GROUPED rather than filled: a warm tint, an
+ * amber edge, amber text at 600. It still reads as one set and as the
+ * weightier set, at about a third of the ink. The answer leading away
+ * stays plain white, which is now a real distinction rather than the
+ * absence of a fill.
+ */
+.reframe { border-color: #d8b25a; background: #fdfaf0; }
+.reframe .headline { color: #8a5a08; }
+.reframe .body { color: #3a3226; }
+
+.reframe .action,
+.reframe .alt {
+  display: block;
+  width: 100%;
+  min-height: 46px;
+  margin: 0;
+  padding: 12px 14px;
+  border-radius: 10px;
+  font: 600 15px/1.3 -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+  text-align: left;
+  transition: background-color 140ms ease, border-color 140ms ease;
+}
+/* The cautious pair. */
+.reframe .action {
+  border: 1px solid #d8b25a;
+  background: #fbf0d8;
+  color: #6f4405;
+}
+.reframe .action:hover { background: #f6e6bf; border-color: #c2992f; }
+/* The one leading away. Plain, and lighter in weight as well as colour. */
+.reframe .alt {
+  border: 1px solid #e7ddc4;
+  background: #ffffff;
+  color: #1a1a1a;
+  font-weight: 500;
+}
+.reframe .alt:hover { border-color: #cdbf9c; }
+
+/*
+ * Stacked, not wrapped into a row.
+ *
+ * `.choices` used to flex, which let the two filled buttons stay full
+ * width while the third shrank to its text — three answers to one
+ * question rendered at two different widths, so the odd one out looked
+ * like a different KIND of control rather than a different answer.
+ */
+.choices { display: flex; flex-direction: column; gap: 8px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .alert, .alert * { transition: none !important; animation: none !important; }
+}

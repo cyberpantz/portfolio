@@ -27,3 +27,8 @@ Thumbs.db
 
 # claude code local settings
 .claude/settings.local.json
+
+# Failure evidence from `pnpm shots` — a recipe that cannot find what it
+# came to photograph dumps the page here so you can see what it saw.
+# Useful locally, never something to commit.
+src/assets/explorations/FAILED-*.png

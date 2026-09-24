@@ -243,6 +243,78 @@ const RECIPES = {
       await page.waitForTimeout(2600);
     },
   },
+
+  chatbots: {
+    note: 'The sofa picker, mid-consultation.',
+    /*
+     * Framed on the picker card rather than the device.
+     *
+     * The pitch of this piece is that a real component can live inside a
+     * chat turn — so the thumbnail has to show a chat turn AND a
+     * component, and nothing else is load-bearing. Photographing the
+     * whole rig would give a card-sized picture of a grey page with a
+     * white rectangle on it.
+     *
+     * Feline rather than care, for two reasons. The sofa diagram is the
+     * more legible drawing at 330px — an ear is a small grey blob — and
+     * a cat behaviour consultation says "this is a demo" at a glance,
+     * where a triage screen shrunk to a thumbnail could be mistaken for
+     * a real medical product.
+     *
+     * `[data-card]` is the attribute the card components carry for
+     * exactly this reason: class names here are CSS-module hashes and
+     * change whenever the file does. `.first()` is safe because feline's
+     * opening node is all speech — the picker is the first card in the
+     * transcript, and if a card is ever added above it this recipe
+     * should fail loudly rather than photograph the wrong one.
+     */
+    frame: '[data-card]',
+    // Derived from the card's measured width so the window covers it
+    // exactly, rather than guessing how the bubble column reflows.
+    fitWidth: true,
+    /*
+     * Lifted so the assistant's line above the card comes into frame.
+     * Without it the crop is a component on its own, which is the one
+     * thing this piece is not about — the point is the component sitting
+     * in a conversation, and that needs at least one bubble visible.
+     */
+    shiftY: -44,
+    async drive(page) {
+      /*
+       * `getByRole('tab')`, not the `click` helper — the scenario picker
+       * is a tablist, and the helper only looks for buttons. It used to
+       * be a dropdown, so this line will need revisiting if it ever goes
+       * back to being one.
+       */
+      /*
+       * The literal label is a coupling this file cannot avoid — it
+       * drives the BUILT page and cannot import SCENARIO_LIST — so it
+       * is the one place a tab rename has to be mirrored by hand. It
+       * has already caught one: this said "Feline Forensics" until the
+       * tabs were shortened to fit three on a line.
+       *
+       * Failing loudly is the mitigation. A recipe that cannot find
+       * its tab stops the run rather than photographing whichever
+       * scenario happened to be showing.
+       */
+      const tab = page.getByRole('tab', { name: 'Feline' });
+      await tab.waitFor({ state: 'visible', timeout: 15000 });
+      await tab.click();
+      await page.waitForTimeout(500);
+
+      // The tray line, which is a real button; its label is the preview.
+      await click(page, 'He has destroyed the sofa.');
+
+      /*
+       * The assistant thinks before it answers, and that delay is
+       * authored content rather than a fixed number — so wait for the
+       * card itself, then let its entrance animation finish. A flat
+       * timeout here would photograph a half-faded card on a slow run.
+       */
+      await page.locator('[data-card]').first().waitFor({ state: 'visible', timeout: 15000 });
+      await page.waitForTimeout(900);
+    },
+  },
 };
 
 mkdirSync(OUT, { recursive: true });

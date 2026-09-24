@@ -1,0 +1,505 @@
+/*
+ * THE APPARATUS — everything outside the bezel.
+ *
+ * Like safety, this file declares no --s-* tokens, but for the opposite
+ * reason: the emergency screen refuses a skin because it must be
+ * recognised identically in every world; the apparatus refuses one
+ * because it was never in any of them.
+ *
+ * NO PANEL. An earlier version wrapped all of this in a grey card, and a
+ * card containing the device reads as the device's own chrome — the
+ * title and the skin buttons looked like part of the chat app, which is
+ * precisely the confusion the inside/outside rule exists to prevent.
+ *
+ * So the apparatus is now type on the page's dark ground, with no
+ * surface of its own: the device is the only lit object, and everything
+ * around it is annotation. Same logic as a museum label, which is never
+ * mounted on a plinth of its own.
+ *
+ * Colours are literals, chosen against the LIGHTEST stop of the page
+ * gradient (#2a2a2e) so they hold at the worst case.
+ */
+
+.rig {
+  --rig-ink: #e8e8e0;     /* 11.61:1 */
+  --rig-mute: #9d9d95;    /*  5.23:1 — controls only, never body copy */
+  --rig-body: #b8b8b0;    /*  7.16:1 — the description */
+  --rig-line: rgb(255 255 255 / 15%);
+
+  width: 100%;
+  max-width: 430px;
+  margin: 0 auto;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+}
+
+/*
+ * The disclosure, on first paint. The product cannot wink; this can.
+ *
+ * Sized as something to READ, not as a caption. At 12px in the muted grey
+ * it was legible only in the sense that the pixels were there — light
+ * type on a dark ground reads thinner than the same contrast ratio does
+ * on paper, so it needs both more size and more luminance than the
+ * numbers alone suggest.
+ */
+.wall {
+  margin: 0 0 36px;
+  padding: 0;
+  max-width: 42ch;
+}
+/*
+ * .wallHead and the menu block below it are the dropdown the tabs
+ * replaced. Both are parked rather than deleted, on the same terms as
+ * ScenarioMenu.tsx: the tab bar wins at two scenarios, and a menu wins
+ * again somewhere around five. Keeping the loser costs a few hundred
+ * bytes of CSS that never ships a rule to the page, because nothing
+ * references the classes.
+ *
+ * Title and theme share a line, baseline-aligned.
+ *
+ * `baseline`, not `center`: the two sit at different sizes, and centring
+ * them on the box would float the smaller one visibly high. The gap
+ * absorbs a wrap at narrow widths rather than forcing one.
+ */
+.wallHead {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  margin-bottom: 10px;
+}
+.wallTitle {
+  font-size: 24px;
+  line-height: 1.2;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  color: var(--rig-ink);
+  /* No widow on a two-word title at any width. */
+  text-wrap: balance;
+}
+
+/*
+ * The scenario tabs, which are also the heading.
+ *
+ * Sized at 20px rather than the 24px the title carried. Two labels at
+ * heading size read as two headings for one thing; dropping four points
+ * lets the pair sit as one object without surrendering the top of the
+ * hierarchy — nothing else in the apparatus comes near it.
+ *
+ * The rail runs the full width of the wall, past both tabs, because a
+ * rail that stops where the labels stop reads as an underline on the
+ * words. Running it past them is what makes the selected tab look
+ * attached to the thing below rather than decorated.
+ */
+.scenarioTabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 22px;
+  /*
+   * Full rig width, not the wall's 42ch.
+   *
+   * The prose measure was borrowed on the theory that the rail should
+   * end where the text ends. It should not: 42ch is a reading
+   * constraint and a tab bar is not read in lines. Capping it there
+   * only narrowed the space the tabs had to fit in, which is what
+   * started them wrapping.
+   */
+  margin-bottom: 14px;
+  border-bottom: 1px solid rgb(255 255 255 / 13%);
+}
+.scenarioTab {
+  position: relative;
+  font: 500 20px/1.2 -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+  letter-spacing: -0.015em;
+  /* Vertical padding sets the hit area; a 20px label alone would be a
+     20px target, and these are the two most consequential controls on
+     the page. */
+  padding: 4px 0 11px;
+  border: 0;
+  background: transparent;
+  color: var(--rig-mute);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 140ms ease;
+}
+.scenarioTab:hover {
+  color: var(--rig-ink);
+}
+/*
+ * The marker is a pseudo-element pulled down onto the rail, not a
+ * border-bottom on the button: a border would shift the label by 2px
+ * when selected, and a set of tabs that twitches as you move between
+ * them looks broken even when nobody can say why.
+ */
+.scenarioTab::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 2px;
+  background: var(--rig-ink);
+  opacity: 0;
+  transition: opacity 140ms ease;
+}
+.scenarioTab[aria-selected='true'] {
+  color: var(--rig-ink);
+  /* Weight as well as the rule. The marker alone fails for anyone who
+     cannot separate #9d9d95 from #e8e8e0, and colour is doing the same
+     job — so the selected tab is also the heavier of the two. */
+  font-weight: 650;
+}
+.scenarioTab[aria-selected='true']::after {
+  opacity: 1;
+}
+.scenarioTab:focus-visible {
+  outline: 2px solid var(--rig-ink);
+  outline-offset: 1px;
+  border-radius: 3px;
+}
+/*
+ * On a phone the rig is narrower than its 430px cap, so the labels that
+ * fit on the desktop stop fitting. Down a step rather than round to a
+ * second line — the bar keeps its shape, and at this width it is still
+ * the largest type on screen.
+ */
+@media (max-width: 420px) {
+  .scenarioTabs { gap: 0 16px; }
+  .scenarioTab { font-size: 17px; padding-bottom: 9px; }
+}
+
+.wallBody {
+  margin: 0;
+  font-size: 16.5px;
+  line-height: 1.6;
+  color: var(--rig-body);
+  text-wrap: pretty;
+}
+
+/*
+ * The disclaimer. Not fine print — fine print is a way of technically
+ * saying something.
+ *
+ * Marked with a rule rather than a box: a bordered warning panel next to
+ * a white device starts to look like part of the product, which is the
+ * one thing it must never be. The rule says "this is a different kind of
+ * statement" without building a second object.
+ *
+ * The rule goes red on hover, which is the only colour in the apparatus
+ * and deliberately the only one — a caution that is always red is
+ * wallpaper by the second visit, and one that answers the pointer says
+ * "yes, this one, look".
+ */
+.disclaimer {
+  margin: 16px 0 0;
+  padding-left: 12px;
+  border-left: 2px solid rgb(255 255 255 / 26%);
+  max-width: 44ch;
+  transition: border-color 160ms ease;
+}
+.disclaimer:hover,
+.disclaimer:focus-within,
+.disclaimer[open] {
+  /*
+   * 5.54:1 on the page ground. The first pick was #e0594a, which I
+   * annotated as 4.9:1 without measuring — it is 3.88:1, under the
+   * floor. A colour carrying meaning has to be legible AS a colour,
+   * not merely present, so it lightened until the number was real.
+   */
+  border-left-color: #f08273;
+}
+
+.disclaimerHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 8px;
+  /* 44px of target from the padding, without a visible control. */
+  padding: 4px 0;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--rig-body);
+  cursor: pointer;
+  list-style: none;
+}
+/* The native marker is a triangle in a sentence. "Read more" is the
+   affordance; the triangle is noise beside it. */
+.disclaimerHead::-webkit-details-marker { display: none; }
+.disclaimerHead::marker { content: ''; }
+.disclaimer:hover .disclaimerHead { color: var(--rig-ink); }
+.disclaimerHead:focus-visible { outline: 2px solid var(--rig-ink); outline-offset: 3px; border-radius: 4px; }
+
+.disclaimerToggle {
+  flex: none;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--rig-mute);
+  text-decoration: underline;
+  text-decoration-color: rgb(255 255 255 / 28%);
+  text-underline-offset: 3px;
+}
+.disclaimer:hover .disclaimerToggle { color: var(--rig-ink); }
+.disclaimerToggle [data-when='open'] { display: none; }
+.disclaimer[open] .disclaimerToggle [data-when='closed'] { display: none; }
+.disclaimer[open] .disclaimerToggle [data-when='open'] { display: inline; }
+
+.disclaimerBody {
+  margin: 6px 0 4px;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--rig-body);
+  text-wrap: pretty;
+}
+
+/* --------------------------------------------------------- scenario */
+/*
+ * The heading is the menu. See ScenarioMenu.tsx for why this one is
+ * hand-built when the previous one was deliberately native.
+ */
+.menu { position: relative; display: inline-block; }
+.menuFace {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 9px;
+  padding: 2px 0;
+  border: 0;
+  background: none;
+  /* The title's type, exactly — this IS the title. */
+  font: 600 24px/1.2 -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+  letter-spacing: -0.015em;
+  color: var(--rig-ink);
+  text-align: left;
+  cursor: pointer;
+}
+/*
+ * The chevron is the only signifier, so it never hides. A heading that
+ * reveals on hover that it was a control the whole time is a heading
+ * that was a control nobody found.
+ */
+.menuChevron {
+  flex: none;
+  color: var(--rig-mute);
+  transition: color 140ms ease, transform 160ms ease;
+}
+.menuFace:hover .menuChevron,
+.menuFace[aria-expanded='true'] .menuChevron { color: var(--rig-ink); }
+.menuFace[aria-expanded='true'] .menuChevron { transform: rotate(180deg); }
+.menuFace:focus-visible { outline: 2px solid var(--rig-ink); outline-offset: 4px; border-radius: 4px; }
+
+.menuList {
+  position: absolute;
+  z-index: 5;
+  top: calc(100% + 8px);
+  left: -10px;
+  min-width: max(220px, 100%);
+  margin: 0;
+  padding: 6px;
+  list-style: none;
+  /* Its own surface, because it floats over the page rather than
+     sitting on it — the only element in the apparatus allowed one. */
+  background: #232327;
+  border: 1px solid rgb(255 255 255 / 14%);
+  border-radius: 12px;
+  box-shadow: 0 18px 40px -12px rgb(0 0 0 / 70%);
+}
+.menuList:focus { outline: none; }
+.menuItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 10px 12px 10px 8px;
+  border-radius: 8px;
+  font: 500 15px/1.3 -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+  color: var(--rig-body);
+  cursor: pointer;
+}
+/* Driven by the keyboard AND the pointer, so the highlight can never
+   disagree with where the cursor is. */
+.menuItem[data-active='1'] { background: rgb(255 255 255 / 9%); color: var(--rig-ink); }
+.menuItem[aria-selected='true'] { color: var(--rig-ink); font-weight: 600; }
+.menuTick {
+  flex: none;
+  width: 14px;
+  color: var(--rig-ink);
+  font-size: 13px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .menuChevron { transition: color 140ms ease; }
+  .menuFace[aria-expanded='true'] .menuChevron { transform: none; }
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+.barLabel {
+  margin-right: 3px;
+  font: 600 10px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--rig-mute);
+}
+.tab {
+  font: 500 14px/1 -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+  min-height: 34px;
+  padding: 9px 12px;
+  border: 1px solid var(--rig-line);
+  border-radius: 8px;
+  /* Transparent, not a light chip: a filled control here would read as
+     belonging to the white object below it. */
+  background: transparent;
+  color: var(--rig-mute);
+  cursor: pointer;
+  transition: color 140ms ease, border-color 140ms ease, background-color 140ms ease;
+}
+.tab:hover {
+  color: var(--rig-ink);
+  border-color: rgb(255 255 255 / 30%);
+}
+.tab[aria-pressed='true'],
+.tab[aria-current='true'] {
+  border-color: rgb(255 255 255 / 42%);
+  background: rgb(255 255 255 / 8%);
+  color: var(--rig-ink);
+  font-weight: 600;
+}
+/* The one lit control in a row of housekeeping. Ink, not mute — and not
+   a filled chip, which would read as belonging to the white device. */
+.tabLead { color: var(--rig-ink); border-color: rgb(255 255 255 / 34%); }
+.tab:disabled { opacity: 0.4; cursor: not-allowed; }
+.tab:focus-visible { outline: 2px solid var(--rig-ink); outline-offset: 2px; }
+
+.deviceSlot { position: relative; }
+
+/* ------------------------------------------------------------- tray */
+
+/*
+ * Vertical rhythm, in tiers.
+ *
+ * Every gap in this file used to sit between 4px and 18px, so nothing
+ * grouped: device → tray was 14px and tray → mode was 16px, which made
+ * two distinct blocks read as one long column. That is what "jammed
+ * together" was. Four steps now, and the jumps between them are large
+ * enough to be read as intent rather than drift.
+ *
+ *    6  inside a thing      title → its subtitle
+ *   12  between siblings    one option and the next
+ *   26  between groups      device → tray → mode
+ *   36  between sections    wall → device
+ */
+.tray { margin-top: 26px; }
+.trayHead {
+  margin: 0 0 10px;
+  font: 600 10px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--rig-mute);
+}
+.line {
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+  width: 100%;
+  min-height: 44px;
+  padding: 13px 2px 13px 0;
+  /*
+   * Rules, not cards. The border-bottom is the only chrome; the list's
+   * top edge comes from the first row's own rule via .tray.
+   */
+  border: 0;
+  border-bottom: 1px solid rgb(160 185 240 / 18%);
+  background: none;
+  color: #c3cfe8;
+  font: 400 15.5px/1.45 -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+  text-align: left;
+  cursor: pointer;
+  transition: color 140ms ease;
+}
+.line:first-of-type { border-top: 1px solid rgb(160 185 240 / 18%); }
+.line:hover { color: #eaf1ff; }
+.line:hover .lineBullet, .line:hover .lineGo { color: #c3cfe8; }
+.line:focus-visible { outline: 2px solid #c3cfe8; outline-offset: 2px; }
+.lineText { flex: 1; }
+.lineBullet {
+  flex: none;
+  font-size: 13px;
+  color: #8d9bbe;
+  transition: color 140ms ease;
+}
+/* Flags the wall of text without spoiling what it says. */
+.lineLong {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 3px 5px;
+  border: 1px solid rgb(160 185 240 / 30%);
+  border-radius: 4px;
+  font: 600 9px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #8d9bbe;
+  vertical-align: 1px;
+}
+/* The upward arrow: this line goes into the box above. Dim at rest so
+   it does not compete with the sentence, lit on hover and focus along
+   with the rest of the control. */
+.lineGo {
+  flex: none;
+  padding-top: 1px;
+  font-size: 13px;
+  line-height: 1.2;
+  color: #8d9bbe;
+  transition: color 140ms ease, transform 140ms ease;
+}
+.line:hover .lineGo,
+.line:focus-visible .lineGo {
+  color: #c3cfe8;
+  transform: translateY(-1px);
+}
+@media (prefers-reduced-motion: reduce) {
+  .lineGo { transition: color 140ms ease; }
+  .line:hover .lineGo, .line:focus-visible .lineGo { transform: none; }
+}
+.line:disabled { opacity: 0.4; cursor: default; }
+
+/* ------------------------------------------------------------ index */
+
+.indexNote {
+  margin: 22px 0 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--rig-body);
+  max-width: 42ch;
+}
+.index {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(auto-fill, minmax(124px, 1fr));
+  margin-top: 11px;
+}
+.indexBtn {
+  min-height: 44px;
+  padding: 8px 10px;
+  border: 1px solid var(--rig-line);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--rig-ink);
+  font: 500 13px/1.3 -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+  text-align: left;
+  cursor: pointer;
+}
+.indexBtn:hover { background: rgb(255 255 255 / 8%); border-color: rgb(255 255 255 / 40%); }
+.indexBtn:focus-visible { outline: 2px solid var(--rig-ink); outline-offset: 2px; }
+.indexBtn small {
+  display: block;
+  margin-top: 2px;
+  font: 10px/1.3 ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: 0.06em;
+  color: var(--rig-mute);
+}
+
+@media (max-width: 420px) {
+  .index { grid-template-columns: 1fr 1fr; }
+}
