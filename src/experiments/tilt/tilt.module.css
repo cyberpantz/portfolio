@@ -204,8 +204,32 @@
 }
 .lookup input:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
 
-.hits { list-style: none; margin: 8px 0 0; padding: 0; }
+.hits { list-style: none; margin: 6px 0 0; padding: 0; }
+
+/*
+ * The rate sits at the far right of the row, not after the name.
+ *
+ * The first version put both in a button with no layout, so "Humboldt County,
+ * CA" and "441" ran together into "Humboldt County, CA441" — which reads as a
+ * mangled place name before it reads as a number. Flex with space-between
+ * gives the rates their own column, tabular figures keep that column straight
+ * down the list, and the caption above says once what the column is so the
+ * number is not an unlabelled quantity on every row.
+ */
+.hitsCap {
+  display: flex;
+  justify-content: flex-end;
+  margin: 10px 2px 2px;
+  font: 500 10px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--mute);
+}
 .hits button {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
   width: 100%;
   text-align: left;
   padding: 9px 14px;
@@ -218,7 +242,14 @@
   margin-bottom: 4px;
   cursor: pointer;
 }
+.hits button b {
+  flex: none;
+  font-weight: 500;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
 .hits button:hover { color: var(--ink); border-color: rgb(255 255 255 / 34%); }
+.hits button:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
 
 .none { margin-top: 12px; font-size: 0.9rem; line-height: 1.6; color: var(--mute); min-height: 1.4em; }
 

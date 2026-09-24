@@ -111,16 +111,24 @@ export function ChapterLookup() {
       </p>
 
       {!picked && hits.length > 0 && (
-        <ul className={s.hits}>
-          {hits.map((c) => (
-            <li key={c.fips}>
-              <button type="button" onClick={() => { setPicked(c); setQ(`${c.name}, ${c.state}`); }}>
-                <span>{c.name}, {c.state}</span>
-                <b>{last(c.rate)}</b>
-              </button>
-            </li>
-          ))}
-        </ul>
+        <>
+          {/* Labels the right-hand column once, rather than repeating a unit
+              on every row or leaving the number to be guessed at. */}
+          <p className={s.hitsCap} aria-hidden="true">2019 rate per 100k</p>
+          <ul className={s.hits}>
+            {hits.map((c) => (
+              <li key={c.fips}>
+                <button type="button" onClick={() => { setPicked(c); setQ(`${c.name}, ${c.state}`); }}>
+                  <span>{c.name}, {c.state}</span>
+                  {/* The caption is decorative to a screen reader, which reads
+                      rows out of the column's context — so the unit rides with
+                      the number here instead. */}
+                  <b>{fmt(last(c.rate))}<span className={s.srOnlyInline}> per 100,000 in 2019</span></b>
+                </button>
+              </li>
+            ))}
+          </ul>
+        </>
       )}
 
       {picked && <CountyReport key={picked.fips} c={picked} />}
