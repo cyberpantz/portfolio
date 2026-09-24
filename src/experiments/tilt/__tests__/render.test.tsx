@@ -7,6 +7,7 @@
  *
  * Run through __tests__/run.sh (esbuild bundle, then node).
  */
+import type { ReactElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import data from '../../../data/tilt.json';
 import counties from '../../../data/tilt-counties.json';
@@ -21,7 +22,7 @@ const ok = (c: unknown, m: string) => { if (!c) { fails++; console.error('  FAIL
 
 /* ---- every chapter renders, and renders something ------------------- */
 console.log('\nChapters render');
-const CH: [string, JSX.Element][] = [
+const CH: [string, ReactElement][] = [
   ['decline', <ChapterDecline />],
   ['bands/count', <ChapterBands mode="count" />],
   ['bands/rate', <ChapterBands mode="rate" />],
