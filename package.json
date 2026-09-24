@@ -11,6 +11,7 @@
     "astro": "astro",
     "og": "node scripts/og-image.mjs",
     "shots": "node scripts/exploration-shots.mjs",
+    "data:vera": "node scripts/fetch-vera-data.mjs",
     "test:chatbots": "sh src/experiments/chatbots/__tests__/run.sh"
   },
   "dependencies": {
