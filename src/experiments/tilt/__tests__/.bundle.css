@@ -393,3 +393,9 @@
   white-space: nowrap;
   border: 0;
 }
+.tilt_chipText {
+  fill: #131315;
+}
+.tilt_figure figcaption {
+  flex-wrap: wrap;
+}

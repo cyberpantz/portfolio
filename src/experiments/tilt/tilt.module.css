@@ -350,3 +350,11 @@
   white-space: nowrap;
   border: 0;
 }
+
+/* The year chip sits on a filled rounded rect, so its text has to invert
+   against the ground rather than against the page. */
+.chipText { fill: #131315; }
+
+/* The hint can wrap at narrow widths rather than overflowing the figure,
+   which it did — the caption is a flex row and the row had nowhere to go. */
+.figure figcaption { flex-wrap: wrap; }

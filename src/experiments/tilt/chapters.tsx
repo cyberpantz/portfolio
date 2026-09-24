@@ -170,7 +170,8 @@ export function ChapterEliminations() {
           <figure key={p.k} className={s.mini}>
             <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label={p.k}
                  style={{ width: '100%', height: 'auto', display: 'block' }}>
-              <title>{p.k}</title>
+              {/* aria-label above is the accessible name; a <title> here
+                  would also produce a native tooltip. */}
               <desc>{`${p.v[0]}${p.unit} in 2002, ${p.v.at(-1)}${p.unit} in 2019.`}</desc>
               <line x1={56} x2={W - 96} y1={sc.y(p.v[0])} y2={sc.y(p.v[0])}
                     stroke="currentColor" opacity={0.18} strokeDasharray="4 4" />

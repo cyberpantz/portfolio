@@ -84,7 +84,12 @@ export function Frame({
            onMouseLeave={() => setAt(null)}
            className={hover ? s.interactive : undefined}
            style={{ width: '100%', height: 'auto', display: 'block', overflow: 'visible' }}>
-        <title>{title}</title>
+        {/*
+          No <title> element. It would be the accessible name — but aria-label
+          on the <svg> already is, and <title> ALSO renders as a native browser
+          tooltip that follows the cursor around on top of the chart. <desc> is
+          announced without producing one.
+        */}
         <desc>{desc}</desc>
         {yTicks.map((t) => (
           <g key={t}>
@@ -101,24 +106,51 @@ export function Frame({
               stroke="currentColor" opacity="0.25" />
         {children}
 
-        {hover && at !== null && (
-          <g pointerEvents="none">
-            <line x1={sx(hover.xs[at])} x2={sx(hover.xs[at])} y1={PAD.t - 6} y2={H - PAD.b}
-                  stroke="currentColor" opacity="0.35" />
-            {hover.rows.map((r) => (
-              <circle key={r.label} cx={sx(hover.xs[at])} cy={sy(r.values[at])} r={3.5}
-                      fill={r.ink ?? 'currentColor'} />
-            ))}
-            <g transform={`translate(${PAD.l + 4} ${PAD.t - 12})`}>
-              <text fontSize="12" fill="currentColor" fontWeight={500}>{hover.xs[at]}</text>
+        {hover && at !== null && (() => {
+          /*
+           * Values are printed AT their own line, not gathered into a panel.
+           *
+           * The panel this replaced listed seven rows in the top-left: it
+           * covered the two largest series, repeated labels that are already
+           * at the line ends, and sat a long way from the guide the reader
+           * was actually looking at. Putting each number beside its own dot
+           * removes the journey and the lookup at once.
+           *
+           * Labels are nudged apart vertically where lines run close, because
+           * two numbers on top of each other are worth less than one.
+           */
+          const gx = sx(hover.xs[at]);
+          const right = gx < W - PAD.r - 90;
+          const placed = hover.rows
+            .map((r, i) => ({ r, i, y: sy(r.values[at]) }))
+            .sort((a, b) => a.y - b.y);
+          const MIN = 13;
+          for (let i = 1; i < placed.length; i++) {
+            if (placed[i].y - placed[i - 1].y < MIN) placed[i].y = placed[i - 1].y + MIN;
+          }
+          return (
+            <g pointerEvents="none">
+              <line x1={gx} x2={gx} y1={PAD.t - 2} y2={H - PAD.b}
+                    stroke="currentColor" opacity="0.28" />
+              <rect x={gx - 20} y={PAD.t - 20} width={40} height={16} rx={3}
+                    fill="currentColor" opacity={0.9} />
+              <text x={gx} y={PAD.t - 12} dy="0.32em" textAnchor="middle" fontSize="11"
+                    fontWeight={500} className={s.chipText}>{hover.xs[at]}</text>
               {hover.rows.map((r, i) => (
-                <text key={r.label} y={16 + i * 15} fontSize="11" fill={r.ink ?? 'currentColor'}>
-                  {fmt(r.values[at])} {r.label}
+                <circle key={`d${i}`} cx={gx} cy={sy(r.values[at])} r={3.5}
+                        fill={r.ink ?? 'currentColor'} />
+              ))}
+              {placed.map(({ r, i, y }) => (
+                <text key={`v${i}`} x={right ? gx + 9 : gx - 9} y={y} dy="0.32em"
+                      textAnchor={right ? 'start' : 'end'} fontSize="11.5" fontWeight={500}
+                      fill={r.ink ?? 'currentColor'}
+                      stroke="#131315" strokeWidth={3} paintOrder="stroke">
+                  {fmt(r.values[at])}
                 </text>
               ))}
             </g>
-          </g>
-        )}
+          );
+        })()}
 
         {/* One hit area per step. Invisible, but a real target — the chart is
             useless to a pointer if the hover zones are the 2px lines. */}
@@ -128,7 +160,7 @@ export function Frame({
         ))}
       </svg>
       <figcaption>
-        {hover && <span className={s.hint}>Hover or focus and use ← →</span>}
+        {hover && <span className={s.hint}>Hover, or focus and use ← →</span>}
         <a href={src.url} target="_blank" rel="noopener noreferrer">{src.publisher}{src.date ? `, ${src.date}` : ''}</a>
       </figcaption>
     </figure>

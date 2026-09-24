@@ -112,6 +112,21 @@ ok(counties.length === data.ch1.panel,
    `lookup has ${counties.length} counties but the panel is ${data.ch1.panel}`);
 console.log(`  ${data.ch1.panel.toLocaleString()} counties, lookup matches`);
 
+/* No <title> inside any chart SVG.
+ *
+ * It renders as a native browser tooltip that trails the cursor across the
+ * chart — visible in a screenshot before anyone thought to look for it. The
+ * accessible name comes from aria-label, which produces no such thing.
+ */
+console.log('\nNo native tooltips');
+for (const [name, markup] of Object.entries(html)) {
+  ok(!/<title>/.test(markup), `${name} has a <title> element, which renders as a native tooltip`);
+  if (name !== 'eliminations' && name !== 'lookup') {
+    ok(/aria-label=/.test(markup), `${name} has no aria-label, so it has no accessible name either`);
+  }
+}
+console.log('  charts named by aria-label, no <title> anywhere');
+
 /* The fallback must be the real chart, not an apology. If chapter three
    server-renders to a placeholder, a reader without WebGL gets nothing. */
 ok(/<svg/.test(html['tilt/fallback'] ?? ''), 'chapter 3 fallback did not render an SVG chart');
