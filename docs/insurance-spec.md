@@ -4,7 +4,7 @@ A data visualisation of what American homeowners insurance costs, against what
 it pays out — and of the two states where, for five years, it cost less.
 React Three Fiber in an Astro island, TypeScript, US Treasury data.
 
-Working title, and the second one. See §17.
+Working title, and the second one. See §18.
 
 > **Revision, after Phase 1.** This document originally proposed a piece about
 > insurers withdrawing from climate-exposed markets, measured by non-renewal
@@ -387,11 +387,41 @@ that are alarming without help.
 
 ---
 
-## 15. Verification
+## 15. Sources
+
+`src/data/insurance-sources.ts` is the single point of truth. The piece renders
+its citations from it; nothing is retyped into a component.
+
+Each entry carries a **`status`**, which records how well the claim is actually
+known rather than how confident the sentence sounds:
+
+- `primary` — the issuing body's own document, read directly.
+- `secondary` — reputable reporting of a primary fact, read directly.
+- `needs-check` — reached me through a search summary and the underlying
+  document has **not** been opened.
+
+`assertNoUnverifiedClaims()` throws on any `needs-check` source, and the
+pipeline and the test suite both call it. Because the timeline and every figure
+cite by id, there is no way to render an unchecked claim without tripping it.
+
+**Current state: 16 sources, 4 primary, 12 needing checking.** The gate is shut
+and will stay shut until they are opened. The two that matter most, because
+they carry the ending:
+
+- `fairplan-enrolment` — the 668,000 policies and the 43% rise reached me with
+  no attributable publisher. Replace with the FAIR Plan's own statistics or
+  draw §9.2 without them.
+- `travelers-surcharge` — the last node of §9.4 and the sentence a reader will
+  remember. It needs a filing or a named report, not a summary.
+
+---
+
+## 16. Verification
 
 - **Every rendered figure traces to a source row or a cited event.** No
   hand-typed numbers in components — the Wage Gap lesson, where a copied rate
   drifted from the data that produced it.
+- **No claim may rest on a `needs-check` source** (§15).
 - **Suppressed and unmatched areas never render as 0.**
 - **Percentiles and ratios computed, not asserted**, with the §6.3 table
   reproduced as a test fixture.
@@ -401,7 +431,7 @@ that are alarming without help.
 
 ---
 
-## 16. Build plan
+## 17. Build plan
 
 **Phase 1 — Data.** ✅ Profiled. Measures tested, §6.1 rejected, §6.2 adopted,
 hazards found. Remaining: crosswalk, aggregation, emit.
@@ -423,7 +453,7 @@ the crossing read? *Gate: if not, 2D piece, rewrite §7–§8.*
 
 ---
 
-## 17. Open decisions
+## 18. Open decisions
 
 1. **Name.** *Ninety-One Cents* is California's ratio — plain, particular,
    memorable, and it is the finding rather than the category. Alternatives:

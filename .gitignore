@@ -32,5 +32,10 @@ Thumbs.db
 # came to photograph dumps the page here so you can see what it saw.
 # Useful locally, never something to commit.
 src/assets/explorations/FAILED-*.png
-data/
+
+# Raw source data for the insurance piece: 15MB, one download from
+# Treasury, reproducible. `/data/` is anchored to the repo root on
+# purpose — an unanchored `data/` also matches src/data/ and silently
+# stops every data module in the project from being tracked.
+/data/
 src/data/raw/
