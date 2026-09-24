@@ -1,10 +1,25 @@
-# Ninety-One Cents — Spec & Build Plan
+# The Crossing — Spec & Build Plan
 
-A data visualisation of what American homeowners insurance costs, against what
-it pays out — and of the two states where, for five years, it cost less.
-React Three Fiber in an Astro island, TypeScript, US Treasury data.
+A data visualisation of what American homeowners insurance charges, against
+what it pays out in claims — and of the two states where, for five years, it
+charged less. React Three Fiber in an Astro island, TypeScript, US Treasury
+data.
 
-Working title, and the second one. See §18.
+**No number in the title, on purpose.** It was *Ninety-One Cents*, then
+*Seventy-Seven Cents* an hour later when the estimator changed, and the figure
+is still 0.77 / 0.85 / 0.90 / 0.91 depending on how it is built (§6.5). A
+headline that has to be re-derived every time the pipeline moves is a liability,
+not a name — and the one string everybody repeats is the worst place to put the
+least settled thing in the project.
+
+*Below Cost* was the obvious number-free alternative and is rejected for the
+same reason §2 rejects the phrasing: claims are not costs. Expenses,
+reinsurance and capital sit on top. Naming the piece after that misreading
+would bake it into the title.
+
+*The Crossing* is geometric, which is the register the whole piece should use —
+the price surface falls through the loss surface. It survives any
+recomputation, because the crossing either happens or it does not. §18.
 
 > **Revision, after Phase 1.** This document originally proposed a piece about
 > insurers withdrawing from climate-exposed markets, measured by non-renewal
@@ -12,6 +27,12 @@ Working title, and the second one. See §18.
 > carry the story (§5.4) and premium-versus-loss-ratio is statistical noise
 > (§6.1). What replaced them is better, and the §7 gate now passes on evidence
 > rather than on hope. The original framing is preserved in git history.
+>
+> **Second revision.** "Loss ratio is noise" was itself the wrong diagnosis —
+> loss ratio has premium in its denominator, so correlating the two correlates
+> premium against itself (§6.1). And the headline figure moved from 91 cents to
+> 77 when the estimator was corrected, which is why there is no number in the
+> title any more (§6.5).
 
 ---
 
@@ -34,27 +55,45 @@ any help.
    2018–2022.
 2. **What does it pay out?** Expected annual loss per policy — claim frequency
    × claim severity. The insurer's own experience, not a model.
-3. **Where do those two numbers cross?** Where premium falls below paid losses,
-   the market is selling something for less than it costs. **This is the piece.**
+3. **Where do those two numbers cross?** Where premium falls below paid
+   losses, **claims alone exceeded premium**. Not "below cost" — expenses sit
+   on top of claims (§2). **This is the piece.**
 4. **What happened next?** The data stops in 2022. The rupture is 2022–2026,
    and has to be told rather than shown.
-5. **Who ends up paying?** Not the homeowner, and not the insurer. §9.4.
+5. **Who ends up paying?** A policyholder — just not the one who burned. §9.4.
 
 ---
 
 ## 2. The claim
 
-> In every state but two, American homeowners insurance collected about $1.60
-> for every dollar it paid out in claims. In California it collected 91 cents.
-> In Louisiana, 86. Within months of the data ending, the largest insurer in
-> California stopped writing new policies, and eleven Louisiana carriers went
-> insolvent.
+> Across the ZIP codes in this dataset, American homeowners insurance collected
+> about **$1.59 in premium for every dollar it paid out in claims**. In
+> California it collected **77 cents**; in Louisiana, **85**. Claims alone
+> exceeded premium there, before a cent of expenses. Five months after the data
+> ends, the largest insurer in California stopped writing new policies.
 
-This works because it is mechanical rather than moral. The popular framing is
-that insurers abandoned people; the data says that where they left, they were
-being paid less than they were paying out. That is not a defence of insurers —
-it relocates the argument to the real question, which is who should carry the
-cost: the homeowner, the other policyholders, or the state.
+**Three disciplines this sentence has to keep.**
+
+*Claims are not costs.* Everything above 1.0 still has to pay claims handling,
+acquisition, reinsurance and capital on top — commonly 25–30 points. $1.59 is a
+normal claims ratio, not a margin and certainly not a profit. The only thing
+the threshold means is **claims exceeded premium**, and that is the phrase that
+goes on the graphic.
+
+*It is an average over ZIP codes, not national accounting.* The workbook
+publishes policy-count deciles, not policy counts, so a true dollar-weighted
+"total premium ÷ total losses" cannot be computed. §6.5.
+
+*Louisiana is not an "after".* Ida was August 2021 and the insolvencies run
+through 2023 — inside the years the ratio is built from. Only California's exit
+is cleanly after the window, so only California gets the "months later"
+construction.
+
+This is mechanical rather than moral. The popular framing is that insurers
+abandoned people; the data says that where they left, claims alone were
+outrunning premium. That is not a defence of insurers. It moves the argument to
+the question the arithmetic forces — who carries the cost — and then the piece
+stops, because §14 says the wall copy states flows and does not answer.
 
 **What the piece must not claim.** That anyone hid the data — Treasury
 published it. That insurers are blameless — rate suppression is one cause among
@@ -141,8 +180,25 @@ into Citizens and into E&S, both excluded here. Its premium column still shows
 it, at $4,975 against a national $1,717.
 
 Together these are conclusive: **the non-renewal column cannot carry the
-story.** It is retained in the dataset and the table, and it is not the
-measure anything is extruded by.
+story.** It is retained in the dataset and the table, and nothing is extruded
+by it.
+
+### 5.4.1 But the hazard does not stop at non-renewal
+
+Florida's premium is real and its paid losses are real, so it renders a
+perfectly valid **2.06** — a comfortable-looking margin in the state with the
+most disrupted market in the country. It looks that way *because* its worst
+risks left the admitted market for Citizens and E&S. The same applies to Texas
+at 1.56 with an unreported column.
+
+This is the same class of visual lie that killed the non-renewal map, and a
+wall-label sentence is the fix already rejected for Texas. **The field itself
+must mark Florida and Texas as incomplete** — hatched, or drawn at reduced
+opacity with a legend entry that says *"admitted market only; this state's
+residual market is large and is not in this data."*
+
+A caveat a reader has to scroll to is a caveat that has been designed to be
+missed.
 
 ### 5.5 Geometry and crosswalk
 
@@ -166,48 +222,100 @@ Build-time script, not a runtime fetch. `scripts/insurance-data.mjs`:
 
 ## 6. Derived measures
 
-### 6.1 What was tested and rejected
+### 6.1 Why the first measure failed — and it was not the loss ratio's fault
 
-`gap = premium percentile − loss-ratio percentile`, the original thesis
-measure. **Rank correlation between premium and loss ratio is +0.049** — and
-+0.043 after winsorising the tails, and +0.049 on five-year means. It is noise
-against noise. Paid loss ratio in one ZIP-year records whether a catastrophe
-happened to land there, not what the risk is. Its range runs from −73.9 to
-+317.8.
+The original thesis measure was `premium percentile − loss-ratio percentile`.
+Rank correlation between premium and loss ratio is **+0.049**, and +0.043
+winsorised. That reads as "loss ratio is noise", and the first revision of this
+document said so. That was the wrong diagnosis.
 
-### 6.2 What replaced it
+**Loss ratio has premium in its denominator.** It is `losses ÷ premium`, so
+correlating it against premium correlates premium against itself, and the
+artefact cancels the real relationship. Confirm by substituting the reciprocal:
+
+| | rank corr. with premium |
+|---|---|
+| Loss Ratio (`losses ÷ premium`) | **+0.049** — contaminated |
+| 1 ÷ Loss Ratio | **−0.050** — contaminated, mirrored |
+| EAL (`losses ÷ policies`) | **+0.545** — clean |
+
+EAL is not a new quantity that rescued the piece. It is the same information
+with premium taken out of the denominator, which is the only form in which the
+comparison means anything. **The ZIP-level correlation was an artefact; the
+state-level story is the five-year paid loss ratio, stated in cents.**
+
+### 6.2 The measures
 
 | Measure | Definition | Note |
 |---|---|---|
-| `premium` | Premiums Per Policy, 5-year mean | Conflates price and house size (§5.2) |
-| `eal` | Claim Frequency × Claim Severity | Expected annual loss per policy |
-| `ratio` | `premium ÷ eal` | **The measure. Below 1.0 is selling under cost** |
-| `gap` | percentile(`premium`) − percentile(`eal`) | For the surface crossing |
+| `premium` | Premiums Per Policy | Conflates price and house size (§5.2) |
+| `eal` | Claim Frequency × Claim Severity, **per year, then averaged** | Paid losses per policy |
+| `cents` | `premium ÷ eal` | Below 1.0 means **claims exceeded premium** |
+| `gap` | percentile(`premium`) − percentile(`eal`) | Readout, not the extrusion |
 | `trend` | 2018→2022 slope of `premium` | Direction |
 
-**Rank correlation between premium and EAL is +0.537**, and the gap has a
-standard deviation of **0.278** where pure noise would give 0.41. There is real
-structure in the residual, which is what the whole visual depends on.
+**`cents` is a readout. Neither it nor `gap` is what gets extruded** — a single
+ratio with height is a choropleth with height, which §7 declines. The surfaces
+are `premium` and `eal`, both in dollars, and the crossing is the exhibit.
 
 ### 6.3 The finding
 
-| | premium | EAL | ratio |
+Construction A (§6.5), five-year pooled:
+
+| | premium | paid losses | cents per dollar |
 |---|---|---|---|
-| Louisiana | $2,453 | $2,842 | **0.86** |
-| California | $1,681 | $1,839 | **0.91** |
-| Texas | $2,276 | $1,552 | 1.47 |
-| **United States** | **$1,717** | **$1,058** | **1.62** |
-| Oklahoma | $2,572 | $1,486 | 1.73 |
-| Florida | $4,975 | $2,363 | 2.11 |
-| South Carolina | $1,778 | $727 | 2.44 |
+| California | $1,681 | $2,183 | **0.77** |
+| Louisiana | $2,453 | $2,870 | **0.85** |
+| Texas | $2,276 | $1,455 | 1.56 |
+| **United States** | **$1,717** | **$1,080** | **1.59** |
+| Oklahoma | $2,572 | $1,498 | 1.72 |
+| Florida | $4,975 | $2,417 | 2.06 |
+| South Carolina | $1,778 | $708 | 2.51 |
+
+Below 1.0 means claims alone exceeded premium, before any expense. It does not
+mean "below cost" (§2) and it is not a margin.
 
 ### 6.4 The caveat that must be on screen
 
-`eal` is **five years of paid claims**, not an actuarial expected loss. It
-contains no catastrophe model, so it does not price events that had not yet
-happened. For wildfire that means it *understates* the risk — which makes
-California's 0.91 worse than it looks, not better. State it plainly; it is the
-single most load-bearing caveat in the piece.
+`eal` is **five years of paid claims**, not an actuarial expected loss. No
+catastrophe model, so it does not price events that had not yet happened. For
+wildfire that means it *understates* the risk — which makes California's 0.77
+worse than it looks, not better. The single most load-bearing caveat here.
+
+### 6.5 The estimator problem, and why the title has no number in it
+
+There is no single "cents per dollar". There are four defensible
+constructions and they disagree:
+
+| | A pooled | B mean of ZIP means | C mean(freq)×mean(sev) | D 1 ÷ published LR |
+|---|---|---|---|---|
+| California | **0.77** | 0.77 | 0.91 | 0.90 |
+| Louisiana | **0.85** | 0.85 | 0.86 | 0.96 |
+| United States | **1.59** | 1.59 | 1.62 | 1.75 |
+
+- **C is what the first draft quoted**, and it is the weakest: multiplying two
+  separately-averaged quantities, `mean(f) × mean(s)`, is not the mean of
+  `f × s` unless they are uncorrelated. They are not. This is where "91 cents"
+  came from, and it is why the piece is no longer named after it.
+- **D uses the workbook's own Loss Ratio column.** Algebraically `premium ÷ eal`
+  should equal `1 ÷ lossRatio` — the policy counts cancel. In this file it does
+  not: the offset is near-constant at about 1.17× (p1 0.85, p99 1.00), because
+  the published columns are aggregated per insurer and then combined, and that
+  does not commute. Neither is wrong; they are different estimators.
+- **A is adopted**: pool the dollars, then divide. Stated as such on screen.
+
+**Also: 2,021 rows have EAL ≤ 0** — catastrophe recoveries and subrogation
+making paid losses negative. They break any per-ZIP ratio and must be excluded
+from `cents` while remaining in the surfaces.
+
+### 6.6 What cannot be computed
+
+A true dollar-weighted national figure — total premium ÷ total losses. The
+workbook publishes policy-count **deciles**, not counts, so every aggregate
+here is an average over ZIP codes rather than over policies. Decile-weighting
+moves the US figure from 1.59 to 1.61 and California from 0.77 to 0.91, which
+is a large enough swing that the weighting has to be named beside the number
+rather than assumed.
 
 ---
 
@@ -222,14 +330,24 @@ take on trust. Extruding both lets them *cross*, and the crossing is the
 finding: where the price surface drops beneath the loss surface, the market is
 selling below cost.
 
-"Underwater" stops being a metaphor. California and Louisiana are submerged,
-and submersion is only legible from a low camera angle — which is an argument
-for a camera, which is an argument for 3D.
+**The narration stays geometric.** The price surface falls *through* the loss
+surface, and California and Louisiana are the places it comes out underneath.
+Water language is banned throughout — "underwater", "submerged", "drowning" —
+because this is a wildfire and wind story built on a dataset that explicitly
+excludes flood, and importing the one peril the file cannot see is how a
+careful reader decides the rest is careless too.
+
+A crossing is only legible from near the horizon, which is an argument for a
+camera, which is the argument for 3D.
 
 This gate previously had no evidence behind it. It now does: §6.2.
 
-**Phase 2 remains a real gate.** If two surfaces at 3,143 polygons read as
-mush, the honest outcome is a 2D piece and §8 is rewritten.
+**Phase 2 remains a real gate, and it tests the right thing.** Two surfaces in
+**dollars** — `premium` and `eal` — crossing. Not a ratio extruded as height:
+that is a choropleth with relief, which this section has already declined, and
+it would pass a test the piece does not need to pass. `cents` and `gap` stay as
+readouts. If the dollar crossing at 3,143 polygons reads as mush, the honest
+outcome is a 2D piece and §8 is rewritten.
 
 ---
 
@@ -317,8 +435,18 @@ renewal notice. A map cannot show a flow.
 
 Four beats, the 3D first and largest:
 
-> **the price** (3D) → **the break** (9.1) → **where it went** (9.2, 9.3) →
-> **who pays** (9.4)
+> **the price** (8.1) → **the crossing** (8.2) → **your county** (8.3) →
+> **the break** (9.1) → **where it went** (9.2, 9.3) → **who pays** (9.4)
+
+§1 calls the crossing the piece, so it is named as a beat rather than folded
+into "the price". Price is the setup; the crossing is the turn; the lookup is
+where a stranger becomes a participant.
+
+**The setup has a built-in misread, and it is deliberate.** Extruding premium
+makes Florida and the Gulf the mountains, and California — $1,681 against a
+national $1,717 — is unremarkable. The ordinary-looking state is the one that
+goes under when the second surface arrives. Five-second legibility and the
+finding are different moments, and the gap between them is the drama.
 
 ---
 
@@ -436,8 +564,10 @@ they carry the ending:
 **Phase 1 — Data.** ✅ Profiled. Measures tested, §6.1 rejected, §6.2 adopted,
 hazards found. Remaining: crosswalk, aggregation, emit.
 
-**Phase 2 — The two-surface prototype.** Throwaway, ugly, one question: does
-the crossing read? *Gate: if not, 2D piece, rewrite §7–§8.*
+**Phase 2 — The two-surface prototype.** Throwaway, ugly, one question: do two
+**dollar** surfaces crossing read at a glance? *Gate: if not, 2D piece, rewrite
+§7–§8.* Also settles open decision 5 — extrude dollars, keep ratios as
+readouts.
 
 **Phase 3 — The field.** Merged geometry, orbit, hover, year scrub.
 
@@ -457,9 +587,14 @@ the crossing read? *Gate: if not, 2D piece, rewrite §7–§8.*
 
 1. **Name.** *Ninety-One Cents* is California's ratio — plain, particular,
    memorable, and it is the finding rather than the category. Alternatives:
-   *Below Cost*, *The Price of Risk*, *Underwater* (literal in the visual, but a
-   flood metaphor on a wildfire story). *The Retreat* is retired with the
-   framing it belonged to.
+   *The Price of Risk* (generic). *Below Cost* and *Underwater* are both
+   **rejected on substance**, not taste: the first states the overclaim §2
+   exists to prevent, the second imports the one peril the dataset excludes.
+   *The Retreat* is retired with the framing it belonged to, and every
+   number-bearing title is retired with §6.5.
+
+   **The rule, for next time: no number in a title.** A figure that can move
+   when the estimator is corrected should not be the string everyone repeats.
 2. **County or ZIP for the field.** County is ~3,143 and cheap; ZIP is 25,593
    and shows intra-county variation that is sometimes the whole story. Proposal
    stands: county for the field, ZIP for the lookup.
