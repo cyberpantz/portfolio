@@ -235,6 +235,56 @@ console.log('\nProse agrees with the series');
   console.log(`  peak ${peak}, smallest +${Math.round((small.at(-1)! / small[0] - 1) * 100)}%, largest ${Math.round((large.rate.at(-1)! / large.rate[0] - 1) * 100)}%`);
 }
 
+/* ---- the lookup renders twice on every page --------------------------
+ *
+ * The scrolly layout puts each chapter in the sticky stage AND in .srFigure
+ * beside the prose, because the stage is aria-hidden. Fine for a chart. Two
+ * search inputs were sharing id="tilt-county", so both <label for> attributes
+ * resolved to the same element and one field was left unlabelled — an error
+ * no visual check would ever surface.
+ */
+console.log('\nThe lookup survives being rendered twice');
+{
+  const twice = renderToStaticMarkup(<div><ChapterLookup /><ChapterLookup /></div>);
+  const ids = [...twice.matchAll(/\sid="([^"]+)"/g)].map((m) => m[1]);
+  ok(ids.length >= 2, 'the lookup input has no id at all, so its label points nowhere');
+  ok(new Set(ids).size === ids.length, `duplicate id across two lookups: ${ids.join(', ')}`);
+  for (const f of [...twice.matchAll(/for="([^"]+)"/g)].map((m) => m[1])) {
+    ok(ids.includes(f), `a label points at "${f}", which no input on the page has`);
+  }
+  console.log(`  ${ids.length} unique ids, every label resolved`);
+}
+
+/* The modal is the only part of this piece that takes the page away from the
+ * reader, so the ways out are checked structurally rather than remembered.
+ *
+ * It exists because the stage swaps its contents on scroll and destroyed the
+ * inline result — which also means the scroll lock is load-bearing, not
+ * cosmetic: without it the lookup unmounts mid-read and takes the portal, and
+ * the dialog, with it.
+ */
+console.log('\nThe modal has its exits');
+{
+  const src = require('fs').readFileSync(__dirname + '/../Lookup.tsx', 'utf8') as string;
+  ok(/showModal\(\)/.test(src), 'the dialog is not opened as a modal, so nothing is focus-trapped or inert');
+  ok(/createPortal\([\s\S]*?document\.body/.test(src),
+     'the dialog is not portalled to body — inside the aria-hidden stage it would be invisible to a screen reader');
+  ok(/onCancel=\{\(e\) => \{ e\.preventDefault\(\); onClose\(\); \}\}/.test(src),
+     'Escape is not routed back into React state, so the dialog would close without clearing the selection and not reopen');
+  /* Deliberately NOT click-to-dismiss: the panel is full-bleed, so the only
+     clickable emptiness is the gutter beside the charts, which reads as part
+     of the panel rather than as a way out. A stray click there would discard
+     the reader's search. If someone adds it back, they should have to delete
+     this line and read the reason first. */
+  ok(!/e\.target === ref\.current/.test(src),
+     'click-to-dismiss is back on a full-screen panel, where the gutter is not obviously "outside"');
+  ok(/aria-label="Close county detail"/.test(src), 'the close button has no accessible name');
+  ok(/html\.style\.overflow = 'hidden'/.test(src) && /html\.style\.overflow = prevOverflow/.test(src),
+     'the scroll lock is missing or never released — the stage would swap chapters and unmount the dialog');
+  ok(/input\.current\?\.focus\(\)/.test(src), 'focus is not returned to the search field on close');
+  console.log('  X and Escape, no stray-click dismissal, scroll locked and released, focus returned');
+}
+
 /* ---- sourcing ------------------------------------------------------- */
 console.log('\nSources');
 /* Every sourceId a chart actually cites, so a figure can never quietly

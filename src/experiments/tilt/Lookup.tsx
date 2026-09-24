@@ -36,7 +36,8 @@
  *    that six chapters of line charts do not wait on it.
  */
 
-import { useMemo, useRef, useState } from 'react';
+import { useEffect, useId, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import data from '../../data/tilt.json';
 import { Frame, makeScales, path, band as areaBand } from './charts';
 import s from './tilt.module.css';
@@ -46,6 +47,7 @@ const XT = [2002, 2007, 2012, 2019];
 const RAMP = ['#e8734a', '#e08a4e', '#c9975c', '#9c9a6e', '#6d9a8c', '#4f8fa8', '#4a7ab8'];
 const fmt = (n: number) => n.toLocaleString();
 const last = <T,>(a: T[]) => a[a.length - 1];
+const bandOf = (c: County) => data.bands.find((b) => b.key === c.band)!;
 
 export type County = {
   fips: string; name: string; state: string; urb: string; band: string;
@@ -75,6 +77,17 @@ export function ChapterLookup() {
   const [list, setList] = useState<County[] | null>(cache);
   const [status, setStatus] = useState<'idle' | 'loading' | 'error'>('idle');
   const started = useRef(false);
+  const input = useRef<HTMLInputElement>(null);
+
+  /*
+   * The scrollytelling layout renders every chapter TWICE: once in the sticky
+   * stage for sighted readers, once inside .srFigure beside the prose for
+   * assistive technology, because the stage is aria-hidden. Harmless for a
+   * chart. Not harmless for a form — two inputs were sharing id="tilt-county",
+   * so both labels pointed at whichever one the parser saw first and one of
+   * the two search fields had no label at all.
+   */
+  const id = useId();
 
   /* Fires on focus as well as on the first keystroke: by the time anyone has
      typed two characters the fetch has had a head start. */
@@ -94,8 +107,8 @@ export function ChapterLookup() {
 
   return (
     <div className={s.lookup}>
-      <label htmlFor="tilt-county">Find a county</label>
-      <input id="tilt-county" type="search" value={q} autoComplete="off"
+      <label htmlFor={id}>Find a county</label>
+      <input id={id} ref={input} type="search" value={q} autoComplete="off"
              placeholder="Grant County, KY"
              onFocus={begin}
              onChange={(e) => { begin(); setQ(e.target.value); setPicked(null); }} />
@@ -131,8 +144,126 @@ export function ChapterLookup() {
         </>
       )}
 
-      {picked && <CountyReport key={picked.fips} c={picked} />}
+      {picked && (
+        <Modal
+          title={`${picked.name}, ${picked.state}`}
+          sub={`${fmt(picked.pop)} residents aged 15–64 · ${bandOf(picked).label} · Vera classes it ${picked.urb}`}
+          onClose={() => { setPicked(null); input.current?.focus(); }}
+        >
+          <CountyReport c={picked} />
+        </Modal>
+      )}
     </div>
+  );
+}
+
+/**
+ * The result, as a modal over the whole page.
+ *
+ * ── Why a modal, which is normally the wrong answer ─────────────────────
+ *
+ * The lookup lives in the sticky stage, and the stage swaps its contents as
+ * you scroll. So the old inline result was destroyed by the next flick of the
+ * wheel — you did the work of searching and the answer evaporated on a
+ * gesture you did not mean as "close this". Any inline panel here has that
+ * problem; the chapter does not own the scroll position.
+ *
+ * A modal owns it. It locks the page, so the stage cannot swap underneath,
+ * and it leaves by a deliberate act: the X, Escape, or a click on the
+ * backdrop. It also buys the report the full width it wants for two charts,
+ * which a 26rem stage column never had.
+ *
+ * ── Three things a hand-rolled modal usually gets wrong ─────────────────
+ *
+ * 1. Native <dialog>.showModal() rather than a div with a high z-index. It
+ *    gives the focus trap, the inert background, Escape, and the top layer —
+ *    all of which are fiddly and easy to half-implement.
+ *
+ * 2. Portalled to <body>. The stage is aria-hidden="true", and aria-hidden
+ *    applies to the whole subtree: a dialog rendered inside it would be
+ *    invisible to a screen reader however correctly it was marked up. The
+ *    stage is also a sticky, overflow-constrained box, which is exactly the
+ *    kind of container that clips a fixed child.
+ *
+ * 3. The scroll lock is not cosmetic. If the page scrolled while this were
+ *    open, the stage would swap chapters, unmount the lookup, and take the
+ *    portal — and the dialog — with it. The lock is what makes the modal
+ *    survive at all.
+ */
+function Modal({ title, sub, children, onClose }: {
+  title: string; sub: string; children: React.ReactNode; onClose: () => void;
+}) {
+  const ref = useRef<HTMLDialogElement>(null);
+  /* The dialog is named by the county heading rather than a generic label, so
+     a screen reader announces WHICH county on open — the same question the
+     sighted reader has. */
+  const headId = useId();
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    if (!el.open) el.showModal();
+
+    /* Lock the page behind the dialog. Padding replaces the scrollbar's width
+       so the layout underneath does not jump sideways as it disappears. */
+    const html = document.documentElement;
+    const gap = window.innerWidth - html.clientWidth;
+    const prevOverflow = html.style.overflow;
+    const prevPad = html.style.paddingRight;
+    html.style.overflow = 'hidden';
+    if (gap > 0) html.style.paddingRight = `${gap}px`;
+
+    return () => {
+      html.style.overflow = prevOverflow;
+      html.style.paddingRight = prevPad;
+      if (el.open) el.close();
+    };
+  }, []);
+
+  if (typeof document === 'undefined') return null;
+
+  return createPortal(
+    <dialog
+      ref={ref}
+      className={s.modal}
+      aria-labelledby={headId}
+      /* Escape fires `cancel`, not `close`, and the browser would otherwise
+         close the element without telling React — leaving `picked` set and
+         the dialog unopenable the second time. */
+      onCancel={(e) => { e.preventDefault(); onClose(); }}
+      /*
+        No click-to-dismiss. On a small centred dialog the surrounding
+        backdrop is obviously "outside" and clicking it to leave is a
+        convenience. This one fills the viewport, so the only clickable
+        emptiness is the gutter beside the charts — which reads as part of
+        the panel, not as a way out of it. Dismissing on a click there would
+        throw away a reader's search on a stray click. The X and Escape are
+        the exits, and both are announced.
+      */
+    >
+      <div className={s.modalInner}>
+        {/*
+          Sticky, so the county you chose is still named when you have scrolled
+          down to the second chart. The charts themselves carry no visible
+          title in the scrolly layout — the prose beside them is the title —
+          and in here there is no prose, so this header is the only thing
+          answering "which county am I looking at".
+        */}
+        <header className={s.modalHead}>
+          <div>
+            <h3 id={headId}>{title}</h3>
+            <p>{sub}</p>
+          </div>
+          <button type="button" className={s.close} onClick={onClose} aria-label="Close county detail">
+            <svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true">
+              <path d="M3 3l10 10M13 3L3 13" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+            </svg>
+          </button>
+        </header>
+        {children}
+      </div>
+    </dialog>,
+    document.body,
   );
 }
 
@@ -153,13 +284,6 @@ export function CountyReport({ c }: { c: County }) {
 
   return (
     <div className={s.report}>
-      <header className={s.reportHead}>
-        <h3>{c.name}, {c.state}</h3>
-        <p>
-          {fmt(c.pop)} residents aged 15&ndash;64 &middot; {bandInfo.label} &middot; Vera classes it {c.urb}
-        </p>
-      </header>
-
       <div className={s.bigRow}>
         <div><b>{fmt(r1)}</b><span>per 100,000 in 2019</span></div>
         {chg !== null && (
@@ -177,6 +301,17 @@ export function CountyReport({ c }: { c: County }) {
         <p>Higher than <b>{c.pct}%</b> of the {fmt(data.ch1.panel)} counties in the panel.</p>
       </div>
 
+      {/* Side by side in the modal once there is room, stacked on a phone.
+          The two charts answer different questions and neither is a caption
+          for the other, so reading order does not matter between them. */}
+      <div className={s.charts}>
+      <div>
+      {/* A visible heading per chart. Frame's `title` becomes the aria-label
+          and nothing else, which is right in the scrolly — the paragraph next
+          to the chart is its heading. Here there is no paragraph. */}
+      <h4 className={s.chartHead}>
+        {c.name.replace(/ County$/, '')} against counties of every size
+      </h4>
       <Frame
         title={`${c.name} against counties of every size`}
         desc={`${c.name} ran at ${r0} per 100,000 in 2002 and ${r1} in 2019, against ${Math.round(peers[0])} and ${Math.round(last(peers))} for counties of its size.`}
@@ -196,20 +331,26 @@ export function CountyReport({ c }: { c: County }) {
           {c.name.replace(/ County$/, '')}
         </text>
       </Frame>
-
       {clipped && (
         <p className={s.aside}>
           The axis runs to {fmt(top)} to fit this county, which presses the seven national bands
           into the foot of the chart. That flattening is the finding, not a drawing problem.
         </p>
       )}
+      </div>
 
+      <div>
+      <h4 className={s.chartHead}>
+        {c.name.replace(/ County$/, '')}: people held against beds built
+      </h4>
       {c.people && c.beds ? <Beds c={c} /> : (
         <p className={s.aside}>
           {c.name} did not report a rated capacity in every year, so its beds are not drawn. An
           incomplete line beside a complete one reads as capacity disappearing, which would be false.
         </p>
       )}
+      </div>
+      </div>
     </div>
   );
 }
