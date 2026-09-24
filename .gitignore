@@ -32,3 +32,5 @@ Thumbs.db
 # came to photograph dumps the page here so you can see what it saw.
 # Useful locally, never something to commit.
 src/assets/explorations/FAILED-*.png
+data/
+src/data/raw/
