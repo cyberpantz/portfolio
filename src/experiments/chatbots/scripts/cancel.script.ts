@@ -535,7 +535,7 @@ export const CANCEL: Scenario = {
     'verify-identity': {
       id: 'verify-identity',
       say: [
-        { t: 'ack', text: 'Right — cancelling. For your security I’ll just confirm it’s really you.' },
+        { t: 'ack', text: 'Cancelling. For your security I’ll just confirm it’s really you.' },
         {
           t: 'think',
           stages: [
@@ -705,29 +705,22 @@ export const CANCEL: Scenario = {
      * the plan was to exempt this node by name.
      *
      * That was the wrong call. A rule with a hand-written exception is
-     * a rule that erodes, and the exemption would have bought a joke
-     * that the split version tells better anyway: two endings, two
-     * different cheerful messages, and underneath each the IDENTICAL
-     * receipt. You can see both, which a shared node could never show.
+     * a rule that erodes, and the split version tells the joke better
+     * anyway: two endings, two different cheerful messages, and the
+     * same thing true underneath each.
      *
-     * The receipt is the one thing in this script that behaves well.
-     * It is `disclose` doing its actual job — the full record, no
-     * editorial — and it is damning precisely because it is neutral.
+     * Both endings used to print a tally — "You asked to cancel: 4
+     * times", "Cancellations processed: 0". It read as the author
+     * scoring the joke rather than the product behaving, and it was
+     * not even true: those counts are authored constants, while both
+     * endings can be reached without passing the cancel gate at all.
+     * The ending now states the one fact it can stand behind.
      */
     'still-subscribed': {
       id: 'still-subscribed',
       say: [
         { t: 'say', text: 'Good news — your plan is unchanged!\u00A0🎉' },
-        {
-          t: 'disclose',
-          summary: 'What happened in this conversation',
-          rows: [
-            ['You asked to cancel', '4 times'],
-            ['Offers made to you', '3'],
-            ['Cancellations processed', '0'],
-            ['Your next payment', '$9.99, in 6 days'],
-          ],
-        },
+        { t: 'say', text: 'Your next payment is $9.99, in 6 days.' },
         { t: 'say', text: 'Anything else I can help with today?' },
       ],
       /*
@@ -802,16 +795,7 @@ export const CANCEL: Scenario = {
       id: 'kept',
       say: [
         { t: 'say', text: 'Wonderful — you’re all set.\u00A0🎉' },
-        {
-          t: 'disclose',
-          summary: 'What happened in this conversation',
-          rows: [
-            ['You asked to cancel', '4 times'],
-            ['Offers made to you', '3'],
-            ['Cancellations processed', '0'],
-            ['Your subscription', 'Active'],
-          ],
-        },
+        { t: 'say', text: 'Your subscription is active. Nothing has changed.' },
       ],
       /*
        * The same two doors. This ending does not ask a question, so it
