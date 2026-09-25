@@ -48,24 +48,39 @@ const SMALLEST = pctChange(data.bands[0].rate);
 const LARGEST = pctChange(data.bands[data.bands.length - 1].rate);
 /* Smallest counties against largest, in the final year. Chapter three quotes
    both ends of this; the intro quotes only where it ended up. */
+const RATIO02 = (data.bands[0].rate[0] / data.bands[data.bands.length - 1].rate[0]).toFixed(2);
 const RATIO = (last(data.bands[0].rate) / last(data.bands[data.bands.length - 1].rate)).toFixed(1);
 
 const CHAPTERS = [
   {
     id: 'decline',
     /*
-      Was "What you already know", and the body went on to call this "the
+      One sentence, twice cut down.
+
+      It was kickered "What you already know" and called the figure "the
       number most people carry around" and the last thing here that would
-      "behave the way you expect". Three guesses about the reader in one
-      short chapter, and a reader who does not recognise the figure has been
-      told they are unusual before the first chart. The claim the chapter
-      needs is about the data, not about the audience: this is the figure
-      that gets reported, and everything after it comes from the same file
-      and points elsewhere.
+      "behave the way you expect" — three guesses about the reader before the
+      first chart. Replacing those with "That is accurate, and it is the
+      number that usually gets quoted. Every chart after this one is drawn
+      from the same data and points somewhere else." fixed the presumption
+      and kept the throat-clearing: two sentences announcing a turn instead
+      of taking it, one of them repeating the kicker.
+
+      Chapter two's title is "That line is an average of opposites." The turn
+      is already there, one scroll away, and it lands harder without being
+      advertised. So this chapter is now the fact and the chart, nothing else.
     */
     kicker: 'The reported figure',
-    title: 'American jails emptied out.',
-    body: `The county jail population peaked in ${PEAK} and fell about ${SINCE_PEAK} percent by 2019. That is accurate, and it is the number that usually gets quoted. Every chart after this one is drawn from the same data and points somewhere else.`,
+    /*
+      "American jails emptied out." A 7 percent fall is not emptying out, and
+      the sentence cut from the body — "that is accurate, and it is the number
+      that usually gets quoted" — had been covering for the overstatement.
+      Take the padding away and the title is left claiming something the
+      figure beneath it does not support. Chapter two does the turning; this
+      one only has to be true.
+    */
+    title: 'The jail population came down.',
+    body: `The county jail population peaked in ${PEAK} and fell about ${SINCE_PEAK} percent by 2019.`,
     figure: <ChapterDecline />,
   },
   {
@@ -79,7 +94,15 @@ const CHAPTERS = [
     id: 'tilt',
     kicker: 'The finding',
     title: 'Measured per resident, the country tilts.',
-    body: `In 2002 a county of three thousand people jailed at roughly the same rate as a county of a million — 1.31 times, close enough to call flat. By 2019 it was 2.61 times. From counties of five thousand downward through the largest, the ladder descends without a step out of place. The very smallest counties are the one exception, sitting below their neighbours: over a third of them share a regional jail rather than running their own, so their rate is measured on a different basis.`,
+    /*
+      Two faults. "From counties of five thousand downward through the largest,
+      the ladder descends without a step out of place" — downward through the
+      largest is a direction that does not exist, and a reader should not have
+      to decode a sentence to reach a fact. And 1.31 and 2.61 were typed here,
+      in the file whose header says no number is, while the same two ratios are
+      computed three lines above for the intro.
+    */
+    body: `In 2002 a county of three thousand people jailed at roughly the same rate as a county of a million — ${RATIO02} times, close enough to call flat. By 2019 it was ${RATIO} times. Above 5,000 residents, every step up in county size means a lower rate, all the way to the largest. Counties under 5,000 are the exception, sitting below their neighbours: more than a third share a regional jail instead of running their own, so their rate is measured on a different basis.`,
     figure: <ChapterTilt />,
   },
   {

@@ -257,8 +257,12 @@ console.log('\nProse agrees with the series');
   ok(large.rate.at(-1)! < large.rate[0], 'the largest counties no longer fall — the standfirst claims they do');
   ok(!/did not stop putting|moved the practice/.test(src),
      'the old "not X, but Y" standfirst is back; it asserts a transfer that chapter four disproves');
-  ok(!/\d\.\d times the rate/.test(src),
-     'the intro ratio is typed rather than derived from data.bands');
+  /* Neither ratio may be typed. Chapter three carried "1.31 times" and "2.61
+     times" as literals for months, in the file whose own header says no
+     number is typed, while the intro three lines above computed the same two
+     figures from the data. */
+  ok(!/\d\.\d\d? times/.test(src),
+     'a ratio is typed into the prose rather than derived from data.bands');
 
   /* The copy does not tell the reader what they think.
    *
