@@ -44,7 +44,7 @@ export const EXPLORATIONS: Exploration[] = [
     type: 'Data',
     tags: ['Scrollytelling', 'SVG', 'React', 'Public data'],
     url: '/explorations/tilt',
-    desc: 'Between 2002 and 2019 rural America began jailing people at a far faster rate than urban America — rates rose by half in the smallest counties while falling by a quarter in the largest. A county of three thousand once jailed at about the same rate as a county of a million. Now it is more than double. Built from the Vera Institute\u2019s data, with every figure computed from the source rather than typed.',
+    desc: 'Between 2002 and 2019 rural America began jailing people at a far faster rate than urban America \u2014 rates rose by half in the smallest counties while falling by a quarter in the largest. Built from the Vera Institute\u2019s county data, then read against the research on who actually decides: sheriffs nobody runs against, forecasts written by the firms that get the construction contract, and bonds that route around the vote.',
     cover: tiltCover,
     coverAlt:
       'Seven lines showing jail rates by county size, fanning apart between 2002 and 2019 as the smallest counties rise and the largest fall.',

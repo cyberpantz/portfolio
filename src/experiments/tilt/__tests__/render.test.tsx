@@ -321,6 +321,33 @@ console.log('\nThe modal has its exits');
   console.log('  X and Escape, no stray-click dismissal, scroll locked and released, focus returned');
 }
 
+/* ---- every citation resolves, and none rests on an unopened source ---
+ * The conclusion makes claims the dataset cannot support, so each one carries
+ * a numbered link. A <Cite> to an unknown id throws at render; these checks
+ * cover the two failures that would not: a source cited while still marked
+ * needs-check, and a numbered link with no matching anchor to land on. */
+console.log('\nCitations');
+{
+  const whole = html['tilt/whole'] ?? '';
+  const cited = [...whole.matchAll(/href="#src-([a-z0-9-]+)"/g)].map((m) => m[1]);
+  const anchors = new Set([...whole.matchAll(/id="src-([a-z0-9-]+)"/g)].map((m) => m[1]));
+  ok(cited.length >= 12, `only ${cited.length} citations in the conclusion`);
+  for (const id of new Set(cited)) ok(anchors.has(id), `citation to "${id}" has no entry to jump to`);
+  try {
+    assertNoUnverifiedClaims([...new Set(cited)]);
+  } catch (e) {
+    fails++; console.error('  FAIL  ' + (e as Error).message);
+  }
+  /* Kinds are printed beside each entry, so a reader can tell a peer-reviewed
+     estimate from an advocacy briefing without knowing the publisher. */
+  ok(SOURCES.every((x) => x.kind), 'a source has no kind');
+  const kinds = new Set(SOURCES.map((x) => x.kind));
+  ok(kinds.has('peer-reviewed'), 'nothing here is peer-reviewed');
+  ok(SOURCES.filter((x) => x.kind === 'peer-reviewed').length >= 3,
+     'the argument leans on fewer than three peer-reviewed sources');
+  console.log(`  ${new Set(cited).size} sources cited inline, ${SOURCES.length} listed, ${kinds.size} kinds`);
+}
+
 /* ---- sourcing ------------------------------------------------------- */
 console.log('\nSources');
 /* Every sourceId a chart actually cites, so a figure can never quietly

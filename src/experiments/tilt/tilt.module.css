@@ -499,6 +499,67 @@
   text-wrap: pretty;
 }
 
+/* ---------------------------------------------------------- conclusion */
+
+.essay {
+  max-width: 40rem;
+  margin: clamp(40px, 8vh, 96px) auto 0;
+  padding: clamp(28px, 5vh, 48px) 20px 0;
+  border-top: 1px solid var(--line);
+  color: var(--body);
+}
+.essay h2 {
+  margin: 0 0 20px;
+  font-size: clamp(1.6rem, 3.4vw, 2.1rem);
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+  font-weight: 600;
+  color: var(--ink);
+}
+.essay h3 {
+  margin: 30px 0 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+.essay p {
+  margin: 0 0 14px;
+  font-size: 1.02rem;
+  line-height: 1.75;
+  text-wrap: pretty;
+}
+
+/* A numbered citation. Small, raised, and a real link to the entry below —
+   a claim the data cannot support has to be checkable in one click. */
+.cite {
+  display: inline-block;
+  margin-left: 1px;
+  padding: 0 3px;
+  font-size: 0.66em;
+  font-weight: 600;
+  line-height: 1;
+  vertical-align: super;
+  color: var(--mute);
+  text-decoration: none;
+  border-radius: 3px;
+}
+.cite:hover { color: #131315; background: var(--ink); }
+.cite:focus-visible { outline: 2px solid var(--ink); outline-offset: 1px; }
+
+/* ------------------------------------------------------------- method */
+
+.method { margin: 0 0 34px; }
+.method div { padding: 14px 0; border-top: 1px solid var(--line); }
+.method dt {
+  margin-bottom: 4px;
+  font: 600 11px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--mute);
+}
+.method dd { margin: 0; font-size: 0.94rem; line-height: 1.7; text-wrap: pretty; }
+
 /* ------------------------------------------------------------- sources */
 
 .sources {
@@ -512,11 +573,34 @@
 .sources ul { list-style: none; margin: 22px 0; padding: 0; }
 .sources li {
   display: grid;
-  gap: 3px;
+  gap: 4px;
   padding: 14px 0;
   border-top: 1px solid var(--line);
 }
 .sources a { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
+.srcHead { display: flex; gap: 10px; align-items: baseline; }
+.srcHead b {
+  flex: none;
+  min-width: 1.4em;
+  font: 600 12px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace;
+  color: var(--mute);
+}
+/* What kind of evidence this is, so a reader need not recognise the publisher
+   to tell a peer-reviewed estimate from an advocacy briefing. */
+.kind {
+  display: inline-block;
+  margin-right: 8px;
+  padding: 1px 6px;
+  font-style: normal;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--body);
+  background: rgb(255 255 255 / 8%);
+  border-radius: 4px;
+}
+.srcNote { font-size: 12px; line-height: 1.6; color: var(--mute); font-style: italic; }
+.sources li { scroll-margin-top: 80px; }
 .pub { font-size: 12px; color: var(--mute); }
 .supports { font-size: 13px; line-height: 1.6; }
 .caveat { font-size: 0.86rem; line-height: 1.7; color: var(--mute); }

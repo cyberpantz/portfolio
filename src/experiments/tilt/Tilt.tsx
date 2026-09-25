@@ -19,7 +19,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import data from '../../data/tilt.json';
-import { SOURCES } from '../../data/incarceration-sources';
+import { SOURCES, byId } from '../../data/incarceration-sources';
 import {
   ChapterDecline, ChapterBands, ChapterTilt, ChapterEliminations, ChapterCapacity,
   ChapterConstruction, ChapterPretrial, ChapterLookup,
@@ -143,6 +143,7 @@ export default function Tilt() {
             <figure className={s.fig}>{c.figure}</figure>
           </section>
         ))}
+        <Conclusion />
         <Finder />
         <Sources />
       </article>
@@ -175,6 +176,7 @@ export default function Tilt() {
           ))}
         </div>
       </div>
+      <Conclusion />
       <Finder />
       <Sources />
     </article>
@@ -186,6 +188,111 @@ export default function Tilt() {
  * it. The sticky stage is for figures, is aria-hidden, and renders each
  * chapter twice — all three are wrong for a text input.
  */
+/*
+ * A numbered citation that jumps to the source list. The chapters cite their
+ * own data file under each chart; this section makes claims the data cannot
+ * support on its own, so every one of them has to point somewhere.
+ */
+function Cite({ id }: { id: string }) {
+  const i = SOURCES.findIndex((x) => x.id === id);
+  if (i < 0) throw new Error(`Tilt: cited unknown source "${id}"`);
+  return (
+    <a className={s.cite} href={`#src-${id}`} aria-label={`Source ${i + 1}: ${byId(id).title}`}>
+      {i + 1}
+    </a>
+  );
+}
+
+function Conclusion() {
+  return (
+    <section className={s.essay} id="what-follows">
+      <p className={s.kicker}>What follows</p>
+      <h2>The building is the decision.</h2>
+
+      <p>
+        A jail is not a policy that can be revised next year. It is a structure with a
+        thirty-year debt attached, and once the beds exist somebody fills them. Since 2002 more
+        than 1,200 counties have spent over $42 billion adding jail capacity, through two decades
+        in which the national jail population fell<Cite id="vera-scale" />. The advertised price
+        is not the price: across thirty years, roughly nine tenths of what a jail costs is running
+        it, not building it<Cite id="vera-scale" />.
+      </p>
+
+      <h3>Nobody with a statewide mandate decides this</h3>
+      <p>
+        Jails are county property. The sheriff decides who is booked and who is released, the
+        commissioners decide what gets built, and almost no state reviews either
+        choice<Cite id="littman-sheriffs" />. Sheriff elections are typically quiet and rarely
+        contested<Cite id="farris-holman-badge" />. So the single largest capital commitment a
+        rural county makes is set by a handful of local officials, on a question almost nobody
+        campaigns on.
+      </p>
+
+      <h3>The forecast and the contract are often the same firm</h3>
+      <p>
+        Counties hire architecture firms to estimate how many beds they will need, and those
+        firms frequently go on to design the jail they recommended. In Indiana, three firms
+        designed roughly 90 percent of recent projects. The needs assessments extrapolate from
+        past population rather than from local policy, and they recommend expansion even where
+        crime and residents are both projected to fall<Cite id="intercept-architects" />. Vera
+        documents the same conflict independently<Cite id="vera-scale" />.
+      </p>
+
+      <h3>And the vote can be routed around</h3>
+      <p>
+        A general obligation bond is backed by taxes and usually needs public approval. A
+        lease-purchase agreement is not and does not — and it is used in counties where voters
+        have already rejected a jail bond<Cite id="vera-scale" />. The debt is real either way:
+        jail bonds carry the second-highest default rate in the municipal
+        market<Cite id="vera-scale" />. Grant County, Kentucky built to rent beds to the state
+        and approached insolvency when the state stopped sending
+        people<Cite id="vera-build-it" />.
+      </p>
+
+      <h3>Is it a party story? Mostly not</h3>
+      <p>
+        The obvious reading is partisan, and the best available test does not support it. A
+        regression discontinuity across more than 3,200 partisan sheriff elections finds
+        Democratic and Republican sheriffs comply with federal immigration detainers at close to
+        the same rate<Cite id="thompson-sheriffs" />. What predicts behaviour is the individual
+        officeholder, and the building. A county that has borrowed against future occupancy has
+        an interest in occupancy regardless of who wins.
+      </p>
+
+      <h3>What it costs the people inside</h3>
+      <p>
+        Most people in an American jail have not been convicted of anything. That detention is
+        not a neutral wait: using the random assignment of bail judges, being held before trial
+        raises the chance of conviction — mostly by producing guilty pleas — and lowers formal
+        employment afterwards<Cite id="dobbie-pretrial" />. The smallest jails have the highest
+        death rates, in some years more than double the overall rate<Cite id="ppi-jail-mortality" />,
+        and there is no reliable national count of those deaths: a bipartisan Senate
+        investigation found the Justice Department had missed at least a thousand in a single
+        year<Cite id="senate-deaths" />. Boyd County, Kentucky expanded from 93 beds to 202 in
+        2006 and held 286 people by 2021<Cite id="quandt-rural-deaths" />.
+      </p>
+
+      <h3>The lever exists</h3>
+      <p>
+        Jail populations are not a readout of crime. They respond to booking, bail and release
+        practices, which is why they fell so far so fast in 2020 — and a synthetic-control study
+        of all 58 California counties finds no consistent link between that decarceration and
+        county crime<Cite id="kubrin-covid" />. One state and one short window, so it shows the
+        lever works rather than that pulling it is free.
+      </p>
+
+      <p>
+        Which leaves the tilt in this piece looking less like a trend and more like an
+        accumulation of local decisions that each seemed small. Rural towns pursue these
+        facilities for standing and a sense of order as much as for
+        jobs<Cite id="eason-bighouse" />, which is why the economics failing has not stopped the
+        building. The beds outlast the crime rate that justified them, the sheriff who wanted
+        them, and the argument that built them.
+      </p>
+    </section>
+  );
+}
+
 function Finder() {
   return (
     <section className={s.finder} id="lookup">
@@ -224,18 +331,71 @@ function Intro() {
 function Sources() {
   return (
     <section className={s.sources} id="sources">
+      <h2>Method</h2>
+      <dl className={s.method}>
+        <div>
+          <dt>Balanced panels</dt>
+          <dd>
+            Counties enter and leave the jail survey from year to year. A chart drawn on
+            whoever reported that year measures the reporting, not the jailing. Every series
+            here uses only counties present with the required field in all eighteen years:
+            {' '}{fmt(data.ch1.panel)} of roughly 3,100 for jail population, fewer for capacity
+            and pretrial. Missing years are dropped, never interpolated.
+          </dd>
+        </div>
+        <div>
+          <dt>Rates, not counts</dt>
+          <dd>
+            Per 100,000 residents aged 15&ndash;64 — Vera&rsquo;s denominator, and roughly the
+            population at risk of arrest. Counts alone hide the story, because the largest
+            counties hold most of the people and their direction becomes the national
+            direction. Chapter two shows the counts so that chapter three&rsquo;s rates mean
+            something.
+          </dd>
+        </div>
+        <div>
+          <dt>Size bands fixed at 2002</dt>
+          <dd>
+            Each county is assigned to a band by its 2002 population and stays there. Reassigning
+            every year would let counties migrate between bands as they grow or shrink, and the
+            chart would then be partly measuring that migration.
+          </dd>
+        </div>
+        <div>
+          <dt>Why pretrial is never shown as a share</dt>
+          <dd>
+            Total jail population is an average across the year; the pretrial figure is a
+            single-day count each June. Dividing one by the other looks like a percentage and
+            is not one, so pretrial appears here only as its own rate. People held for federal
+            authorities, ICE among them, are counted inside the pretrial number — so those two
+            series overlap and cannot be added.
+          </dd>
+        </div>
+        <div>
+          <dt>Percentiles</dt>
+          <dd>
+            A county&rsquo;s rank is its position among the {fmt(data.ch1.panel)} panel counties
+            by 2019 rate. It describes this panel, not all US counties — the excluded ones skew
+            rural and small.
+          </dd>
+        </div>
+      </dl>
+
       <h2>Sources</h2>
-      <p>
-        Every number on this page is calculated from the files below when the site is
-        built. Nothing was copied across by hand, so anything here can be traced back
-        to the original data.
-      </p>
       <ul>
-        {SOURCES.map((x) => (
-          <li key={x.id}>
-            <a href={x.url} target="_blank" rel="noopener noreferrer">{x.title}</a>
-            <span className={s.pub}>{x.publisher}{x.date ? `, ${x.date}` : ''}</span>
+        {SOURCES.map((x, i) => (
+          <li key={x.id} id={`src-${x.id}`}>
+            <span className={s.srcHead}>
+              <b>{i + 1}</b>
+              <a href={x.url} target="_blank" rel="noopener noreferrer">{x.title}</a>
+            </span>
+            <span className={s.pub}>
+              <em className={s.kind}>{x.kind}</em>
+              {x.author ? `${x.author} · ` : ''}{x.publisher}{x.date ? `, ${x.date}` : ''}
+              {x.openCopy ? ' · free copy of a paywalled work' : ''}
+            </span>
             <span className={s.supports}>{x.supports}</span>
+            {x.note && <span className={s.srcNote}>{x.note}</span>}
           </li>
         ))}
       </ul>
