@@ -9,20 +9,10 @@
  * one axis, year on the other, rate as height. Seen whole, the near edge is
  * almost level and the far edge is a ramp, and the object between them twists.
  *
- * ── Why it is labelled the way it is ─────────────────────────────────────
- *
- * The first version had three static hints printed under the canvas — "←
- * smaller counties", "height = jail rate", "2002 → 2019 →". Useless, and
- * worse than useless the moment anyone dragged it: the labels kept claiming
- * a left and a right that the object no longer had. A 3D chart cannot have
- * 2D axis labels.
- *
- * So the labels live IN the scene, pinned to the ends of the axes they
- * describe, and they travel with the geometry. Turn it around and "2019" is
- * still at the 2019 end. Every band is named at its own edge, and hovering
- * the surface reads out the exact county size, year and rate under the
- * cursor — which is the thing a picture of a landscape cannot otherwise
- * tell you.
+ * Labels live IN the scene, pinned to the ends of the axes they describe, so
+ * they travel with the geometry: turn it around and "2019" is still at the
+ * 2019 end. A 3D chart cannot have 2D axis labels — printed under the canvas
+ * they would claim a left and a right the object no longer has.
  *
  * ── What it still refuses to do ──────────────────────────────────────────
  *

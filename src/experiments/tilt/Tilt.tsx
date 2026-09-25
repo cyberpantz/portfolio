@@ -28,17 +28,9 @@ import s from './tilt.module.css';
 
 const fmt = (n: number) => n.toLocaleString();
 
-/*
- * Figures the prose quotes, computed rather than typed.
- *
- * Chapter one said "peaked in 2008" for months. In this panel the peak is
- * 2007 — 734,475 against 733,116 the following year, a gap of about 1,300
- * people out of three quarters of a million. The nationally reported peak IS
- * 2008, so the sentence was not plucked out of the air; it was a true fact
- * about a different population quietly standing in for this one. That is the
- * exact failure this file's header warns about, and it survived because the
- * number was a string rather than an expression. Now it cannot.
- */
+/* Figures the prose quotes, computed rather than typed. The nationally
+   reported jail peak is 2008; this balanced panel peaks in 2007. Quote the
+   panel, since it is what the charts draw. */
 const COUNT = data.ch1.count;
 const PEAK = data.ch1.years[COUNT.indexOf(Math.max(...COUNT))];
 const SINCE_PEAK = Math.abs(Math.round((COUNT[COUNT.length - 1] / Math.max(...COUNT) - 1) * 100));
@@ -54,47 +46,15 @@ const RATIO = (last(data.bands[0].rate) / last(data.bands[data.bands.length - 1]
 const CHAPTERS = [
   {
     id: 'decline',
-    /*
-      One sentence, twice cut down.
 
-      It was kickered "What you already know" and called the figure "the
-      number most people carry around" and the last thing here that would
-      "behave the way you expect" — three guesses about the reader before the
-      first chart. Replacing those with "That is accurate, and it is the
-      number that usually gets quoted. Every chart after this one is drawn
-      from the same data and points somewhere else." fixed the presumption
-      and kept the throat-clearing: two sentences announcing a turn instead
-      of taking it, one of them repeating the kicker.
-
-      Chapter two's title is "That line is an average of opposites." The turn
-      is already there, one scroll away, and it lands harder without being
-      advertised. So this chapter is now the fact and the chart, nothing else.
-    */
     kicker: 'The reported figure',
-    /*
-      "American jails emptied out." A 7 percent fall is not emptying out, and
-      the sentence cut from the body — "that is accurate, and it is the number
-      that usually gets quoted" — had been covering for the overstatement.
-      Take the padding away and the title is left claiming something the
-      figure beneath it does not support. Chapter two does the turning; this
-      one only has to be true.
-    */
+
     title: 'The jail population came down.',
     body: `The county jail population peaked in ${PEAK} and fell about ${SINCE_PEAK} percent by 2019.`,
     figure: <ChapterDecline />,
   },
   {
     id: 'split',
-    /*
-      "Ungrouped" is a word from the pipeline, not from English. "That line is
-      an average of opposites" is a nice phrase that asks the reader to hold
-      three abstractions — a line, an average, opposites — before it tells
-      them anything, and the body then said the decline "sets the national
-      direction", which is a description of a chart rather than of jails.
-      
-      Said plainly it is a simple idea: a few huge counties outvote everyone
-      else in the national total.
-    */
     kicker: 'The same data, by county size',
     title: 'One line, two opposite trends.',
     body: `Most people in jail are held in a small number of very large counties, so those counties decide which way the national line goes. Group counties by size and the split shows: the biggest are jailing fewer people each year, while almost everywhere else is jailing more.`,
@@ -104,14 +64,6 @@ const CHAPTERS = [
     id: 'tilt',
     kicker: 'The finding',
     title: 'Measured per resident, the country tilts.',
-    /*
-      Two faults. "From counties of five thousand downward through the largest,
-      the ladder descends without a step out of place" — downward through the
-      largest is a direction that does not exist, and a reader should not have
-      to decode a sentence to reach a fact. And 1.31 and 2.61 were typed here,
-      in the file whose header says no number is, while the same two ratios are
-      computed three lines above for the intro.
-    */
     body: `In 2002 a county of three thousand people jailed at roughly the same rate as a county of a million — ${RATIO02} times, close enough to call flat. By 2019 it was ${RATIO} times. Above 5,000 residents, every step up in county size means a lower rate, all the way to the largest. Counties under 5,000 are the exception, sitting below their neighbours: more than a third share a regional jail instead of running their own, so their rate is measured on a different basis.`,
     figure: <ChapterTilt />,
   },
@@ -230,22 +182,9 @@ export default function Tilt() {
 }
 
 /*
- * The county lookup, as its own section rather than a chapter.
- *
- * It was the eighth entry in CHAPTERS, which meant a search field slid into
- * the sticky stage as you scrolled — the place seven charts had appeared,
- * suddenly holding a control. Frank's note was that getting to it felt odd,
- * and that is why: the stage is for things you watch, and a text input is
- * something you operate. Scrolling past would also have swept it away mid-
- * typing, the same problem the result panel had.
- *
- * Two structural faults went with it. The stage is aria-hidden="true", so the
- * one interactive control in the piece was hidden from assistive technology
- * there and present only in the duplicate rendered for screen readers. And
- * being a chapter, it rendered twice on every page — which is how two search
- * inputs came to share one id.
- *
- * Here it is a destination: the story ends, and then it turns to the reader.
+ * The county lookup, as a section after the story rather than a chapter in
+ * it. The sticky stage is for figures, is aria-hidden, and renders each
+ * chapter twice — all three are wrong for a text input.
  */
 function Finder() {
   return (
@@ -267,29 +206,11 @@ function Intro() {
   return (
     <header className={s.intro}>
       <h1>The Tilt</h1>
-      {/*
-        This read "the United States did not stop putting people in jail — it
-        moved the practice to its smallest places." Two things wrong with it.
-        The first is rhetorical: "not X, but Y" only lands if somebody believed
-        X, and nobody has ever believed America stopped jailing people. The
-        second is factual. "Moved" implies a transfer, a fixed quantity going
-        somewhere else — and chapter four spends its whole length proving that
-        is not what happened. Rural rates rose while urban rates fell; the two
-        are not the same people relocated.
-      */}
       <p className={s.standfirst}>
         Between 2002 and 2019 rural America began jailing people at a far faster rate
         than urban America. In the smallest counties the rate rose by {SMALLEST} percent.
         In the largest it fell by {Math.abs(LARGEST)}.
       </p>
-      {/*
-        "What is new here is the shape: a gradient by county size that was
-        nearly flat and is now steep." Three abstractions stacked on each
-        other — shape, gradient, flat-to-steep — and not one of them names a
-        thing the reader can picture. It was a description of the chart rather
-        than of the country. The same claim stated as two rates does not need
-        the vocabulary at all.
-      */}
       <p className={s.credit}>
         The finding is the Vera Institute&rsquo;s, from <i>Out of Sight</i> (2017). What this
         piece adds is a way to see it: in 2002 a county of a few thousand people jailed at
@@ -304,13 +225,6 @@ function Sources() {
   return (
     <section className={s.sources} id="sources">
       <h2>Sources</h2>
-      {/*
-        This used to name the build script by path and say no number was
-        "typed by hand" — a note to a code reviewer, on a page read by people
-        looking at a portfolio. The underlying claim is worth making, because
-        it is the reason to trust the charts; it just has to be made to a
-        reader rather than to whoever might open the repository.
-      */}
       <p>
         Every number on this page is calculated from the files below when the site is
         built. Nothing was copied across by hand, so anything here can be traced back

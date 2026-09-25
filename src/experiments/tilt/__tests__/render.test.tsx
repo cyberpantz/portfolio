@@ -49,15 +49,9 @@ for (const [name, el] of CH) {
 }
 console.log(`  ${CH.length} chapters`);
 
-/* ---- the piece itself, not only its parts ----------------------------
- *
- * This suite rendered eight chapters and never once rendered Tilt. A dangling
- * brace left in CHAPTERS while moving the lookup out of it took tsc down and
- * the suite still printed PASSED, because Tilt.tsx was only ever read as text
- * for the prose checks. Rendering it server-side exercises the stacked
- * reading — the path taken under reduced motion — and, more to the point,
- * means the file has to compile.
- */
+/* ---- the piece itself, not only its parts ---------------------------
+ * Rendering Tilt is what makes Tilt.tsx compile under test; the chapter
+ * checks below import chapters.tsx and never touch it. */
 console.log('\nThe whole piece renders');
 {
   const Tilt = (require('../Tilt') as { default: () => ReactElement }).default;
@@ -84,11 +78,9 @@ for (const [name, markup] of Object.entries(html)) {
 }
 console.log('  clean');
 
-/* ---- the charts draw the data, not a copy of it ----------------------
- * The chapters take their numbers from tilt.json. These assertions fail if
- * someone hard-codes a figure into a component, which is exactly how the
- * Wage Gap rate drifted away from the data that produced it.
- */
+/* ---- the charts draw the data, not a copy of it ---------------------
+ * These fail if a figure is hard-coded into a component instead of read
+ * from tilt.json. */
 console.log('\nFigures trace to the data file');
 const bands = data.bands;
 const ratio0 = bands[0].rate[0] / bands[bands.length - 1].rate[0];
@@ -97,16 +89,10 @@ ok(Math.abs(ratio0 - 1.31) < 0.02, `2002 ratio is ${ratio0.toFixed(2)}, expected
 ok(Math.abs(ratio1 - 2.61) < 0.02, `2019 ratio is ${ratio1.toFixed(2)}, expected ~2.61`);
 console.log(`  gradient ${ratio0.toFixed(2)}x → ${ratio1.toFixed(2)}x`);
 
-/* The gradient descends cleanly from the SECOND band down, and the smallest
- * band sits below its neighbour rather than above it.
- *
- * I asserted seven-band monotonicity first, and this check failed it, which
- * is the only reason the piece does not currently claim something untrue.
- * The exception is real and has a cause: 38% of counties under 5,000 people
- * are flagged as regional jails against 19% of the next band up, so the
- * smallest counties frequently share a facility and their own rate is
- * measured on a different basis. It is described, not smoothed away.
- */
+/* The gradient descends from the SECOND band down, and the smallest band
+ * sits BELOW its neighbour. That exception is real and described in chapter
+ * three: 38% of counties under 5,000 are flagged regional jails against 19%
+ * of the next band, so their rate is measured on a different basis. */
 const last = bands.map((b) => b.rate.at(-1)!);
 let mono = true;
 for (let i = 2; i < last.length; i++) if (last[i] > last[i - 1]) mono = false;
@@ -223,22 +209,12 @@ ok((html['tilt/fallback'] ?? '').includes('over 500k'),
    'chapter 3 fallback is missing the band labels — it is not the real chart');
 console.log('  chapter 3 falls back to the real 2D chart');
 
-/* ---- the prose quotes the data it is printed next to -----------------
- *
- * Chapter one read "peaked in 2008" for months. The panel peaks in 2007 —
- * 734,475 against 733,116 — and the sentence was not invented: 2008 is the
- * nationally reported peak, so a true fact about a different population was
- * standing in for this one, beside a chart that disagreed with it.
- *
- * It survived review because it was a string. Anything a chapter asserts
- * about a turning point or a direction is checked against the series here,
- * so a figure can go stale in the pipeline but not in the copy.
- */
+/* ---- the prose quotes the data it is printed next to ----------------
+ * A figure can go stale in the pipeline; it must not go stale in the copy.
+ * The panel peaks in 2007, not the nationally reported 2008. */
 console.log('\nProse agrees with the series');
 {
-  /* Comments stripped first. The first version of this check failed on the
-     note explaining WHY the year is no longer typed — a test that forbids
-     discussing the bug it guards is a test nobody will keep. */
+  /* Comments stripped: the notes explaining these rules would trip them. */
   const src = (require('fs').readFileSync(__dirname + '/../Tilt.tsx', 'utf8') as string)
     .replace(/\/\*[\s\S]*?\*\//g, '')
     .replace(/^\s*\/\/.*$/gm, '');
@@ -249,35 +225,19 @@ console.log('\nProse agrees with the series');
   const peak = data.ch1.years[count.indexOf(Math.max(...count))];
   ok(peak === 2007, `the panel now peaks in ${peak}; chapter one is written around a single turning point`);
 
-  /* The standfirst is the one claim every reader sees, and it is a direction:
-     small counties up, large counties down. If that ever reverses the opening
-     sentence is wrong, and no chart further down would say so. */
+  /* The standfirst claims a direction: small up, large down. */
   const small = data.bands[0].rate, large = data.bands.at(-1)!;
   ok(small.at(-1)! > small[0], 'the smallest counties no longer rise — the standfirst claims they do');
   ok(large.rate.at(-1)! < large.rate[0], 'the largest counties no longer fall — the standfirst claims they do');
   ok(!/did not stop putting|moved the practice/.test(src),
      'the old "not X, but Y" standfirst is back; it asserts a transfer that chapter four disproves');
-  /* Neither ratio may be typed. Chapter three carried "1.31 times" and "2.61
-     times" as literals for months, in the file whose own header says no
-     number is typed, while the intro three lines above computed the same two
-     figures from the data. */
+  /* Neither ratio may be typed; both are computed from data.bands. */
   ok(!/\d\.\d\d? times/.test(src),
      'a ratio is typed into the prose rather than derived from data.bands');
 
-  /* The copy does not tell the reader what they think.
-   *
-   * Chapter one was kickered "What you already know" and went on to call the
-   * figure "the number most people carry around" and the last thing here that
-   * would "behave the way you expect" — three guesses about the audience in
-   * one short chapter, and a reader who did not recognise the figure had been
-   * told they were unusual before the first chart. Every claim in this piece
-   * should be about the data.
-   *
-   * Matched on a bare "most people" at first, which then failed chapter two
-   * for "Most people in jail are held in a small number of very large
-   * counties" — a fact about the subject, not a guess about the audience. The
-   * rule has to name the presumption, not the phrase that often carries it,
-   * or it will be deleted the first time it is wrong. */
+  /* The copy does not tell the reader what they think. Match the
+     presumption, not the phrase that usually carries it — a bare "most
+     people" fails chapter two, which is about people in jail. */
   for (const phrase of [
     'you already know', 'as you know', 'you expect', 'you would expect',
     'most people (know|think|assume|expect|believe|carry|realise|realize)',
@@ -294,14 +254,8 @@ console.log('\nProse agrees with the series');
   console.log(`  peak ${peak}, smallest +${Math.round((small.at(-1)! / small[0] - 1) * 100)}%, largest ${Math.round((large.rate.at(-1)! / large.rate[0] - 1) * 100)}%`);
 }
 
-/* ---- the lookup renders twice on every page --------------------------
- *
- * The scrolly layout puts each chapter in the sticky stage AND in .srFigure
- * beside the prose, because the stage is aria-hidden. Fine for a chart. Two
- * search inputs were sharing id="tilt-county", so both <label for> attributes
- * resolved to the same element and one field was left unlabelled — an error
- * no visual check would ever surface.
- */
+/* ---- ids survive two instances on one page --------------------------
+ * A literal id would make both labels resolve to the same input. */
 console.log('\nThe lookup survives being rendered twice');
 {
   const twice = renderToStaticMarkup(<div><ChapterLookup /><ChapterLookup /></div>);
@@ -314,15 +268,9 @@ console.log('\nThe lookup survives being rendered twice');
   console.log(`  ${ids.length} unique ids, every label resolved`);
 }
 
-/* ---- the key does not overprint itself -------------------------------
- *
- * Eight end-of-line labels — seven size bands and the county — land wherever
- * their lines finish. On a flat county several finish within a pixel or two
- * of each other, and drawn as-is they smear into something that reads as a
- * rendering fault rather than a key. They are spread apart before drawing,
- * and that spreading is arithmetic, so it is checked on every county rather
- * than on the two I happened to look at.
- */
+/* ---- the key does not overprint itself ------------------------------
+ * Eight labels land wherever their lines finish; on a flat county several
+ * land within a pixel or two. */
 console.log('\nThe chart key stays legible');
 {
   const { spread } = require('../Lookup') as typeof import('../Lookup');
@@ -349,14 +297,8 @@ console.log('\nThe chart key stays legible');
   console.log(`  closest pair across ${counties.length.toLocaleString()} counties: ${worstGap.toFixed(1)}px, ${outside} outside the frame`);
 }
 
-/* The modal is the only part of this piece that takes the page away from the
- * reader, so the ways out are checked structurally rather than remembered.
- *
- * It exists because the stage swaps its contents on scroll and destroyed the
- * inline result — which also means the scroll lock is load-bearing, not
- * cosmetic: without it the lookup unmounts mid-read and takes the portal, and
- * the dialog, with it.
- */
+/* The modal takes the page away from the reader, so its exits are pinned
+ * structurally rather than remembered. */
 console.log('\nThe modal has its exits');
 {
   const src = require('fs').readFileSync(__dirname + '/../Lookup.tsx', 'utf8') as string;

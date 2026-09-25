@@ -38,13 +38,9 @@ export const band = (xs: number[], hi: number[], lo: number[], sx: Scale, sy: Sc
   'Z';
 
 /**
- * A readout at a point in time, driven by hover OR keyboard.
- *
- * Deliberately not a floating tooltip. A tooltip that follows the pointer
- * covers the data it describes, cannot be reached without a pointer, and has
- * to be dismissed. This is a fixed panel in the chart's own top-left with a
- * guide line down the plot — the reader's eye already knows where to look,
- * and arrow keys move it.
+ * A readout at a point in time, driven by hover OR keyboard. Deliberately not
+ * a floating tooltip: one would cover the data, need dismissing, and be
+ * unreachable without a pointer.
  */
 export type HoverSpec = {
   xs: number[];
@@ -86,12 +82,9 @@ export function Frame({
            onMouseLeave={() => setAt(null)}
            className={hover ? s.interactive : undefined}
            style={{ width: '100%', height: 'auto', display: 'block', overflow: 'visible' }}>
-        {/*
-          No <title> element. It would be the accessible name — but aria-label
-          on the <svg> already is, and <title> ALSO renders as a native browser
-          tooltip that follows the cursor around on top of the chart. <desc> is
-          announced without producing one.
-        */}
+        {/* No <title>: aria-label is already the accessible name, and
+            <title> also renders as a native tooltip that trails the cursor.
+            <desc> is announced without producing one. */}
         <desc>{desc}</desc>
         {yTicks.map((t) => (
           <g key={t}>
@@ -109,18 +102,9 @@ export function Frame({
         {children}
 
         {hover && at !== null && (() => {
-          /*
-           * Values are printed AT their own line, not gathered into a panel.
-           *
-           * The panel this replaced listed seven rows in the top-left: it
-           * covered the two largest series, repeated labels that are already
-           * at the line ends, and sat a long way from the guide the reader
-           * was actually looking at. Putting each number beside its own dot
-           * removes the journey and the lookup at once.
-           *
-           * Labels are nudged apart vertically where lines run close, because
-           * two numbers on top of each other are worth less than one.
-           */
+          /* Values print AT their own line, not gathered into a corner
+           * panel — a panel covers the largest series and sits far from the
+           * guide the reader is looking at. */
           const gx = sx(hover.xs[at]);
           const right = gx < W - PAD.r - 90;
           const placed = hover.rows

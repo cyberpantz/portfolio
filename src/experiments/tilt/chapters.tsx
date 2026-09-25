@@ -79,34 +79,29 @@ export function ChapterBands({ mode, toggle }: { mode: 'count' | 'rate'; toggle?
   );
 }
 
-/* ── 3, in three dimensions ────────────────────────────────────────────
+/* ── 3, in three dimensions ───────────────────────────────────────────
  *
- * The same seven bands and eighteen years as ChapterBands, as a surface.
- * Size runs one way, time the other, rate is height — so the near edge is
- * 2002 lying nearly flat and the far edge is 2019 as a ramp, and the twist
- * between them is the finding in one object.
+ * The same seven bands and eighteen years as ChapterBands, as a surface:
+ * size one way, time the other, rate as height.
  *
- * It degrades to the 2D chart, which is not a consolation prize: that chart
- * carries the same numbers, is keyboard-readable and has a hover readout the
- * surface does not. Three reasons to fall back, checked in this order:
+ * Falls back to the 2D chart, which is not a consolation prize — same
+ * numbers, keyboard-readable, and it has a hover readout the surface does
+ * not. Three reasons to fall back, checked in this order:
  *
- *   reduced motion  — an orbitable object is motion the reader did not ask for
+ *   reduced motion  — an orbitable object is motion nobody asked for
  *   no WebGL        — old hardware, blocklisted drivers, some VMs
  *   a render error  — a WebGL context can be lost at any moment
  */
 export function ChapterTilt() {
   /*
-   * Three separate facts, and conflating any two of them is how the toggle
-   * ended up one-way in the first version.
+   * Three separate facts. Conflating any two makes the toggle one-way, since
+   * a preference would then overwrite the capability check.
    *
    *   can3d   — WebGL exists and the reader has not asked for reduced motion
    *   want3d  — what the reader last chose
-   *   failed  — the canvas threw, which no preference should be able to undo
-   *
-   * The old code had only one flag, so "show as a chart" overwrote the
-   * capability check and there was no state left that remembered 3D had ever
-   * been possible. A control with no inverse is a trap, however small.
+   *   failed  — the canvas threw, which no preference may undo
    */
+
   const [can3d, setCan3d] = useState(false);
   const [want3d, setWant3d] = useState(true);
   const [failed, setFailed] = useState(false);
