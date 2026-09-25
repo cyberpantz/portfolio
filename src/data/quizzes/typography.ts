@@ -15,7 +15,7 @@ export const typography: Quiz = assertValidQuiz({
   id: 'typography',
   title: 'Typography',
   blurb:
-    'Nine questions about type. Several are answered by looking rather than reading.',
+    'Nine questions about typography. How well do you know your kerning from your tracking?',
   fonts: ['Bodoni Moda', 'Archivo', 'EB Garamond', 'Libre Franklin'],
   questions: [
     {

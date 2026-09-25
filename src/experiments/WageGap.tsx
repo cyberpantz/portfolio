@@ -1,4 +1,4 @@
-import { useState, useEffect, useLayoutEffect, useRef, useCallback, useMemo } from 'react';
+import { useState, useEffect, useLayoutEffect, useRef, useCallback, useId, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Pencil, Pause, Play, RotateCcw } from 'lucide-react';
 import {
@@ -45,7 +45,55 @@ function computeCellW(availablePx: number) {
 const WRAP_MS = 380;
 const REBASE_MS = 32;
 
-function FlipDigit({ value, cellW }: { value: string; cellW: number }) {
+/*
+ * A column that turns faster than this stops flipping and starts spinning.
+ *
+ * The cents column turns every 360ms at $100 an hour, 72ms at $500. A 380ms
+ * flip cannot finish inside a 360ms change, so past roughly $100/hr the reel
+ * used to hard-cut to each value: accurate, and it looked like a fault. A
+ * column that is genuinely moving, blurred, says the true thing instead —
+ * this is going too fast to read.
+ *
+ * 400ms puts the boundary at $100/hr for the cents column, and every other
+ * column inherits it for free: the tenths start spinning around $1,000/hr,
+ * the dollars around $10,000.
+ */
+const SMEAR_MS = 400;
+/*
+ * Vertical-only blur, one filter per spinning digit.
+ *
+ * CSS `filter: blur()` is isotropic: it smudges the digits sideways into
+ * the cell walls and reads as an out-of-focus screen. `stdDeviation="0 N"`
+ * blurs along Y alone, which is what a spinning reel actually looks like.
+ *
+ * Per digit rather than one shared definition, because the right amount of
+ * blur depends on how fast THAT digit is turning — the cents reel at $500
+ * an hour and the tens reel beside it are not the same picture.
+ */
+function ReelBlur({ id, px }: { id: string; px: number }) {
+  return (
+    <svg width="0" height="0" aria-hidden="true" style={{ position: 'absolute' }}>
+      <defs>
+        {/* The filter region has to be taller than the source or the blur is
+            clipped flat at the cell edges, which looks like a crop. */}
+        <filter id={id} x="0" y="-20%" width="100%" height="140%">
+          <feGaussianBlur in="SourceGraphic" stdDeviation={`0 ${px}`} />
+        </filter>
+      </defs>
+    </svg>
+  );
+}
+
+function FlipDigit({
+  value, cellW, periodMs, running,
+}: {
+  value: string;
+  cellW: number;
+  /** Exactly how often this digit changes, in ms. Infinity if never. */
+  periodMs: number;
+  /** False while the clock is paused, so a stopped reel stops spinning. */
+  running: boolean;
+}) {
   const cellH    = Math.round(cellW * (CELL_H_MAX / CELL_W_MAX));
   const fontSize = Math.round(cellW * (72 / CELL_W_MAX));
 
@@ -62,6 +110,22 @@ function FlipDigit({ value, cellW }: { value: string; cellW: number }) {
    * that applies the matching position.
    */
   const [animate, setAnimate] = useState(true);
+
+  /*
+   * Spinning rather than stepping, and decided from the WAGE rather than
+   * from measurement.
+   *
+   * The first version timed the gaps between changes and set the spin
+   * speed from that. It surged and stalled, because those gaps jitter with
+   * every frame and each new measurement restarted the animation from the
+   * top. The rate is not something to discover: a digit worth `v` dollars
+   * changes every `v / (wage/3600)` seconds, exactly. Derived, the reel
+   * turns at one constant speed and is never restarted while it spins.
+   */
+  const smear = running && periodMs < SMEAR_MS;
+  const filterId = useId();
+  const reel = useRef<HTMLDivElement>(null);
+  const spin = useRef<Animation | null>(null);
 
   // Index 10 is a SECOND zero, so 9 -> 0 rolls forward instead of spinning
   // backwards through 8,7,6...
@@ -81,15 +145,10 @@ function FlipDigit({ value, cellW }: { value: string; cellW: number }) {
     /*
      * Cancel anything still in flight.
      *
-     * This is the bug behind the blinking, and why it showed up at higher
-     * wages. The cents digit changes at wage/36 per second — 0.8/s at the
-     * median, but 2.6/s by $95/hr and 13.9/s at $500/hr. Past roughly
-     * $95/hr the digit changes faster than this 380ms choreography can
-     * finish, so the old code left stale timeouts running: each one fired
-     * `setPos(0)` later, yanking the reel to zero regardless of which digit
-     * should have been showing, and wrote a STALE closure value into
-     * prevNum, which then broke rollover detection for every later change.
-     * They also stacked — at $500/hr several were in flight at once.
+     * Stale timeouts each fired `setPos(0)` later, yanking the reel to
+     * zero regardless of which digit should have been showing, and wrote
+     * a stale closure value into prevNum, which broke rollover detection
+     * for every later change.
      */
     clearTimers();
 
@@ -98,20 +157,18 @@ function FlipDigit({ value, cellW }: { value: string; cellW: number }) {
     lastChange.current = now;
     prevNum.current = num;
 
+    /* A spinning reel is not showing discrete values, so there is nothing
+       to choreograph. Keep `pos` current so the landing is right when it
+       stops. */
+    if (smear) { setPos(num); return; }
+
     // Any decrease is a roll past zero. The old check was `=== 9 && === 0`,
     // which misses skips like 7 -> 2 — real at high rates, and they made the
     // reel spin backwards.
     const rollsOver = num < from;
 
-    /*
-     * If this digit is changing faster than the animation can play, do not
-     * try to play it. Nobody can read a 380ms flip at 14 changes a second;
-     * attempting it is exactly what produced the jerk. Cut straight to the
-     * value instead.
-     *
-     * This degrades per digit for free: the cents reel goes hard-cut while
-     * the tens and dollars, which change far more slowly, keep the flip.
-     */
+    /* Still faster than the flip can play — a wage edit can jump several
+       digits at once — so cut rather than lurch. */
     if (sinceLast < WRAP_MS * 1.25) {
       setAnimate(false);
       setPos(num);
@@ -137,22 +194,64 @@ function FlipDigit({ value, cellW }: { value: string; cellW: number }) {
         if (num !== 0) setPos(num);
       }, REBASE_MS));
     }, WRAP_MS));
-  }, [num]);
+  }, [num, smear]);
 
   // Unmounting mid-roll left timers running against a dead component.
   useEffect(() => clearTimers, []);
+
+  /*
+   * The spin, driven by the Web Animations API rather than a transition on
+   * `pos`.
+   *
+   * A spring animating to a target cannot express continuous motion — it
+   * always settles — and this reel is not going anywhere. One iteration
+   * travels exactly ten cells, and the strip's duplicate zero makes the
+   * loop point seamless. The dependencies are only the things that change
+   * the motion itself, so a digit ticking over does not restart it.
+   *
+   * Reduced motion gets no spin: the reel holds still and the blur alone
+   * says the digit is unreadable, which is the same information without
+   * the movement.
+   */
+  useEffect(() => {
+    spin.current?.cancel();
+    spin.current = null;
+    if (!smear || !reel.current) return;
+    if (typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    spin.current = reel.current.animate(
+      [{ transform: 'translateY(0px)' }, { transform: `translateY(${-10 * cellH}px)` }],
+      { duration: Math.max(120, periodMs * 10), iterations: Infinity, easing: 'linear' }
+    );
+    return () => { spin.current?.cancel(); spin.current = null; };
+  }, [smear, cellH, periodMs]);
+
+  /*
+   * Blur by how far the reel travels in one frame — what a camera would
+   * have smeared. Scaled off the cell so it holds at every counter size,
+   * and capped so the fastest reels stay a column of light rather than
+   * dissolving into a flat grey bar.
+   */
+  const perFrame = (cellH / periodMs) * 16.7;
+  const blurPx = smear
+    ? Math.min(cellH * 0.22, Math.max(cellH * 0.04, perFrame / 2))
+    : 0;
 
   return (
     <div
       className="relative overflow-hidden rounded-xs border border-white/10"
       style={{ width: cellW, height: cellH, background: 'rgba(255,255,255,0.04)' }}
     >
+      {smear && <ReelBlur id={filterId} px={blurPx} />}
       <div className="absolute inset-x-0 top-0 h-1/2 bg-gradient-to-b from-white/5 to-transparent pointer-events-none z-10" />
       <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/30 to-transparent pointer-events-none z-10" />
       <div className="absolute inset-x-0 top-1/2 h-px bg-white/8 pointer-events-none z-10" />
       <motion.div
+        ref={reel}
         className="absolute inset-x-0 top-0"
-        animate={{ y: -pos * cellH }}
+        /* While spinning, WAAPI owns the transform — framer-motion must not
+           also drive it, or the two fight over the same property. */
+        animate={smear ? undefined : { y: -pos * cellH }}
+        style={smear ? { filter: `url(#${filterId})`, opacity: 0.8 } : undefined}
         transition={
           animate
             ? { type: 'spring', stiffness: 220, damping: 32, mass: 0.8 }
@@ -171,7 +270,15 @@ function FlipDigit({ value, cellW }: { value: string; cellW: number }) {
   );
 }
 
-function EarningsDisplay({ earnings, scale = 1 }: { earnings: number; scale?: number }) {
+function EarningsDisplay({
+  earnings, scale = 1, wage, running,
+}: {
+  earnings: number;
+  scale?: number;
+  /** Dollars per hour, which is what sets every digit's turn rate. */
+  wage: number;
+  running: boolean;
+}) {
   const [baseW, setBaseW] = useState(() =>
     typeof window !== 'undefined' ? computeCellW(window.innerWidth - 48) : CELL_W_MAX
   );
@@ -217,6 +324,23 @@ function EarningsDisplay({ earnings, scale = 1 }: { earnings: number; scale?: nu
   const intDigits = rawInt.padStart(3, '0').split('');
   const fracDigits = frac.split('');
 
+  /*
+   * How often each column turns over, in milliseconds.
+   *
+   * Earnings rise at `wage / 3600` dollars a second, so a digit worth
+   * `place` dollars changes every `place / (wage / 3600)` seconds. The
+   * cents column at $100/hr: 0.01 / 0.0278 = 0.36s. At $500/hr: 0.072s.
+   *
+   * Passing it down beats measuring it in the digit. The rate is known
+   * exactly here, and a measured one jitters frame to frame — which is
+   * what made the reel surge and stall.
+   */
+  const perSec = wage / 3600;
+  const periodFor = (place: number) => (perSec > 0 ? (place / perSec) * 1000 : Infinity);
+  /* Integer columns are ones, tens, hundreds reading left to right. */
+  const intPeriods = intDigits.map((_, i) => periodFor(10 ** (intDigits.length - 1 - i)));
+  const fracPeriods = fracDigits.map((_, i) => periodFor(10 ** -(i + 1)));
+
   return (
     /* Shrinks to its digits so the ladder's `items-center` can place it.
        This said "left-aligned" and argued that a centred counter among
@@ -228,11 +352,15 @@ function EarningsDisplay({ earnings, scale = 1 }: { earnings: number; scale?: nu
       <div className="flex items-center" style={{ gap: outerGap }}>
         <span className="font-mono font-bold text-exp-base select-none" style={{ fontSize: separatorSize, lineHeight: `${cellH}px` }}>$</span>
         <div className="flex" style={{ gap: innerGap }}>
-          {intDigits.map((d, i) => <FlipDigit key={`i${i}`} value={d} cellW={cellW} />)}
+          {intDigits.map((d, i) => (
+            <FlipDigit key={`i${i}`} value={d} cellW={cellW} periodMs={intPeriods[i]} running={running} />
+          ))}
         </div>
         <span className="font-mono font-bold text-exp-base select-none" style={{ fontSize: separatorSize, lineHeight: `${cellH}px` }}>.</span>
         <div className="flex" style={{ gap: innerGap }}>
-          {fracDigits.map((d, i) => <FlipDigit key={`f${i}`} value={d} cellW={cellW} />)}
+          {fracDigits.map((d, i) => (
+            <FlipDigit key={`f${i}`} value={d} cellW={cellW} periodMs={fracPeriods[i]} running={running} />
+          ))}
         </div>
       </div>
     </div>
@@ -1576,7 +1704,7 @@ export default function WageGap() {
                     </div>
 
                     <div className="relative">
-                      <EarningsDisplay earnings={earnings} scale={youScale} />
+                      <EarningsDisplay earnings={earnings} scale={youScale} wage={wage} running={!paused} />
                       <div className="absolute inset-0" style={{ overflow: 'visible', pointerEvents: 'none' }}>
                         {coins.map(coin => <CoinParticle key={coin.id} {...coin} />)}
                       </div>

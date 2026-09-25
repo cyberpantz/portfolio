@@ -246,8 +246,8 @@ function Conclusion() {
       <h2>The building is the decision.</h2>
 
       <p>
-        A jail is not a policy that can be revised next year. It is a structure with a
-        thirty-year debt attached, and once the beds exist somebody fills them. Since 2002 more
+        A jail is not a policy that can be revised nor a politician that can be replaced next year. It is a structure with a
+        thirty-year debt attached, and once the beds exist somebody needs to fill them. Since 2002 more
         than 1,200 counties have spent over $42 billion adding jail capacity, through two decades
         in which the national jail population fell<Cite id="vera-scale" />. The advertised price
         is not the price: across thirty years, roughly nine tenths of what a jail costs is running
@@ -287,7 +287,7 @@ function Conclusion() {
 
       <h3>Is it a party story? Mostly not</h3>
       <p>
-        The obvious reading is partisan, and the best available test does not support it. A
+        The obvious reading is partisan, but the best available test does not support it. A
         regression discontinuity across more than 3,200 partisan sheriff elections finds
         Democratic and Republican sheriffs comply with federal immigration detainers at close to
         the same rate<Cite id="thompson-sheriffs" />. What predicts behaviour is the individual
