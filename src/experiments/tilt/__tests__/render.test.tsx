@@ -49,6 +49,31 @@ for (const [name, el] of CH) {
 }
 console.log(`  ${CH.length} chapters`);
 
+/* ---- the piece itself, not only its parts ----------------------------
+ *
+ * This suite rendered eight chapters and never once rendered Tilt. A dangling
+ * brace left in CHAPTERS while moving the lookup out of it took tsc down and
+ * the suite still printed PASSED, because Tilt.tsx was only ever read as text
+ * for the prose checks. Rendering it server-side exercises the stacked
+ * reading — the path taken under reduced motion — and, more to the point,
+ * means the file has to compile.
+ */
+console.log('\nThe whole piece renders');
+{
+  const Tilt = (require('../Tilt') as { default: () => ReactElement }).default;
+  const whole = renderToStaticMarkup(<Tilt />);
+  html['tilt/whole'] = whole;
+  ok(whole.length > 4000, `the article rendered ${whole.length} chars — chapters are missing`);
+  /* The lookup is now a section after the story rather than a chapter in it,
+     so it must appear exactly once. As a chapter it rendered twice: once in
+     the aria-hidden stage and once in the screen-reader copy. */
+  const inputs = (whole.match(/type="search"/g) ?? []).length;
+  ok(inputs === 1, `${inputs} search fields in the article — the lookup is a section, not a chapter`);
+  ok(whole.includes('Now find your own county'),
+     'the lookup section is missing its heading, so the search box arrives unannounced');
+  console.log(`  ${whole.length.toLocaleString()} chars, one search field, ${CH.length - 1} chapters plus the finder`);
+}
+
 /* ---- no NaN reaches the screen --------------------------------------
  * An SVG path with NaN in it renders as nothing at all — a blank chart that
  * looks like a styling problem rather than a maths one.
@@ -232,6 +257,29 @@ console.log('\nProse agrees with the series');
   ok(large.rate.at(-1)! < large.rate[0], 'the largest counties no longer fall — the standfirst claims they do');
   ok(!/did not stop putting|moved the practice/.test(src),
      'the old "not X, but Y" standfirst is back; it asserts a transfer that chapter four disproves');
+  ok(!/\d\.\d times the rate/.test(src),
+     'the intro ratio is typed rather than derived from data.bands');
+
+  /* The copy does not tell the reader what they think.
+   *
+   * Chapter one was kickered "What you already know" and went on to call the
+   * figure "the number most people carry around" and the last thing here that
+   * would "behave the way you expect" — three guesses about the audience in
+   * one short chapter, and a reader who did not recognise the figure had been
+   * told they were unusual before the first chart. Every claim in this piece
+   * should be about the data. */
+  for (const phrase of [
+    'you already know', 'most people', 'you expect', 'as you know',
+    'of course', 'obviously', 'everyone knows', 'we all know',
+  ]) {
+    ok(!new RegExp(phrase, 'i').test(src), `the copy tells the reader what they think: "${phrase}"`);
+  }
+  /* The intro says the two ends were "about the same rate" in 2002 and gives
+     a multiple for 2019. Both halves are claims about the data. */
+  const ratio02 = data.bands[0].rate[0] / data.bands.at(-1)!.rate[0];
+  const ratio19 = data.bands[0].rate.at(-1)! / data.bands.at(-1)!.rate.at(-1)!;
+  ok(ratio02 < 1.5, `the ends were ${ratio02.toFixed(2)}x apart in 2002 — the intro calls that "about the same rate"`);
+  ok(ratio19 > 2, `the ends are only ${ratio19.toFixed(2)}x apart in 2019 — the intro leads on that multiple`);
   console.log(`  peak ${peak}, smallest +${Math.round((small.at(-1)! / small[0] - 1) * 100)}%, largest ${Math.round((large.rate.at(-1)! / large.rate[0] - 1) * 100)}%`);
 }
 

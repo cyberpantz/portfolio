@@ -42,16 +42,30 @@ const fmt = (n: number) => n.toLocaleString();
 const COUNT = data.ch1.count;
 const PEAK = data.ch1.years[COUNT.indexOf(Math.max(...COUNT))];
 const SINCE_PEAK = Math.abs(Math.round((COUNT[COUNT.length - 1] / Math.max(...COUNT) - 1) * 100));
+const last = <T,>(a: T[]) => a[a.length - 1];
 const pctChange = (r: number[]) => Math.round((r[r.length - 1] / r[0] - 1) * 100);
 const SMALLEST = pctChange(data.bands[0].rate);
 const LARGEST = pctChange(data.bands[data.bands.length - 1].rate);
+/* Smallest counties against largest, in the final year. Chapter three quotes
+   both ends of this; the intro quotes only where it ended up. */
+const RATIO = (last(data.bands[0].rate) / last(data.bands[data.bands.length - 1].rate)).toFixed(1);
 
 const CHAPTERS = [
   {
     id: 'decline',
-    kicker: 'What you already know',
+    /*
+      Was "What you already know", and the body went on to call this "the
+      number most people carry around" and the last thing here that would
+      "behave the way you expect". Three guesses about the reader in one
+      short chapter, and a reader who does not recognise the figure has been
+      told they are unusual before the first chart. The claim the chapter
+      needs is about the data, not about the audience: this is the figure
+      that gets reported, and everything after it comes from the same file
+      and points elsewhere.
+    */
+    kicker: 'The reported figure',
     title: 'American jails emptied out.',
-    body: `The county jail population peaked in ${PEAK} and fell about ${SINCE_PEAK} percent by 2019. That is true, it is well reported, and it is the number most people carry around. It is also the last thing in this piece that will behave the way you expect.`,
+    body: `The county jail population peaked in ${PEAK} and fell about ${SINCE_PEAK} percent by 2019. That is accurate, and it is the number that usually gets quoted. Every chart after this one is drawn from the same data and points somewhere else.`,
     figure: <ChapterDecline />,
   },
   {
@@ -95,13 +109,6 @@ const CHAPTERS = [
     title: 'Mostly people awaiting a decision.',
     body: `The pretrial rate — people not convicted of anything — rose sharply in rural counties and fell in urban ones. Held for ICE grew fastest of all in rural jails, though it accounts for under a tenth of the rural pretrial rise, and the two figures are not independent: the codebook is explicit that people held for federal authorities are counted inside the pretrial number.`,
     figure: <ChapterPretrial />,
-  },
-  {
-    id: 'lookup',
-    kicker: 'Where you are',
-    title: 'Find a county.',
-    body: `Two thousand five hundred and thirteen counties reported in every year between 2002 and 2019. The rest were left out rather than estimated.`,
-    figure: <ChapterLookup />,
   },
 ] as const;
 
@@ -151,6 +158,7 @@ export default function Tilt() {
             <figure className={s.fig}>{c.figure}</figure>
           </section>
         ))}
+        <Finder />
         <Sources />
       </article>
     );
@@ -182,8 +190,43 @@ export default function Tilt() {
           ))}
         </div>
       </div>
+      <Finder />
       <Sources />
     </article>
+  );
+}
+
+/*
+ * The county lookup, as its own section rather than a chapter.
+ *
+ * It was the eighth entry in CHAPTERS, which meant a search field slid into
+ * the sticky stage as you scrolled — the place seven charts had appeared,
+ * suddenly holding a control. Frank's note was that getting to it felt odd,
+ * and that is why: the stage is for things you watch, and a text input is
+ * something you operate. Scrolling past would also have swept it away mid-
+ * typing, the same problem the result panel had.
+ *
+ * Two structural faults went with it. The stage is aria-hidden="true", so the
+ * one interactive control in the piece was hidden from assistive technology
+ * there and present only in the duplicate rendered for screen readers. And
+ * being a chapter, it rendered twice on every page — which is how two search
+ * inputs came to share one id.
+ *
+ * Here it is a destination: the story ends, and then it turns to the reader.
+ */
+function Finder() {
+  return (
+    <section className={s.finder} id="lookup">
+      <p className={s.kicker}>Where you are</p>
+      <h2>Now find your own county.</h2>
+      <p className={s.finderLede}>
+        {fmt(data.ch1.panel)} counties reported a jail population in every year between 2002
+        and 2019; the rest were left out rather than estimated. Search for one and you get its
+        own line drawn against counties of every size, so you can see whether it followed the
+        national pattern or went its own way.
+      </p>
+      <ChapterLookup />
+    </section>
   );
 }
 
@@ -206,10 +249,19 @@ function Intro() {
         than urban America. In the smallest counties the rate rose by {SMALLEST} percent.
         In the largest it fell by {Math.abs(LARGEST)}.
       </p>
+      {/*
+        "What is new here is the shape: a gradient by county size that was
+        nearly flat and is now steep." Three abstractions stacked on each
+        other — shape, gradient, flat-to-steep — and not one of them names a
+        thing the reader can picture. It was a description of the chart rather
+        than of the country. The same claim stated as two rates does not need
+        the vocabulary at all.
+      */}
       <p className={s.credit}>
-        The finding is the Vera Institute&rsquo;s, from <i>Out of Sight</i> (2017). What is new here
-        is the shape: a gradient by county size that was nearly flat and is now steep.
-        Figures cover {fmt(data.ch1.panel)} counties reporting in every year.
+        The finding is the Vera Institute&rsquo;s, from <i>Out of Sight</i> (2017). What this
+        piece adds is a way to see it: in 2002 a county of a few thousand people jailed at
+        about the same rate as a county of a million. By 2019 it jailed at {RATIO} times
+        the rate. Figures cover {fmt(data.ch1.panel)} counties that reported in every year.
       </p>
     </header>
   );

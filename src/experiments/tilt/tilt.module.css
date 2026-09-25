@@ -469,11 +469,41 @@
 }
 .report :global(figure) { margin-bottom: 26px; }
 
+/* -------------------------------------------------------------- finder */
+
+/*
+ * The lookup as a destination at the end of the story, not a chapter inside
+ * it. Same reading column as the prose and the sources, so the page closes
+ * the way it opened — a single column of text — rather than handing the
+ * reader one more sticky split to parse.
+ */
+.finder {
+  max-width: 44rem;
+  margin: clamp(40px, 8vh, 96px) auto 0;
+  padding: clamp(28px, 5vh, 48px) 20px 0;
+  border-top: 1px solid var(--line);
+  color: var(--body);
+}
+.finder h2 {
+  margin: 0 0 12px;
+  font-size: clamp(1.5rem, 3.2vw, 2.05rem);
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  font-weight: 600;
+  color: var(--ink);
+}
+.finderLede {
+  margin: 0 0 26px;
+  font-size: 1rem;
+  line-height: 1.7;
+  text-wrap: pretty;
+}
+
 /* ------------------------------------------------------------- sources */
 
 .sources {
   max-width: 44rem;
-  margin: clamp(48px, 10vh, 120px) auto 0;
+  margin: clamp(40px, 8vh, 96px) auto 0;
   padding: clamp(28px, 5vh, 48px) 20px 10vh;
   border-top: 1px solid var(--line);
 }
