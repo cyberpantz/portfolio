@@ -986,8 +986,14 @@ export const CARE: Scenario = {
       id: 'hand-off',
       constrained: true,
       say: [
-        { t: 'say', text: 'That one wants a person rather than a scheduler.' },
-        { t: 'say', text: 'The nurse line is answered right now, and it is free.' },
+        {
+          t: 'say',
+          text: 'I can’t work out what’s going on from here. That needs someone who can ask you questions.',
+        },
+        {
+          t: 'say',
+          text: 'Two things I can do right now: the nurse line, or a slot at urgent care when they open.',
+        },
         {
           t: 'results',
           items: [
@@ -998,15 +1004,82 @@ export const CARE: Scenario = {
         {
           t: 'chips',
           options: [
-            { label: 'That’s what I needed', go: 'r-closing' },
-            { label: 'Something else, then', go: 'open' },
+            { label: 'Call the nurse line', go: 'hand-off-nurse' },
+            { label: 'Book urgent care, 8:00am', go: 'confirm-handoff' },
+            /* The out, for someone who does not know which of these they
+               want. It goes back to the open composer, which is a real
+               elsewhere rather than a polite no-op. */
+            { label: 'Something else, then', go: 'open', safe: true },
           ],
         },
       ],
       accept: [
-        { on: 'chip', value: 'That’s what I needed', go: 'r-closing' },
+        { on: 'chip', value: 'Call the nurse line', go: 'hand-off-nurse' },
+        { on: 'chip', value: 'Book urgent care, 8:00am', go: 'confirm-handoff' },
         { on: 'chip', value: 'Something else, then', go: 'open' },
       ],
+    },
+
+    /*
+     * Chose the nurse line — and the booking stays on the table.
+     *
+     * Picking the human should not close the other door. Someone who calls
+     * at two in the morning may still want the eight o'clock slot, and
+     * making them start again to get it is the kind of small hostility the
+     * cancellation scenario is built out of.
+     */
+    'hand-off-nurse': {
+      id: 'hand-off-nurse',
+      constrained: true,
+      say: [
+        { t: 'say', text: 'It’s free and answered all night.' },
+        {
+          t: 'results',
+          items: [{ name: 'Nurse line', detail: 'Free, 24 hours', meta: '1-800-—' }],
+        },
+        { t: 'say', text: 'They can tell you whether this waits until morning.' },
+        {
+          t: 'chips',
+          options: [
+            { label: 'Book the 8:00am too', go: 'confirm-handoff' },
+            { label: 'That’s what I needed', go: 'r-closing' },
+          ],
+        },
+      ],
+      accept: [
+        { on: 'chip', value: 'Book the 8:00am too', go: 'confirm-handoff' },
+        { on: 'chip', value: 'That’s what I needed', go: 'r-closing' },
+      ],
+    },
+
+    /*
+     * The hand-off's own confirmation, and it needs to be its own.
+     *
+     * `confirm-morning` is written for the ear: "Urgent care — ear pain",
+     * and ibuprofen advice. This node is reached from a stomach, a back, a
+     * chest that cleared the cardiac screen, or days of feeling wrong — so
+     * reusing it would print a confident diagnosis nobody made.
+     */
+    'confirm-handoff': {
+      id: 'confirm-handoff',
+      effect: { strip: { win: 'urgent', out: ['primary'] } },
+      say: [
+        { t: 'say', text: 'You’re down for 8:00 tomorrow.' },
+        {
+          t: 'appointment',
+          title: 'Urgent care — to be assessed',
+          day: 'tomorrow',
+          time: '08:00',
+          minutes: 30,
+          location: 'Grand Street Urgent Care',
+          prep: [
+            ['Your insurance card', 'they scan it at the desk'],
+            ['Get there by 7:50', 'walk-ins queue from eight'],
+            ['The nurse line tonight', 'free, if anything changes before then'],
+          ],
+        },
+      ],
+      auto: 'after',
     },
 
     /* ========================================================= branches */

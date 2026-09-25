@@ -323,7 +323,7 @@ export const CANCEL: Scenario = {
       id: 'confirm-intent',
       say: [
         { t: 'ack', text: 'Absolutely — I can start that for you right now.' },
-        { t: 'say', text: 'Just so I can log it correctly: what’s prompting the change?' },
+        { t: 'say', text: 'Can you tell us why you want to cancel?' },
         {
           t: 'chips',
           options: [
@@ -361,20 +361,42 @@ export const CANCEL: Scenario = {
       id: 'why-required',
       say: [
         { t: 'ack', text: 'Of course — no pressure at all.' },
-        { t: 'say', text: 'Our system does need a category before it’ll let me proceed. Closest one is fine.' },
+        { t: 'say', text: 'Our system does need a reason for canceling before it’ll let me proceed. Closest one is fine.' },
         {
           t: 'chips',
           options: [
             { label: 'Cost, I suppose', go: 'offer-discount' },
-            { label: 'Fine — I never use it', go: 'usage-report' },
+            { label: 'I never use it', go: 'usage-report' },
+            { label: 'I never meant to subscribe', go: 'verify-identity' },
+            { label: 'Still rather not say', go: 'why-other', safe: true },
           ],
         },
       ],
       constrained: true,
       accept: [
         { on: 'chip', value: 'Cost, I suppose', go: 'offer-discount' },
-        { on: 'chip', value: 'Fine — I never use it', go: 'usage-report' },
+        { on: 'chip', value: 'I never use it', go: 'usage-report' },
+        { on: 'chip', value: 'I never meant to subscribe', go: 'verify-identity' },
+        { on: 'chip', value: 'Still rather not say', go: 'why-other' },
       ],
+    },
+
+    /*
+     * Declining twice, honoured — and it costs you nothing but a step.
+     *
+     * The funnel's rule is interposition, never deceit: every control does
+     * exactly what its label says. So the second refusal is accepted, the
+     * reason is filed as Other, and the script says so in plain words
+     * before moving to the next gate. Nobody is tricked. They are just
+     * still here.
+     */
+    'why-other': {
+      id: 'why-other',
+      say: [
+        { t: 'ack', text: 'That’s completely fine — I’ve put it down as Other.' },
+        { t: 'say', text: 'That’s enough for the system. Next it wants to confirm it’s really you.' },
+      ],
+      auto: 'verify-identity',
     },
 
     /*
