@@ -346,15 +346,42 @@
 }
 .modalHead p { margin: 0; font-size: 0.86rem; line-height: 1.5; color: var(--mute); }
 
+/* Labelled pairs, not a run-on middot list. "764,606 residents aged 15–64 ·
+   over 500k · Vera classes it suburban" made the reader work out where each
+   fact started and what "over 500k" referred to. */
+.modalMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 28px;
+  margin: 10px 0 0;
+}
+.modalMeta div { display: flex; flex-direction: column; gap: 1px; }
+.modalMeta dt {
+  font: 600 10px/1.2 ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--mute);
+}
+.modalMeta dd { margin: 0; font-size: 0.88rem; color: var(--body); }
+
 /* A visible heading per chart. Frame's `title` is the aria-label and nothing
    more, which is correct in the scrolly where the prose beside the chart is
    its heading — in here there is no prose. */
 .chartHead {
-  margin: 0 0 10px;
-  font-size: 0.95rem;
+  margin: 0 0 4px;
+  font-size: 1rem;
   font-weight: 600;
   letter-spacing: -0.01em;
   color: var(--ink);
+}
+/* The heading says what is measured; this says what the lines are. A chart of
+   eight lines needs both, and neither belongs in the other. */
+.chartDeck {
+  margin: 0 0 14px;
+  max-width: 44ch;
+  font-size: 0.84rem;
+  line-height: 1.55;
+  color: var(--mute);
 }
 
 @media (min-width: 900px) {
@@ -377,23 +404,36 @@
    sticky panel header, so they stay on screen while you scroll the charts
    rather than scrolling away with the first thing you read. */
 
+/*
+ * Three figures, each named above and explained below. The middle line is the
+ * number; on its own it is just a quantity, and the two lines around it are
+ * what turn it into a fact.
+ */
 .bigRow {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px 32px;
-  margin: 18px 0 4px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 18px 28px;
+  margin: 22px 0 4px;
+  max-width: 68rem;
 }
-.bigRow div { display: flex; flex-direction: column; gap: 2px; }
+.bigRow div { display: flex; flex-direction: column; gap: 3px; }
+.bigRow dt {
+  font: 600 10px/1.2 ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--mute);
+}
+.bigRow dd { display: flex; flex-direction: column; gap: 3px; margin: 0; }
 .bigRow b {
-  font-size: clamp(1.8rem, 5vw, 2.4rem);
+  font-size: clamp(1.9rem, 4.4vw, 2.5rem);
   font-weight: 500;
   line-height: 1;
   letter-spacing: -0.02em;
   color: var(--ink);
   font-variant-numeric: tabular-nums;
 }
-.bigRow i { font-size: 0.5em; font-style: normal; vertical-align: super; opacity: 0.6; }
-.bigRow span { font-size: 11px; letter-spacing: 0.04em; color: var(--mute); }
+.bigRow i { font-size: 0.48em; font-style: normal; vertical-align: super; opacity: 0.6; }
+.bigRow span { font-size: 12px; line-height: 1.45; color: var(--mute); text-wrap: pretty; }
 
 /* Where this county sits in the national distribution, at a glance. The rail
    is the whole panel; the mark is one place in it. */
@@ -416,6 +456,7 @@
   box-shadow: 0 0 0 2px #131315;
 }
 .pctWrap p { margin: 9px 0 0; font-size: 0.86rem; color: var(--mute); }
+.pctWrap { max-width: 68rem; }
 .pctWrap b { color: var(--ink); font-weight: 500; }
 
 /* A note that belongs to the chart above it — why an axis is shaped as it is,
@@ -438,10 +479,6 @@
 }
 .sources h2 { margin: 0 0 12px; font-size: 1.2rem; color: var(--ink); font-weight: 600; }
 .sources > p { font-size: 0.92rem; }
-.sources code {
-  font: 0.85em ui-monospace, SFMono-Regular, Menlo, monospace;
-  color: var(--ink);
-}
 .sources ul { list-style: none; margin: 22px 0; padding: 0; }
 .sources li {
   display: grid;

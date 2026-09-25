@@ -219,9 +219,17 @@ function Sources() {
   return (
     <section className={s.sources} id="sources">
       <h2>Sources</h2>
+      {/*
+        This used to name the build script by path and say no number was
+        "typed by hand" — a note to a code reviewer, on a page read by people
+        looking at a portfolio. The underlying claim is worth making, because
+        it is the reason to trust the charts; it just has to be made to a
+        reader rather than to whoever might open the repository.
+      */}
       <p>
-        Every figure above is computed from the files below by{' '}
-        <code>scripts/tilt-data.mjs</code>. No number in this piece was typed by hand.
+        Every number on this page is calculated from the files below when the site is
+        built. Nothing was copied across by hand, so anything here can be traced back
+        to the original data.
       </p>
       <ul>
         {SOURCES.map((x) => (

@@ -255,6 +255,41 @@ console.log('\nThe lookup survives being rendered twice');
   console.log(`  ${ids.length} unique ids, every label resolved`);
 }
 
+/* ---- the key does not overprint itself -------------------------------
+ *
+ * Eight end-of-line labels — seven size bands and the county — land wherever
+ * their lines finish. On a flat county several finish within a pixel or two
+ * of each other, and drawn as-is they smear into something that reads as a
+ * rendering fault rather than a key. They are spread apart before drawing,
+ * and that spreading is arithmetic, so it is checked on every county rather
+ * than on the two I happened to look at.
+ */
+console.log('\nThe chart key stays legible');
+{
+  const { spread } = require('../Lookup') as typeof import('../Lookup');
+  /* The same geometry Frame uses: H 420, top padding 28, bottom padding 36. */
+  const TOP = 28, BOTTOM = 384;
+  const yOf = (v: number, max: number) => BOTTOM - (v / max) * (BOTTOM - TOP);
+
+  let worstGap = Infinity, worstAt = '', outside = 0;
+  for (const c of counties) {
+    const max = Math.max(1000, Math.ceil((Math.max(...c.rate) * 1.1) / 500) * 500);
+    const ends = [
+      ...data.bands.map((b) => ({ y: yOf(b.rate.at(-1)!, max) })),
+      { y: yOf(c.rate.at(-1)!, max) },
+    ];
+    const out = spread(ends, TOP, BOTTOM);
+    for (let i = 1; i < out.length; i++) {
+      const gap = out[i].y - out[i - 1].y;
+      if (gap < worstGap) { worstGap = gap; worstAt = `${c.name}, ${c.state}`; }
+    }
+    if (out.some((e) => e.y < TOP - 8 || e.y > BOTTOM + 8)) outside++;
+  }
+  ok(worstGap >= 12, `two key labels are ${worstGap.toFixed(1)}px apart on ${worstAt} — they overprint`);
+  ok(outside === 0, `${outside} counties push a key label outside the plot frame`);
+  console.log(`  closest pair across ${counties.length.toLocaleString()} counties: ${worstGap.toFixed(1)}px, ${outside} outside the frame`);
+}
+
 /* The modal is the only part of this piece that takes the page away from the
  * reader, so the ways out are checked structurally rather than remembered.
  *
