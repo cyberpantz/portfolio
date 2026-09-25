@@ -23,7 +23,12 @@ export default defineConfig({
      *          results page is a dead end.
      */
     sitemap({
-      filter: (page) => !/\/(v1|thanks)\/?$/.test(page),
+      /*  /explorations/tilt  hidden from the grid while the writing is
+       *          revised. It builds and stays reachable by direct link, but
+       *          nothing links to it, so listing it in the sitemap would be
+       *          inviting crawlers to a draft. Also noindex'd at the layout.
+       */
+      filter: (page) => !/\/(v1|thanks|explorations\/tilt)\/?$/.test(page),
       changefreq: 'monthly',
       lastmod: new Date(),
     }),

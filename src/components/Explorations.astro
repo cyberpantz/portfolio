@@ -1,5 +1,5 @@
 ---
-import { EXPLORATIONS } from '../data/explorations';
+import { VISIBLE_EXPLORATIONS } from '../data/explorations';
 import SectionLabel from './ui/SectionLabel.astro';
 import { ExplorationIcon } from './ExplorationIcon';
 ---
@@ -16,7 +16,7 @@ import { ExplorationIcon } from './ExplorationIcon';
   </p>
 
   <div class="grid grid-cols-1 sm:grid-cols-3 gap-px bg-rule border border-rule rounded overflow-hidden">
-    {EXPLORATIONS.map((exp) => (
+    {VISIBLE_EXPLORATIONS.map((exp) => (
       <a href={exp.url ?? '#'}
          class="bg-ink-surface px-6 py-7 flex flex-col gap-3 cursor-pointer group
                 transition-all duration-200 hover:bg-ink-surface2 hover:-translate-y-1

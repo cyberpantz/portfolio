@@ -40,6 +40,10 @@ export interface Exploration {
 export const EXPLORATIONS: Exploration[] = [
   {
     id: 'tilt',
+    /* Off the grid while the writing is worked on. The page still builds and
+       is reachable at /explorations/tilt; the layout noindexes it so a draft
+       does not get crawled while it is not linked from anywhere. */
+    hidden: true,
     name: 'The Tilt',
     type: 'Data',
     tags: ['Scrollytelling', 'SVG', 'React', 'Public data'],
