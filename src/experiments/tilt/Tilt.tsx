@@ -85,9 +85,19 @@ const CHAPTERS = [
   },
   {
     id: 'split',
-    kicker: 'The same data, ungrouped',
-    title: 'That line is an average of opposites.',
-    body: `Split the country by county size and the single line comes apart. The very largest counties hold most of the people, so their decline sets the national direction on its own. Underneath it, almost everywhere else is going the other way.`,
+    /*
+      "Ungrouped" is a word from the pipeline, not from English. "That line is
+      an average of opposites" is a nice phrase that asks the reader to hold
+      three abstractions — a line, an average, opposites — before it tells
+      them anything, and the body then said the decline "sets the national
+      direction", which is a description of a chart rather than of jails.
+      
+      Said plainly it is a simple idea: a few huge counties outvote everyone
+      else in the national total.
+    */
+    kicker: 'The same data, by county size',
+    title: 'One line, two opposite trends.',
+    body: `Most people in jail are held in a small number of very large counties, so those counties decide which way the national line goes. Group counties by size and the split shows: the biggest are jailing fewer people each year, while almost everywhere else is jailing more.`,
     figure: <ChapterBands mode="count" />,
   },
   {

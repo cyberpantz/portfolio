@@ -271,9 +271,16 @@ console.log('\nProse agrees with the series');
    * would "behave the way you expect" — three guesses about the audience in
    * one short chapter, and a reader who did not recognise the figure had been
    * told they were unusual before the first chart. Every claim in this piece
-   * should be about the data. */
+   * should be about the data.
+   *
+   * Matched on a bare "most people" at first, which then failed chapter two
+   * for "Most people in jail are held in a small number of very large
+   * counties" — a fact about the subject, not a guess about the audience. The
+   * rule has to name the presumption, not the phrase that often carries it,
+   * or it will be deleted the first time it is wrong. */
   for (const phrase of [
-    'you already know', 'most people', 'you expect', 'as you know',
+    'you already know', 'as you know', 'you expect', 'you would expect',
+    'most people (know|think|assume|expect|believe|carry|realise|realize)',
     'of course', 'obviously', 'everyone knows', 'we all know',
   ]) {
     ok(!new RegExp(phrase, 'i').test(src), `the copy tells the reader what they think: "${phrase}"`);
