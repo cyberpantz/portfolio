@@ -326,7 +326,7 @@ export const FELINE: Scenario = {
       id: 'options',
       constrained: true,
       say: [
-        { t: 'ack', text: 'Noted, and not judged.' },
+        { t: 'ack', text: 'Noted.' },
         {
           t: 'compare',
           title: 'Three ways this goes',
