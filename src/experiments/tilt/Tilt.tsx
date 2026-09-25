@@ -45,8 +45,12 @@ const Y0 = data.ch1.years[0], Y1 = data.ch1.years[data.ch1.years.length - 1];
    only on the open-ended top band, so a null here means the bands were
    reordered and the chapter is now describing the wrong end. */
 const SMALL = data.bands[0].max;
-if (SMALL === null) throw new Error('Tilt: smallest band has no ceiling — bands reordered?');
+/* The largest band is open-ended, so its floor is the ceiling of the band
+   below it — the figure chapter three compares the smallest against. */
+const LARGE = data.bands[data.bands.length - 2].max;
+if (SMALL === null || LARGE === null) throw new Error('Tilt: band thresholds missing — bands reordered?');
 const TRANSFERS = data.ch4.transfers;
+const LATINX = data.ch4.demography.latinxShare;
 const COV = data.ch7;
 const CON = data.ch5.construction;
 const SPARE = data.ch5.spare[data.ch5.spare.length - 1];
@@ -74,7 +78,7 @@ const CHAPTERS = [
     id: 'tilt',
     kicker: 'The finding',
     title: 'Measured per resident, the country tilts.',
-    body: `In 2002 a county of three thousand people jailed at roughly the same rate as a county of a million — ${RATIO02} times, close enough to call flat. By 2019 it was ${RATIO} times. Ranked by size, each band above ${fmt(SMALL)} residents jails at a lower rate than the band below it, and has done in every year of this panel. Counties under ${fmt(SMALL)} are the exception, sitting below their neighbours: more than a third share a regional jail instead of running their own, so their rate is measured on a different basis.`,
+    body: `In ${Y0}, counties under ${fmt(SMALL)} residents jailed at ${RATIO02} times the rate of counties over ${fmt(LARGE)}. By ${Y1} it was ${RATIO} times. From ${fmt(SMALL)} residents up, each larger group jails at a lower rate than the group below it, in every year from ${Y0} to ${Y1}. Counties under ${fmt(SMALL)} are the exception: more than a third share a regional jail, so their rate is not counted the same way.`,
     figure: <ChapterTilt />,
   },
   {
@@ -96,7 +100,7 @@ const CHAPTERS = [
     */
     kicker: 'Testing three explanations',
     title: 'Most of it is local.',
-    body: `Between ${Y0} and ${Y1} rural jail populations rose ${TRANSFERS.growth} percent. People held for other authorities — state prisons, federal agencies, other counties — account for ${TRANSFERS.heldShareOfGrowth} percent of that increase, leaving ${TRANSFERS.localShareOfGrowth} percent held on local authority. Cities shipping people to rural jails is the smallest piece: jail-to-jail transfers doubled, from ${fmt(TRANSFERS.otherJail.from)} to ${fmt(TRANSFERS.otherJail.to)}, but that is ${TRANSFERS.otherJail.shareOfGrowth} percent of the growth. Displacement into rural counties cannot explain it either, since rural America lost population over this period. Changing demographics is the one this data cannot settle: the Latino share of rural residents rose about three points, which is small beside the move in the rate, but a composition shift is not a test.`,
+    body: `Between ${Y0} and ${Y1}, rural jail populations rose ${TRANSFERS.growth} percent. People held for state prisons, federal agencies, or other counties account for ${TRANSFERS.heldShareOfGrowth} percent of that rise. The other ${TRANSFERS.localShareOfGrowth} percent were held by the county itself. Transfers from one jail to another doubled, from ${fmt(TRANSFERS.otherJail.from)} to ${fmt(TRANSFERS.otherJail.to)}, and that is ${TRANSFERS.otherJail.shareOfGrowth} percent of the growth. Rural counties lost residents over these years, so the rise is not people moving in. The Latino share of rural residents went from ${LATINX[0]} percent to ${LATINX[LATINX.length - 1]}. That is small beside the change in the jail rate, and this data cannot say whether it matters.`,
     figure: <ChapterEliminations />,
   },
   {
@@ -124,7 +128,7 @@ const CHAPTERS = [
     id: 'coverage',
     kicker: 'Why it stops where it stops',
     title: 'The record thins out.',
-    body: `The file runs to ${COV.years[COV.years.length - 1]}, so the obvious question is why this ends at ${Y1}. Not because the data stops — because it empties. About ${fmt(COV.peakJail)} counties reported a jail population every year through ${Y1}; by ${COV.years[COV.years.length - 1]} it is ${fmt(COV.lastJail)}, and the ones that drop out are smaller and more rural than the ones that stay. The census denominator that turns a count into a rate ends after ${COV.popEnds - 1}, so per-resident rates cannot be computed at all for the last two years. And the count of people held for ICE — along with every other federal breakdown — ends after ${COV.iceEnds - 1}. Not reported as zero. Absent.`,
+    body: `The survey runs to ${COV.years[COV.years.length - 1]}. These charts stop at ${Y1} because counties stop answering. About ${fmt(COV.peakJail)} reported a jail population every year through ${Y1}. By ${COV.years[COV.years.length - 1]} that is ${fmt(COV.lastJail)}, and the counties that drop out are smaller and more rural than the ones that stay. Rates need a population count, which ends after ${COV.popEnds - 1}. The count of people held for ICE, and every other federal category, ends after ${COV.iceEnds - 1}. Those years are missing. They were not reported as zero.`,
     figure: <ChapterCoverage />,
   },
 ] as const;
@@ -315,14 +319,11 @@ function Conclusion() {
 
       <h3>What happened next</h3>
       <p>
-        This piece ends in {Y1} because the county record thins past it. For what is known
-        since: Vera estimates about 660,000 people in jail by spring 2024 — a tenth below
-        mid-2019, but more than 100,000 above the 2020 floor — with the rural jail population
-        up 2.2 percent between 2022 and 2024 while the urban figure
-        fell<Cite id="vera-2024" />. That is their sample and their weighting, not something
-        reproducible from the file used here. A balanced panel through {COV.years[COV.years.length - 1]}
-        retains about a quarter of the counties and points the other way, which is a reason to
-        defer to the people who collect the data rather than to publish the disagreement.
+        Past {Y1}, too many counties stop reporting to extend these charts. Vera estimates
+        about 660,000 people in jail by spring 2024: a tenth below mid-2019, and more than
+        100,000 above the 2020 low. In that estimate the rural jail population rose 2.2 percent
+        between 2022 and 2024 while the urban figure fell<Cite id="vera-2024" />. Those figures
+        are Vera&rsquo;s sample. They are not computed from the counties in this piece.
       </p>
 
       <p>
