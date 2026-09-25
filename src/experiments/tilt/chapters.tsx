@@ -272,6 +272,45 @@ export function ChapterPretrial() {
   );
 }
 
+/* ── 8 — why the piece stops at 2019 ───────────────────────────────────
+ *
+ * Coverage, not values. Four series, each the number of counties reporting
+ * that field — so the collapse after 2019 is visible rather than asserted.
+ */
+export function ChapterCoverage() {
+  const c = data.ch7;
+  const top = Math.max(...c.jail) * 1.08;
+  const sc = makeScales(c.years, 0, top);
+  const LINES = [
+    { key: 'jail' as const, label: 'jail population', ink: '#e8e8e0', w: 2.6 },
+    { key: 'cap' as const, label: 'capacity', ink: '#9c9a6e', w: 2 },
+    { key: 'pop' as const, label: 'population denominator', ink: '#4f8fa8', w: 2 },
+    { key: 'ice' as const, label: 'held for ICE', ink: '#e8734a', w: 2 },
+  ];
+  return (
+    <Frame
+      title="Counties reporting each field, by year"
+      desc={`Around ${fmt(c.peakJail)} counties reported a jail population through 2019. By ${c.years.at(-1)} it is ${fmt(c.lastJail)}. The population denominator stops after ${c.popEnds! - 1} and the ICE count after ${c.iceEnds! - 1}.`}
+      yTicks={[0, 1000, 2000, 3000]} xTicks={[2002, 2010, 2019, c.years.at(-1)!]}
+      sx={sc.x} sy={sc.y} fmtY={fmt}
+      hover={{ xs: c.years, rows: LINES.map((l) => ({ label: l.label, values: c[l.key], ink: l.ink })) }}>
+      {/* 2019 is where this piece stops, and the reason is to its right. */}
+      <line x1={sc.x(2019)} x2={sc.x(2019)} y1={sc.y(0)} y2={sc.y(top)}
+            stroke="currentColor" opacity={0.28} strokeDasharray="4 4" />
+      <text x={sc.x(2019) - 8} y={sc.y(top) + 4} textAnchor="end"
+            fontSize="11" fill="currentColor" opacity={0.6}>this piece ends</text>
+      {LINES.map((l) => (
+        <path key={l.key} d={path(c.years, c[l.key], sc.x, sc.y)} fill="none"
+              stroke={l.ink} strokeWidth={l.w} />
+      ))}
+      {LINES.map((l) => (
+        <text key={l.key} x={sc.x(c.years.at(-1)!) + 8} y={sc.y(c[l.key].at(-1)!)} dy="0.32em"
+              fontSize="10.5" fill={l.ink}>{l.label}</text>
+      ))}
+    </Frame>
+  );
+}
+
 /* ── 7 ──────────────────────────────────────────────────────────────── */
 
 /*

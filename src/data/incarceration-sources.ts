@@ -138,6 +138,20 @@ export const SOURCES: Source[] = [
     note: 'Read in full. This is the companion essay to the construction dataset already used here.',
   },
   {
+    id: 'vera-2024',
+    kind: 'research report',
+    title: 'People in Jail and Prison in 2024',
+    author: 'Jacob Kang-Brown and others',
+    publisher: 'Vera Institute of Justice',
+    date: '2024-11',
+    url: 'https://www.vera.org/publications/people-in-jail-and-prison-in-2024',
+    status: 'secondary',
+    supports:
+      'What is known about the years this dataset can no longer measure. By spring 2024 about 660,000 people were held in jails — 10 percent below mid-2019, but more than 100,000 above 2020 — and the rural jail population rose 2.2 percent between 2022 and 2024 while the urban figure fell 1.7 percent. Vera estimates this from its own sample; it is not reproducible from the county file used here.',
+    note:
+      'Cited instead of extending this piece past 2019. A balanced panel through 2026 keeps only about a quarter of the counties, and that thin sample disagrees with this estimate — which is a reason to defer to Vera, not to publish the disagreement.',
+  },
+  {
     id: 'littman-sheriffs',
     kind: 'law review',
     title: 'Jails, Sheriffs, and Carceral Policymaking',

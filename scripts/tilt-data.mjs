@@ -222,6 +222,44 @@ ch5.construction = {
   bedsAdded: round(bedsUp), bedsRemoved: round(bedsDown), bedRows,
 };
 
+/* ── ch7 — what happens to the record after 2019 ───────────────────────
+ *
+ * The piece stops at 2019 and has to say why. It is not that the file stops:
+ * it runs to 2026. It is that the record thins to the point where the
+ * question cannot be asked. Counted here rather than asserted.
+ */
+/* Straight off the raw rows — byFips is already clipped to the study window,
+   which is the thing being measured here. */
+const FIELD = { jail: 'total_jail_pop', pop: 'total_pop_15to64',
+                cap: 'jail_rated_capacity', ice: 'total_jail_from_ice' };
+const cov = new Map();
+for (const r of rows) {
+  const y = num(r[idx.year]);
+  if (y === null || y < Y0) continue;
+  if (!cov.has(y)) cov.set(y, { jail: 0, pop: 0, cap: 0, ice: 0 });
+  const c = cov.get(y);
+  for (const k of Object.keys(FIELD)) if (num(r[idx[FIELD[k]]]) !== null) c[k] += 1;
+}
+const ALL_YEARS = [...cov.keys()].sort((a, b) => a - b);
+const has = (y, f) => cov.get(y)[f];
+const ch7 = {
+  years: ALL_YEARS,
+  jail: ALL_YEARS.map((y) => has(y, 'jail')),
+  pop: ALL_YEARS.map((y) => has(y, 'pop')),
+  cap: ALL_YEARS.map((y) => has(y, 'cap')),
+  ice: ALL_YEARS.map((y) => has(y, 'ice')),
+  lastFull: Y1,
+};
+/* The year each series goes to nothing, so the prose never names one by hand. */
+const endsAt = (k) => {
+  const i = ch7[k].findIndex((n, j) => n === 0 && j > 0);
+  return i < 0 ? null : ALL_YEARS[i];
+};
+ch7.popEnds = endsAt('pop');
+ch7.iceEnds = endsAt('ice');
+ch7.peakJail = Math.max(...ch7.jail);
+ch7.lastJail = ch7.jail[ch7.jail.length - 1];
+
 /* ── ch6 — pretrial as a RATE, and ICE inside it ───────────────────────── */
 const pPre = panel(['pre', 'ice', 'pop']);
 const URB = ['rural', 'small/mid', 'suburban', 'urban'];
@@ -299,7 +337,7 @@ const bundle = {
     note: 'Balanced panels: counties present with the required fields in every year of the window.',
     generated: new Date().toISOString().slice(0, 10),
   },
-  ch1, bands: bandSeries, ch4, ch5, ch6,
+  ch1, bands: bandSeries, ch4, ch5, ch6, ch7,
   anchors: { grant: anchor('21081'), terrebonne: anchor('22109') },
 };
 writeFileSync(join(OUT, 'tilt.json'), JSON.stringify(bundle));

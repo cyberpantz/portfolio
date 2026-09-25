@@ -13,7 +13,7 @@ import data from '../../../data/tilt.json';
 import { SOURCES, assertNoUnverifiedClaims } from '../../../data/incarceration-sources';
 import {
   ChapterDecline, ChapterBands, ChapterTilt, ChapterEliminations, ChapterCapacity,
-  ChapterConstruction, ChapterPretrial, ChapterLookup,
+  ChapterConstruction, ChapterPretrial, ChapterCoverage, ChapterLookup,
 } from '../chapters';
 
 let fails = 0;
@@ -33,6 +33,7 @@ const CH: [string, ReactElement][] = [
   ['capacity', <ChapterCapacity />],
   ['construction', <ChapterConstruction />],
   ['pretrial', <ChapterPretrial />],
+  ['coverage', <ChapterCoverage />],
   ['lookup', <ChapterLookup />],
 ];
 const html: Record<string, string> = {};
@@ -147,6 +148,22 @@ console.log(`  ICE = ${rural.iceShareOfPretrialChange}% of the rural pretrial ch
   ok(t.otherJail.to > t.otherJail.from,
      'jail-to-jail transfers no longer rise — the chapter says they doubled');
   console.log(`  rural +${t.growth}%: ${t.localShareOfGrowth}% local, ${t.heldShareOfGrowth}% held for others (${t.otherJail.shareOfGrowth}% jail-to-jail)`);
+}
+
+/* Chapter eight is the honesty chapter: it shows why the piece stops at 2019
+ * rather than claiming the data does. These assertions fail if the record
+ * ever recovers — at which point the chapter is wrong and the piece could be
+ * extended — or if the study window drifts away from the last full year. */
+{
+  const c = data.ch7;
+  ok(c.years[c.years.length - 1] > data.ch1.years[data.ch1.years.length - 1],
+     'the file no longer runs past the study window, so chapter eight has nothing to explain');
+  ok(c.lastJail < c.peakJail / 2,
+     `coverage recovered: ${c.lastJail} counties reporting against a peak of ${c.peakJail} — chapter eight says it collapsed`);
+  ok(c.popEnds !== null && c.iceEnds !== null,
+     'the denominator or the ICE field no longer goes to zero — chapter eight names both');
+  ok(c.iceEnds! <= c.popEnds!, 'the ICE field now outlives the denominator; chapter eight has the order wrong');
+  console.log(`  coverage ${c.peakJail} → ${c.lastJail} counties; denominator ends ${c.popEnds! - 1}, ICE ${c.iceEnds! - 1}`);
 }
 
 /* ---- panels are stated, and real ------------------------------------ */

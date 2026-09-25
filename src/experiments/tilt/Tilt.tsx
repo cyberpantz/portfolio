@@ -22,7 +22,7 @@ import data from '../../data/tilt.json';
 import { SOURCES, byId } from '../../data/incarceration-sources';
 import {
   ChapterDecline, ChapterBands, ChapterTilt, ChapterEliminations, ChapterCapacity,
-  ChapterConstruction, ChapterPretrial, ChapterLookup,
+  ChapterConstruction, ChapterPretrial, ChapterCoverage, ChapterLookup,
 } from './chapters';
 import s from './tilt.module.css';
 
@@ -47,6 +47,7 @@ const Y0 = data.ch1.years[0], Y1 = data.ch1.years[data.ch1.years.length - 1];
 const SMALL = data.bands[0].max;
 if (SMALL === null) throw new Error('Tilt: smallest band has no ceiling — bands reordered?');
 const TRANSFERS = data.ch4.transfers;
+const COV = data.ch7;
 const CON = data.ch5.construction;
 const SPARE = data.ch5.spare[data.ch5.spare.length - 1];
 const RATIO02 = (data.bands[0].rate[0] / data.bands[data.bands.length - 1].rate[0]).toFixed(2);
@@ -118,6 +119,13 @@ const CHAPTERS = [
     title: 'Mostly people awaiting a decision.',
     body: `The pretrial rate — people not convicted of anything — rose sharply in rural counties and fell in urban ones. Held for ICE grew fastest of all in rural jails, though it accounts for under a tenth of the rural pretrial rise, and the two figures are not independent: the codebook is explicit that people held for federal authorities are counted inside the pretrial number.`,
     figure: <ChapterPretrial />,
+  },
+  {
+    id: 'coverage',
+    kicker: 'Why it stops where it stops',
+    title: 'The record thins out.',
+    body: `The file runs to ${COV.years[COV.years.length - 1]}, so the obvious question is why this ends at ${Y1}. Not because the data stops — because it empties. About ${fmt(COV.peakJail)} counties reported a jail population every year through ${Y1}; by ${COV.years[COV.years.length - 1]} it is ${fmt(COV.lastJail)}, and the ones that drop out are smaller and more rural than the ones that stay. The census denominator that turns a count into a rate ends after ${COV.popEnds - 1}, so per-resident rates cannot be computed at all for the last two years. And the count of people held for ICE — along with every other federal breakdown — ends after ${COV.iceEnds - 1}. Not reported as zero. Absent.`,
+    figure: <ChapterCoverage />,
   },
 ] as const;
 
@@ -303,6 +311,18 @@ function Conclusion() {
         of all 58 California counties finds no consistent link between that decarceration and
         county crime<Cite id="kubrin-covid" />. One state and one short window, so it shows the
         lever works rather than that pulling it is free.
+      </p>
+
+      <h3>What happened next</h3>
+      <p>
+        This piece ends in {Y1} because the county record thins past it. For what is known
+        since: Vera estimates about 660,000 people in jail by spring 2024 — a tenth below
+        mid-2019, but more than 100,000 above the 2020 floor — with the rural jail population
+        up 2.2 percent between 2022 and 2024 while the urban figure
+        fell<Cite id="vera-2024" />. That is their sample and their weighting, not something
+        reproducible from the file used here. A balanced panel through {COV.years[COV.years.length - 1]}
+        retains about a quarter of the counties and points the other way, which is a reason to
+        defer to the people who collect the data rather than to publish the disagreement.
       </p>
 
       <p>
