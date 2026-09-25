@@ -193,21 +193,33 @@ const ch5 = {
   people: YEARS.map((y) => round(cJail[y])),
   beds: YEARS.map((y) => round(cCap[y])),
   spare: YEARS.map((y) => round(cCap[y] - cJail[y])),
+  bedsGrowth: round(((cCap[Y1] / cCap[Y0]) - 1) * 100, 1),
 };
 
 const con = parseCSV(readFileSync(join(RAW, 'vera-jail-construction.csv'), 'utf8'));
 const cy = {}, cStatus = {};
+let bedsUp = 0, bedsDown = 0, bedRows = 0;
 for (const r of con.rows) {
   const y = num(r[con.idx.project_year]);
   if (y === null) continue;
   cy[y] = (cy[y] ?? 0) + 1;
   const s = r[con.idx.project_status]?.trim();
   if (s) cStatus[s] = (cStatus[s] ?? 0) + 1;
+  /* Beds added and removed. The prose quoted both as typed literals, which is
+     the drift this pipeline exists to prevent. Only rows carrying a before
+     AND an after can contribute; the rest are counted as projects, not beds. */
+  const b0 = num(r[con.idx.jail_capacity_before]), b1 = num(r[con.idx.jail_capacity_after]);
+  if (b0 !== null && b1 !== null) {
+    const d = b1 - b0;
+    if (d > 0) bedsUp += d; else bedsDown += -d;
+    bedRows += 1;
+  }
 }
 ch5.construction = {
   years: Object.keys(cy).map(Number).sort((a, b) => a - b),
   count: Object.keys(cy).map(Number).sort((a, b) => a - b).map((y) => cy[y]),
   status: cStatus, total: con.rows.length,
+  bedsAdded: round(bedsUp), bedsRemoved: round(bedsDown), bedRows,
 };
 
 /* ── ch6 — pretrial as a RATE, and ICE inside it ───────────────────────── */

@@ -269,6 +269,22 @@ console.log('\nProse agrees with the series');
   ok(!/\d\.\d\d? times/.test(src),
      'a ratio is typed into the prose rather than derived from data.bands');
 
+  /* No typed figure of any size in the chapter bodies. "348,688 beds added"
+     sat here for months; recomputed from the source it is 348,321, so the
+     literal had already drifted from the data it claimed to report. Any
+     comma-grouped number, or a percentage not inside a template expression,
+     is the same bug waiting. */
+  const bodies = [...src.matchAll(/body: `([^`]*)`/g)].map((m) => m[1]).join(' ');
+  const literals = [
+    ...bodies.matchAll(/(?<!\$\{[^}]{0,80})\b\d{1,3}(,\d{3})+\b/g),
+    ...bodies.matchAll(/(?<!\$\{[^}]{0,80})\b\d+(\.\d+)? percent\b/g),
+  ].map((m) => m[0]);
+  ok(literals.length === 0, `figures typed into chapter prose: ${literals.join(', ')}`);
+
+  /* And the windows are stated. A bare "rose 39 percent" reads as current. */
+  ok(/Between \$\{Y0\} and \$\{Y1\}/.test(src),
+     'a change figure is quoted without naming the years it spans');
+
   /* The copy does not tell the reader what they think. Match the
      presumption, not the phrase that usually carries it — a bare "most
      people" fails chapter two, which is about people in jail. */

@@ -40,7 +40,15 @@ const SMALLEST = pctChange(data.bands[0].rate);
 const LARGEST = pctChange(data.bands[data.bands.length - 1].rate);
 /* Smallest counties against largest, in the final year. Chapter three quotes
    both ends of this; the intro quotes only where it ended up. */
+const Y0 = data.ch1.years[0], Y1 = data.ch1.years[data.ch1.years.length - 1];
+/* The smallest band's ceiling — the threshold chapter three turns on. Null
+   only on the open-ended top band, so a null here means the bands were
+   reordered and the chapter is now describing the wrong end. */
+const SMALL = data.bands[0].max;
+if (SMALL === null) throw new Error('Tilt: smallest band has no ceiling — bands reordered?');
 const TRANSFERS = data.ch4.transfers;
+const CON = data.ch5.construction;
+const SPARE = data.ch5.spare[data.ch5.spare.length - 1];
 const RATIO02 = (data.bands[0].rate[0] / data.bands[data.bands.length - 1].rate[0]).toFixed(2);
 const RATIO = (last(data.bands[0].rate) / last(data.bands[data.bands.length - 1].rate)).toFixed(1);
 
@@ -65,7 +73,7 @@ const CHAPTERS = [
     id: 'tilt',
     kicker: 'The finding',
     title: 'Measured per resident, the country tilts.',
-    body: `In 2002 a county of three thousand people jailed at roughly the same rate as a county of a million — ${RATIO02} times, close enough to call flat. By 2019 it was ${RATIO} times. Ranked by size, each band above 5,000 residents jails at a lower rate than the band below it, and has done in every year of this panel. Counties under 5,000 are the exception, sitting below their neighbours: more than a third share a regional jail instead of running their own, so their rate is measured on a different basis.`,
+    body: `In 2002 a county of three thousand people jailed at roughly the same rate as a county of a million — ${RATIO02} times, close enough to call flat. By 2019 it was ${RATIO} times. Ranked by size, each band above ${fmt(SMALL)} residents jails at a lower rate than the band below it, and has done in every year of this panel. Counties under ${fmt(SMALL)} are the exception, sitting below their neighbours: more than a third share a regional jail instead of running their own, so their rate is measured on a different basis.`,
     figure: <ChapterTilt />,
   },
   {
@@ -87,21 +95,21 @@ const CHAPTERS = [
     */
     kicker: 'Testing three explanations',
     title: 'Most of it is local.',
-    body: `Rural jail populations rose ${TRANSFERS.growth} percent. People held for other authorities — state prisons, federal agencies, other counties — account for ${TRANSFERS.heldShareOfGrowth} percent of that increase, leaving ${TRANSFERS.localShareOfGrowth} percent held on local authority. Cities shipping people to rural jails is the smallest piece: jail-to-jail transfers doubled, from ${fmt(TRANSFERS.otherJail.from)} to ${fmt(TRANSFERS.otherJail.to)}, but that is ${TRANSFERS.otherJail.shareOfGrowth} percent of the growth. Displacement into rural counties cannot explain it either, since rural America lost population over this period. Changing demographics is the one this data cannot settle: the Latino share of rural residents rose about three points, which is small beside the move in the rate, but a composition shift is not a test.`,
+    body: `Between ${Y0} and ${Y1} rural jail populations rose ${TRANSFERS.growth} percent. People held for other authorities — state prisons, federal agencies, other counties — account for ${TRANSFERS.heldShareOfGrowth} percent of that increase, leaving ${TRANSFERS.localShareOfGrowth} percent held on local authority. Cities shipping people to rural jails is the smallest piece: jail-to-jail transfers doubled, from ${fmt(TRANSFERS.otherJail.from)} to ${fmt(TRANSFERS.otherJail.to)}, but that is ${TRANSFERS.otherJail.shareOfGrowth} percent of the growth. Displacement into rural counties cannot explain it either, since rural America lost population over this period. Changing demographics is the one this data cannot settle: the Latino share of rural residents rose about three points, which is small beside the move in the rate, but a composition shift is not a test.`,
     figure: <ChapterEliminations />,
   },
   {
     id: 'capacity',
     kicker: 'What was built',
     title: 'The beds kept coming anyway.',
-    body: `Rated capacity grew by almost 22 percent while the population inside fell. By 2019 there were around 150,000 empty beds. Vera's own phrase for what follows is "if you build it, they will come" — they document counties that expanded far past local need, rented the surplus to state prisons and federal immigration, and then filled it locally when the outside customers stopped coming.`,
+    body: `Between ${Y0} and ${Y1} rated capacity grew ${data.ch5.bedsGrowth} percent while the population inside fell. By ${Y1} there were about ${fmt(Math.round(SPARE / 1000) * 1000)} empty beds. Vera's own phrase for what follows is "if you build it, they will come" — they document counties that expanded far past local need, rented the surplus to state prisons and federal immigration, and then filled it locally when the outside customers stopped coming.`,
     figure: <ChapterCapacity />,
   },
   {
     id: 'construction',
     kicker: 'And still coming',
     title: 'Construction hit a twenty-year high.',
-    body: `Proposals bottomed out in the mid-2010s and then climbed. The last year in the record, 2022, is the busiest in the series. Across the whole period: 1,926 projects, 348,688 beds added and 949 removed.`,
+    body: `Proposals bottomed out in the mid-2010s and then climbed. The last year in the record, ${CON.years[CON.years.length - 1]}, is the busiest in the series. Across ${CON.years[0]} to ${CON.years[CON.years.length - 1]}: ${fmt(CON.total)} projects, ${fmt(CON.bedsAdded)} beds added and ${fmt(CON.bedsRemoved)} removed.`,
     figure: <ChapterConstruction />,
   },
   {
@@ -397,6 +405,17 @@ function Sources() {
             in 2019, while a tenth were below 190 and a tenth above 1,022. The ladder is a
             statement about bands. It is not a rule that a bigger county jails less, and the
             county search below will show you plenty of exceptions.
+          </dd>
+        </div>
+        <div>
+          <dt>Construction is a different record</dt>
+          <dd>
+            The construction figures come from a separate Vera dataset that runs to{' '}
+            {CON.years[CON.years.length - 1]}, not {Y1}, and was assembled from local
+            documents, records requests and phone calls rather than a federal survey. Beds added
+            and removed are summed only over the {fmt(CON.bedRows)} of {fmt(CON.total)} projects
+            that report a capacity both before and after; the rest are counted as projects and
+            not as beds.
           </dd>
         </div>
         <div>
