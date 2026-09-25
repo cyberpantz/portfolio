@@ -902,5 +902,33 @@ for (const [sid, S] of Object.entries(SCENARIOS)) {
   console.log(`  ${sid}: ${reach.size} nodes, ${lines.length} lines, structure holds`);
 }
 
+/* ---- the reply is not instantaneous ---------------------------------
+ *
+ * Every gap in the director spaces the assistant's OWN beats, so the first
+ * beat of a node had no previous beat to wait out and landed in the same
+ * frame as the visitor's message. Nothing answers that fast, and the reply
+ * reads as pre-written rather than produced — which is the one impression
+ * a piece about conversational interfaces must not give away free.
+ *
+ * Structural, because timing is invisible to a render test and this is the
+ * sort of thing a later refactor drops without noticing.
+ */
+console.log('\nThe assistant does not answer instantly');
+{
+  const dir = readFileSync(new URL('../director/useDirector.ts', import.meta.url), 'utf8');
+  ok(/const REPLY_MS = \d{3}/.test(dir), 'no reply latency is defined');
+  ok(/REPLY_JITTER_MS/.test(dir),
+     'the latency has no jitter, so a conversation develops an audible metronome');
+  ok(/st\.via === 'user' \? replyLatency\(beats\[0\]\) : 0/.test(dir),
+     'the first beat of a node no longer waits out a round trip');
+  ok(/go\(target, 'auto'\)/.test(dir),
+     'self-continuing nodes claim a reply latency they did not earn — they already have AUTO_GAP');
+  const m = dir.match(/const REPLY_MS = (\d+)/);
+  const ms = m ? Number(m[1]) : 0;
+  ok(ms >= 250 && ms <= 900,
+     `reply latency is ${ms}ms: under 250 reads as instant, over 900 as broken`);
+  console.log(`  ${ms}ms before the first beat, user turns only, jittered`);
+}
+
 console.log(fails ? `\n${fails} FAILED\n` : '\nAll checks passed\n');
 process.exit(fails ? 1 : 0);

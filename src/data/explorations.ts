@@ -59,7 +59,7 @@ export const EXPLORATIONS: Exploration[] = [
     type: 'Interface',
     tags: ['React', 'Conversational UI', 'A11y', 'Motion'],
     url: '/explorations/chatbots',
-    desc: 'Always awake, endlessly patient, often useful — and, the second it stops understanding you, this shareholder-friendly design becomes absolutely infuriating. Helpfulness turns out to be a setting, and not always the one shareholders prefer. Three conversations on one engine, and one of them is not on your side. Enjoy the future.',
+    desc: 'Always awake, endlessly patient, often useful, often frustrating. This shareholder-friendly design can also become absolutely infuriating. Helpfulness turns out to be a setting, and not always the one shareholders prefer. Enjoy the future.',
     cover: chatbotsCover,
     /*
      * The alt describes what is in the picture, not what the piece is

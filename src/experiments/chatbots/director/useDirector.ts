@@ -33,10 +33,13 @@ type State = {
   turns: Turn[];
   strip: StripState;
   seq: number;
+  /** How the current node was entered. Only a user's turn earns a reply
+      latency; a node continuing into the next already has AUTO_GAP. */
+  via: 'user' | 'auto';
 };
 
 type Action =
-  | { a: 'enter'; node: Node }
+  | { a: 'enter'; node: Node; via: 'user' | 'auto' }
   | { a: 'emit'; beat: Beat }
   | { a: 'settle'; locked: boolean }
   | { a: 'user'; text: string }
@@ -76,6 +79,7 @@ function reduce(st: State, act: Action): State {
         phase: 'playing',
         node: act.node.id,
         beat: 0,
+        via: act.via,
         strip: applyStrip(st.strip, act.node.effect?.strip),
       };
     case 'emit': {
@@ -109,6 +113,7 @@ function reduce(st: State, act: Action): State {
         node: act.node.id,
         beat: 0,
         turns: [],
+        via: 'auto',
         strip: applyStrip(EMPTY_STRIP, act.node.effect?.strip),
         seq: 0,
       };
@@ -151,6 +156,39 @@ const GAP_AFTER: Record<Beat['t'], number> = {
   error: 0,
 };
 const GROUPED_GAP = 180;
+
+/* ------------------------------------------------------------- latency
+ *
+ * The pause between the visitor's turn landing and the assistant's first
+ * beat.
+ *
+ * It was zero. Every other gap in this file spaces the assistant's own
+ * beats, and the first beat of a node has no previous beat to wait out —
+ * so sending a tray line produced an answer in the same frame. Nothing in
+ * the world answers that fast, and the effect is not "responsive" but
+ * uncanny: the reply reads as pre-written rather than produced, which is
+ * the one impression a piece about conversational interfaces cannot
+ * afford to give for free.
+ *
+ * A `think` beat gets less, because it IS the waiting made visible and
+ * its own duration is authored. Everything else gets the full pause.
+ *
+ * The jitter matters more than the number. A fixed delay repeated across
+ * a conversation is itself a tell — you start to feel the metronome — and
+ * ±90ms is enough to break it without ever reading as lag.
+ *
+ * Perceptual clock: this impersonates a machine's round trip, not the
+ * skin's temperament, so it does not scale with --s-tempo. A calm skin
+ * does not get a slower network.
+ */
+const REPLY_MS = 420;
+const REPLY_THINK_MS = 240;
+const REPLY_JITTER_MS = 90;
+
+function replyLatency(first: Beat | undefined): number {
+  const base = first?.t === 'think' ? REPLY_THINK_MS : REPLY_MS;
+  return Math.round(base + (Math.random() * 2 - 1) * REPLY_JITTER_MS);
+}
 /** Beat before a self-continuing node moves on, so its last line reads. */
 const AUTO_GAP = 520;
 
@@ -241,6 +279,7 @@ export function useDirector({ scenario, startAt, watch = false }: DirectorOption
 
   const [st, dispatch] = useReducer(reduce, undefined, (): State => ({
     phase: 'playing',
+    via: 'auto',
     node: entry.id,
     beat: 0,
     turns: [],
@@ -296,12 +335,12 @@ export function useDirector({ scenario, startAt, watch = false }: DirectorOption
    * exact shape of a bug shipped earlier in this codebase.
    */
   const go = useCallback(
-    (id: NodeId) => {
+    (id: NodeId, via: 'user' | 'auto' = 'user') => {
       const next = scenario.nodes[id];
       if (!next) return;
       sched.flush();
       setNudge('none');
-      dispatch({ a: 'enter', node: next });
+      dispatch({ a: 'enter', node: next, via });
     },
     [scenario, sched]
   );
@@ -319,16 +358,19 @@ export function useDirector({ scenario, startAt, watch = false }: DirectorOption
     }
 
     /*
-     * Each beat waits out the PREVIOUS beat before it lands, so the first
-     * one arrives immediately and a 9-second think genuinely holds the
-     * stage for nine seconds.
+     * Each beat waits out the PREVIOUS beat before it lands, so a
+     * 9-second think genuinely holds the stage for nine seconds. The
+     * first beat of a node has no previous beat, so it waits out the
+     * round trip instead — but only when a person just spoke.
      */
     const prev = st.beat > 0 ? beats[st.beat - 1] : null;
-    const delay = prev ? ownTime(prev) + gapBetween(prev, beats[st.beat]) : 0;
+    const delay = prev
+      ? ownTime(prev) + gapBetween(prev, beats[st.beat])
+      : st.via === 'user' ? replyLatency(beats[0]) : 0;
 
     sched.after(delay, () => dispatch({ a: 'emit', beat: beats[st.beat] }));
     return () => sched.flush();
-  }, [st.phase, st.beat, st.node, node.say, sched]);
+  }, [st.phase, st.beat, st.node, st.via, node.say, sched]);
 
   /* ---- nodes that continue on their own ---------------------------
    *
@@ -339,7 +381,7 @@ export function useDirector({ scenario, startAt, watch = false }: DirectorOption
   useEffect(() => {
     if (st.phase !== 'waiting' || !node.auto) return;
     const target = node.auto;
-    const t = window.setTimeout(() => go(target), AUTO_GAP);
+    const t = window.setTimeout(() => go(target, 'auto'), AUTO_GAP);
     return () => window.clearTimeout(t);
   }, [st.phase, st.node, node.auto, go]);
 
