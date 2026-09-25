@@ -123,6 +123,32 @@ ok(rural.iceShareOfPretrialChange < 50,
    `ICE is ${rural.iceShareOfPretrialChange}% of the rural pretrial change — chapter 6 claims it is a minority`);
 console.log(`  ICE = ${rural.iceShareOfPretrialChange}% of the rural pretrial change`);
 
+/* Chapter four attributes the rural increase rather than eliminating causes.
+ *
+ * It used to read a flat SHARE of people held for other authorities as proof
+ * that transfers were not a factor. A flat share of a rising total means the
+ * component rose in step — here, 28% of the increase — and Vera names holding
+ * for other authorities as one of two drivers of rural jail growth. The
+ * chapter was denying its own source.
+ *
+ * These assertions fail if the attribution stops adding up, or if the local
+ * share ever drops far enough that "most of it is local" stops being true. */
+{
+  const t = data.ch4.transfers as {
+    growth: number; heldShareOfGrowth: number; localShareOfGrowth: number;
+    otherJail: { from: number; to: number; shareOfGrowth: number };
+  };
+  ok(t.heldShareOfGrowth + t.localShareOfGrowth === 100,
+     `attribution does not sum to 100: ${t.heldShareOfGrowth} + ${t.localShareOfGrowth}`);
+  ok(t.localShareOfGrowth > 50,
+     `only ${t.localShareOfGrowth}% of the rural increase is local — the chapter title claims most of it`);
+  ok(t.otherJail.shareOfGrowth <= t.heldShareOfGrowth,
+     'jail-to-jail transfers exceed all holding for other authorities, which contains them');
+  ok(t.otherJail.to > t.otherJail.from,
+     'jail-to-jail transfers no longer rise — the chapter says they doubled');
+  console.log(`  rural +${t.growth}%: ${t.localShareOfGrowth}% local, ${t.heldShareOfGrowth}% held for others (${t.otherJail.shareOfGrowth}% jail-to-jail)`);
+}
+
 /* ---- panels are stated, and real ------------------------------------ */
 console.log('\nPanels');
 ok(data.ch1.panel > 2000, `rate panel is only ${data.ch1.panel} counties`);

@@ -153,7 +153,13 @@ const bandSeries = BANDS.map((b) => {
 const natJail = sumBy(pRate, (r) => r.jail);
 const ch1 = { panel: pRate.length, years: YEARS, count: YEARS.map((y) => round(natJail[y])) };
 
-/* ── ch4 — the three eliminations ──────────────────────────────────────── */
+/* ── ch4 — three candidate explanations, attributed ────────────────────
+ *
+ * A flat SHARE is not an absent cause. Held-for-others sat near a third of
+ * the rural jail population throughout, which means it grew roughly in step
+ * with everything else and therefore supplied roughly a third of the growth.
+ * The chapter has to report that attribution, not the share alone.
+ */
 const pHeld = panel(['jail', 'oth', 'pri', 'fed']);
 const heldRural = pHeld.filter((f) => byFips.get(f).get(Y0).urb === 'rural');
 const hJail = sumBy(heldRural, (r) => r.jail);
@@ -161,9 +167,18 @@ const hHeld = sumBy(heldRural, (r) => r.oth + r.pri + r.fed);
 const pDem = panel(['pop', 'black', 'latinx']);
 const demRural = pDem.filter((f) => byFips.get(f).get(Y0).urb === 'rural');
 const dPop = sumBy(demRural, (r) => r.pop), dLat = sumBy(demRural, (r) => r.latinx);
+const hOth = sumBy(heldRural, (r) => r.oth);
+const dTotal = hJail[Y1] - hJail[Y0];
 const ch4 = {
   transfers: { panel: heldRural.length, years: YEARS,
-    share: YEARS.map((y) => round((hHeld[y] / hJail[y]) * 100, 1)) },
+    share: YEARS.map((y) => round((hHeld[y] / hJail[y]) * 100, 1)),
+    /* Attribution of the rural increase, 2002→2019. */
+    growth: round(((hJail[Y1] / hJail[Y0]) - 1) * 100),
+    heldShareOfGrowth: round(((hHeld[Y1] - hHeld[Y0]) / dTotal) * 100),
+    localShareOfGrowth: round((1 - (hHeld[Y1] - hHeld[Y0]) / dTotal) * 100),
+    /* Jail-to-jail specifically — the "cities shipping people out" version. */
+    otherJail: { from: round(hOth[Y0]), to: round(hOth[Y1]),
+      shareOfGrowth: round(((hOth[Y1] - hOth[Y0]) / dTotal) * 100) } },
   population: { panel: demRural.length, years: YEARS,
     index: YEARS.map((y) => round((dPop[y] / dPop[Y0]) * 100, 1)) },
   demography: { panel: demRural.length, years: YEARS,

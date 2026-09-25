@@ -40,6 +40,7 @@ const SMALLEST = pctChange(data.bands[0].rate);
 const LARGEST = pctChange(data.bands[data.bands.length - 1].rate);
 /* Smallest counties against largest, in the final year. Chapter three quotes
    both ends of this; the intro quotes only where it ended up. */
+const TRANSFERS = data.ch4.transfers;
 const RATIO02 = (data.bands[0].rate[0] / data.bands[data.bands.length - 1].rate[0]).toFixed(2);
 const RATIO = (last(data.bands[0].rate) / last(data.bands[data.bands.length - 1].rate)).toFixed(1);
 
@@ -69,9 +70,24 @@ const CHAPTERS = [
   },
   {
     id: 'eliminations',
-    kicker: 'Three things it is not',
-    title: 'The obvious explanations do not survive.',
-    body: `It is not cities shipping people to rural jails: the share of rural jail populations held for other authorities is flat. It is not displacement of the poor out of cities: rural America lost population over this period. And it is not demographic change: the shift is a few percentage points against a rate that moved by forty.`,
+    /*
+      Was "Three things it is not" / "The obvious explanations do not
+      survive", and it overclaimed twice.
+      
+      These three hypotheses came from a conversation, not from the
+      literature, so "the obvious explanations" promises a sweep that was
+      never done. Worse, the transfers test was wrong: it read a flat SHARE
+      as an absent cause. Held-for-others held near a third of the rural jail
+      population throughout, which means it grew in step with everything else
+      and supplied 28% of the increase. Vera names it as one of two drivers,
+      and this chapter was denying it.
+      
+      The conclusion survives — most of the growth is locally driven — but it
+      is now stated as an attribution rather than an elimination.
+    */
+    kicker: 'Testing three explanations',
+    title: 'Most of it is local.',
+    body: `Rural jail populations rose ${TRANSFERS.growth} percent. People held for other authorities — state prisons, federal agencies, other counties — account for ${TRANSFERS.heldShareOfGrowth} percent of that increase, leaving ${TRANSFERS.localShareOfGrowth} percent held on local authority. Cities shipping people to rural jails is the smallest piece: jail-to-jail transfers doubled, from ${fmt(TRANSFERS.otherJail.from)} to ${fmt(TRANSFERS.otherJail.to)}, but that is ${TRANSFERS.otherJail.shareOfGrowth} percent of the growth. Displacement into rural counties cannot explain it either, since rural America lost population over this period. Changing demographics is the one this data cannot settle: the Latino share of rural residents rose about three points, which is small beside the move in the rate, but a composition shift is not a test.`,
     figure: <ChapterEliminations />,
   },
   {

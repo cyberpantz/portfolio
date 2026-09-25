@@ -83,10 +83,11 @@ export const SOURCES: Source[] = [
     publisher: 'Vera Institute of Justice',
     date: '2017',
     url: 'https://www.vera.org/publications/out-of-sight-growth-of-jails-rural-america',
-    status: 'needs-check',
+    status: 'secondary',
     supports:
-      'The rural inversion — that small and rural counties drive jail growth while big cities decline. This finding is Vera’s, not this piece’s.',
-    note: 'Cited for credit. Read the report before quoting any figure from it.',
+      'The rural inversion — that small and rural counties drive jail growth while big cities decline — and the two drivers Vera names: rising pretrial detention, and people held for other authorities. This finding is Vera’s, not this piece’s.',
+    note:
+      'Chapter four originally argued against the second of those drivers, on a misreading of a flat share. Corrected.',
   },
   {
     id: 'vera-build-it',
