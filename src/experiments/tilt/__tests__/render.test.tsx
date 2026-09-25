@@ -94,12 +94,20 @@ console.log(`  gradient ${ratio0.toFixed(2)}x → ${ratio1.toFixed(2)}x`);
  * three: 38% of counties under 5,000 are flagged regional jails against 19%
  * of the next band, so their rate is measured on a different basis. */
 const last = bands.map((b) => b.rate.at(-1)!);
-let mono = true;
-for (let i = 2; i < last.length; i++) if (last[i] > last[i - 1]) mono = false;
-ok(mono, `2019 rates are not descending from the second band down: ${last.join(' > ')}`);
+/* Chapter three claims the ladder holds in EVERY year, not just 2019, so
+   check every year. It does — but the claim is about band aggregates, and
+   the Method section has to keep saying so: the median county does not
+   descend this way, and within-band spread dwarfs the between-band gap. */
+let mono = true, brokeAt = '';
+data.ch1.years.forEach((y, t) => {
+  for (let i = 2; i < bands.length; i++) {
+    if (bands[i].rate[t] > bands[i - 1].rate[t]) { mono = false; brokeAt ||= `${y}: ${bands[i].key} > ${bands[i - 1].key}`; }
+  }
+});
+ok(mono, `the size ladder is not clean in every year — ${brokeAt}`);
 ok(last[0] < last[1],
    `the smallest band (${last[0]}) is no longer below the second (${last[1]}) — chapter 3 describes that exception and would need rewriting`);
-console.log(`  descending from band 2: ${last.slice(1).join(' > ')}   (smallest ${last[0]}, the stated exception)`);
+console.log(`  descending from band 2 in all ${data.ch1.years.length} years: ${last.slice(1).map(Math.round).join(' > ')}   (smallest ${Math.round(last[0])}, the stated exception)`);
 
 /* Capacity above population in the final year is the whole of chapter 5. */
 const { people, beds, spare } = data.ch5;

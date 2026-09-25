@@ -143,7 +143,7 @@ export function ChapterTilt() {
         </ErrorBoundary>
       </div>
       <figcaption>
-        <span className={s.hint}>Drag to turn it &middot; hover to read a value</span>
+        <span className={s.hint}>Drag to turn it</span>
         {toggle}
       </figcaption>
       {/* The numbers, for anyone the canvas cannot serve. A <canvas> is opaque

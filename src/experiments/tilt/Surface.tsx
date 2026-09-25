@@ -22,8 +22,8 @@
  * both of which make it unreadable and look broken.
  */
 
-import { useMemo, useRef, useState } from 'react';
-import { Canvas, useFrame, type ThreeEvent } from '@react-three/fiber';
+import { useMemo, useRef } from 'react';
+import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, Html } from '@react-three/drei';
 import * as THREE from 'three';
 import s from './tilt.module.css';
@@ -40,10 +40,7 @@ export const RAMP = ['#e8734a', '#e08a4e', '#c9975c', '#9c9a6e', '#6d9a8c', '#4f
 
 const SX = 3.2, SZ = 4.4, SY = 2.6;
 
-type Pick = { band: number; year: number; rate: number; pos: [number, number, number] } | null;
-
-function Surface3D({ data, onPick, picked }:
-  { data: SurfaceData; onPick: (p: Pick) => void; picked: Pick }) {
+function Surface3D({ data }: { data: SurfaceData }) {
   const nx = data.bands.length, nz = data.years.length;
 
   const { geometry, wire, lo, hi, vertex } = useMemo(() => {
@@ -80,19 +77,17 @@ function Surface3D({ data, onPick, picked }:
     return { geometry: g, wire: new THREE.WireframeGeometry(g), lo, hi, vertex };
   }, [data, nx, nz]);
 
-  /* The grid is regular, so the nearest vertex is arithmetic rather than a
-     second raycast against 126 points. */
-  const move = (e: ThreeEvent<PointerEvent>) => {
-    e.stopPropagation();
-    const x = Math.round((e.point.x / SX + 0.5) * (nx - 1));
-    const z = Math.round((e.point.z / SZ + 0.5) * (nz - 1));
-    const bx = Math.min(Math.max(x, 0), nx - 1), bz = Math.min(Math.max(z, 0), nz - 1);
-    onPick({ band: bx, year: bz, rate: data.bands[bx].rate[bz], pos: vertex(bx, bz) });
-  };
+  /*
+   * No hover readout here. Reading a value off a surface you are also
+   * rotating means aiming at a moving target, and the label has to be pinned
+   * in 3D space where it can end up behind the geometry it describes. The
+   * flat chart is one click away and has a readout that works from a pointer
+   * or the arrow keys.
+   */
 
   return (
     <group>
-      <mesh geometry={geometry} onPointerMove={move} onPointerOut={() => onPick(null)}>
+      <mesh geometry={geometry}>
         <meshStandardMaterial vertexColors side={THREE.DoubleSide} roughness={0.85} metalness={0.05} />
       </mesh>
       {/* Not decoration: on a smooth surface with no gridlines there is
@@ -102,21 +97,6 @@ function Surface3D({ data, onPick, picked }:
         <lineBasicMaterial color="#e8e8e0" transparent opacity={0.16} />
       </lineSegments>
 
-      {picked && (
-        <group position={picked.pos}>
-          <mesh>
-            <sphereGeometry args={[0.055, 16, 16]} />
-            <meshBasicMaterial color="#ffffff" />
-          </mesh>
-          <Html center distanceFactor={9} zIndexRange={[20, 0]}>
-            <div className={s.pick}>
-              <b>{Math.round(picked.rate)}</b>
-              <span>per 100k</span>
-              <em>{data.bands[picked.band].label} &middot; {data.years[picked.year]}</em>
-            </div>
-          </Html>
-        </group>
-      )}
 
       {/* Axis labels live in the scene and travel with it. Turn the surface
           around and 2019 is still at the 2019 end. */}
@@ -164,7 +144,6 @@ function Settle({ done }: { done: React.MutableRefObject<boolean> }) {
 
 export default function Surface({ data }: { data: SurfaceData }) {
   const settled = useRef(false);
-  const [picked, setPicked] = useState<Pick>(null);
   return (
     <Canvas camera={{ position: [4.6, 3.1, 5.0], fov: 38 }} dpr={[1, 2]}
             style={{ width: '100%', height: '100%', display: 'block' }}
@@ -173,7 +152,7 @@ export default function Surface({ data }: { data: SurfaceData }) {
       <directionalLight position={[4, 8, 6]} intensity={1.15} />
       <directionalLight position={[-6, 3, -4]} intensity={0.35} />
       <Floor />
-      <Surface3D data={data} onPick={setPicked} picked={picked} />
+      <Surface3D data={data} />
       <Settle done={settled} />
       <OrbitControls enablePan={false} enableZoom minDistance={4.5} maxDistance={11}
                      minPolarAngle={0.25} maxPolarAngle={Math.PI / 2.35}

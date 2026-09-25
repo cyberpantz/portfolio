@@ -713,22 +713,3 @@
 }
 .axisName { text-transform: none; letter-spacing: 0.04em; }
 
-/* The hover readout, pinned to the point it describes. Scales with distance
-   via distanceFactor so it stays attached rather than floating free. */
-.pick {
-  pointer-events: none;
-  user-select: none;
-  display: flex;
-  align-items: baseline;
-  gap: 5px;
-  padding: 5px 9px;
-  border-radius: 7px;
-  background: #e8e8e0;
-  color: #131315;
-  font: 500 12px/1.2 -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
-  white-space: nowrap;
-  transform: translateY(-26px);
-}
-.pick b { font-size: 15px; font-weight: 600; }
-.pick span { opacity: 0.6; }
-.pick em { font-style: normal; opacity: 0.75; border-left: 1px solid rgb(0 0 0 / 20%); padding-left: 6px; }

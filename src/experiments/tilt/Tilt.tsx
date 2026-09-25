@@ -64,7 +64,7 @@ const CHAPTERS = [
     id: 'tilt',
     kicker: 'The finding',
     title: 'Measured per resident, the country tilts.',
-    body: `In 2002 a county of three thousand people jailed at roughly the same rate as a county of a million — ${RATIO02} times, close enough to call flat. By 2019 it was ${RATIO} times. Above 5,000 residents, every step up in county size means a lower rate, all the way to the largest. Counties under 5,000 are the exception, sitting below their neighbours: more than a third share a regional jail instead of running their own, so their rate is measured on a different basis.`,
+    body: `In 2002 a county of three thousand people jailed at roughly the same rate as a county of a million — ${RATIO02} times, close enough to call flat. By 2019 it was ${RATIO} times. Ranked by size, each band above 5,000 residents jails at a lower rate than the band below it, and has done in every year of this panel. Counties under 5,000 are the exception, sitting below their neighbours: more than a third share a regional jail instead of running their own, so their rate is measured on a different basis.`,
     figure: <ChapterTilt />,
   },
   {
@@ -369,6 +369,18 @@ function Sources() {
             is not one, so pretrial appears here only as its own rate. People held for federal
             authorities, ICE among them, are counted inside the pretrial number — so those two
             series overlap and cannot be added.
+          </dd>
+        </div>
+        <div>
+          <dt>Bands are aggregates, not typical counties</dt>
+          <dd>
+            A band&rsquo;s line is everyone in it — total jail population over total residents —
+            so it follows the larger counties within each band. Individual counties scatter
+            widely around it, and the spread inside one band is far larger than the gap between
+            bands: among counties of 10,000 to 25,000 the middle one jailed at 493 per 100,000
+            in 2019, while a tenth were below 190 and a tenth above 1,022. The ladder is a
+            statement about bands. It is not a rule that a bigger county jails less, and the
+            county search below will show you plenty of exceptions.
           </dd>
         </div>
         <div>
