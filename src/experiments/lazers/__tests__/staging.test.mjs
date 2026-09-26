@@ -152,7 +152,7 @@ const deg = (x) => `${x.toFixed(0)}°`;
      `left ${deg(l.face)} vs right ${deg(r.face)}`);
 }
 
-/* --- a dot going back and forth at its feet ---------------------------- */
+/* --- a dot going back and forth, anywhere in the middle ---------------- */
 {
   /*
    * The neck does this, not the hips.
@@ -205,6 +205,84 @@ const deg = (x) => `${x.toFixed(0)}°`;
      swept > 30, `${swept.toFixed(0)}° of neck`);
   ok('and the body stays where it is',
      (bodyTravel * 180) / Math.PI < 20, `${deg((bodyTravel * 180) / Math.PI)} of body`);
+}
+
+/* --- the same, with its back to you ------------------------------------ */
+{
+  /*
+   * A dot at the top of the frame puts the cat's back to the viewer, and a
+   * sweep there should move the same things a sweep at its feet does: the
+   * head, and not the hips. Before, the body was dragged through 113° by a
+   * dot that swung 64°, while the head sat three degrees off centre and
+   * did not track at all — the movement test measured x and y and the
+   * sweep was mostly in z.
+   */
+  const cat = new Cat(steady());
+  let head = [0.58, 0.53, -0.19];
+  let paw = [0.9, -0.76, -0.09];
+  let bodyTravel = 0, prevBody = 0, started = false;
+  let minYaw = 1e9, maxYaw = -1e9, earSwing = 0;
+
+  for (let i = 0; i < 26 / dt; i++) {
+    const now = i * dt;
+    const u = now < 8 ? 0 : 0.30 * Math.sin((now - 8) * 1.5);
+    const d = cat.update(dt, laserAt(u, 0.85), head, paw);
+
+    sampleClip(rig, rig.clips.get(d.clip), d.time, q, t);
+    if (d.from && d.blend < 1) {
+      sampleClip(rig, rig.clips.get(d.from), d.fromTime, q2, t2);
+      blendPose(rig.bones, q, t, q2, t2, 1 - d.blend);
+    }
+    composeWorld(rig, q, t, world);
+    for (const tn of d.turns) turnSubtree(rig, world, kids, tn.joint, tn.yaw, tn.pitch);
+    const h = BONE.RigHead * 16, w = BONE.RigLFLegAnkle * 16;
+    head = [world[h + 3], world[h + 7], world[h + 11]];
+    if (d.clip !== 'swipe') paw = [world[w + 3], world[w + 7], world[w + 11]];
+
+    if (now > 8) {
+      if (!started) { prevBody = d.facing; started = true; }
+      bodyTravel += Math.abs(d.facing - prevBody);
+      prevBody = d.facing;
+      const yaw = TUNING.chain.reduce(
+        (a, [nm]) => a + d.turns.filter((x) => x.joint === BONE[nm]).reduce((b, x) => b + x.yaw, 0), 0
+      );
+      minYaw = Math.min(minYaw, yaw);
+      maxYaw = Math.max(maxYaw, yaw);
+      earSwing = Math.max(earSwing,
+        Math.abs(d.turns.filter((x) => x.joint === BONE.RigLEar1).reduce((b, x) => b + x.yaw, 0)));
+    }
+  }
+
+  const swept = ((maxYaw - minYaw) * 180) / Math.PI;
+  ok('a dot sweeping behind it is followed by the head', swept > 30, `${swept.toFixed(0)}° of neck`);
+  ok('and the body stays there too',
+     (bodyTravel * 180) / Math.PI < 20, `${deg((bodyTravel * 180) / Math.PI)} of body`);
+  ok('and the ears swivel with it', (earSwing * 180) / Math.PI > 2,
+     `${deg((earSwing * 180) / Math.PI)} of ear`);
+}
+
+/* --- it can see movement that is purely in depth ----------------------- */
+{
+  /*
+   * The test for "has the dot moved" is what gates re-aiming, and it used
+   * to ignore z. On the tilted pointer plane a sideways sweep is mostly x
+   * and z, so a movement with no x or y component at all — which this is —
+   * was invisible: the cat would watch the first position forever.
+   */
+  const cat = new Cat(steady());
+  const head = [0.58, 0.53, -0.19], paw = [0.32, -0.76, -0.10];
+  const yaws = [];
+  for (let i = 0; i < 14 / dt; i++) {
+    const now = i * dt;
+    const z = now < 6 ? -1.2 : -1.2 + 1.6 * Math.sin((now - 6) * 1.2);
+    const d = cat.update(dt, { x: 1.4, y: 0.25, z, present: true }, head, paw);
+    if (now > 6) {
+      yaws.push(TUNING.chain.reduce(
+        (a, [nm]) => a + d.turns.filter((x) => x.joint === BONE[nm]).reduce((b, x) => b + x.yaw, 0), 0));
+    }
+  }
+  const range = ((Math.max(...yaws) - Math.min(...yaws)) * 180) / Math.PI;
+  ok('a dot moving only in depth is noticed', range > 15, `${range.toFixed(0)}° of neck`);
 }
 
 /* --- the paw goes up before it comes down ------------------------------ */

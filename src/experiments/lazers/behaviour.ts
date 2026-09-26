@@ -211,6 +211,20 @@ export const TUNING = {
   earsFor: 0.55,
 
   /*
+   * Ears that are paying attention, as distinct from ears that are cross.
+   *
+   * They already ride the head, so they arrive pointed roughly the right
+   * way. What is missing is the swivel — an ear turns FURTHER than the
+   * skull it is on, and gets there first. A small share of the aim added
+   * on top gives that, and a little perk forward with it.
+   *
+   * Small on purpose. At this point density an ear is about a hundred
+   * points, and anything larger reads as a rabbit.
+   */
+  earsTrack: 0.22,
+  earsPerk: 7 * DEG,
+
+  /*
    * The paw.
    *
    * A cat with a dot near its foot does not swat at it on sight. It lifts
@@ -274,7 +288,7 @@ export class Cat {
   private t = 0;
   private aim = { yaw: 0, pitch: 0 };
   private want = { yaw: 0, pitch: 0 };
-  private seen = { x: 0, y: 0, has: false };
+  private seen = { x: 0, y: 0, z: 0, has: false };
   private dwell = 0;
   private interest = 0;
   /** 0 at ease, 1 staring down at something sitting right in front of it. */
@@ -399,11 +413,25 @@ export class Cat {
       const notice = TUNING.notice * (1 - 0.85 * keen);
       const settle = TUNING.settle * (1 - 0.9 * keen);
 
-      const moved = this.seen.has ? Math.hypot(s.x - this.seen.x, s.y - this.seen.y) : Infinity;
+      /*
+       * How far the dot has moved — in all THREE axes.
+       *
+       * This used to measure x and y and ignore z, which was survivable
+       * when the pointer rode a plane facing the camera, because screen-x
+       * was mostly world x and screen-y was mostly world y. On a plane
+       * tilted toward the floor it is not: a sideways sweep moves the dot
+       * mostly in x and z, and with z left out the cat could not see
+       * horizontal movement at all. At the top of the frame its head sat
+       * frozen three degrees off centre while the thing it was supposedly
+       * watching swung twenty-five degrees either way.
+       */
+      const moved = this.seen.has
+        ? Math.hypot(s.x - this.seen.x, s.y - this.seen.y, s.z - this.seen.z)
+        : Infinity;
       this.dwell = moved > notice ? this.dwell + dt : 0;
       if (this.dwell > settle) {
         this.dwell = 0;
-        this.seen = { x: s.x, y: s.y, has: true };
+        this.seen = { x: s.x, y: s.y, z: s.z, has: true };
 
         /*
          * The cat faces +x, up is +y. Yaw turns it about the world up
@@ -480,7 +508,19 @@ export class Cat {
            * head, where the running out actually happens.
            */
           const toward = -Math.atan2(bz, bx);
-          const holding = underfoot && this.squared > TUNING.squaredFor;
+          /*
+           * Once squared up, the body stays squared up.
+           *
+           * This was limited to a dot underfoot, which is where the
+           * shuffling was first noticed — but nothing about the problem
+           * is particular to the floor. Anywhere the cat has turned to
+           * face something and settled, the neck's 62° either way covers
+           * most of what a hand does next, and a body that answers every
+           * one of those swings instead of letting the head work shuffles
+           * on the spot. Measured at the top of the frame, a dot swinging
+           * 64° dragged the body through 113°.
+           */
+          const holding = this.squared > TUNING.squaredFor;
           const worth = Math.abs(toward)
             > (holding ? TUNING.bodyRound : TUNING.bodyNotice);
           const free = Math.abs(wrap(this.bodyWant - this.body)) < TUNING.arrived
@@ -651,15 +691,25 @@ export class Cat {
    * result, which is the order the animal does it in.
    */
   private ears(turns: Turn[]): void {
-    if (this.annoyed < 0.01) return;
+    /* Cross, and attentive, are different things and both can be true. */
     const back = this.annoyed * TUNING.earsBack;
+    const perk = this.interest * TUNING.earsPerk;
+    const swivel = this.aim.yaw * TUNING.earsTrack * this.interest;
+    if (back < 0.002 && perk < 0.002 && Math.abs(swivel) < 0.002) return;
+
     for (const [name, share] of [
       ['RigLEar1', 1], ['RigREar1', 1],
       ['RigLEar2', TUNING.earsFor], ['RigREar2', TUNING.earsFor],
     ] as [string, number][]) {
       const j = BONE[name];
       if (j === undefined) continue;
-      turns.push({ joint: j, yaw: 0, pitch: -back * share });
+      /* Flattening wins over perking: a cat that has decided to be cross
+         about something is not also pricking its ears at it. */
+      turns.push({
+        joint: j,
+        yaw: swivel * share * (1 - this.annoyed),
+        pitch: (perk * (1 - this.annoyed) - back) * share,
+      });
     }
   }
 
