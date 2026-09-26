@@ -30,7 +30,15 @@ const CAM_FOV = 34;
    it is seen at three-quarters rather than in profile. Strict profile is
    the pose in which a head turn is least readable — it can only shorten. */
 const CAM_DIR = new THREE.Vector3(0.62, 0.22, 1).normalize();
-const CAM_DIST = 3.05;
+/*
+ * Far enough back to leave air around the animal.
+ *
+ * At 3.05 the cat filled about nine tenths of the frame's height, which is
+ * a portrait rather than a scene — and the laser needs somewhere to be that
+ * is not on top of the cat. 3.7 puts it at roughly three quarters and gives
+ * the dot room to circle.
+ */
+const CAM_DIST = 3.7;
 
 /** Ambient floor, so the shadowed side is dark but not empty. */
 const AMBIENT = 0.22;
@@ -357,7 +365,9 @@ function Rig() {
     const aspect = size.width / size.height;
     const dist = CAM_DIST / Math.min(1, aspect * 0.85);
     cam.position.copy(CAM_DIR).multiplyScalar(dist);
-    cam.lookAt(0, 0.02, 0);
+    /* Aim slightly above the middle, so the cat sits low in frame with
+       headroom rather than centred like a specimen. */
+    cam.lookAt(0, 0.12, 0);
     cam.updateProjectionMatrix();
   }, [camera, size.width, size.height]);
   return null;

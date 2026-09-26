@@ -16,27 +16,31 @@
   gap: 14px;
   width: 100%;
   min-height: 100%;
-  padding: clamp(16px, 4vh, 40px) 16px clamp(20px, 5vh, 48px);
+  padding: clamp(12px, 3vh, 32px) 12px clamp(16px, 4vh, 40px);
   color: var(--mute);
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 
-/*
- * A square stage, capped by BOTH axes.
- *
- * The cat mask is square, so the field is square. Sizing on width alone
- * pushes the controls off the bottom of a short window; sizing on height
- * alone wastes a wide one. `min()` of both is the only version that behaves
- * in a laptop window turned any which way.
- */
 .hideCursor { cursor: none; }
 
+/*
+ * A wide stage.
+ *
+ * Width is not decoration here, it is interaction surface. The cat turns to
+ * face the laser, which it can only do if the laser has somewhere to go —
+ * in a square frame the pointer runs out of room before the cat has run out
+ * of neck, and the body never commits to a turn.
+ *
+ * 16:9 by preference, with a height cap so a short laptop window does not
+ * push the controls off the bottom. When that cap bites the box simply gets
+ * wider than 16:9, which is the right failure: the camera already reframes
+ * on aspect, and a wider frame is exactly what this piece wants anyway.
+ */
 .stage {
   position: relative;
-  /* Wider than tall now. The cat sits, but it sits with a tail laid out
-     beside it, and a square crops that into the margin. */
-  width: min(100%, 1100px);
-  aspect-ratio: 4 / 3;
+  width: min(100%, 1600px);
+  aspect-ratio: 16 / 9;
+  max-height: 76vh;
   /* Pointer events are the entire interface, so nothing may swallow them. */
   touch-action: none;
 }
