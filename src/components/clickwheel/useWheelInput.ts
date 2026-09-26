@@ -103,15 +103,12 @@ export function hitZone(angle: number, radiusFrac: number): WheelButton | null {
 }
 
 export function useWheelInput(opts: WheelOptions = {}) {
-  const {
-    degreesPerTick = 20,
-    clicks = true,
-    hoverTarget,
-    onTick,
-    onButton,
-    onScrubStart,
-    onScrubEnd,
-  } = opts;
+  /* Only the values that configure the hook are destructured. The
+     callbacks are deliberately NOT — they are read through `cb` below, so
+     that handlers changing identity every render does not rebind the
+     pointer listeners. Pulling them out here as well left four names that
+     nothing could ever read. */
+  const { degreesPerTick = 20, clicks = true, hoverTarget } = opts;
 
   const ref = useRef<HTMLDivElement>(null);
   const acc = useRef(0);          // rotation banked but not yet a tick

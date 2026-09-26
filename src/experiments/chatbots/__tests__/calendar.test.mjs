@@ -2,7 +2,7 @@
  * The calendar export, tested without a DOM — which is the point of
  * keeping it out of the component.
  */
-import { resolve, toICS, googleUrl, stamp, formatRange } from '../components/calendar.ts';
+import { resolve, toICS, googleUrl, stamp } from '../components/calendar.ts';
 const now = new Date(2026, 8, 26, 19, 4);   // Sat 26 Sep 2026, 7:04pm
 let fails = 0;
 const ok = (c, m) => { if (!c) { fails++; console.error('  FAIL ' + m); } };

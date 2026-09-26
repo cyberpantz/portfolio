@@ -43,7 +43,7 @@ const SX = 3.2, SZ = 4.4, SY = 2.6;
 function Surface3D({ data }: { data: SurfaceData }) {
   const nx = data.bands.length, nz = data.years.length;
 
-  const { geometry, wire, lo, hi, vertex } = useMemo(() => {
+  const { geometry, wire, lo, hi } = useMemo(() => {
     const all = data.bands.flatMap((b) => b.rate);
     const lo = Math.min(...all), hi = Math.max(...all);
     const vertex = (x: number, z: number): [number, number, number] => ([
@@ -130,7 +130,7 @@ function Floor() {
 
 /* A brief drift on load so the shape reads as an object rather than a
    picture, then it stops and stays where the reader leaves it. */
-function Settle({ done }: { done: React.MutableRefObject<boolean> }) {
+function Settle({ done }: { done: React.RefObject<boolean> }) {
   const t = useRef(0);
   useFrame((state, dt) => {
     if (done.current) return;

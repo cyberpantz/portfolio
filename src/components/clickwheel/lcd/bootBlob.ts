@@ -30,7 +30,7 @@ export const DEFAULT_PALETTE: BootBlobPalette = {
 };
 
 export function createBootBlob(opts: BootBlobOptions = {}) {
-  const W = LCD_W, H = LCD_H, S = LCD_S, BW = RASTER_W, BH = RASTER_H;
+  const W = LCD_W, S = LCD_S, BW = RASTER_W, BH = RASTER_H;
   const FPS = opts.fps ?? 12;
   const MESSAGE = opts.message ?? 'TWERKALIZING... PLEASE WAIT';
   const SCANLINES = opts.scanlines ?? true;
@@ -91,7 +91,6 @@ export function createBootBlob(opts: BootBlobOptions = {}) {
     poly(pts, false);
   }
   function circle(cx: any, cy: any, r: any) { ellipse(cx, cy, r, r); }
-  function rect(x: any, y: any, w: any, h: any) { poly([[x, y], [x + w, y], [x + w, y + h], [x, y + h]]); }
   // ---------- 3x5 pixel font ----------
   const FONT: Record<string, number[]> = {
     A:[2,5,7,5,5], B:[6,5,6,5,6], C:[3,4,4,4,3], D:[6,5,5,5,6], E:[7,4,6,4,7], F:[7,4,6,4,4],
@@ -138,7 +137,6 @@ export function createBootBlob(opts: BootBlobOptions = {}) {
     limb(cx - rx * 0.9, cy - 2, L[0] + 3, L[1] + 2, 4);
     limb(cx + rx * 0.9, cy - 2, R[0] - 3, R[1] + 2, -4);
   }
-  function drop(x: any, y: any) { set(x, y - 1); set(x - 1, y); set(x + 1, y); set(x - 1, y + 1); set(x, y + 1); set(x + 1, y + 1); }
 
   function body(cx: any, cy: any, sx: any, sy: any, t: any, tilt: any, pupil: any, dir = 1, face: { eyes?: 'open' | 'closed' | 'wide'; mouth?: 'smile' | 'open' | 'tight'; facing?: 'side' | 'away' | 'camera' } = {}) {
     const { eyes = 'open', mouth = 'smile', facing = 'side' } = face;
@@ -235,7 +233,7 @@ export function createBootBlob(opts: BootBlobOptions = {}) {
     [-90, 180, -90, 0, -0.15, 0],
     [180, 90, 0, 90, 0, 4],
   ];
-  function robot(cx: any, floorY: any, dir: any, frame: any, t: any) {
+  function robot(cx: any, floorY: any, dir: any, frame: any) {
     const HOLD = 4;                                          // frames per pose
     const step = Math.floor(frame / HOLD);
     const freeze = step % 7 === 6;                           // every 7th beat he locks up
@@ -326,7 +324,7 @@ export function createBootBlob(opts: BootBlobOptions = {}) {
       const u = tt / len;
       const cx = u < 0.2 ? xAt(u / 0.2 * 0.5) : u < 0.82 ? xAt(0.5) : xAt(0.5 + (u - 0.82) / 0.18 * 0.5);
       if (u < 0.2 || u >= 0.82) walk(cx, floorY - 26 - Math.abs(beat) * 3);
-      else robot(cx, floorY, dir, frame, t);
+      else robot(cx, floorY, dir, frame);
     }
 
   }

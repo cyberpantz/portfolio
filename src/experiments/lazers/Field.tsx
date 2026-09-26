@@ -181,7 +181,7 @@ const FRAG = /* glsl */ `
 
 type Ptr = { x: number; y: number; z: number; present: boolean };
 
-function Cloud3D({ rig, cloud, ptr }: { rig: CatRig; cloud: Cloud; ptr: React.MutableRefObject<Ptr> }) {
+function Cloud3D({ rig, cloud, ptr }: { rig: CatRig; cloud: Cloud; ptr: React.RefObject<Ptr> }) {
   const group = useRef<THREE.Group>(null);
   const inner = useRef<THREE.Group>(null);
   const gl = useThree((s) => s.gl);
@@ -349,7 +349,7 @@ function Cloud3D({ rig, cloud, ptr }: { rig: CatRig; cloud: Cloud; ptr: React.Mu
 
     composeWorld(rig, work.q, work.t, work.world);
     for (const turn of drive.turns) {
-      turnSubtree(rig, work.world, work.kids, turn.joint, turn.yaw, turn.pitch);
+      turnSubtree(work.world, work.kids, turn.joint, turn.yaw, turn.pitch);
     }
 
     const h = BONE_HEAD * 16;
@@ -424,7 +424,7 @@ function Cloud3D({ rig, cloud, ptr }: { rig: CatRig; cloud: Cloud; ptr: React.Mu
  * A quad turned to face the camera has neither limit, and costs two
  * triangles.
  */
-function Laser({ at }: { at: React.MutableRefObject<{ x: number; y: number; z: number; present: boolean }> }) {
+function Laser({ at }: { at: React.RefObject<{ x: number; y: number; z: number; present: boolean }> }) {
   const mesh = useRef<THREE.Mesh>(null);
   const geo = useMemo(() => new THREE.PlaneGeometry(1, 1), []);
   const mat = useMemo(

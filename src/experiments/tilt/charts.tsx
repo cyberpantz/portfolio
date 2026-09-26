@@ -34,7 +34,9 @@ export const path = (xs: number[], ys: number[], sx: Scale, sy: Scale) =>
 
 export const band = (xs: number[], hi: number[], lo: number[], sx: Scale, sy: Scale) =>
   path(xs, hi, sx, sy) +
-  xs.map((v, i) => `L${sx(xs[xs.length - 1 - i]).toFixed(1)},${sy(lo[xs.length - 1 - i]).toFixed(1)}`).join('') +
+  /* The value is not read — this walks the same xs backwards to close the
+     band, so only the index matters. */
+  xs.map((_, i) => `L${sx(xs[xs.length - 1 - i]).toFixed(1)},${sy(lo[xs.length - 1 - i]).toFixed(1)}`).join('') +
   'Z';
 
 /**

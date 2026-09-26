@@ -223,7 +223,7 @@ composeWorld.scratch = undefined as Float32Array | undefined;
  * world matrix, so applying these down a chain accumulates correctly:
  * by the time the head is turned, the neck has already moved it.
  */
-export function turnSubtree(rig: Rig, world: Float32Array, subtree: Uint8Array[], joint: number,
+export function turnSubtree(world: Float32Array, subtree: Uint8Array[], joint: number,
                             yaw: number, pitch: number): void {
   if (!yaw && !pitch) return;
   const A = turnSubtree.a ??= new Float32Array(16);

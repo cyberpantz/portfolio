@@ -116,7 +116,7 @@ ok('every weight references a bone that exists',
   const gpu = new Float32Array(rig.bones * 16);
   sampleClip(rig, rig.clips.get('sneak'), 1.4, q, t);
   composeWorld(rig, q, t, world);
-  turnSubtree(rig, world, subtrees(rig), BONE.RigHead, 0.4, -0.2);
+  turnSubtree(world, subtrees(rig), BONE.RigHead, 0.4, -0.2);
   skinMatrices(rig, world, gpu);
 
   ok('the bone matrices are finite', Array.from(gpu).every(Number.isFinite));

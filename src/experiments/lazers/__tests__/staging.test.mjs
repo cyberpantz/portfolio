@@ -85,7 +85,7 @@ function hold(u, v, secs = 14) {
       blendPose(rig.bones, q, t, q2, t2, 1 - d.blend);
     }
     composeWorld(rig, q, t, world);
-    for (const tn of d.turns) turnSubtree(rig, world, kids, tn.joint, tn.yaw, tn.pitch);
+    for (const tn of d.turns) turnSubtree(world, kids, tn.joint, tn.yaw, tn.pitch);
 
     const h = BONE.RigHead * 16, w = BONE.RigLFLegAnkle * 16;
     head = [world[h + 3], world[h + 7], world[h + 11]];
@@ -184,7 +184,7 @@ const deg = (x) => `${x.toFixed(0)}°`;
       blendPose(rig.bones, q, t, q2, t2, 1 - d.blend);
     }
     composeWorld(rig, q, t, world);
-    for (const tn of d.turns) turnSubtree(rig, world, kids, tn.joint, tn.yaw, tn.pitch);
+    for (const tn of d.turns) turnSubtree(world, kids, tn.joint, tn.yaw, tn.pitch);
     const h = BONE.RigHead * 16, w = BONE.RigLFLegAnkle * 16;
     head = [world[h + 3], world[h + 7], world[h + 11]];
     if (d.clip !== 'swipe') paw = [world[w + 3], world[w + 7], world[w + 11]];
@@ -234,7 +234,7 @@ const deg = (x) => `${x.toFixed(0)}°`;
       blendPose(rig.bones, q, t, q2, t2, 1 - d.blend);
     }
     composeWorld(rig, q, t, world);
-    for (const tn of d.turns) turnSubtree(rig, world, kids, tn.joint, tn.yaw, tn.pitch);
+    for (const tn of d.turns) turnSubtree(world, kids, tn.joint, tn.yaw, tn.pitch);
     const h = BONE.RigHead * 16, w = BONE.RigLFLegAnkle * 16;
     head = [world[h + 3], world[h + 7], world[h + 11]];
     if (d.clip !== 'swipe') paw = [world[w + 3], world[w + 7], world[w + 11]];
@@ -307,7 +307,7 @@ const deg = (x) => `${x.toFixed(0)}°`;
       blendPose(rig.bones, q, t, q2, t2, 1 - d.blend);
     }
     composeWorld(rig, q, t, world);
-    for (const tn of d.turns) turnSubtree(rig, world, kids, tn.joint, tn.yaw, tn.pitch);
+    for (const tn of d.turns) turnSubtree(world, kids, tn.joint, tn.yaw, tn.pitch);
     const h = BONE.RigHead * 16, w = BONE.RigLFLegAnkle * 16;
     head = [world[h + 3], world[h + 7], world[h + 11]];
     if (d.clip !== 'swipe') paw = [world[w + 3], world[w + 7], world[w + 11]];

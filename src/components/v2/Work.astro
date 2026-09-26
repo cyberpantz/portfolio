@@ -68,8 +68,21 @@ const bulletDates = (b: string | { text: string; dates?: string }) =>
         >
           <span aria-hidden="true" class="max-md:hidden"></span>
           <div>
+            {/*
+              `set:html` rather than React's `dangerouslySetInnerHTML`, which
+              Astro does not have and `astro check` rejects. One blurb carries
+              a link; the rest are plain text, and both go through the same
+              path so a link added to any of them keeps working.
+
+              The content is hand-written in src/data/experience.ts — it is
+              not user input and not fetched — which is what makes injecting
+              it as HTML fine here.
+            */}
             {role.blurb && (
-              <p class="mb-[18px] max-w-[64ch] text-body text-ink-2 [text-wrap:pretty]" dangerouslySetInnerHTML={{__html: role.blurb}} />
+              <p
+                class="mb-[18px] max-w-[64ch] text-body text-ink-2 [text-wrap:pretty]"
+                set:html={role.blurb}
+              />
             )}
             <ul class="rule-list flex max-w-[64ch] list-none flex-col gap-[13px]">
               {role.bullets.map((b) => (

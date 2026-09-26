@@ -375,7 +375,7 @@ export class Cat {
     this.annoyed += ((underfoot ? 1 : 0) - this.annoyed) * Math.min(1, dt * 1.6);
 
     if (this.clip === 'swipe') {
-      this.paw(dt, s);
+      this.paw(s);
     } else if (this.busy()) {
       /* A transition owns the body until it finishes. */
       if (this.time >= this.duration(this.clip)) {
@@ -612,7 +612,7 @@ export class Cat {
    * animation at it. If the dot stays, the strike goes in on its own
    * schedule and the clip is allowed to run.
    */
-  private paw(dt: number, s: Sense): void {
+  private paw(s: Sense): void {
     if (this.poised) {
       this.time = Math.min(this.time, TUNING.poiseAt);
       if (!this.inReach(s)) {
