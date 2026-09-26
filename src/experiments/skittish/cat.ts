@@ -49,43 +49,55 @@ type Part = Ellipsoid | Cone | Tube;
  * cat and a meerkat.
  */
 export const PARTS: Part[] = [
-  /* Rump, mid-body, chest — three overlapping masses rather than two.
-     Two left a visible waist where the chest met the rump; a cat has no
-     waist sitting down, it has one continuous curve from ear to floor. */
-  { kind: 'ellipsoid', at: [0.22, -0.54, 0], r: [0.44, 0.40, 0.37], bone: BONE.BODY },
-  { kind: 'ellipsoid', at: [0.06, -0.30, 0], r: [0.40, 0.40, 0.355], bone: BONE.BODY },
-  { kind: 'ellipsoid', at: [-0.07, -0.02, 0], r: [0.37, 0.44, 0.335], bone: BONE.BODY },
+  /*
+   * Proportions measured off a reference cat rather than guessed.
+   *
+   * The first sculpt had a small head on a fat body, which is what made it
+   * read as a toy. On a real cat the torso is barely wider than the skull —
+   * 1.06 to 1 — where this was 1.60. Three more corrections came from the
+   * same measurement: the skull is WIDER than it is long (1.24), the ears
+   * sit much further apart than they look (a span of 1.3 skull lengths),
+   * and the muzzle is short and broad rather than long and narrow.
+   */
+
+  /* Rump, mid-body, chest — three overlapping masses. Two left a visible
+     waist where the chest met the rump; a cat sitting has no waist, it has
+     one continuous curve from ear to floor. */
+  { kind: 'ellipsoid', at: [0.22, -0.54, 0], r: [0.42, 0.40, 0.295], bone: BONE.BODY },
+  { kind: 'ellipsoid', at: [0.06, -0.29, 0], r: [0.37, 0.39, 0.285], bone: BONE.BODY },
+  { kind: 'ellipsoid', at: [-0.08, -0.01, 0], r: [0.33, 0.43, 0.275], bone: BONE.BODY },
   /* Neck. In BODY, not HEAD: it is what the head turns against. */
-  { kind: 'ellipsoid', at: [-0.21, 0.28, 0], r: [0.21, 0.22, 0.205], bone: BONE.BODY },
+  { kind: 'ellipsoid', at: [-0.23, 0.29, 0], r: [0.20, 0.21, 0.205], bone: BONE.BODY },
 
-  /* Skull, muzzle, ears — everything that turns together. */
-  { kind: 'ellipsoid', at: [-0.37, 0.58, 0], r: [0.235, 0.215, 0.22], bone: BONE.HEAD },
-  { kind: 'ellipsoid', at: [-0.545, 0.505, 0], r: [0.135, 0.115, 0.125], bone: BONE.HEAD },
-  /* Broader and shorter than the first pass, which gave it horns. A cat's
-     ear is a wide triangle canted outward, not a spike. */
-  { kind: 'cone', at: [-0.36, 0.71, 0.115], dir: [-0.05, 0.90, 0.43], h: 0.20, r: 0.125, bone: BONE.HEAD },
-  { kind: 'cone', at: [-0.36, 0.71, -0.115], dir: [-0.05, 0.90, -0.43], h: 0.20, r: 0.125, bone: BONE.HEAD },
+  /* Skull — wider than long, and bigger than it was. */
+  { kind: 'ellipsoid', at: [-0.40, 0.60, 0], r: [0.225, 0.195, 0.275], bone: BONE.HEAD },
+  /* Muzzle — short, broad, and low on the face. */
+  { kind: 'ellipsoid', at: [-0.555, 0.525, 0], r: [0.105, 0.115, 0.165], bone: BONE.HEAD },
+  /* Ears — set wide on the skull and canted out, which is most of what
+     makes a cat read as a cat from any distance. */
+  { kind: 'cone', at: [-0.38, 0.715, 0.185], dir: [-0.04, 0.88, 0.47], h: 0.19, r: 0.115, bone: BONE.HEAD },
+  { kind: 'cone', at: [-0.38, 0.715, -0.185], dir: [-0.04, 0.88, -0.47], h: 0.19, r: 0.115, bone: BONE.HEAD },
 
-  /* Front legs, tucked in under the chest rather than hanging off it. */
-  { kind: 'tube', path: [[-0.24, -0.10, 0.135], [-0.29, -0.50, 0.145], [-0.30, -0.85, 0.15]], r0: 0.115, r1: 0.075, bone: BONE.PAW },
-  { kind: 'ellipsoid', at: [-0.36, -0.895, 0.15], r: [0.115, 0.07, 0.095], bone: BONE.PAW },
-  { kind: 'tube', path: [[-0.23, -0.10, -0.135], [-0.28, -0.50, -0.145], [-0.29, -0.85, -0.15]], r0: 0.115, r1: 0.075, bone: BONE.BODY },
-  { kind: 'ellipsoid', at: [-0.35, -0.895, -0.15], r: [0.115, 0.07, 0.095], bone: BONE.BODY },
+  /* Front legs, tucked under the chest. The near one is its own bone. */
+  { kind: 'tube', path: [[-0.25, -0.10, 0.125], [-0.29, -0.50, 0.135], [-0.30, -0.85, 0.14]], r0: 0.105, r1: 0.07, bone: BONE.PAW },
+  { kind: 'ellipsoid', at: [-0.36, -0.895, 0.14], r: [0.11, 0.065, 0.09], bone: BONE.PAW },
+  { kind: 'tube', path: [[-0.24, -0.10, -0.125], [-0.28, -0.50, -0.135], [-0.29, -0.85, -0.14]], r0: 0.105, r1: 0.07, bone: BONE.BODY },
+  { kind: 'ellipsoid', at: [-0.35, -0.895, -0.14], r: [0.11, 0.065, 0.09], bone: BONE.BODY },
 
   /* Hind legs, folded — a sitting cat is mostly thigh. */
-  { kind: 'ellipsoid', at: [0.10, -0.55, 0.30], r: [0.31, 0.29, 0.155], bone: BONE.BODY },
-  { kind: 'ellipsoid', at: [0.10, -0.55, -0.30], r: [0.31, 0.29, 0.155], bone: BONE.BODY },
-  { kind: 'ellipsoid', at: [-0.09, -0.895, 0.25], r: [0.16, 0.065, 0.10], bone: BONE.BODY },
-  { kind: 'ellipsoid', at: [-0.09, -0.895, -0.25], r: [0.16, 0.065, 0.10], bone: BONE.BODY },
+  { kind: 'ellipsoid', at: [0.10, -0.55, 0.245], r: [0.30, 0.28, 0.14], bone: BONE.BODY },
+  { kind: 'ellipsoid', at: [0.10, -0.55, -0.245], r: [0.30, 0.28, 0.14], bone: BONE.BODY },
+  { kind: 'ellipsoid', at: [-0.09, -0.895, 0.215], r: [0.155, 0.065, 0.095], bone: BONE.BODY },
+  { kind: 'ellipsoid', at: [-0.09, -0.895, -0.215], r: [0.155, 0.065, 0.095], bone: BONE.BODY },
 
   /* Tail: out, around and forward, the way a sitting cat parks it. */
   {
     kind: 'tube',
     path: [
-      [0.50, -0.44, 0], [0.70, -0.64, 0.06], [0.78, -0.85, 0.18],
-      [0.64, -0.94, 0.34], [0.38, -0.95, 0.42], [0.10, -0.93, 0.42],
+      [0.48, -0.44, 0], [0.68, -0.64, 0.06], [0.76, -0.85, 0.17],
+      [0.62, -0.94, 0.32], [0.36, -0.95, 0.39], [0.08, -0.93, 0.39],
     ],
-    r0: 0.085, r1: 0.055,
+    r0: 0.08, r1: 0.05,
     bone: BONE.TAIL,
   },
 ];
