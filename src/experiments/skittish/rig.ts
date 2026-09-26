@@ -67,8 +67,6 @@ export const JOINT = Object.fromEntries(JOINTS.map((j, i) => [j.name, i])) as Re
 /** How many joints may move one point. Four is the usual bargain. */
 export const INFLUENCES = 4;
 
-type V3 = [number, number, number];
-
 /**
  * Distance from a point to a bone — the SEGMENT from a joint to its parent,
  * not the joint itself.
@@ -148,8 +146,19 @@ function multiply(a: Mat4, b: Mat4, out: Mat4): Mat4 {
   return out;
 }
 
-/** Rotation about x, then y, then z, applied around `pivot`. */
-export function jointMatrix(pivot: readonly [number, number, number], rx: number, ry: number, rz: number): Mat4 {
+/**
+ * Rotation about x, then y, then z, around `pivot`, then an offset.
+ *
+ * Translation is here because animation needs it and posing did not: a cat
+ * breathing lifts its chest, and a cat shifting its weight moves its hips.
+ * Neither is expressible as a rotation about a joint, and faking them with
+ * one produces a cat that leans when it should swell.
+ */
+export function jointMatrix(
+  pivot: readonly [number, number, number],
+  rx: number, ry: number, rz: number,
+  tx = 0, ty = 0, tz = 0,
+): Mat4 {
   const cx = Math.cos(rx), sx = Math.sin(rx);
   const cy = Math.cos(ry), sy = Math.sin(ry);
   const cz = Math.cos(rz), sz = Math.sin(rz);
@@ -162,13 +171,19 @@ export function jointMatrix(pivot: readonly [number, number, number], rx: number
   ]);
   /* Translate so the rotation happens about the joint rather than the
      origin: T(pivot) · R · T(-pivot), folded into the last column. */
-  r[12] = pivot[0] - (r[0] * pivot[0] + r[4] * pivot[1] + r[8] * pivot[2]);
-  r[13] = pivot[1] - (r[1] * pivot[0] + r[5] * pivot[1] + r[9] * pivot[2]);
-  r[14] = pivot[2] - (r[2] * pivot[0] + r[6] * pivot[1] + r[10] * pivot[2]);
+  r[12] = pivot[0] - (r[0] * pivot[0] + r[4] * pivot[1] + r[8] * pivot[2]) + tx;
+  r[13] = pivot[1] - (r[1] * pivot[0] + r[5] * pivot[1] + r[9] * pivot[2]) + ty;
+  r[14] = pivot[2] - (r[2] * pivot[0] + r[6] * pivot[1] + r[10] * pivot[2]) + tz;
   return r;
 }
 
-export type Pose = Record<string, [number, number, number]>;
+export type V3 = [number, number, number];
+
+/** What one joint is doing: a rotation, an offset, or both. */
+export type JointPose = { r?: V3; t?: V3 };
+
+/** What every joint is doing. Absent joints are at rest. */
+export type Pose = Record<string, JointPose>;
 
 /**
  * Compose local rotations down the chain into one matrix per joint.
@@ -183,8 +198,14 @@ export function poseMatrices(pose: Pose): Mat4[] {
   const out: Mat4[] = [];
   for (let i = 0; i < JOINTS.length; i++) {
     const j = JOINTS[i];
-    const r = pose[j.name];
-    const local = r ? jointMatrix(j.at, r[0], r[1], r[2]) : identity();
+    const jp = pose[j.name];
+    const local = jp
+      ? jointMatrix(
+          j.at,
+          jp.r?.[0] ?? 0, jp.r?.[1] ?? 0, jp.r?.[2] ?? 0,
+          jp.t?.[0] ?? 0, jp.t?.[1] ?? 0, jp.t?.[2] ?? 0,
+        )
+      : identity();
     out[i] = j.parent >= 0 ? multiply(out[j.parent], local, new Float32Array(16)) : local;
   }
   return out;
