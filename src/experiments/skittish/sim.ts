@@ -34,10 +34,49 @@ export const PARAMS = {
   /* How fast the breeze pattern travels. Slow — a breeze, not a gale. */
   breezeSpeed: 0.42,
 
-  /* Pointer. `radius` is in field units where the cat is about 1.7 across,
-     so 0.28 is a hand's width rather than a gust. */
-  radius: 0.28,
-  push: 2.4,
+  /*
+   * How far the head will go, in radians.
+   *
+   * A cat's head is not a turret. Past about 25 degrees of in-plane nod the
+   * silhouette stops reading as a head at an angle and starts reading as a
+   * head coming off, and past 40 of yaw a single profile has run out of
+   * shape to foreshorten. Both are limits of the drawing, not of the cat.
+   */
+  nodMax: 0.40,
+  yawMax: 0.70,
+  pawMax: 0.52,
+
+  /*
+   * Stealth.
+   *
+   * `notice` is how far the pointer must move before the cat re-aims at
+   * all. It is the whole difference between watching and tracking: without
+   * it the head glides continuously and reads as a servo following a
+   * magnet. With it, the cat holds still, then commits.
+   *
+   * `ease` is the time constant of that commitment, in seconds. Slow on
+   * purpose — the brief was unhurried.
+   */
+  notice: 0.14,
+  noticeDelay: 0.22,
+  ease: 0.55,
+  pawNotice: 0.20,
+  pawEase: 0.75,
+  /* How close the pointer must come before a paw is worth moving for. */
+  pawRange: 0.52,
+
+  /*
+   * The bloom: seconds from one point of light to a whole cat.
+   *
+   * Unhurried, because it is the first thing anyone sees and it is the only
+   * time the piece gets to show that the cat is made of something. Rushed,
+   * it looks like a loading state.
+   */
+  bloom: 3.2,
+  /* How much of that time is spent waiting, per unit of distance from the
+     origin. Nought would grow every part at once — a cat inflating. This
+     staggers it so the shape unfurls outward from the middle. */
+  bloomStagger: 0.55,
 
   /* Depth of the Z ripple, and how hard it shades. Without the shading the
      ripple is invisible: a wave seen face-on displaces nothing you can see
@@ -52,9 +91,85 @@ export const PARAMS = {
   sizeJitter: 0.55,
 } as const;
 
-/* Shared by both shaders, so the breeze the simulation applies and the
-   ripple the renderer draws come from one description of the same air. */
+/*
+ * Shared by both shaders, so the breeze the simulation applies, the ripple
+ * the renderer draws, and the pose they both have to agree on come from one
+ * description rather than two that drift apart.
+ */
 const FIELD = /* glsl */ `
+  uniform vec2  uNeck;
+  uniform vec2  uElbow;
+  uniform float uHeadCx;
+  uniform float uHeadR;
+  uniform float uYaw;
+  uniform float uNod;
+  uniform float uPaw;
+  uniform float uBloom;
+  uniform float uBloomStagger;
+
+  /*
+   * Growth, per particle.
+   *
+   * Everything starts at the origin and the cat scales out of it. Each
+   * particle waits in proportion to how far it has to go, so the shape
+   * unfurls from the middle outward rather than inflating uniformly — the
+   * difference between something growing and something being resized.
+   */
+  float grown(vec2 home) {
+    float d = clamp(length(home) / 1.05, 0.0, 1.0) * uBloomStagger;
+    return smoothstep(d, d + (1.0 - uBloomStagger), uBloom);
+  }
+
+  /*
+   * The head, posed.
+   *
+   * Two rotations, and they are different in kind. The nod is a plain
+   * in-plane turn about the neck — a cat raising its chin really is that,
+   * seen from the side. The yaw is not: turning to face you rotates through
+   * the screen, and a flat silhouette rotated that way would simply get
+   * thinner and vanish.
+   *
+   * So the head is first given depth it does not have. Each particle is
+   * lifted onto a half-cylinder of radius uHeadR about the vertical axis
+   * through the head — the particles near the middle of the skull come
+   * toward the viewer, the ones at the edge stay put. Rotating THAT
+   * foreshortens: the muzzle swings toward you and compresses, the back of
+   * the skull swings away. Which is what a head turning looks like.
+   *
+   * Returns the posed position in xy and the depth it gained in z, relative
+   * to the flat rest pose, so that at rest it contributes nothing.
+   */
+  vec3 headPose(vec2 home, float w) {
+    if (w <= 0.0) return vec3(home, 0.0);
+
+    float dx = home.x - uHeadCx;
+    float z  = sqrt(max(0.0, uHeadR * uHeadR - dx * dx));
+    float cy = cos(uYaw), sy = sin(uYaw);
+    vec2  p  = vec2(uHeadCx + dx * cy + z * sy, home.y);
+    float z2 = -dx * sy + z * cy;
+
+    vec2 q = p - uNeck;
+    float cn = cos(uNod), sn = sin(uNod);
+    q = vec2(q.x * cn - q.y * sn, q.x * sn + q.y * cn);
+
+    return vec3(mix(home, uNeck + q, w), (z2 - z) * w);
+  }
+
+  /* The paw, swung from the elbow. One rotation, because a cat reaching is
+     one rotation — the shoulder does the work and the foot follows. */
+  vec2 pawPose(vec2 home, float w) {
+    if (w <= 0.0) return home;
+    vec2 q = home - uElbow;
+    float c = cos(uPaw * w), s = sin(uPaw * w);
+    return uElbow + vec2(q.x * c - q.y * s, q.x * s + q.y * c);
+  }
+
+  vec3 pose(vec2 home, float wHead, float wPaw) {
+    vec3 h = headPose(home, wHead);
+    float g = grown(home);
+    return vec3(pawPose(h.xy, wPaw) * g, h.z * g);
+  }
+
   vec2 breeze(vec2 p, float t) {
     float a = sin(p.x * 2.6 + t * 0.55) + sin(p.y * 1.9 - t * 0.41);
     float b = sin((p.x + p.y) * 3.7 - t * 0.73);
@@ -80,16 +195,12 @@ export const SIM_FRAG = /* glsl */ `
   precision highp float;
   uniform sampler2D uState;
   uniform sampler2D uHome;
-  uniform vec2  uPointer;
-  uniform float uPointerOn;
   uniform float uTime;
   uniform float uDt;
   uniform float uStiff;
   uniform float uDamp;
   uniform float uBreeze;
   uniform float uBreezeSpeed;
-  uniform float uRadius;
-  uniform float uPush;
   varying vec2 vUv;
   ${FIELD}
 
@@ -97,34 +208,37 @@ export const SIM_FRAG = /* glsl */ `
     vec4 s = texture2D(uState, vUv);
     vec2 off = s.xy;
     vec2 vel = s.zw;
-    vec2 home = texture2D(uHome, vUv).xy;
+
+    vec4 hm = texture2D(uHome, vUv);
+    vec2 home = hm.xy;
+    float wHead = hm.z;
+    float wPaw  = hm.w;
 
     /*
-     * The breeze is sampled at HOME, not at the particle's current place.
+     * The particle is not sprung to where it started. It is sprung to where
+     * that part of the cat currently IS.
      *
-     * Sampling where the particle actually is couples the force field to the
-     * thing the force field is moving, which is a feedback loop: particles
-     * blown into a crest get blown harder, and the field boils. Sampling at
-     * home makes it a standing pattern the sheet rides over, which is both
-     * stable and what cloth on a line actually does.
+     * This is the whole mechanism. The head's pose is recomputed every frame
+     * from the pointer, the spring chases it, and the chasing is what makes
+     * the movement look like an animal rather than a transform: the ears
+     * arrive after the skull, the field lags and then catches up, and none
+     * of that had to be animated. It falls out of the same spring that
+     * gathers the cat at load.
+     */
+    vec2 target = pose(home, wHead, wPaw).xy - home;
+
+    /*
+     * The breeze is sampled at HOME, not where the particle currently is.
+     *
+     * Sampling at the live position couples the force field to the thing it
+     * is moving — particles blown into a crest get blown harder, and the
+     * field boils. At home it is a standing pattern the sheet rides over,
+     * which is stable and is what cloth on a line actually does.
      */
     vec2 f = breeze(home, uTime * uBreezeSpeed) * uBreeze;
 
-    /*
-     * Pointer repulsion, falling off as a gaussian rather than as 1/r².
-     *
-     * An inverse square has no natural edge — it is either clipped, which
-     * gives a visible circular seam in the field, or unbounded, which throws
-     * the nearest particles off screen. A gaussian reaches zero smoothly, so
-     * the disturbance has a soft boundary and no particle is ever launched.
-     */
-    vec2 d = (home + off) - uPointer;
-    float r = length(d);
-    float falloff = exp(-(r * r) / (uRadius * uRadius));
-    f += (d / max(r, 1e-4)) * falloff * uPush * uPointerOn;
-
-    /* Hooke, toward the cat. This is the whole of "flows back". */
-    f -= off * uStiff;
+    /* Hooke, toward the posed place. */
+    f -= (off - target) * uStiff;
 
     vel = (vel + f * uDt) * uDamp;
     off += vel * uDt;
@@ -147,14 +261,26 @@ export const DRAW_VERT = /* glsl */ `
   varying float vSeed;
   ${FIELD}
 
+  /* Cheap per-particle noise, so size and shade vary without a second
+     texture lookup. The home texture's spare channels went to the part
+     weights, which earn them more. */
+  float hash12(vec2 p) {
+    vec3 q = fract(vec3(p.xyx) * 0.1031);
+    q += dot(q, q.yzx + 33.33);
+    return fract((q.x + q.y) * q.z);
+  }
+
   void main() {
     vec4 st = texture2D(uState, aRef);
     vec4 hm = texture2D(uHome, aRef);
     vec2 p = hm.xy + st.xy;
-    vSeed = hm.w;
+    vSeed = hash12(aRef);
 
     float t = uTime * uWaveSpeed;
-    float z = sheet(p, t) * uWave;
+    /* The sheet ripple, plus whatever depth the turned head has gained.
+       Both are stateless: a wave and a rotation are each a function of
+       where you are and what the clock says. */
+    float z = sheet(p, t) * uWave + pose(hm.xy, hm.z, hm.w).z;
 
     /*
      * Shade by the sheet's SLOPE, not its height.
@@ -176,7 +302,7 @@ export const DRAW_VERT = /* glsl */ `
     gl_Position = projectionMatrix * mv;
     /* Perspective size attenuation, and a per-particle jitter so the field
        reads as dust rather than as a printed halftone. */
-    gl_PointSize = uSize * uScale * (0.7 + 0.6 * hm.z) * (1.0 / max(0.25, -mv.z));
+    gl_PointSize = uSize * uScale * (0.7 + 0.6 * vSeed) * (1.0 / max(0.25, -mv.z));
   }
 `;
 

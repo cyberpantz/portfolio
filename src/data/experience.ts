@@ -94,7 +94,7 @@ export const EXPERIENCE: Role[] = [
     yr: '2005–2009',
     tags: ['Flash', 'Motion', 'Audio', 'Interactive Advertising'],
     blurb:
-      'A two-person interactive agency. I was the entire technical half - Bela Spohrer was the design half. Go check out his work <a href="https://bela-sf.com/" target="_blank">here</a>.',
+      'A two-person interactive agency. I was the technical half - Bela Spohrer was the design half. Go check out his work <a href="https://bela-sf.com/" target="_blank">here</a>.',
     bullets: [
       'Built Flash campaign sites for Warner Bros. Records — deeply interactive artist and release sites with embedded music players and cinematic scenes.',
       'Motion and audio were the medium, not decoration: the whole experience was timeline, sound and state.'

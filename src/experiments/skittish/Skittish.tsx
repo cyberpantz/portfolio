@@ -73,12 +73,24 @@ export default function Skittish() {
   }, [sound]);
 
   const showField = able === true && !reduced;
+  /* Before the capability check has run we do not yet know which of the two
+     this is, and guessing wrong means flashing the cat at someone who was
+     about to watch it assemble. Hold the dark for the one frame it takes. */
+  const deciding = able === null;
 
   return (
     <div className={s.wrap}>
       <div className={s.stage}>
-        {showField ? (
-          <Suspense fallback={<Still label="Settling…" />}>
+        {deciding ? null : showField ? (
+          /*
+            An empty fallback, deliberately.
+            
+            It showed the mask while three.js loaded, which gave away the cat
+            before the field had a chance to make one — the bloom then had
+            nothing to reveal. Better to hold the dark and let the first
+            thing anyone sees be a point of light.
+          */
+          <Suspense fallback={<div className={s.blank} aria-hidden="true" />}>
             <Field maskUrl={mask.src} stir={stir} />
           </Suspense>
         ) : (

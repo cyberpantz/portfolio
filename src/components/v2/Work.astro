@@ -69,7 +69,7 @@ const bulletDates = (b: string | { text: string; dates?: string }) =>
           <span aria-hidden="true" class="max-md:hidden"></span>
           <div>
             {role.blurb && (
-              <p class="mb-[18px] max-w-[64ch] text-body text-ink-2 [text-wrap:pretty]">{role.blurb}</p>
+              <p class="mb-[18px] max-w-[64ch] text-body text-ink-2 [text-wrap:pretty]" dangerouslySetInnerHTML={{__html: role.blurb}} />
             )}
             <ul class="rule-list flex max-w-[64ch] list-none flex-col gap-[13px]">
               {role.bullets.map((b) => (
