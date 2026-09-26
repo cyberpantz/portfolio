@@ -10,7 +10,8 @@ import { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react'
 import type { Stir } from './Field';
 import { SynthPurr, type Purr } from './purr';
 /* Astro types an image import as ImageMetadata, not a string — `.src` is the
-   resolved, content-hashed URL. */
+   resolved, content-hashed URL the field samples for particle homes. It is
+   never rendered as an image; see Still below. */
 import mask from './cat-mask.png';
 import s from './skittish.module.css';
 
@@ -135,15 +136,23 @@ export default function Skittish() {
 /**
  * The still.
  *
- * Deliberately the mask itself rather than a screenshot of the field. A
- * screenshot would show a moment of a thing that is not happening, which is
- * a worse answer than showing what the field is made of.
+ * Text, and no picture of the cat.
+ *
+ * It used to show the mask, which is a reasonable thing for someone who
+ * will never see the field — and a bad thing for everyone else, because it
+ * kept finding its way onto the screen a moment before the particles did
+ * and giving away the shape the bloom exists to reveal. Twice I fixed the
+ * path it was arriving by and twice it came back.
+ *
+ * So it no longer has an image to show. The failure mode is now "a sentence
+ * appears" instead of "the surprise is spoiled", and the first of those is
+ * recoverable.
  */
 function Still({ label }: { label: string }) {
+  if (!label) return null;
   return (
     <div className={s.still}>
-      <img src={mask.src} alt="" width={mask.width} height={mask.height} className={s.stillImg} />
-      {label && <p className={s.stillNote}>{label}</p>}
+      <p className={s.stillNote}>{label}</p>
     </div>
   );
 }

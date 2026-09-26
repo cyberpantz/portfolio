@@ -86,12 +86,6 @@
   gap: 18px;
   align-content: center;
 }
-/* The mask is white on transparent, which is already the right colour. */
-.stillImg {
-  width: 78%;
-  height: auto;
-  opacity: 0.5;
-}
 .stillNote {
   max-width: 30ch;
   margin: 0;

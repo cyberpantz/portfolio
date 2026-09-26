@@ -20,17 +20,34 @@
  */
 
 export const PARAMS = {
-  /* Spring pulling each particle to its place in the cat. Higher snaps back
-     faster and makes the animal feel stiffer — more paper than cloth. */
-  stiffness: 5.2,
-  /* Velocity retained per frame. This is the single most expressive number
-     here: below about 0.86 the field is damp sand, above 0.94 it sloshes
-     and never settles. */
-  damping: 0.905,
+  /*
+   * The spring, and the pair of numbers that decide whether this feels
+   * alive or underwater.
+   *
+   * They are not free parameters — they are a frequency and a damping
+   * ratio in disguise. Natural frequency is sqrt(stiffness); the damping
+   * ratio is (1 - damping) / (2·ω·dt) at 60fps. The first version ran at
+   * stiffness 5.2, which is ω = 2.3 rad/s: a natural period of nearly three
+   * seconds, and critically damped on top. Every response was correct and
+   * arrived far too late to feel like a response at all.
+   *
+   * 64 gives ω = 8 rad/s, a period of 0.79s, and 0.82 damping puts ζ at
+   * 0.68 — under one, so there is a little overshoot left. That overshoot
+   * is not a defect to tune out: it is the ears carrying past the skull and
+   * coming back, and it is most of what makes the movement read as an
+   * animal rather than a transform.
+   */
+  stiffness: 64,
+  damping: 0.82,
 
-  /* Breeze force. Cloth, not confetti: the waves are long relative to the
-     cat, so neighbours move together and the whole flank lifts at once. */
-  breeze: 0.085,
+  /*
+   * Breeze force — and it had to go up with the spring.
+   *
+   * A steady force displaces a spring by F/k, so stiffening the spring
+   * twelvefold without touching this would have divided the breeze by
+   * twelve and left the cat standing in dead air.
+   */
+  breeze: 0.9,
   /* How fast the breeze pattern travels. Slow — a breeze, not a gale. */
   breezeSpeed: 0.42,
 
@@ -54,14 +71,17 @@ export const PARAMS = {
    * it the head glides continuously and reads as a servo following a
    * magnet. With it, the cat holds still, then commits.
    *
-   * `ease` is the time constant of that commitment, in seconds. Slow on
-   * purpose — the brief was unhurried.
+   * `ease` is the time constant of that commitment, in seconds. It was
+   * 0.55, which on top of a slow spring meant the head was still arriving
+   * a second and a half after you moved. A cat's head turn takes about a
+   * quarter of a second; the stillness before it is what makes it stealthy,
+   * not the slowness of the turn itself.
    */
-  notice: 0.14,
-  noticeDelay: 0.22,
-  ease: 0.55,
-  pawNotice: 0.20,
-  pawEase: 0.75,
+  notice: 0.10,
+  noticeDelay: 0.08,
+  ease: 0.20,
+  pawNotice: 0.14,
+  pawEase: 0.28,
   /* How close the pointer must come before a paw is worth moving for. */
   pawRange: 0.52,
 
@@ -72,7 +92,7 @@ export const PARAMS = {
    * time the piece gets to show that the cat is made of something. Rushed,
    * it looks like a loading state.
    */
-  bloom: 3.2,
+  bloom: 2.4,
   /* How much of that time is spent waiting, per unit of distance from the
      origin. Nought would grow every part at once — a cat inflating. This
      staggers it so the shape unfurls outward from the middle. */
