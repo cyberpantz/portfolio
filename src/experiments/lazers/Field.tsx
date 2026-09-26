@@ -162,6 +162,13 @@ const FRAG = /* glsl */ `
   varying float vFacing;
 
   void main() {
+    /* The far shell, dropped before anything else is decided. A cloud
+       sampled from a closed surface has two of them and points are not a
+       surface, so the near one does not cover the far one. Slightly PAST
+       the horizon rather than at it, so the silhouette keeps a rim of
+       points instead of coming away with a shaved edge. */
+    if (vFacing < -0.12) discard;
+
     /* Round, with a hard edge. Soft-edged points need blending, blending
        needs sorting, and sorting a hundred thousand points every frame is
        how you turn a cat into a slideshow. A disc and a depth test give

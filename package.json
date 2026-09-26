@@ -16,7 +16,8 @@
     "test:tilt": "sh src/experiments/tilt/__tests__/run.sh",
     "test:chatbots": "sh src/experiments/chatbots/__tests__/run.sh",
     "test:lazers": "sh src/experiments/lazers/__tests__/run.sh",
-    "test:handheld": "sh src/components/exp/__tests__/run.sh"
+    "test:handheld": "sh src/components/exp/__tests__/run.sh",
+    "cover:lazers": "node scripts/lazers-cover.mjs && python3 scripts/lazers-cover.py"
   },
   "dependencies": {
     "@astrojs/check": "0.9.9",

@@ -96,6 +96,36 @@ function clipAround(box, view, { pad = 0, shiftY = 0, height, fitWidth = false }
  * field, the device, the question card — not the page.
  */
 const RECIPES = {
+  lazers: {
+    note: 'The cat sitting, head turned to the dot.',
+    /*
+     * Framed on the stage, and driven entirely by where the pointer is
+     * parked — which in this piece decides the whole pose. Up and to the
+     * right of centre makes the cat lift its head toward the dot rather
+     * than drop its chin: ears up, the line of the back and tail
+     * unbroken. Low and the skull hides the face and the animal reads as
+     * a hunched lump; far off to the side and it stands up and stalks,
+     * which photographs as a blur of legs.
+     *
+     * The numbers are fractions of the stage, so this survives the stage
+     * being resized. They match SHOT in scripts/lazers-cover.mjs, which
+     * renders the same frame without a browser.
+     */
+    frame: '[class*="_stage_"]',
+    viewport: { width: 1280, height: 900 },
+    pad: 0,
+    async drive(page) {
+      const stage = await page.waitForSelector('[class*="_stage_"]', { timeout: 20000 });
+      const box = await stage.boundingBox();
+      /* The cat is lazy-loaded behind three.js and a 215KB rig, and it
+         settles into the pose over a second or two. Both waits are the
+         difference between a photograph and an empty black rectangle. */
+      await page.waitForTimeout(2500);
+      await page.mouse.move(box.x + box.width * 0.775, box.y + box.height * 0.35);
+      await page.waitForTimeout(3000);
+    },
+  },
+
   clickwheel: {
     note: 'The device leaning, screen lit, on Now Playing.',
     frame: '[class*="_mount_"]',
