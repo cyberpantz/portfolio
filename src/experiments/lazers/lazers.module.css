@@ -1,8 +1,11 @@
 /*
- * Skittish.
+ * Lazers.
  *
  * The ground is near-black and nothing else on screen competes with the
- * field — the whole piece is one object and a way to touch it.
+ * field — the whole piece is one object and a way to touch it. There is no
+ * caption and no controls: a red dot where the cursor was is the entire
+ * instruction, and anything written underneath it is a second thing to
+ * read before the first one has been understood.
  */
 
 .wrap {
@@ -13,10 +16,10 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 14px;
+  justify-content: center;
   width: 100%;
   min-height: 100%;
-  padding: clamp(12px, 3vh, 32px) 12px clamp(16px, 4vh, 40px);
+  padding: clamp(10px, 2vh, 24px) 12px;
   color: var(--mute);
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
 }
@@ -31,37 +34,26 @@
  * in a square frame the pointer runs out of room before the cat has run out
  * of neck, and the body never commits to a turn.
  *
- * 16:9 by preference, with a height cap so a short laptop window does not
- * push the controls off the bottom. When that cap bites the box simply gets
- * wider than 16:9, which is the right failure: the camera already reframes
- * on aspect, and a wider frame is exactly what this piece wants anyway.
+ * 16:9 by preference, with a height cap so a short window does not push the
+ * frame off the bottom. When that cap bites the box simply gets wider than
+ * 16:9, which is the right failure: the camera already reframes on aspect,
+ * and a wider frame is exactly what this piece wants anyway.
+ *
+ * The cap is stated rather than guessed. The page reserves the viewport
+ * minus the chrome bar, so that — minus a little air — is exactly what is
+ * going spare, and a fixed `76vh` left about a tenth of the window empty
+ * under the cat. `dvh` because a phone's toolbars come and go and `vh`
+ * measures the window they are not in.
  */
 .stage {
   position: relative;
   width: min(100%, 1600px);
   aspect-ratio: 16 / 9;
-  max-height: 76vh;
+  max-height: calc(100dvh - var(--exp-chrome-h) - 5vh);
   /* Pointer events are the entire interface, so nothing may swallow them. */
   touch-action: none;
 }
 
-/* ------------------------------------------------------------- controls */
-
-.bar {
-  display: flex;
-  align-items: center;
-  gap: 18px;
-  min-height: 34px;
-}
-
-.hint {
-  margin: 0;
-  font-size: 11px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--mute);
-  opacity: 0.75;
-}
 
 
 /* ---------------------------------------------------------------- still */

@@ -59,10 +59,6 @@ export default function Lazers() {
         )}
       </div>
 
-      <div className={s.bar}>
-        <p className={s.hint} aria-hidden="true">{showCat ? 'Move the laser' : ''}</p>
-      </div>
-
       {/*
         A canvas is opaque to assistive technology however it is labelled,
         and what it holds is a cat rather than information. So this is not a
