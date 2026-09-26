@@ -44,6 +44,28 @@ const ORIGIN = new THREE.Vector3(0, 0, 0);
 const AMBIENT = 0.22;
 
 
+/*
+ * How much fatter the depth-priming splats are than the points you see.
+ *
+ * Measured rather than guessed. At the sizes this draws at, the visible
+ * points cover about 12% of the surface they sit on — the cloud is mostly
+ * holes, which is the whole look. Closing the holes needs the area of each
+ * splat multiplied by about eight, so the diameter by sqrt(8) ≈ 2.9; 3.1
+ * leaves a little margin for the sparser end of the range.
+ */
+const FAT = 3.1;
+
+/*
+ * How far behind the near surface a point may be and still be drawn.
+ *
+ * The priming pass pushes its splats this far away from the camera before
+ * writing depth, so the real points sitting on that same surface still
+ * pass the test. Too small and the surface erases itself in a moiré of
+ * half-missing points; too large and the far side comes back. A thirtieth
+ * of a body is about one whisker's thickness at this scale.
+ */
+const DEPTH_BIAS = 0.03;
+
 const VERT = /* glsl */ `
   attribute vec3 aNormal;
   attribute vec4 aJoint;
@@ -53,6 +75,7 @@ const VERT = /* glsl */ `
   uniform float uBoneCount;
   uniform float uSize;
   uniform float uScale;
+  uniform float uBias;
 
   varying float vShade;
   varying float vFacing;
@@ -117,6 +140,16 @@ const VERT = /* glsl */ `
      */
     vFacing = dot(normalize(normalMatrix * nn), normalize(-mv.xyz));
 
+    /*
+     * The priming pass pushes its splats away from the camera, along the
+     * view ray so the screen position does not move, before writing depth.
+     * Without that the real points land at exactly the depth their own
+     * splat wrote and lose the test against themselves.
+     */
+    #ifdef PRIME
+      mv.xyz *= 1.0 + uBias / max(0.25, length(mv.xyz));
+    #endif
+
     gl_Position = projectionMatrix * mv;
     gl_PointSize = uSize * uScale / max(0.25, -mv.z);
   }
@@ -143,7 +176,7 @@ type Ptr = { x: number; y: number; z: number; present: boolean };
 
 function Cloud3D({ rig, cloud, ptr }: { rig: CatRig; cloud: Cloud; ptr: React.MutableRefObject<Ptr> }) {
   const group = useRef<THREE.Group>(null);
-  const inner = useRef<THREE.Points>(null);
+  const inner = useRef<THREE.Group>(null);
   const gl = useThree((s) => s.gl);
   const camera = useThree((s) => s.camera);
   const cat = useMemo(() => new Cat(), []);
@@ -187,22 +220,53 @@ function Cloud3D({ rig, cloud, ptr }: { rig: CatRig; cloud: Cloud; ptr: React.Mu
     paw: [0.9, -0.76, -0.09] as [number, number, number],
   }), [rig]);
 
-  const material = useMemo(
-    () => new THREE.ShaderMaterial({
+  /*
+   * Two materials over one cloud, and the second is why you cannot see
+   * through the cat.
+   *
+   * A cloud sampled from a closed surface has a near side and a far side,
+   * and points are not a surface: at these sizes the near side covers
+   * about an eighth of what is behind it. Everything else shows through —
+   * and what shows through the back of a cat's skull is its eyes and its
+   * mouth, which are concave, so they always have some patch turned toward
+   * the viewer no matter where the viewer is. Dropping back-facing points
+   * cannot reach them. Making the points big enough to close the gaps
+   * would work and would also stop it being a cloud.
+   *
+   * So the cloud is drawn twice. First with fat splats that write depth
+   * and no colour, which lays down where the nearest surface is. Then with
+   * the real points, which are simply depth-tested against it. The second
+   * pass draws only what is actually in front, and the holes stay holes.
+   *
+   * It is one extra draw of the same buffer with no fragment work, which
+   * is the cheapest occlusion available short of not having any.
+   */
+  const [material, prime] = useMemo(() => {
+    const shared = {
+      uBones: { value: boneTex },
+      uBoneCount: { value: rig.bones },
+      uSize: { value: 2.4 },
+      uScale: { value: 1 },
+      uBias: { value: DEPTH_BIAS },
+    };
+    const visible = new THREE.ShaderMaterial({
       vertexShader: VERT,
       fragmentShader: FRAG,
-      uniforms: {
-        uBones: { value: boneTex },
-        uBoneCount: { value: rig.bones },
-        uSize: { value: 2.4 },
-        uScale: { value: 1 },
-        uInk: { value: new THREE.Color('#ded9d0') },
-      },
-    }),
-    [boneTex, rig]
-  );
+      uniforms: { ...shared, uInk: { value: new THREE.Color('#ded9d0') } },
+    });
+    const depth = new THREE.ShaderMaterial({
+      defines: { PRIME: '' },
+      vertexShader: VERT,
+      fragmentShader: FRAG,
+      uniforms: { ...shared, uSize: { value: 2.4 * FAT }, uInk: { value: new THREE.Color() } },
+      colorWrite: false,
+    });
+    return [visible, depth] as const;
+  }, [boneTex, rig]);
 
-  useEffect(() => () => { geometry.dispose(); material.dispose(); boneTex.dispose(); }, [geometry, material, boneTex]);
+  useEffect(() => () => {
+    geometry.dispose(); material.dispose(); prime.dispose(); boneTex.dispose();
+  }, [geometry, material, prime, boneTex]);
 
   /*
    * The pointer, unprojected onto a plane through the cat.
@@ -309,12 +373,22 @@ function Cloud3D({ rig, cloud, ptr }: { rig: CatRig; cloud: Cloud; ptr: React.Mu
       group.current.position.set(drive.pivot[0], 0, drive.pivot[2]);
       inner.current.position.set(-drive.pivot[0], 0, -drive.pivot[2]);
     }
-    material.uniforms.uScale.value = (gl.getPixelRatio() * state.size.height) / 700;
+    const scale = (gl.getPixelRatio() * state.size.height) / 700;
+    material.uniforms.uScale.value = scale;
+    prime.uniforms.uScale.value = scale;
   });
 
   return (
     <group ref={group}>
-      <points ref={inner} geometry={geometry} material={material} frustumCulled={false} />
+      {/* Both passes hang off the SAME offset group. Offsetting only the
+          visible one would leave the depth it is tested against sitting a
+          fifth of a body-length away, which erases the cat. */}
+      <group ref={inner}>
+        {/* The priming pass first — it has to have written the near
+            surface before anything is tested against it. */}
+        <points geometry={geometry} material={prime} frustumCulled={false} renderOrder={-1} />
+        <points geometry={geometry} material={material} frustumCulled={false} />
+      </group>
     </group>
   );
 }
