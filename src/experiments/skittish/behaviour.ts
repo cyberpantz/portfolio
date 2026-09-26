@@ -75,12 +75,13 @@ export const TUNING = {
   turn: 0.19,
 
   /*
-   * When the body gives up and turns.
+   * When the body turns, and how fast.
    *
-   * A cat aims in three stages: eyes, then head, then body. The head takes
-   * what it can and hands the rest over.
+   * A cat aims in three stages: eyes, then head, then body. `bodyNotice`
+   * is how far off the laser has to be before the body bothers at all —
+   * under that the neck handles it alone, which is most of the time and
+   * is what keeps a still cat still.
    */
-  bodyAt: 38 * DEG,
   bodyTurn: 0.62,
   bodyNotice: 14 * DEG,
 
@@ -131,13 +132,31 @@ export const TUNING = {
    * how long the cat stays down after the laser leaves the floor, so a
    * pointer wavering at the threshold does not make it bob up and down.
    */
-  crouchFrom: -0.32,
-  crouchAt: -0.66,
+  crouchFrom: -0.02,
+  crouchAt: -0.45,
   hold: 1.1,
 
-  /* The swipe. `range` is how near the laser has to come to the working
-     paw, `every` the shortest and longest gap between attempts. */
-  pawRange: 0.5,
+  /*
+   * The paw.
+   *
+   * A cat with a dot near its foot does not swat at it on sight. It lifts
+   * the paw and holds it there, cocked, watching — and then, at a moment
+   * of its own choosing, commits. The holding is most of the behaviour and
+   * all of the menace.
+   *
+   * So the swipe clip is played in two pieces. `poiseAt` is where the paw
+   * is up and forward but not yet thrown, measured off the clip: the paw
+   * leaves the floor at about 0.1s, peaks at 0.30s a whole body-length
+   * out, and is back down by 0.60. Held at 0.18 it is raised and loaded.
+   * `swipeEnd` is where the strike has landed and returned — the clip runs
+   * on for another four tenths of a second doing nothing, and playing that
+   * tail just delays the cat's next move.
+   */
+  pawRange: 0.42,
+  poiseAt: 0.18,
+  swipeEnd: 0.62,
+  /* How long it hovers before committing, and how long it waits after. */
+  poiseFor: [0.45, 1.6] as [number, number],
   pawEvery: [0.7, 1.9] as [number, number],
 
   /** Cross-fade between clips. Long enough to hide a seam, short enough
@@ -179,6 +198,11 @@ export class Cat {
   private base = 'sit';
   private offFloor = 999;
   private nextSwipe = 0;
+  /** Set while the paw is up but not yet thrown, and when it will throw. */
+  private poised = false;
+  private strikeAt = 0;
+  /** Where the paw rests, remembered from the last frame it was down. */
+  private pawRest: [number, number, number] = [0.9, -0.76, -0.09];
 
   get facing(): number {
     return this.body;
@@ -189,8 +213,12 @@ export class Cat {
    *   back from the rig, because the cat's own animation moves it a long
    *   way between sitting and crouching and aiming from a fixed point
    *   would have it looking past anything close by.
+   * @param paw likewise for the working front paw. Only sampled while the
+   *   paw is DOWN: once it lifts, the thing being reached for must not
+   *   move with the reaching, or the cat chases its own foot.
    */
-  update(dt: number, world: Sense, head: [number, number, number]): Drive {
+  update(dt: number, world: Sense, head: [number, number, number],
+         paw: [number, number, number] = this.pawRest): Drive {
     this.t += dt;
     this.time += dt;
     this.sinceCommit += dt;
@@ -210,18 +238,17 @@ export class Cat {
      */
     const s = this.toLocal(world);
     const turns: Turn[] = [];
+    if (this.clip !== 'swipe') this.pawRest = paw;
 
     /* ---- the floor, and what the cat is doing about it ----------------- */
     const low = s.present && s.y < TUNING.crouchFrom;
     this.offFloor = low ? 0 : this.offFloor + dt;
 
-    if (this.busy()) {
-      /* A transition or a swipe owns the body until it finishes. */
+    if (this.clip === 'swipe') {
+      this.paw(dt, s);
+    } else if (this.busy()) {
+      /* A transition owns the body until it finishes. */
       if (this.time >= this.duration(this.clip)) {
-        /* The cooldown starts when the swipe ENDS, not when it starts.
-           Measured from the start it is mostly consumed by the swipe's own
-           second of runtime, and the cat swats without pause like a toy. */
-        if (this.clip === 'swipe') this.rest();
         this.play(this.clip === 'rise' ? 'sneak' : this.clip === 'settle' ? 'sit' : this.base);
         if (this.clip === 'sneak' || this.clip === 'sit') this.base = this.clip;
       }
@@ -231,8 +258,11 @@ export class Cat {
     } else if (this.base === 'sneak' && this.offFloor > TUNING.hold) {
       this.base = 'sit';
       this.play('settle');
-    } else if (this.swipeWanted(s)) {
+    } else if (this.inReach(s) && this.t > this.nextSwipe) {
       this.play('swipe');
+      this.poised = true;
+      this.strikeAt = this.t + TUNING.poiseFor[0]
+        + Math.random() * (TUNING.poiseFor[1] - TUNING.poiseFor[0]);
     }
 
     /* ---- deciding where to look --------------------------------------- */
@@ -284,16 +314,28 @@ export class Cat {
         const pv = this.pivot();
         const bx = s.x - pv[0], bz = s.z - pv[2];
         if (Math.hypot(bx, bz) > TUNING.overhead) {
+          /*
+           * The body goes all the way round, not just as far as the neck
+           * cannot reach.
+           *
+           * Handing the body only the overflow leaves it square to the
+           * camera with the head craned over its shoulder: at the top of
+           * the frame the target is 127° away, the neck covers 62 of that,
+           * and the body settles at 65 — three-quarters turned and looking
+           * awkward about it. Giving it the whole angle puts the cat's
+           * back to the viewer, which is what an animal watching something
+           * behind it actually does.
+           *
+           * The head still leads, because it has to: the neck settles in a
+           * fifth of a second and the hips take three times that, so the
+           * look happens first and the body catches up.
+           */
           const toward = -Math.atan2(bz, bx);
-          /* Whatever the neck cannot cover becomes a heading change, and
-             only past `bodyNotice` — otherwise the cat creeps round by a
-             degree at a time and never stops moving. */
-          const overflow = toward - clamp(toward, -TUNING.yawMax, TUNING.yawMax);
-          const worth = Math.abs(overflow) > TUNING.bodyNotice || Math.abs(toward) > TUNING.bodyAt;
+          const worth = Math.abs(toward) > TUNING.bodyNotice;
           const free = Math.abs(wrap(this.bodyWant - this.body)) < TUNING.arrived
             || this.sinceCommit > TUNING.recommit;
           if (worth && free) {
-            this.bodyWant = this.body + overflow;
+            this.bodyWant = this.shoulders + toward;
             this.sinceCommit = 0;
           }
         }
@@ -368,6 +410,39 @@ export class Cat {
     return this.clip === 'rise' || this.clip === 'settle' || this.clip === 'swipe';
   }
 
+  /**
+   * The paw, up and waiting, and then thrown.
+   *
+   * While poised the clip is held at `poiseAt` — the paw raised and
+   * loaded. It comes down again the moment the laser leaves reach, which
+   * is the whole point: the cat is reacting to the dot, not running an
+   * animation at it. If the dot stays, the strike goes in on its own
+   * schedule and the clip is allowed to run.
+   */
+  private paw(dt: number, s: Sense): void {
+    if (this.poised) {
+      this.time = Math.min(this.time, TUNING.poiseAt);
+      if (!this.inReach(s)) {
+        /* Lost interest: put the foot down, and do not immediately try
+           again, or a laser wobbling on the edge of reach makes the cat
+           pump its leg. */
+        this.poised = false;
+        this.rest();
+        this.play(this.base);
+      } else if (this.t > this.strikeAt) {
+        this.poised = false;
+      }
+      return;
+    }
+    if (this.time >= TUNING.swipeEnd) {
+      /* The cooldown starts when the swipe ENDS, not when it starts.
+         Measured from the start it is mostly consumed by the swipe's own
+         runtime, and the cat swats without pause like a toy. */
+      this.rest();
+      this.play(this.base);
+    }
+  }
+
   private duration(name: string): number {
     return CLIP_META.find((c) => c.name === name)?.seconds ?? 0;
   }
@@ -398,17 +473,19 @@ export class Cat {
   /* -------------------------------------------------------- the swipe */
 
   /**
-   * Is the laser close enough to the working paw to be worth a swipe?
+   * Is the laser within reach of the working paw?
    *
-   * Measured against the left front ankle's resting place in the current
-   * pose rather than the cat's centre, and only when the laser is low —
-   * a cat does not swat at something above its own head from a sit.
+   * Measured horizontally against where the paw actually is — read back
+   * from the rig, because it moves half a body-length between sitting and
+   * crouching and a hard-coded reach is wrong in at least one of them.
+   * Horizontally, because the laser rides a plane above the floor and its
+   * height is never the paw's; what matters is whether the cat could put
+   * its foot on the dot.
    */
-  private swipeWanted(s: Sense): boolean {
-    if (!s.present || this.t < this.nextSwipe) return false;
-    if (s.y > TUNING.crouchFrom + 0.15) return false;
-    const reach = this.base === 'sneak' ? 0.95 : 0.55;
-    return Math.hypot(s.x - reach, s.z) < TUNING.pawRange;
+  private inReach(s: Sense): boolean {
+    if (!s.present) return false;
+    if (s.y > TUNING.crouchFrom + 0.3) return false;
+    return Math.hypot(s.x - this.pawRest[0], s.z - this.pawRest[2]) < TUNING.pawRange;
   }
 
   /* ---------------------------------------------------------- the tail */
@@ -440,9 +517,26 @@ export class Cat {
     }
   }
 
-  /** World pointer into the shoulders' frame. */
+  /**
+   * The world pointer, in the cat's own frame.
+   *
+   * Everything read back from the rig — the head, the paw — is in this
+   * frame already, because the clip is composed before the heading is
+   * applied: the renderer turns the whole object afterwards. So the
+   * pointer is the one thing that has to be brought across, and it has to
+   * be brought across the SAME way the renderer takes the cat the other
+   * way — about the pivot, not about the origin. Rotating about the origin
+   * instead leaves an error of up to twice the pivot offset, which is a
+   * quarter of a unit: small enough to look like sloppy aim, large enough
+   * to make the paw miss.
+   *
+   * The shoulders' heading rather than the hips', because everything above
+   * the spine twist is posed in the shoulders' frame.
+   */
   private toLocal(w: Sense): Sense {
     const c = Math.cos(-this.shoulders), sn = Math.sin(-this.shoulders);
-    return { x: w.x * c + w.z * sn, y: w.y, z: -w.x * sn + w.z * c, present: w.present };
+    const pv = this.pivot();
+    const x = w.x - pv[0], z = w.z - pv[2];
+    return { x: pv[0] + x * c + z * sn, y: w.y, z: pv[2] - x * sn + z * c, present: w.present };
   }
 }

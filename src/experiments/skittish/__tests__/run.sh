@@ -7,6 +7,7 @@ npx esbuild "$DIR/entry.ts" --bundle --format=esm --loader:.json=json \
   --outfile="$DIR/.bundle.mjs" --log-level=warning
 node "$DIR/behaviour.test.mjs"
 node "$DIR/rig.test.mjs"
+node "$DIR/staging.test.mjs"
 rm -f "$DIR"/.bundle.*
 # A crash is not a pass: absence of this line is the signal.
 echo

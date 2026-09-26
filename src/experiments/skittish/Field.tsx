@@ -30,29 +30,19 @@ import * as THREE from 'three';
 import { fetchRigBuffer, scatter, type Cloud } from './loader';
 import { parseRig, sampleClip, blendPose, composeWorld, subtrees, turnSubtree, skinMatrices, type Rig as CatRig } from './rig';
 import { Cat, BONE } from './behaviour';
+import { CAM_FOV, CAM_DIR, CAM_DIST, CAM_LOOK, planeNormal } from './stage';
 
 /* Read once, not per frame: the head's index never changes, and the frame
    loop should not be doing dictionary lookups. */
 const BONE_HEAD = BONE.RigHead;
+const BONE_PAW = BONE.RigLFLegAnkle;
 
-const CAM_FOV = 34;
+const ORIGIN = new THREE.Vector3(0, 0, 0);
 
-/* The cat fills roughly a unit cube, and the camera sits off to one side so
-   it is seen at three-quarters rather than in profile. Strict profile is
-   the pose in which a head turn is least readable — it can only shorten. */
-const CAM_DIR = new THREE.Vector3(0.62, 0.22, 1).normalize();
-/*
- * Far enough back to leave air around the animal.
- *
- * At 3.05 the cat filled about nine tenths of the frame's height, which is
- * a portrait rather than a scene — and the laser needs somewhere to be that
- * is not on top of the cat. 3.7 puts it at roughly three quarters and gives
- * the dot room to circle.
- */
-const CAM_DIST = 3.7;
 
 /** Ambient floor, so the shadowed side is dark but not empty. */
 const AMBIENT = 0.22;
+
 
 const VERT = /* glsl */ `
   attribute vec3 aNormal;
@@ -175,6 +165,7 @@ function Cloud3D({ rig, cloud, ptr }: { rig: CatRig; cloud: Cloud; ptr: React.Mu
     world: new Float32Array(rig.bones * 16),
     kids: subtrees(rig),
     head: [0, 0.5, 0] as [number, number, number],
+    paw: [0.9, -0.76, -0.09] as [number, number, number],
   }), [rig]);
 
   const material = useMemo(
@@ -195,14 +186,13 @@ function Cloud3D({ rig, cloud, ptr }: { rig: CatRig; cloud: Cloud; ptr: React.Mu
   useEffect(() => () => { geometry.dispose(); material.dispose(); boneTex.dispose(); }, [geometry, material, boneTex]);
 
   /*
-   * The pointer, unprojected onto the plane through the cat that faces the
-   * camera.
+   * The pointer, unprojected onto a plane through the cat.
    *
-   * Not the floor and not the screen: a plane at the cat's own depth,
-   * perpendicular to the view. Moving the cursor left then genuinely moves
-   * along the cat's length AND across its width, because the camera is at
-   * an angle — which is what gives the head something to turn toward
-   * rather than merely tip at.
+   * Neither the screen nor the floor but tilted between them, so moving
+   * the cursor up the frame sends the laser up AND away, and down sends it
+   * down and toward the viewer. That is what makes the vertical half of
+   * the pointer's travel mean something: it is depth as well as height,
+   * and depth is what the cat turns for.
    */
   useEffect(() => {
     const el = gl.domElement;
@@ -217,7 +207,10 @@ function Cloud3D({ rig, cloud, ptr }: { rig: CatRig; cloud: Cloud; ptr: React.Mu
       ndc.set(((e.clientX - r.left) / r.width) * 2 - 1, -(((e.clientY - r.top) / r.height) * 2 - 1));
       ray.setFromCamera(ndc, camera);
       camera.getWorldDirection(normal);
-      plane.setFromNormalAndCoplanarPoint(normal, new THREE.Vector3(0, 0, 0));
+      /* Tip the plane's normal up toward vertical, which lays the plane
+         itself down toward the floor by the same angle. */
+      const n = planeNormal([normal.x, normal.y, normal.z]);
+      plane.setFromNormalAndCoplanarPoint(normal.set(n[0], n[1], n[2]), ORIGIN);
       if (ray.ray.intersectPlane(plane, hit)) {
         ptr.current = { x: hit.x, y: hit.y, z: hit.z, present: true };
       }
@@ -250,7 +243,7 @@ function Cloud3D({ rig, cloud, ptr }: { rig: CatRig; cloud: Cloud; ptr: React.Mu
      * lag on a number that moves at most a few hundredths of a unit per
      * frame is invisible; the alternative is composing the skeleton twice.
      */
-    const drive = cat.update(dt, ptr.current, work.head);
+    const drive = cat.update(dt, ptr.current, work.head, work.paw);
 
     const a = rig.clips.get(drive.clip);
     if (!a) return;
@@ -273,6 +266,10 @@ function Cloud3D({ rig, cloud, ptr }: { rig: CatRig; cloud: Cloud; ptr: React.Mu
     work.head[0] = work.world[h + 3];
     work.head[1] = work.world[h + 7];
     work.head[2] = work.world[h + 11];
+    const w = BONE_PAW * 16;
+    work.paw[0] = work.world[w + 3];
+    work.paw[1] = work.world[w + 7];
+    work.paw[2] = work.world[w + 11];
 
     skinMatrices(rig, work.world, boneData);
     boneTex.needsUpdate = true;
@@ -395,10 +392,10 @@ function Rig() {
     const cam = camera as THREE.PerspectiveCamera;
     const aspect = size.width / size.height;
     const dist = CAM_DIST / Math.min(1, aspect * 0.85);
-    cam.position.copy(CAM_DIR).multiplyScalar(dist);
+    cam.position.set(CAM_DIR[0], CAM_DIR[1], CAM_DIR[2]).multiplyScalar(dist);
     /* Aim slightly above the middle, so the cat sits low in frame with
        headroom rather than centred like a specimen. */
-    cam.lookAt(0, 0.12, 0);
+    cam.lookAt(CAM_LOOK[0], CAM_LOOK[1], CAM_LOOK[2]);
     cam.updateProjectionMatrix();
   }, [camera, size.width, size.height]);
   return null;
