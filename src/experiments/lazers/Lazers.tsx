@@ -1,5 +1,5 @@
 /**
- * Skittish — a cat made of points, watching a laser dot.
+ * Lazers — a cat made of points, watching a laser dot.
  *
  * This file owns everything that is not the cat: whether the machine can
  * draw it, whether the visitor wants motion or sound, and what to show when
@@ -8,7 +8,7 @@
 
 import { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react';
 import { SynthPurr, type Purr } from './purr';
-import s from './skittish.module.css';
+import s from './lazers.module.css';
 
 /* ~600KB of three.js has no business loading for someone who will be shown
    a sentence. */
@@ -23,7 +23,7 @@ function canRunWebGL(): boolean {
   }
 }
 
-export default function Skittish() {
+export default function Lazers() {
   /* Three separate facts. Conflating capability with preference is how you
      build a control that cannot be undone. */
   const [able, setAble] = useState<boolean | null>(null);

@@ -43,7 +43,7 @@ const VSTRIDE = 18; // 3×i16 + 3×i8 + 4×u8 + 4×u8 + 1 pad
 export function parseRig(buf: ArrayBuffer): Rig {
   const d = new DataView(buf);
   const magic = String.fromCharCode(d.getUint8(0), d.getUint8(1), d.getUint8(2), d.getUint8(3));
-  if (magic !== 'CATS') throw new Error('skittish: not a cat rig');
+  if (magic !== 'CATS') throw new Error('lazers: not a cat rig');
   const nv = d.getUint32(4, true);
   const nt = d.getUint32(8, true);
   const nb = d.getUint32(12, true);
@@ -103,7 +103,7 @@ export function parseRig(buf: ArrayBuffer): Rig {
     o += frames * 12;
     clips.set(name, { name, loop, seconds, frames, q, t });
   }
-  if (o !== buf.byteLength) throw new Error(`skittish: rig has ${buf.byteLength - o} bytes left over`);
+  if (o !== buf.byteLength) throw new Error(`lazers: rig has ${buf.byteLength - o} bytes left over`);
 
   return { bones: nb, parent, restT, restQ, invBind, S, clips, mesh: { pos, nrm, idx, wgt, tris } };
 }

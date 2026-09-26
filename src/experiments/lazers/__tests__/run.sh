@@ -11,4 +11,4 @@ node "$DIR/staging.test.mjs"
 rm -f "$DIR"/.bundle.*
 # A crash is not a pass: absence of this line is the signal.
 echo
-echo "SKITTISH SUITE PASSED"
+echo "LAZERS SUITE PASSED"

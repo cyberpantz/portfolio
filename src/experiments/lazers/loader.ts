@@ -25,7 +25,7 @@ export type Cloud = {
 
 export async function fetchRigBuffer(url: string): Promise<ArrayBuffer> {
   const res = await fetch(url);
-  if (!res.ok) throw new Error(`skittish: cat rig ${res.status}`);
+  if (!res.ok) throw new Error(`lazers: cat rig ${res.status}`);
   return res.arrayBuffer();
 }
 

@@ -37,7 +37,7 @@ ROOT = Path(__file__).resolve().parent.parent
 MESH = ROOT / 'docs/resources/Cat/Meshes/Cat.fbx'
 ANIM = ROOT / 'docs/resources/Cat/Animations'
 OUT = ROOT / 'public/cat.bin'
-META = ROOT / 'src/experiments/skittish/cat-rig.json'
+META = ROOT / 'src/experiments/lazers/cat-rig.json'
 
 FBX_TIME = 46186158000  # FBX's internal ticks per second
 RATE = 30.0             # clip sample rate, frames per second

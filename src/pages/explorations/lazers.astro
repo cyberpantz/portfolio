@@ -1,17 +1,17 @@
 ---
 import ExpBase from '../../layouts/ExpBase.astro';
 import ExpChrome from '../../components/exp/ExpChrome.astro';
-import Skittish from '../../experiments/skittish/Skittish';
+import Lazers from '../../experiments/lazers/Lazers';
 ---
 
 <ExpBase
   noindex
-  title="Skittish — Frank Young"
-  description="Skittish, 2026 — a hundred thousand particles settle into the silhouette of a sitting cat and move like cloth in a breeze. Reach for it and they flow away from your hand, then find their places again once you move on."
+  title="Lazers — Frank Young"
+  description="Lazers, 2026 — a cat drawn entirely in points, rigged to a real skeleton, watching a red dot that follows your cursor. Take the dot to the floor and it stands up and stalks; bring it near a paw and the paw comes up, waits, and strikes."
 >
-  <ExpChrome name="Skittish" kind="Toy" />
+  <ExpChrome name="Lazers" kind="Toy" />
   <main id="main" class="exp-stage">
-    <Skittish client:visible />
+    <Lazers client:visible />
   </main>
 </ExpBase>
 

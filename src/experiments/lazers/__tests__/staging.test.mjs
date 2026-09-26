@@ -63,8 +63,12 @@ const q2 = new Float32Array(rig.bones * 4), t2 = new Float32Array(3);
 const world = new Float32Array(rig.bones * 16);
 const dt = 1 / 60;
 
+/* A fixed sequence in place of Math.random, so "did it swipe" is a fact
+   about the code rather than about this particular run. */
+const steady = () => { let i = 0; return () => ((i = (i * 1103515245 + 12345) & 0x7fffffff) / 0x7fffffff); };
+
 function hold(u, v, secs = 14) {
-  const cat = new Cat();
+  const cat = new Cat(steady());
   let head = [0.58, 0.53, -0.19];
   let paw = [0.9, -0.76, -0.09];
   const seen = new Set();
@@ -111,9 +115,16 @@ const deg = (x) => `${x.toFixed(0)}°`;
   /* On top of the cat there is no direction to face, so it should stop
      rather than pick one. A few degrees of settling is fine; a turn is not. */
   const r = hold(0, 0);
-  ok('pointer on the cat: it stops turning and idles',
-     r.travel * 180 / Math.PI < 15 && r.clip === 'sit',
-     `${deg((r.travel * 180) / Math.PI)} travelled, ended ${r.clip}`);
+  ok('pointer on the cat: it stops turning',
+     (r.travel * 180) / Math.PI < 15, `${deg((r.travel * 180) / Math.PI)} travelled`);
+  /*
+   * And does nothing else either. A dot resting on the cat's own chest is
+   * 0.41 from its paw measured horizontally, just inside the 0.42 reach —
+   * so before the height gate was measured against the paw rather than
+   * against a fixed number, the cat sat there batting at its own ribs.
+   */
+  ok('and sits, rather than batting at its own chest',
+     [...r.seen].every((c) => c === 'sit'), [...r.seen].join('/'));
 }
 {
   const l = hold(-0.85, 0.1), r = hold(0.85, 0.1);
@@ -123,7 +134,7 @@ const deg = (x) => `${x.toFixed(0)}°`;
 
 /* --- the paw goes up before it comes down ------------------------------ */
 {
-  const cat = new Cat();
+  const cat = new Cat(steady());
   let head = [0.58, 0.53, -0.19];
   let paw = [0.9, -0.76, -0.09];
   let poised = 0, struck = 0, wasSwipe = false;

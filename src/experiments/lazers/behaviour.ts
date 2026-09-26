@@ -153,6 +153,17 @@ export const TUNING = {
    * tail just delays the cat's next move.
    */
   pawRange: 0.42,
+  /*
+   * How far ABOVE its own foot the cat will swat.
+   *
+   * Reach alone is not enough: measured horizontally, a dot resting on the
+   * cat's chest is 0.41 from its paw, which is inside the 0.42 reach, so
+   * the cat sat there batting at its own ribs. A cat swats at things on
+   * the ground. Measured against the paw rather than a fixed height,
+   * because the paw drops when the animal crouches and a fixed number is
+   * wrong in one pose or the other.
+   */
+  pawReachUp: 0.55,
   poiseAt: 0.18,
   swipeEnd: 0.62,
   /* How long it hovers before committing, and how long it waits after. */
@@ -174,6 +185,13 @@ function wrap(a: number): number {
 }
 
 export class Cat {
+  /**
+   * @param rand where the cat's small unpredictabilities come from. Left
+   *   alone it is `Math.random`; a test passes its own so that "does it
+   *   ever swipe" is a fact rather than a coin flip.
+   */
+  constructor(private rand: () => number = Math.random) {}
+
   private t = 0;
   private aim = { yaw: 0, pitch: 0 };
   private want = { yaw: 0, pitch: 0 };
@@ -262,7 +280,7 @@ export class Cat {
       this.play('swipe');
       this.poised = true;
       this.strikeAt = this.t + TUNING.poiseFor[0]
-        + Math.random() * (TUNING.poiseFor[1] - TUNING.poiseFor[0]);
+        + this.rand() * (TUNING.poiseFor[1] - TUNING.poiseFor[0]);
     }
 
     /* ---- deciding where to look --------------------------------------- */
@@ -403,7 +421,7 @@ export class Cat {
   /** Refuse to swipe again for a while. */
   private rest(): void {
     this.nextSwipe = this.t + TUNING.pawEvery[0]
-      + Math.random() * (TUNING.pawEvery[1] - TUNING.pawEvery[0]);
+      + this.rand() * (TUNING.pawEvery[1] - TUNING.pawEvery[0]);
   }
 
   private busy(): boolean {
@@ -484,7 +502,7 @@ export class Cat {
    */
   private inReach(s: Sense): boolean {
     if (!s.present) return false;
-    if (s.y > TUNING.crouchFrom + 0.3) return false;
+    if (s.y > this.pawRest[1] + TUNING.pawReachUp) return false;
     return Math.hypot(s.x - this.pawRest[0], s.z - this.pawRest[2]) < TUNING.pawRange;
   }
 
