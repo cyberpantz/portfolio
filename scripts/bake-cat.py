@@ -330,7 +330,21 @@ def main():
         at = ((np.array([-wp[1], wp[2], wp[0]]) - centre) * scale).tolist()
         joints.append({'name': name, 'at': [round(x, 5) for x in at],
                        'parent': mindex[p] if p in mindex else -1})
-    META.write_text(json.dumps({'joints': joints}, indent=2) + '\n')
+    # Where the cat turns about.
+    #
+    # Not the origin, which is only the centre of the bounding box and sits
+    # about a fifth of the animal's length behind where it is actually
+    # resting. Rotating there swings the whole cat through an arc, which
+    # reads as a turntable rather than as a cat turning.
+    #
+    # The contact patch is the honest pivot: the horizontal centre of
+    # whatever is near the floor — a seated cat's hindquarters and front
+    # feet.
+    ylo = P[:, 1].min()
+    low = P[:, 1] < ylo + 0.15 * (P[:, 1].max() - ylo)
+    pivot = [round(float(P[low, 0].mean()), 5), 0.0, round(float(P[low, 2].mean()), 5)]
+
+    META.write_text(json.dumps({'joints': joints, 'pivot': pivot}, indent=2) + '\n')
 
     moved = (tw.sum(1) > 0.01).sum()
     print(f'  {OUT.name}: {len(buf) / 1024:.0f}KB — {len(P)} verts, {len(tris)} tris, {len(moving)} joints')

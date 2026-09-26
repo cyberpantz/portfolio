@@ -22,7 +22,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 import { fetchMesh, scatter, type Cloud } from './loader';
-import { Cat, JOINTS, type Pose } from './behaviour';
+import { Cat, JOINTS, PIVOT, type Pose } from './behaviour';
 
 const CAM_FOV = 34;
 
@@ -159,7 +159,7 @@ function composePose(pose: Pose, out: Float32Array): void {
 type Ptr = { x: number; y: number; z: number; present: boolean };
 
 function Cloud3D({ cloud, ptr }: { cloud: Cloud; ptr: React.MutableRefObject<Ptr> }) {
-  const group = useRef<THREE.Points>(null);
+  const group = useRef<THREE.Group>(null);
   const gl = useThree((s) => s.gl);
   const camera = useThree((s) => s.camera);
   const cat = useMemo(() => new Cat(), []);
@@ -269,7 +269,25 @@ function Cloud3D({ cloud, ptr }: { cloud: Cloud; ptr: React.MutableRefObject<Ptr
     material.uniforms.uScale.value = (gl.getPixelRatio() * state.size.height) / 700;
   });
 
-  return <points ref={group} geometry={geometry} material={material} frustumCulled={false} />;
+  /*
+   * The turn happens about the cat's seat, not the scene origin.
+   *
+   * The mesh's origin sits roughly a fifth of a body-length behind where
+   * the animal's weight actually is, so rotating the object directly swings
+   * it round a point outside itself — a lazy susan. Putting the group AT
+   * the seat and the points at minus the seat leaves every vertex where it
+   * was in world space while giving `rotation.y` the right centre.
+   */
+  return (
+    <group ref={group} position={[PIVOT[0], PIVOT[1], PIVOT[2]]}>
+      <points
+        geometry={geometry}
+        material={material}
+        position={[-PIVOT[0], -PIVOT[1], -PIVOT[2]]}
+        frustumCulled={false}
+      />
+    </group>
+  );
 }
 
 /**

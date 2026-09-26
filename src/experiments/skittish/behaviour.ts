@@ -10,6 +10,14 @@ import rig from './cat-rig.json';
 
 const DEG = Math.PI / 180;
 export const JOINTS = rig.joints as { name: string; at: [number, number, number]; parent: number }[];
+/**
+ * The point the cat sits on, in mesh space.
+ *
+ * The seat, not the origin and not the centroid — measured at bake time as
+ * the centre of the contact patch. Rotating anywhere else makes the animal
+ * orbit rather than turn.
+ */
+export const PIVOT = rig.pivot as [number, number, number];
 export const JOINT = Object.fromEntries(JOINTS.map((j, i) => [j.name, i])) as Record<string, number>;
 
 /** Euler triple per joint index. Absent joints stay at rest. */
@@ -69,6 +77,41 @@ export const TUNING = {
   bodyTurn: 0.62,
   bodyNotice: 14 * DEG,
 
+  /*
+   * How much of a turn the shoulders take before the hips do.
+   *
+   * A rigid rotation of the whole animal reads as a lazy susan: nothing
+   * about the cat is turning, the ground under it is. What a real turn
+   * looks like is a twist — the chest leads, the hindquarters follow a beat
+   * later, and for a moment the animal is not straight.
+   *
+   * So the chest carries the difference between where the shoulders are
+   * pointed and where the hips have got to, clamped. `twistMax` is what a
+   * spine will actually do; beyond it the cat becomes a corkscrew.
+   */
+  twistMax: 22 * DEG,
+  hipLag: 1.15,
+
+  /*
+   * Crouching at something on the floor.
+   *
+   * The cat sits with its feet at about y = −0.78. `crouchFrom` is where
+   * the pointer stops being overhead and starts being prey; `crouchAt` is
+   * where the crouch is total. Between them it ramps, so lowering the
+   * laser toward the ground pulls the cat down with it rather than
+   * tripping a switch.
+   *
+   * `crouchMax` is the chest drop. Most of it is given back along the neck
+   * (`crouchLevel`) — a stalking cat's body goes down while its head stays
+   * up and forward, and cancelling only part of the drop is what makes the
+   * head follow the shoulders a little instead of floating.
+   */
+  crouchFrom: -0.32,
+  crouchAt: -0.66,
+  crouchMax: 17 * DEG,
+  crouchLevel: 0.78,
+  crouchEase: 0.34,
+
   /* Breath, at rest and when the cat is interested. A watching cat holds
      its breath a little. */
   breathe: 1.9 * DEG,
@@ -117,7 +160,11 @@ export class Cat {
   /** 0 at rest, 1 at full stretch, and the phase of the current swipe. */
   /** Which way the whole animal is facing, and where it wants to face. */
   private body = 0;
+  private shoulders = 0;
   private bodyWant = 0;
+
+  /** 0 sitting up, 1 flattened over something on the floor. */
+  private crouch = 0;
 
   private paw = 0;
   private swiping = false;
@@ -202,8 +249,36 @@ export class Cat {
      * the cat's own frame each time it re-aims. The head leads and then
      * relaxes, which is the shape of the real movement.
      */
+    /*
+     * Shoulders first, hips after.
+     *
+     * `shoulders` chases the target at the body's own pace; `body` — the
+     * hips, and the thing the whole object rotates by — chases the
+     * shoulders more slowly still. The gap between them is the twist, and
+     * the twist is what makes it a cat turning rather than a plinth.
+     */
     const bk = 1 - Math.exp(-dt / TUNING.bodyTurn);
-    this.body += (this.bodyWant - this.body) * bk;
+    this.shoulders += (this.bodyWant - this.shoulders) * bk;
+    const hk = 1 - Math.exp(-dt / (TUNING.bodyTurn * TUNING.hipLag));
+    this.body += (this.shoulders - this.body) * hk;
+
+    /* ---- the crouch --------------------------------------------------- */
+    /*
+     * Driven by the pointer's height, not by distance.
+     *
+     * A laser on the wall is something to watch; a laser on the floor is
+     * something to catch, and the cat's whole shape changes when it
+     * decides which it is looking at. Losing the pointer releases it.
+     */
+    const wantCrouch = s.present
+      ? clamp(
+          (TUNING.crouchFrom - s.y) / (TUNING.crouchFrom - TUNING.crouchAt),
+          0,
+          1
+        )
+      : 0;
+    this.crouch += (wantCrouch - this.crouch) * (1 - Math.exp(-dt / TUNING.crouchEase));
+    const drop = this.crouch * TUNING.crouchMax;
 
     for (const [name, share] of TUNING.chain) {
       const j = JOINT[name];
@@ -216,10 +291,21 @@ export class Cat {
          in world axes means this file never has to know. */
       p[1] += this.aim.yaw * share;
       p[2] += this.aim.pitch * share;
+      /* Giving back most of what the chest just took. The shares sum to
+         one, so spreading the counter by share unbends the neck evenly
+         instead of kinking it at the skull. */
+      p[2] += drop * TUNING.crouchLevel * share;
     }
 
-    /* ---- breath ------------------------------------------------------ */
+    /* ---- breath, and the twist ---------------------------------------- */
     const chest = JOINT.RigChest;
+    if (chest !== undefined) {
+      /* The spine taking up the slack between shoulders and hips. Because
+         the neck hangs off the chest, the head comes round with it for
+         free — which is the order a cat actually does this in. */
+      const twist = clamp(this.shoulders - this.body, -TUNING.twistMax, TUNING.twistMax);
+      add(pose, chest, [0, twist, -drop]);
+    }
     if (chest !== undefined) {
       /* Shallower when it is paying attention, which is what a cat that has
          noticed something actually does. */
@@ -236,9 +322,16 @@ export class Cat {
     return { pose, facing: this.body };
   }
 
-  /** World pointer into the cat's frame — the inverse of its heading. */
+  /**
+   * World pointer into the cat's frame.
+   *
+   * The SHOULDERS' heading, not the hips'. Everything above the chest —
+   * neck, head, ears — hangs off the chest bone, so that is the frame they
+   * are actually posed in. Using the hips would make the head fight the
+   * twist and lag by exactly the amount the spine is taking up.
+   */
   private toLocal(w: Sense): Sense {
-    const c = Math.cos(-this.body), sn = Math.sin(-this.body);
+    const c = Math.cos(-this.shoulders), sn = Math.sin(-this.shoulders);
     /* Rotation about the world up axis: x and z turn, y is untouched. */
     return {
       x: w.x * c + w.z * sn,
@@ -259,8 +352,8 @@ export class Cat {
     const names = ['RigTail1', 'RigTail2', 'RigTail3', 'RigTail4', 'RigTail5', 'RigTail6'];
     /* A restless tail when the cat is interested, a drifting one when not.
        This is the tell people read first, before the head. */
-    const amp = (1.1 + 3.4 * this.interest) * DEG;
-    const speed = 0.5 + 1.5 * this.interest;
+    const amp = (1.1 + 3.4 * this.interest) * DEG * (1 + 1.4 * this.crouch);
+    const speed = (0.5 + 1.5 * this.interest) * (1 + 0.9 * this.crouch);
     names.forEach((n, i) => {
       const j = JOINT[n];
       if (j === undefined) return;
