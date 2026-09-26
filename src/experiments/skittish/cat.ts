@@ -35,7 +35,22 @@ export const JOINTS = {
 };
 
 type Ellipsoid = { kind: 'ellipsoid'; at: [number, number, number]; r: [number, number, number]; bone: BoneId };
-type Cone = { kind: 'cone'; at: [number, number, number]; dir: [number, number, number]; h: number; r: number; bone: BoneId };
+type Cone = {
+  kind: 'cone';
+  at: [number, number, number];
+  dir: [number, number, number];
+  h: number;
+  r: number;
+  bone: BoneId;
+  /*
+   * Non-uniform squash about `at`, in world axes.
+   *
+   * A cone is radially symmetric, and an ear is not: it is a thin fin, wide
+   * across and narrow front-to-back. Without this the ears read as horns —
+   * which they did.
+   */
+  squash?: [number, number, number];
+};
 type Tube = { kind: 'tube'; path: [number, number, number][]; r0: number; r1: number; bone: BoneId };
 type Part = Ellipsoid | Cone | Tube;
 
@@ -75,8 +90,8 @@ export const PARTS: Part[] = [
   { kind: 'ellipsoid', at: [-0.555, 0.525, 0], r: [0.105, 0.115, 0.165], bone: BONE.HEAD },
   /* Ears — set wide on the skull and canted out, which is most of what
      makes a cat read as a cat from any distance. */
-  { kind: 'cone', at: [-0.38, 0.715, 0.185], dir: [-0.04, 0.88, 0.47], h: 0.19, r: 0.115, bone: BONE.HEAD },
-  { kind: 'cone', at: [-0.38, 0.715, -0.185], dir: [-0.04, 0.88, -0.47], h: 0.19, r: 0.115, bone: BONE.HEAD },
+  { kind: 'cone', at: [-0.375, 0.705, 0.185], dir: [-0.05, 0.90, 0.44], h: 0.205, r: 0.140, bone: BONE.HEAD, squash: [0.42, 1, 1] },
+  { kind: 'cone', at: [-0.375, 0.705, -0.185], dir: [-0.05, 0.90, -0.44], h: 0.205, r: 0.140, bone: BONE.HEAD, squash: [0.42, 1, 1] },
 
   /* Front legs, tucked under the chest. The near one is its own bone. */
   { kind: 'tube', path: [[-0.25, -0.10, 0.125], [-0.29, -0.50, 0.135], [-0.30, -0.85, 0.14]], r0: 0.105, r1: 0.07, bone: BONE.PAW },
@@ -159,16 +174,29 @@ function sdSegment(p: V3, a: V3, b: V3, ra: number, rb: number): number {
  * stops being an ear, and the ears are most of what makes the silhouette
  * legible at a glance.
  */
-export function sdCat(p: V3): number {
-  let d = Infinity;
-  for (const part of PARTS) {
+/** Distance to ONE primitive, unblended. Used to decide ownership. */
+export function sdPart(p: V3, part: Part): number {
+  {
     let s: number;
     if (part.kind === 'ellipsoid') s = sdEllipsoid(p, part.at as unknown as V3, part.r as unknown as V3);
     else if (part.kind === 'cone') {
       const tip: V3 = [
         part.at[0] + part.dir[0] * part.h, part.at[1] + part.dir[1] * part.h, part.at[2] + part.dir[2] * part.h,
       ];
-      s = sdSegment(p, part.at as unknown as V3, tip, part.r, part.r * 0.12);
+      /* Squashed shapes are evaluated in the space where they are round,
+         then the distance is scaled back by the tightest axis. That
+         under-reports distance away from the surface, which is harmless
+         here: every use of this field is a Newton step that only needs the
+         sign and the local gradient to be right. */
+      const q = part.squash
+        ? ([
+            part.at[0] + (p[0] - part.at[0]) / part.squash[0],
+            part.at[1] + (p[1] - part.at[1]) / part.squash[1],
+            part.at[2] + (p[2] - part.at[2]) / part.squash[2],
+          ] as V3)
+        : p;
+      const k = part.squash ? Math.min(part.squash[0], part.squash[1], part.squash[2]) : 1;
+      s = sdSegment(q, part.at as unknown as V3, tip, part.r, part.r * TIP) * k;
     } else {
       s = Infinity;
       for (let i = 1; i < part.path.length; i++) {
@@ -179,11 +207,49 @@ export function sdCat(p: V3): number {
         ));
       }
     }
-    const k = part.bone === BONE.HEAD && part.kind === 'cone' ? 0.02 : 0.12;
-    d = d === Infinity ? s : smin(d, s, k);
+    return s;
+  }
+}
+
+/** Blend radius for a part: ears barely melt, bodies melt generously. */
+const blendOf = (part: Part) => (part.bone === BONE.HEAD && part.kind === 'cone' ? 0.02 : 0.12);
+
+export function sdCat(p: V3): number {
+  let d = Infinity;
+  for (const part of PARTS) {
+    const s = sdPart(p, part);
+    d = d === Infinity ? s : smin(d, s, blendOf(part));
   }
   return d;
 }
+
+/**
+ * Which primitive owns this piece of surface.
+ *
+ * Seeds are generated per primitive and then walked onto the blended skin,
+ * and at every seam the primitives on both sides walk their points onto the
+ * SAME ridge. The result is double density exactly along the joins — bright
+ * arcs round the neck, the shoulder and the haunch, which read as wireframe
+ * on an object that has none.
+ *
+ * So each landed point is asked which primitive it is actually nearest to,
+ * and is kept only by that one. Every patch of skin gets claimed once, and
+ * the seams stop glowing.
+ */
+function nearestPart(p: V3): number {
+  let best = 0, bd = Infinity;
+  for (let i = 0; i < PARTS.length; i++) {
+    const d = sdPart(p, PARTS[i]);
+    if (d < bd) { bd = d; best = i; }
+  }
+  return best;
+}
+
+/* How blunt an ear ends, as a fraction of its base radius. At 0.12 the
+   apex is a spike and the ears read as horns; a cat's ear tapers to a soft
+   rounded point, and the softness is most of what stops it looking like a
+   Halloween decoration. */
+const TIP = 0.42;
 
 const EPS = 0.004;
 function gradCat(p: V3): V3 {
@@ -276,7 +342,9 @@ export function buildCat(count: number, rand: () => number = Math.random): Cloud
          far they are no longer sampling the part they were allocated to —
          those pile up along seams and read as bright welds. */
       if (Math.abs(sdCat(p)) > 0.006) continue;
-      if (len(sub(p, seed as unknown as V3)) > 0.14) continue;
+      /* Only the nearest primitive keeps it. Without this the joins carry
+         twice the points of the flanks and glow. */
+      if (nearestPart(p) !== pi) continue;
 
       const n = gradCat(p);
       pos[w * 3] = p[0]; pos[w * 3 + 1] = p[1]; pos[w * 3 + 2] = p[2];
@@ -319,7 +387,7 @@ function samplePart(part: Part, rand: () => number): [V3, V3] {
        bunching at the tip where the circumference is small. */
     const t = Math.sqrt(rand());
     const ang = rand() * Math.PI * 2;
-    const rr = part.r * (1 - t);
+    const rr = part.r * (1 - (1 - TIP) * t);
     const c = Math.cos(ang), s = Math.sin(ang);
     const p: V3 = [
       part.at[0] + axis[0] * part.h * t + (u[0] * c + v[0] * s) * rr,
@@ -328,9 +396,18 @@ function samplePart(part: Part, rand: () => number): [V3, V3] {
     ];
     const radial: V3 = [u[0] * c + v[0] * s, u[1] * c + v[1] * s, u[2] * c + v[2] * s];
     const slope = part.r / part.h;
-    const n = norm([
+    let n = norm([
       radial[0] + axis[0] * slope, radial[1] + axis[1] * slope, radial[2] + axis[2] * slope,
     ]);
+    if (part.squash) {
+      const sq = part.squash;
+      p[0] = part.at[0] + (p[0] - part.at[0]) * sq[0];
+      p[1] = part.at[1] + (p[1] - part.at[1]) * sq[1];
+      p[2] = part.at[2] + (p[2] - part.at[2]) * sq[2];
+      /* Normals of a scaled surface transform by the inverse — for a
+         diagonal scale that is a division, not a multiplication. */
+      n = norm([n[0] / sq[0], n[1] / sq[1], n[2] / sq[2]]);
+    }
     return [p, n];
   }
 
