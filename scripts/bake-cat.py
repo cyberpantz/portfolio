@@ -343,6 +343,59 @@ def pose_verts(verts, norms, skin, world):
     return acc, accn, live
 
 
+def outer_shell(V, tris, dirs=240, grid=320):
+    """Which triangles can be seen from outside at all.
+
+    A model built to be looked at from the outside still carries surfaces
+    that never are: the inside of the mouth, the backs of the eye sockets,
+    the sheet behind the nose. Rendered as a solid they are hidden by the
+    skin in front of them. Rendered as POINTS they are not — a cloud is
+    porous, the shell in front covers only about half of what is behind it,
+    and what comes through the gaps at the back of the skull is the inside
+    of the cat's face. It reads as an x-ray, which is not the effect.
+
+    So they are dropped here, once, rather than fought with at runtime.
+    The test is direct: look at the mesh from a couple of hundred
+    directions spread evenly over the sphere, and keep every triangle that
+    is ever the nearest thing along some line of sight. Anything that is
+    never nearest from any angle is inside.
+
+    Centroids rather than full rasterisation — a triangle wins a cell of
+    the grid if its centre is the closest centre in it. At this grid size
+    most cells hold at most one, and a triangle only has to win once in two
+    hundred and forty looks, so the error is one-sided and small.
+    """
+    C = V[tris].mean(1)
+    seen = np.zeros(len(tris), bool)
+
+    # Fibonacci sphere: even coverage without clustering at the poles.
+    i = np.arange(dirs) + 0.5
+    phi = np.arccos(1 - 2 * i / dirs)
+    theta = np.pi * (1 + 5 ** 0.5) * i
+    D = np.stack([np.cos(theta) * np.sin(phi), np.sin(theta) * np.sin(phi), np.cos(phi)], 1)
+
+    for d in D:
+        # An orthonormal frame with `d` as depth.
+        up = np.array([0.0, 0.0, 1.0]) if abs(d[2]) < 0.9 else np.array([1.0, 0.0, 0.0])
+        x = np.cross(d, up); x /= np.linalg.norm(x)
+        y = np.cross(d, x)
+        u, v, z = C @ x, C @ y, C @ d
+
+        lo = np.array([u.min(), v.min()])
+        span = max(u.max() - lo[0], v.max() - lo[1]) * 1.0001
+        gu = ((u - lo[0]) / span * grid).astype(np.int32)
+        gv = ((v - lo[1]) / span * grid).astype(np.int32)
+        cell = gu * (grid + 1) + gv
+
+        # Nearest centroid per cell: sort by depth, then take the first of
+        # each cell — np.unique on a stably sorted array gives exactly that.
+        order = np.argsort(z, kind='stable')
+        _, first = np.unique(cell[order], return_index=True)
+        seen[order[first]] = True
+
+    return seen
+
+
 def main():
     print('reading mesh…')
     verts, norms, tris, bones, skin = read_mesh(MESH)
@@ -419,6 +472,13 @@ def main():
     span = float(np.abs(V).max()) * 1.001
     assert 0.5 < span < 8, f'bind pose is a strange size ({span:.2f})'
 
+    print('finding the outer shell…')
+    keep = outer_shell(V, tris)
+    inside = len(tris) - int(keep.sum())
+    print(f'  dropped {inside} of {len(tris)} triangles ({inside / len(tris):.0%}) that are never visible')
+    assert inside < len(tris) * 0.45, 'too much of the cat judged interior — check the test'
+    tris = tris[keep]
+
     print('sampling clips…')
     clips = []
     for name, fname, start, stop, loop in CLIPS:
@@ -469,14 +529,24 @@ def main():
     The sneak cycle drifts its pelvis a couple of units over four seconds —
     the pack's "-IP" clips are close to stationary but not exactly so, and
     a cat that walks slowly off the side of the frame is not what anybody
-    wants. Horizontal root motion is removed and the vertical left alone,
-    since the rise and fall of the body IS the gait.
+    wants.
 
-    These are FBX axes, where z is up — so the two to flatten are x and y.
+    Each clip is flattened onto the SIT's position rather than onto zero.
+    Flattening onto zero de-drifts each clip correctly and then puts them
+    all in different places, because a clip's mean root position is a fact
+    about that clip: the cat would jump sideways every time it stood up or
+    sat down. Worse for a single-frame clip like the sit, whose mean IS its
+    only value, so subtracting it deletes the pose's placement outright and
+    moves the whole animal half a head.
+
+    Vertical is left alone, since the rise and fall of the body IS the
+    gait. These are FBX axes, where z is up — so the two to flatten are x
+    and y.
     """
+    home = clips[0][4][:, :2].mean(0)   # the sit, which everything sits on
     for name, loop, dur, Q, T, pivot in clips:
-        T[:, 0] -= T[:, 0].mean()
-        T[:, 1] -= T[:, 1].mean()
+        T[:, 0] += home[0] - T[:, 0].mean()
+        T[:, 1] += home[1] - T[:, 1].mean()
 
     print('writing…')
     buf = bytearray()

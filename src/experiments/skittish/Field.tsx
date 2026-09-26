@@ -55,6 +55,7 @@ const VERT = /* glsl */ `
   uniform float uScale;
 
   varying float vShade;
+  varying float vFacing;
 
   /* A joint matrix, read as four texels. Nearest-filtered and sampled at
      texel centres, or a matrix would come back as a blend of two joints. */
@@ -99,6 +100,23 @@ const VERT = /* glsl */ `
     vShade = ${AMBIENT.toFixed(2)} + ${(1 - AMBIENT).toFixed(2)} * max(dot(nn, light), 0.0);
 
     vec4 mv = modelViewMatrix * vec4(p, 1.0);
+
+    /*
+     * Which way this bit of surface is turned, relative to the viewer.
+     *
+     * A cloud sampled from a closed surface has two shells — the near side
+     * and the far side — and points are not a surface, so the near one
+     * does not cover the far one. The gaps between points at the back of
+     * the skull are wider than the points themselves, and what shows
+     * through them is the cat's own face. Depth testing cannot help: every
+     * one of those far points is genuinely visible through a hole.
+     *
+     * So the far shell is not drawn at all. That is what a solid object
+     * does, and it is the difference between a cloud shaped like a cat and
+     * a cat made of points.
+     */
+    vFacing = dot(normalize(normalMatrix * nn), normalize(-mv.xyz));
+
     gl_Position = projectionMatrix * mv;
     gl_PointSize = uSize * uScale / max(0.25, -mv.z);
   }
@@ -108,6 +126,7 @@ const FRAG = /* glsl */ `
   precision mediump float;
   uniform vec3 uInk;
   varying float vShade;
+  varying float vFacing;
 
   void main() {
     /* Round, with a hard edge. Soft-edged points need blending, blending

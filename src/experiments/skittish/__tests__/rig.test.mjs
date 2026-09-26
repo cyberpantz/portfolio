@@ -44,6 +44,70 @@ ok('every weight references a bone that exists',
   ok('every vertex is fully weighted', bad === 0, `${bad} of ${nv} off`);
 }
 
+/* --- every clip stands in the same place ------------------------------- */
+{
+  /*
+   * Root motion is flattened per clip so a walk cycle does not travel.
+   * Flattened onto ZERO rather than onto a shared home, each clip lands
+   * somewhere slightly different and the cat jumps sideways every time it
+   * stands up or sits down — and a single-frame clip like the sit loses
+   * its placement entirely, because its mean IS its only value. That moved
+   * the whole animal half a head and put it outside its own framing.
+   */
+  /* Root translations are still in the source's axes, where Z is UP — so
+     the two that are flattened, and the two to compare, are X and Y. The
+     third is left free on purpose: the rise and fall of the body is the
+     gait, and the swipe rears a whole body-height off the floor. */
+  /* Each clip's AVERAGE position, not each frame's. A clip is allowed to
+     travel inside itself — the swipe lunges most of a body-length forward
+     and comes back — and flattening is about where it sits on average. */
+  const mean = (clip) => {
+    let x = 0, y = 0;
+    for (let f = 0; f < clip.frames; f++) { x += clip.t[f * 3]; y += clip.t[f * 3 + 1]; }
+    return [x / clip.frames, y / clip.frames];
+  };
+  const home = mean(rig.clips.get('sit'));
+  let worst = 0, where = '';
+  for (const [name, clip] of rig.clips) {
+    const m = mean(clip);
+    const d = Math.hypot(m[0] - home[0], m[1] - home[1]);
+    if (d > worst) { worst = d; where = name; }
+  }
+  ok('every clip is rooted in the same place', worst < 1e-3,
+     `worst ${worst.toExponential(1)} (${where})`);
+}
+
+/* --- the bind mesh is framed where the sit expects it ------------------ */
+{
+  const q = new Float32Array(rig.bones * 4), t = new Float32Array(3);
+  const world = new Float32Array(rig.bones * 16), M = new Float32Array(rig.bones * 16);
+  sampleClip(rig, rig.clips.get('sit'), 0, q, t);
+  composeWorld(rig, q, t, world);
+  skinMatrices(rig, world, M);
+  const mesh = rig.mesh, nv = mesh.pos.length / 3;
+  let lo = [1e9, 1e9, 1e9], hi = [-1e9, -1e9, -1e9];
+  for (let v = 0; v < nv; v++) {
+    const o = [0, 0, 0];
+    for (let k = 0; k < 4; k++) {
+      const w = mesh.wgt[v * 4 + k];
+      if (!w) continue;
+      const b = mesh.idx[v * 4 + k] * 16;
+      const m = (r, c) => M[b + c * 4 + r];
+      for (let r = 0; r < 3; r++) {
+        o[r] += w * (m(r, 0) * mesh.pos[v * 3] + m(r, 1) * mesh.pos[v * 3 + 1]
+                   + m(r, 2) * mesh.pos[v * 3 + 2] + m(r, 3));
+      }
+    }
+    for (let r = 0; r < 3; r++) { lo[r] = Math.min(lo[r], o[r]); hi[r] = Math.max(hi[r], o[r]); }
+  }
+  /* The normalisation fits the SIT into a box two units across centred on
+     the origin, so this is the one pose whose extent is known exactly. Any
+     drift here means something has shifted the cat out of its framing. */
+  const off = Math.max(Math.abs(lo[0] + 1), Math.abs(hi[0] - 1), Math.abs(lo[1] + hi[1]));
+  ok('the sitting cat sits inside its own framing', off < 0.05,
+     `x ${lo[0].toFixed(2)}..${hi[0].toFixed(2)}  y ${lo[1].toFixed(2)}..${hi[1].toFixed(2)}`);
+}
+
 /* --- the layout the shader reads --------------------------------------- */
 {
   const q = new Float32Array(rig.bones * 4);
