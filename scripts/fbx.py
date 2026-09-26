@@ -105,14 +105,52 @@ def load(path):
 
 
 def connections(root):
-    """child id -> list of parent ids, from the Connections block."""
+    """
+    child id -> [(parent id, property or None)].
+
+    FBX links objects two ways: OO for "this belongs to that", and OP for
+    "this drives that property of that". Animation needs the second — a
+    curve node is attached to a model's Lcl Rotation, and without the
+    property name there is no way to know which channel it drives.
+    """
     out = defaultdict(list)
     c = root.find('Connections')
     if c:
         for k in c.kids:
-            if k.name == 'C' and len(k.props) >= 3:
-                out[k.props[1]].append(k.props[2])
+            if k.name != 'C' or len(k.props) < 3:
+                continue
+            prop = k.props[3] if len(k.props) > 3 and isinstance(k.props[3], str) else None
+            out[k.props[1]].append((k.props[2], prop))
     return out
+
+
+def by_id(root):
+    """Every object that has an id, keyed by it."""
+    out = {}
+    objs = root.find('Objects')
+    if objs:
+        for x in objs.kids:
+            if x.props and isinstance(x.props[0], int):
+                out[x.props[0]] = x
+    return out
+
+
+def name_of(node):
+    """FBX packs name and class into one string separated by a null."""
+    if len(node.props) > 1 and isinstance(node.props[1], str):
+        return node.props[1].split('\x00')[0]
+    return ''
+
+
+def prop70(node, key, default=None):
+    """Read one Properties70 entry, returning its value list."""
+    p = node.find('Properties70')
+    if not p:
+        return default
+    for k in p.kids:
+        if k.props and k.props[0] == key:
+            return list(k.props[4:])
+    return default
 
 
 if __name__ == '__main__':
