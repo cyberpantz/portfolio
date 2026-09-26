@@ -1,0 +1,145 @@
+---
+/**
+ * A one-time warning for people arriving on a phone.
+ *
+ * The explorations are built for a pointer that hovers and a window with
+ * room in it. Several of them are worse than that on a touchscreen and at
+ * least one — a cat that tracks a laser dot under a hidden cursor — barely
+ * works at all, because a finger has no hover state and covers the thing
+ * it is pointing at.
+ *
+ * Saying so is cheaper and more honest than pretending otherwise, and it
+ * costs a desktop visitor nothing: the markup ships inert and a script
+ * decides whether it was ever meant for them.
+ *
+ * Shown once, ever, across the whole site.
+ */
+const KEY = 'fy:handheld-note';
+---
+
+<div class="note" id="handheld-note" hidden role="status" aria-live="polite">
+  <div class="body">
+    <p class="head">Built for a mouse</p>
+    <p class="say">
+      These want a cursor that hovers and a window with room. On a phone the results
+      range from fine to frankly odd — and I haven&rsquo;t checked every one, so you may
+      be the experiment.
+    </p>
+  </div>
+  <button type="button" class="ok" data-dismiss>Risk it</button>
+</div>
+
+<script is:inline define:vars={{ KEY }}>
+  (() => {
+    const note = document.getElementById('handheld-note');
+    if (!note) return;
+
+    /*
+     * A coarse pointer, not a narrow screen.
+     *
+     * The problem is the input, not the width: a hovering cursor in a small
+     * window is fine, and a tablet held in two hands is not. `pointer:
+     * coarse` asks exactly the right question — is the primary input a
+     * fingertip — and a browser too old to answer it is a browser these
+     * pieces were never going to work in anyway.
+     */
+    const coarse = window.matchMedia?.('(pointer: coarse)').matches;
+    if (!coarse) return;
+
+    /* Storage throws outright in some privacy modes, so every touch of it
+       is guarded and the notice simply shows again if it cannot remember. */
+    let seen = false;
+    try {
+      seen = localStorage.getItem(KEY) === '1';
+    } catch {
+      /* no storage: show it, which is the safe way to be wrong */
+    }
+    if (seen) return;
+
+    const dismiss = () => {
+      note.hidden = true;
+      try {
+        localStorage.setItem(KEY, '1');
+      } catch {
+        /* nothing to do: it will say hello again next time */
+      }
+    };
+
+    note.hidden = false;
+    /* Focus goes to the button so the notice can be dismissed from the
+       keyboard, which is also how a screen reader user gets past it. */
+    note.querySelector('[data-dismiss]')?.addEventListener('click', dismiss);
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !note.hidden) dismiss();
+    });
+  })();
+</script>
+
+<style>
+  /*
+   * Bottom of the screen, above the thumb rather than under it, and never
+   * covering the middle of the canvas — whatever the piece is doing, that
+   * is where it is doing it.
+   */
+  .note {
+    position: fixed;
+    inset-inline: 0;
+    bottom: 0;
+    z-index: 60;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 16px 16px calc(16px + env(safe-area-inset-bottom));
+    background: rgb(12 12 14 / 92%);
+    backdrop-filter: blur(8px);
+    border-top: 1px solid rgb(255 255 255 / 12%);
+    color: #9d9d95;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    animation: rise 0.36s ease-out;
+  }
+  .note[hidden] { display: none; }
+
+  @keyframes rise {
+    from { transform: translateY(100%); }
+    to { transform: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .note { animation: none; }
+  }
+
+  .body { min-width: 0; }
+
+  .head {
+    margin: 0 0 6px;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #e8e8e0;
+  }
+
+  .say {
+    margin: 0;
+    max-width: 46ch;
+    font-size: 12px;
+    line-height: 1.6;
+  }
+
+  .ok {
+    flex: none;
+    font: inherit;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #e8e8e0;
+    background: rgb(255 255 255 / 6%);
+    border: 1px solid rgb(255 255 255 / 24%);
+    border-radius: 999px;
+    /* A 44px target: this is the one control on the page that is certain
+       to be pressed by a thumb. */
+    min-height: 44px;
+    padding: 0 20px;
+    cursor: pointer;
+  }
+  .ok:focus-visible { outline: 2px solid #e8e8e0; outline-offset: 3px; }
+</style>

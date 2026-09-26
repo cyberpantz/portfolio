@@ -1,5 +1,6 @@
 ---
 import '../styles/explorations.css';
+import HandheldNote from '../components/exp/HandheldNote.astro';
 
 interface Props {
   title?: string;
@@ -82,5 +83,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site).href;
 
   <body class="bg-ink text-fg" style="color-scheme: dark;">
     <slot />
+    {/* Every exploration gets this, once ever, and only on a fingertip. */}
+    <HandheldNote />
   </body>
 </html>
