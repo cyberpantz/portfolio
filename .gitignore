@@ -49,6 +49,7 @@ src/experiments/*/__tests__/.bundle.*
 # a laptop and is not fine in a public repo, and `git add -A` does not know
 # the difference.
 docs/resources/Cat_v1_L3*/
+docs/resources/Cat/
 docs/resources/**/*.obj
 docs/resources/**/*.fbx
 docs/resources/**/*.mtl
