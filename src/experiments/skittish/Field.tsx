@@ -5,10 +5,16 @@
  *
  * The flat version carried a GPGPU simulation: two render targets, a
  * ping-pong, per-particle velocity integrated every frame. None of that
- * survives, because none of it is needed. With the sit baked in and the
- * motion coming from twenty joints, a point's position is a pure function
- * of its rest position and the bone matrices — there is no state to keep.
- * The whole thing is one draw call.
+ * survives, because none of it is needed. A point's position is a pure
+ * function of its bind position and the bone matrices — there is no state
+ * to keep. The whole thing is one draw call.
+ *
+ * The version after that baked a sitting pose into the geometry and left
+ * twenty bones free. That was cheaper still and quietly ruled out every
+ * animation in the pack: the legs, spine and pelvis were frozen, so a
+ * crouch could only be faked by bowing the chest, and the boundary between
+ * moving and frozen vertices tore open whenever the cat turned. What ships
+ * now is the whole skeleton and real clips.
  *
  * ── Solid, not luminous ─────────────────────────────────────────────────
  *
@@ -21,8 +27,13 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
-import { fetchMesh, scatter, type Cloud } from './loader';
-import { Cat, JOINTS, PIVOT, type Pose } from './behaviour';
+import { fetchRigBuffer, scatter, type Cloud } from './loader';
+import { parseRig, sampleClip, blendPose, composeWorld, subtrees, turnSubtree, skinMatrices, type Rig as CatRig } from './rig';
+import { Cat, BONE } from './behaviour';
+
+/* Read once, not per frame: the head's index never changes, and the frame
+   loop should not be doing dictionary lookups. */
+const BONE_HEAD = BONE.RigHead;
 
 const CAM_FOV = 34;
 
@@ -84,12 +95,12 @@ const VERT = /* glsl */ `
     }
 
     /*
-     * Points the moving bones do not touch keep their baked place.
+     * Every vertex carries weight now, but the guard stays.
      *
-     * Most of the animal is frozen — the haunches, the hind legs, the far
-     * foreleg — and those arrive with weights summing to zero. Without this
-     * they would collapse to the origin, which is a very fast way to lose
-     * four fifths of a cat.
+     * A point whose weights summed to zero would collapse to the origin,
+     * which is a very fast way to lose a cat. The bake asserts this cannot
+     * happen; four instructions is a cheap price for it never being able
+     * to happen silently.
      */
     vec3 p = total > 0.001 ? skinned.xyz / total : position;
     vec3 nn = total > 0.001 ? normalize(n) : aNormal;
@@ -119,47 +130,11 @@ const FRAG = /* glsl */ `
   }
 `;
 
-/**
- * Compose the pose into one matrix per joint.
- *
- * Rotations are world-axis, about each joint's own pivot, and composed
- * parent-first down the chain — so the ears inherit the head, the head
- * inherits the neck, and the whole neck inherits the chest breathing.
- * Every matrix is the identity at rest, which is what lets the baked sit
- * be the zero of the system.
- */
-function composePose(pose: Pose, out: Float32Array): void {
-  const world: THREE.Matrix4[] = [];
-  const m = new THREE.Matrix4();
-  const e = new THREE.Euler();
-  const q = new THREE.Quaternion();
-  const pivot = new THREE.Vector3();
-  const toOrigin = new THREE.Matrix4();
-  const back = new THREE.Matrix4();
-
-  for (let i = 0; i < JOINTS.length; i++) {
-    const j = JOINTS[i];
-    const r = pose.get(i);
-    if (r) {
-      pivot.set(j.at[0], j.at[1], j.at[2]);
-      e.set(r[0], r[1], r[2], 'XYZ');
-      q.setFromEuler(e);
-      m.makeRotationFromQuaternion(q);
-      toOrigin.makeTranslation(-pivot.x, -pivot.y, -pivot.z);
-      back.makeTranslation(pivot.x, pivot.y, pivot.z);
-      m.premultiply(back).multiply(toOrigin);
-    } else {
-      m.identity();
-    }
-    world[i] = j.parent >= 0 ? new THREE.Matrix4().multiplyMatrices(world[j.parent], m) : m.clone();
-    world[i].toArray(out, i * 16);
-  }
-}
-
 type Ptr = { x: number; y: number; z: number; present: boolean };
 
-function Cloud3D({ cloud, ptr }: { cloud: Cloud; ptr: React.MutableRefObject<Ptr> }) {
+function Cloud3D({ rig, cloud, ptr }: { rig: CatRig; cloud: Cloud; ptr: React.MutableRefObject<Ptr> }) {
   const group = useRef<THREE.Group>(null);
+  const inner = useRef<THREE.Points>(null);
   const gl = useThree((s) => s.gl);
   const camera = useThree((s) => s.camera);
   const cat = useMemo(() => new Cat(), []);
@@ -180,15 +155,27 @@ function Cloud3D({ cloud, ptr }: { cloud: Cloud; ptr: React.MutableRefObject<Ptr
    * GLSL ES 1.00 forbids indexing a uniform array by a varying value, and
    * a point's joint index is exactly that. A texture can be sampled at any
    * coordinate, which is why every engine that skins on the GPU ends up
-   * here. Twenty joints is eighty texels.
+   * here. Forty-four bones is a hundred and seventy-six texels.
    */
-  const boneData = useMemo(() => new Float32Array(JOINTS.length * 16), []);
+  const boneData = useMemo(() => new Float32Array(rig.bones * 16), [rig]);
   const boneTex = useMemo(() => {
-    const t = new THREE.DataTexture(boneData, JOINTS.length * 4, 1, THREE.RGBAFormat, THREE.FloatType);
+    const t = new THREE.DataTexture(boneData, rig.bones * 4, 1, THREE.RGBAFormat, THREE.FloatType);
     t.minFilter = t.magFilter = THREE.NearestFilter;
     t.needsUpdate = true;
     return t;
-  }, [boneData]);
+  }, [boneData, rig]);
+
+  /* Scratch for the frame, allocated once. A per-frame allocation of this
+     size is how a smooth animation acquires a stutter every few seconds. */
+  const work = useMemo(() => ({
+    q: new Float32Array(rig.bones * 4),
+    t: new Float32Array(3),
+    q2: new Float32Array(rig.bones * 4),
+    t2: new Float32Array(3),
+    world: new Float32Array(rig.bones * 16),
+    kids: subtrees(rig),
+    head: [0, 0.5, 0] as [number, number, number],
+  }), [rig]);
 
   const material = useMemo(
     () => new THREE.ShaderMaterial({
@@ -196,13 +183,13 @@ function Cloud3D({ cloud, ptr }: { cloud: Cloud; ptr: React.MutableRefObject<Ptr
       fragmentShader: FRAG,
       uniforms: {
         uBones: { value: boneTex },
-        uBoneCount: { value: JOINTS.length },
+        uBoneCount: { value: rig.bones },
         uSize: { value: 2.4 },
         uScale: { value: 1 },
         uInk: { value: new THREE.Color('#ded9d0') },
       },
     }),
-    [boneTex]
+    [boneTex, rig]
   );
 
   useEffect(() => () => { geometry.dispose(); material.dispose(); boneTex.dispose(); }, [geometry, material, boneTex]);
@@ -254,38 +241,64 @@ function Cloud3D({ cloud, ptr }: { cloud: Cloud; ptr: React.MutableRefObject<Ptr
        integrated, so it cannot explode — but the cat would teleport, and a
        clamp is cheaper than explaining that. */
     const dt = Math.min(delta, 1 / 20);
-    const { pose, facing } = cat.update(dt, ptr.current);
-    composePose(pose, boneData);
-    boneTex.needsUpdate = true;
+
     /*
-     * The heading is an object rotation, not a bone.
+     * The cat decides first, using where its head was LAST frame.
+     *
+     * It has to be one or the other: the head's position comes out of the
+     * pose, and which pose to play is what the cat is deciding. A frame of
+     * lag on a number that moves at most a few hundredths of a unit per
+     * frame is invisible; the alternative is composing the skeleton twice.
+     */
+    const drive = cat.update(dt, ptr.current, work.head);
+
+    const a = rig.clips.get(drive.clip);
+    if (!a) return;
+    sampleClip(rig, a, drive.time, work.q, work.t);
+    const b = drive.from ? rig.clips.get(drive.from) : null;
+    if (b && drive.blend < 1) {
+      sampleClip(rig, b, drive.fromTime, work.q2, work.t2);
+      /* Blending TOWARD the outgoing clip by (1 - blend): at blend 0 the
+         result is the old pose exactly, which is what makes the first
+         frame of a transition continuous with the last frame before it. */
+      blendPose(rig.bones, work.q, work.t, work.q2, work.t2, 1 - drive.blend);
+    }
+
+    composeWorld(rig, work.q, work.t, work.world);
+    for (const turn of drive.turns) {
+      turnSubtree(rig, work.world, work.kids, turn.joint, turn.yaw, turn.pitch);
+    }
+
+    const h = BONE_HEAD * 16;
+    work.head[0] = work.world[h + 3];
+    work.head[1] = work.world[h + 7];
+    work.head[2] = work.world[h + 11];
+
+    skinMatrices(rig, work.world, boneData);
+    boneTex.needsUpdate = true;
+
+    /*
+     * The heading is an object rotation, about the cat's contact patch.
      *
      * Turning the whole animal is not a joint doing anything — every bone
-     * keeps its pose and the thing they belong to swings round. Trying to
-     * express it as a root bone would mean re-baking with the pelvis
-     * unfrozen, for a transform three.js already applies for free.
+     * keeps its pose and the thing they belong to swings round. But the
+     * mesh's origin is the centre of a bounding box, about a fifth of a
+     * body-length behind where the cat is actually resting, so rotating
+     * there swings it through an arc: a lazy susan. The pivot comes from
+     * the clip and moves as the cat rises, because a sitting cat turns on
+     * its haunches and a crouched one on all four feet.
      */
-    if (group.current) group.current.rotation.y = facing;
+    if (group.current && inner.current) {
+      group.current.rotation.y = drive.facing;
+      group.current.position.set(drive.pivot[0], 0, drive.pivot[2]);
+      inner.current.position.set(-drive.pivot[0], 0, -drive.pivot[2]);
+    }
     material.uniforms.uScale.value = (gl.getPixelRatio() * state.size.height) / 700;
   });
 
-  /*
-   * The turn happens about the cat's seat, not the scene origin.
-   *
-   * The mesh's origin sits roughly a fifth of a body-length behind where
-   * the animal's weight actually is, so rotating the object directly swings
-   * it round a point outside itself — a lazy susan. Putting the group AT
-   * the seat and the points at minus the seat leaves every vertex where it
-   * was in world space while giving `rotation.y` the right centre.
-   */
   return (
-    <group ref={group} position={[PIVOT[0], PIVOT[1], PIVOT[2]]}>
-      <points
-        geometry={geometry}
-        material={material}
-        position={[-PIVOT[0], -PIVOT[1], -PIVOT[2]]}
-        frustumCulled={false}
-      />
+    <group ref={group}>
+      <points ref={inner} geometry={geometry} material={material} frustumCulled={false} />
     </group>
   );
 }
@@ -392,7 +405,7 @@ function Rig() {
 }
 
 export default function Field({ meshUrl, onReady }: { meshUrl: string; onReady?: () => void }) {
-  const [cloud, setCloud] = useState<Cloud | null>(null);
+  const [loaded, setLoaded] = useState<{ rig: CatRig; cloud: Cloud } | null>(null);
   const ready = useRef(onReady);
   ready.current = onReady;
   /* One pointer, shared: the cat aims at it and the laser is drawn at it,
@@ -402,20 +415,20 @@ export default function Field({ meshUrl, onReady }: { meshUrl: string; onReady?:
   useEffect(() => {
     let live = true;
     (async () => {
-      const mesh = await fetchMesh(meshUrl);
+      const rig = parseRig(await fetchRigBuffer(meshUrl));
       /* Point count by device. This is the whole reason the mesh ships
          rather than a baked cloud. */
       const wide = window.innerWidth;
       const count = wide < 700 ? 45000 : wide < 1400 ? 110000 : 170000;
-      const c = scatter(mesh, count);
+      const cloud = scatter(rig.mesh, count);
       if (!live) return;
-      setCloud(c);
+      setLoaded({ rig, cloud });
       ready.current?.();
     })();
     return () => { live = false; };
   }, [meshUrl]);
 
-  if (!cloud) return null;
+  if (!loaded) return null;
   return (
     <Canvas
       camera={{ position: [2, 0.7, 3], fov: CAM_FOV }}
@@ -424,7 +437,7 @@ export default function Field({ meshUrl, onReady }: { meshUrl: string; onReady?:
       style={{ width: '100%', height: '100%', display: 'block', touchAction: 'none' }}
     >
       <Rig />
-      <Cloud3D cloud={cloud} ptr={ptr} />
+      <Cloud3D rig={loaded.rig} cloud={loaded.cloud} ptr={ptr} />
       <Laser at={ptr} />
     </Canvas>
   );

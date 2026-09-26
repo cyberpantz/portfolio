@@ -1,189 +1,106 @@
 {
-  "joints": [
+  "bones": [
+    "RigPelvis",
+    "RigLBLeg1",
+    "RigLBLeg2",
+    "RigLBLeg3",
+    "RigLBLegAnkle",
+    "RigSpine1",
+    "RigSpine2",
+    "RigSpine3",
+    "RigChest",
+    "RigNeck1",
+    "RigNeck2",
+    "RigNeck3",
+    "RigNeck4",
+    "RigHead",
+    "RigJaw1",
+    "RigTongue1",
+    "RigTongue2",
+    "RigTongue3",
+    "RigLEar1",
+    "RigLEar2",
+    "RigREar1",
+    "RigREar2",
+    "RigLFLegCollarbone",
+    "RigLFLeg1",
+    "RigLFLeg2",
+    "RigLFLeg3",
+    "RigLFLegAnkle",
+    "RigRFLegCollarbone",
+    "RigRFLeg1",
+    "RigRFLeg2",
+    "RigRFLeg3",
+    "RigRFLegAnkle",
+    "RigLShoulderBlade1",
+    "RigRShoulderBlade1",
+    "RigTail1",
+    "RigTail2",
+    "RigTail3",
+    "RigTail4",
+    "RigTail5",
+    "RigTail6",
+    "RigRBLeg1",
+    "RigRBLeg2",
+    "RigRBLeg3",
+    "RigRBLegAnkle"
+  ],
+  "clips": [
     {
-      "name": "RigChest",
-      "at": [
-        0.02709,
-        0.04758,
-        -0.16457
-      ],
-      "parent": -1
+      "name": "sit",
+      "loop": true,
+      "seconds": 0.0,
+      "frames": 1,
+      "pivot": [
+        0.14307,
+        0.0,
+        -0.13311
+      ]
     },
     {
-      "name": "RigNeck1",
-      "at": [
-        0.28101,
-        0.11746,
-        -0.1728
-      ],
-      "parent": 0
+      "name": "rise",
+      "loop": false,
+      "seconds": 1.9503,
+      "frames": 60,
+      "pivot": [
+        0.14307,
+        0.0,
+        -0.13318
+      ]
     },
     {
-      "name": "RigNeck2",
-      "at": [
-        0.40643,
-        0.18673,
-        -0.17803
-      ],
-      "parent": 1
+      "name": "sneak",
+      "loop": true,
+      "seconds": 4.0333,
+      "frames": 122,
+      "pivot": [
+        0.28047,
+        0.0,
+        -0.17558
+      ]
     },
     {
-      "name": "RigNeck3",
-      "at": [
-        0.47964,
-        0.30198,
-        -0.18182
-      ],
-      "parent": 2
+      "name": "settle",
+      "loop": false,
+      "seconds": 1.7,
+      "frames": 52,
+      "pivot": [
+        0.0091,
+        0.0,
+        -0.16621
+      ]
     },
     {
-      "name": "RigNeck4",
-      "at": [
-        0.52028,
-        0.43229,
-        -0.18423
-      ],
-      "parent": 3
-    },
-    {
-      "name": "RigHead",
-      "at": [
-        0.57583,
-        0.52914,
-        -0.18883
-      ],
-      "parent": 4
-    },
-    {
-      "name": "RigLEar1",
-      "at": [
-        0.7352,
-        0.71204,
-        -0.05137
-      ],
-      "parent": 5
-    },
-    {
-      "name": "RigLEar2",
-      "at": [
-        0.76401,
-        0.78716,
-        0.00394
-      ],
-      "parent": 6
-    },
-    {
-      "name": "RigREar1",
-      "at": [
-        0.70758,
-        0.71346,
-        -0.35135
-      ],
-      "parent": 5
-    },
-    {
-      "name": "RigREar2",
-      "at": [
-        0.73066,
-        0.79023,
-        -0.40708
-      ],
-      "parent": 8
-    },
-    {
-      "name": "RigLFLeg1",
-      "at": [
-        0.46351,
-        0.23613,
-        0.02069
-      ],
-      "parent": 0
-    },
-    {
-      "name": "RigLFLeg2",
-      "at": [
-        0.20619,
-        -0.17623,
-        -0.01234
-      ],
-      "parent": 10
-    },
-    {
-      "name": "RigLFLeg3",
-      "at": [
-        0.26906,
-        -0.62315,
-        -0.0732
-      ],
-      "parent": 11
-    },
-    {
-      "name": "RigLFLegAnkle",
-      "at": [
-        0.31977,
-        -0.76302,
-        -0.09582
-      ],
-      "parent": 12
-    },
-    {
-      "name": "RigTail1",
-      "at": [
-        -0.52511,
-        -0.77751,
-        -0.17593
-      ],
-      "parent": -1
-    },
-    {
-      "name": "RigTail2",
-      "at": [
-        -0.71271,
-        -0.77103,
-        -0.10139
-      ],
-      "parent": 14
-    },
-    {
-      "name": "RigTail3",
-      "at": [
-        -0.85154,
-        -0.77582,
-        0.04526
-      ],
-      "parent": 15
-    },
-    {
-      "name": "RigTail4",
-      "at": [
-        -0.93231,
-        -0.77728,
-        0.23023
-      ],
-      "parent": 16
-    },
-    {
-      "name": "RigTail5",
-      "at": [
-        -0.89421,
-        -0.78301,
-        0.4283
-      ],
-      "parent": 17
-    },
-    {
-      "name": "RigTail6",
-      "at": [
-        -0.74964,
-        -0.7852,
-        0.56906
-      ],
-      "parent": 18
+      "name": "swipe",
+      "loop": false,
+      "seconds": 1.0333,
+      "frames": 32,
+      "pivot": [
+        0.00915,
+        0.0,
+        -0.16623
+      ]
     }
   ],
-  "pivot": [
-    0.14307,
-    0.0,
-    -0.13311
-  ]
+  "rate": 30.0
 }

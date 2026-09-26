@@ -1,20 +1,17 @@
 /**
- * Fetch the baked cat and scatter points over it.
+ * Scatter points over the cat's surface.
  *
- * The file is a posed, skinned mesh — 8,915 vertices and 15,124 triangles,
- * quantised, about 139KB over the wire. Sampling it here rather than baking
- * the points means the count is a property of the device rather than of the
- * build, and a phone and a large display can each get a sensible one.
+ * The mesh arrives in its bind pose with four bone influences per vertex,
+ * and every point sampled from it inherits those influences — so the cloud
+ * is skinned by the same rig the mesh is, and the animation drives points
+ * rather than triangles.
+ *
+ * Sampling here rather than baking a fixed cloud means the count is a
+ * property of the device instead of the build, and a phone and a large
+ * display can each get a sensible one.
  */
 
-export type CatMesh = {
-  pos: Float32Array;   // xyz per vertex, normalised to roughly [-1, 1]
-  nrm: Float32Array;
-  idx: Uint8Array;     // 4 joint indices per vertex
-  wgt: Float32Array;   // 4 joint weights per vertex, summing to 1 or to 0
-  tris: Uint16Array;
-  joints: number;
-};
+import type { Rig } from './rig';
 
 export type Cloud = {
   pos: Float32Array;
@@ -26,35 +23,10 @@ export type Cloud = {
   count: number;
 };
 
-const STRIDE = 18; // 3×i16 + 3×i8 + 4×u8 + 4×u8 + 1 pad
-
-export async function fetchMesh(url: string): Promise<CatMesh> {
+export async function fetchRigBuffer(url: string): Promise<ArrayBuffer> {
   const res = await fetch(url);
-  if (!res.ok) throw new Error(`skittish: cat mesh ${res.status}`);
-  const buf = await res.arrayBuffer();
-  const head = new DataView(buf);
-
-  const magic = String.fromCharCode(head.getUint8(0), head.getUint8(1), head.getUint8(2), head.getUint8(3));
-  if (magic !== 'CATM') throw new Error('skittish: not a cat mesh');
-  const nv = head.getUint32(4, true);
-  const nt = head.getUint32(8, true);
-  const joints = head.getUint32(12, true);
-
-  const pos = new Float32Array(nv * 3);
-  const nrm = new Float32Array(nv * 3);
-  const idx = new Uint8Array(nv * 4);
-  const wgt = new Float32Array(nv * 4);
-
-  const body = new DataView(buf, 16);
-  for (let v = 0; v < nv; v++) {
-    const o = v * STRIDE;
-    for (let k = 0; k < 3; k++) pos[v * 3 + k] = body.getInt16(o + k * 2, true) / 32767;
-    for (let k = 0; k < 3; k++) nrm[v * 3 + k] = body.getInt8(o + 6 + k) / 127;
-    for (let k = 0; k < 4; k++) idx[v * 4 + k] = body.getUint8(o + 9 + k);
-    for (let k = 0; k < 4; k++) wgt[v * 4 + k] = body.getUint8(o + 13 + k) / 255;
-  }
-  const tris = new Uint16Array(buf, 16 + nv * STRIDE, nt * 3);
-  return { pos, nrm, idx, wgt, tris, joints };
+  if (!res.ok) throw new Error(`skittish: cat rig ${res.status}`);
+  return res.arrayBuffer();
 }
 
 /**
@@ -63,12 +35,8 @@ export async function fetchMesh(url: string): Promise<CatMesh> {
  * Area-weighted, so density is even over the animal rather than even per
  * triangle — a model's tessellation follows its detail, so the face would
  * otherwise come out a bright knot and the flank would go bare.
- *
- * Attributes are interpolated with the same barycentric coordinates as the
- * position, including the skin weights, so a point halfway along an edge
- * between two bones is influenced by both in the right proportion.
  */
-export function scatter(mesh: CatMesh, count: number, rand: () => number = Math.random): Cloud {
+export function scatter(mesh: Rig['mesh'], count: number, rand: () => number = Math.random): Cloud {
   const nt = mesh.tris.length / 3;
 
   /* Prefix sum of triangle areas, so a uniform random number picks a
@@ -114,14 +82,14 @@ export function scatter(mesh: CatMesh, count: number, rand: () => number = Math.
     nrm[p * 3] /= l; nrm[p * 3 + 1] /= l; nrm[p * 3 + 2] /= l;
 
     /*
-     * Skin weights need the vertex with the LARGEST barycentric share to
-     * win, not an average.
+     * Skin weights come from the vertex with the LARGEST barycentric
+     * share, not from an average.
      *
      * Averaging four-slot weight lists is meaningless when the slots hold
-     * different joints: slot 0 might be the jaw on one vertex and an ear on
-     * the next, and mixing them produces a point attached to neither. The
-     * nearest vertex's list is correct by construction, and at this density
-     * the error is smaller than a point.
+     * different joints: slot 0 might be the jaw on one vertex and an ear
+     * on the next, and mixing them produces a point attached to neither.
+     * The nearest vertex's list is correct by construction, and at this
+     * density the error is smaller than a point.
      */
     const near = w0 >= u && w0 >= v ? ia : u >= v ? ib : ic;
     for (let k = 0; k < 4; k++) {

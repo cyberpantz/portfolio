@@ -53,3 +53,7 @@ docs/resources/Cat/
 docs/resources/**/*.obj
 docs/resources/**/*.fbx
 docs/resources/**/*.mtl
+
+# Python bytecode from the bake scripts
+__pycache__/
+*.pyc
