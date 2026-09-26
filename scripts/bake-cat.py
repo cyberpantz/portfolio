@@ -37,17 +37,20 @@ MESH = ROOT / 'docs/resources/Cat/Meshes/Cat.fbx'
 # is a grooming loop: sampled at four seconds it gives a cat mid-lick, head
 # down and a paw up, which is a lovely pose and the wrong one to be born in.
 ANIM = ROOT / 'docs/resources/Cat/Animations/Sitting_00-IP.fbx'
-OUT = ROOT / 'public/cat-cloud.bin'
+OUT = ROOT / 'public/cat.bin'
 META = ROOT / 'src/experiments/skittish/cat-rig.json'
 
-POINTS = 120000
 POSE_AT = float(__import__('os').environ.get('POSE_AT', 2.0))
 FBX_TIME = 46186158000  # FBX's internal ticks per second
 
 # The only bones that move once the sit is baked in. Everything else is
 # frozen, which is most of the animal: four legs, the spine, all the toes.
 MOVING = (
-    'RigSpine4', 'RigNeck1', 'RigNeck2', 'RigNeck3', 'RigNeck4', 'RigHead',
+    # The chest is here so the cat can breathe. Its children — the neck
+    # chain and the forelegs — ride on it, which is correct: a ribcage
+    # lifting carries the shoulders. The pelvis and hind legs hang off the
+    # spine below it and stay frozen, which is also correct.
+    'RigChest', 'RigNeck1', 'RigNeck2', 'RigNeck3', 'RigNeck4', 'RigHead',
     'RigLEar1', 'RigLEar2', 'RigREar1', 'RigREar2',
     'RigLFLeg1', 'RigLFLeg2', 'RigLFLeg3', 'RigLFLegAnkle',
     'RigTail1', 'RigTail2', 'RigTail3', 'RigTail4', 'RigTail5',
@@ -275,41 +278,51 @@ def main():
     scale = 2.0 / np.max(P.max(0) - P.min(0))
     P = (P - centre) * scale
 
-    print(f'sampling {POINTS} points…')
-    a, b, c3 = P[tris[:, 0]], P[tris[:, 1]], P[tris[:, 2]]
-    area = 0.5 * np.linalg.norm(np.cross(b - a, c3 - a), axis=1)
-    cum = np.cumsum(area)
-    rng = np.random.default_rng(11)
-    pick = np.searchsorted(cum, rng.random(POINTS) * cum[-1])
-    u, v = rng.random(POINTS), rng.random(POINTS)
-    sw = u + v > 1
-    u[sw], v[sw] = 1 - u[sw], 1 - v[sw]
-    bary = np.stack([1 - u - v, u, v], 1)
+    # Per-vertex influences, trimmed to four and renormalised.
+    top = np.argsort(-wsum, axis=1)[:, :4]
+    tw = np.take_along_axis(wsum, top, 1)
+    tot4 = tw.sum(1, keepdims=True)
+    tw = np.where(tot4 > 1e-5, tw / np.maximum(tot4, 1e-9), 0)
 
-    pts = (P[tris[pick]] * bary[:, :, None]).sum(1)
-    nrm = (N[tris[pick]] * bary[:, :, None]).sum(1)
-    nrm /= np.linalg.norm(nrm, axis=1, keepdims=True) + 1e-9
-    wts = (wsum[tris[pick]] * bary[:, :, None]).sum(1)
-
-    top = np.argsort(-wts, axis=1)[:, :4]
-    tw = np.take_along_axis(wts, top, 1)
-    s = tw.sum(1, keepdims=True)
-    tw = np.where(s > 1e-5, tw / np.maximum(s, 1e-9), 0)
-
-    print('writing…')
+    print('writing mesh…')
     OUT.parent.mkdir(parents=True, exist_ok=True)
+
+    """
+    The MESH ships, not a point cloud.
+
+    Baking 120,000 points came to 2.9MB, and it gzips to 2.0 because
+    float32 positions are close to incompressible noise. The 8,915 vertices
+    those points were sampled FROM describe the same surface in about a
+    tenth of the space, and sampling them in the browser costs tens of
+    milliseconds.
+
+    The size is the smaller half of the argument. Baked, the point count is
+    decided here and everyone gets the same one — too many for a phone, too
+    few for a large display. Sampled at load it becomes a property of the
+    device looking at it.
+
+    Positions are int16 over a normalised cube, which is a resolution of
+    about 1/16000 of the cat: far finer than a point is wide. Normals are
+    int8, which is about half a degree, and nothing here is shiny enough to
+    show the difference.
+    """
     buf = bytearray()
-    buf += struct.pack('<4sIII', b'CAT1', POINTS, len(moving), 0)
-    for i in range(POINTS):
-        buf += struct.pack('<3f', *pts[i])
-        buf += struct.pack('<3b', *np.clip(nrm[i] * 127, -127, 127).astype(np.int8))
-        buf += struct.pack('<4B', *top[i].astype(np.uint8))
-        buf += struct.pack('<4B', *np.clip(tw[i] * 255, 0, 255).astype(np.uint8))
-        buf += b'\x00'
+    buf += struct.pack('<4sIII', b'CATM', len(P), len(tris), len(moving))
+    q = np.clip(np.round(P * 32767), -32767, 32767).astype('<i2')
+    qn = np.clip(np.round(N * 127), -127, 127).astype('<i1')
+    qi = top.astype(np.uint8)
+    qw = np.clip(np.round(tw * 255), 0, 255).astype(np.uint8)
+    for i in range(len(P)):
+        buf += q[i].tobytes() + qn[i].tobytes() + qi[i].tobytes() + qw[i].tobytes() + b'\x00'
+    assert tris.max() < 65536, 'too many vertices for 16-bit indices'
+    buf += tris.astype('<u2').tobytes()
     OUT.write_bytes(buf)
 
+    # The joints, in the same normalised space as the vertices. The runtime
+    # rotates about these, so they are pivots rather than bones: a position
+    # and whose pivot it hangs from.
     joints = []
-    for i, name in enumerate(moving):
+    for name in moving:
         p = bones[name]['parent']
         while p and p not in mindex:
             p = bones[p]['parent'] if p in bones else None
@@ -317,11 +330,11 @@ def main():
         at = ((np.array([-wp[1], wp[2], wp[0]]) - centre) * scale).tolist()
         joints.append({'name': name, 'at': [round(x, 5) for x in at],
                        'parent': mindex[p] if p in mindex else -1})
-    META.write_text(json.dumps({'joints': joints, 'points': POINTS}, indent=2) + '\n')
+    META.write_text(json.dumps({'joints': joints}, indent=2) + '\n')
 
     moved = (tw.sum(1) > 0.01).sum()
-    print(f'  {OUT.name}: {len(buf) / 1e6:.2f}MB, {POINTS} points, {len(moving)} joints')
-    print(f'  {moved} points ({moved / POINTS:.0%}) are influenced by a moving bone')
+    print(f'  {OUT.name}: {len(buf) / 1024:.0f}KB — {len(P)} verts, {len(tris)} tris, {len(moving)} joints')
+    print(f'  {moved} verts ({moved / len(P):.0%}) are influenced by a moving bone')
 
 
 if __name__ == '__main__':

@@ -1,22 +1,17 @@
 /**
- * Skittish — a particle field that settles into a cat and flinches from you.
+ * Skittish — a cat made of points, watching a laser dot.
  *
- * This file owns the things that are not physics: whether the machine can
- * run it at all, whether the visitor wants motion and sound, and what to
- * show when the answer to any of those is no.
+ * This file owns everything that is not the cat: whether the machine can
+ * draw it, whether the visitor wants motion or sound, and what to show when
+ * the answer to either is no.
  */
 
 import { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react';
-import type { Stir } from './Field';
 import { SynthPurr, type Purr } from './purr';
-/* Astro types an image import as ImageMetadata, not a string — `.src` is the
-   resolved, content-hashed URL the field samples for particle homes. It is
-   never rendered as an image; see Still below. */
-import mask from './cat-mask.png';
 import s from './skittish.module.css';
 
 /* ~600KB of three.js has no business loading for someone who will be shown
-   a still image. */
+   a sentence. */
 const Field = lazy(() => import('./Field'));
 
 function canRunWebGL(): boolean {
@@ -29,32 +24,17 @@ function canRunWebGL(): boolean {
 }
 
 export default function Skittish() {
-  /*
-   * Three separate facts, for the same reason chapter three of The Tilt
-   * keeps them apart: conflating capability with preference produces a
-   * control that cannot be undone.
-   */
+  /* Three separate facts. Conflating capability with preference is how you
+     build a control that cannot be undone. */
   const [able, setAble] = useState<boolean | null>(null);
   const [reduced, setReduced] = useState(false);
   const [sound, setSound] = useState(false);
-
-  const stir = useRef<Stir>({ energy: 0 });
   const purr = useRef<Purr | null>(null);
 
   useEffect(() => {
     setAble(canRunWebGL());
-    const mq = window.matchMedia?.('(prefers-reduced-motion: reduce)');
-    setReduced(!!mq?.matches);
+    setReduced(!!window.matchMedia?.('(prefers-reduced-motion: reduce)').matches);
   }, []);
-
-  /* The audio follows the field on a timer rather than per frame. The field
-     writes energy into a ref sixty times a second; the purr only needs to
-     know roughly, and a ramp is already smoothing it. */
-  useEffect(() => {
-    if (!sound) return;
-    const id = window.setInterval(() => purr.current?.setEnergy(stir.current.energy), 80);
-    return () => window.clearInterval(id);
-  }, [sound]);
 
   useEffect(() => () => purr.current?.stop(), []);
 
@@ -65,69 +45,57 @@ export default function Skittish() {
       setSound(false);
       return;
     }
-    /* Started from the click, because every browser requires a gesture and
-       a context created anywhere else arrives suspended and silent. */
+    /* Created inside the click, because every browser requires a gesture
+       and a context made anywhere else arrives suspended and silent. */
     const p = new SynthPurr();
     await p.start();
+    p.setEnergy(0.35);
     purr.current = p;
     setSound(p.running);
   }, [sound]);
 
-  const showField = able === true && !reduced;
-  /* Before the capability check has run we do not yet know which of the two
-     this is, and guessing wrong means flashing the cat at someone who was
-     about to watch it assemble. Hold the dark for the one frame it takes. */
   const deciding = able === null;
+  const showCat = able === true && !reduced;
 
   return (
     <div className={s.wrap}>
-      <div className={s.stage}>
-        {deciding ? null : showField ? (
-          /*
-            An empty fallback, deliberately.
-            
-            It showed the mask while three.js loaded, which gave away the cat
-            before the field had a chance to make one — the bloom then had
-            nothing to reveal. Better to hold the dark and let the first
-            thing anyone sees be a point of light.
-          */
+      {/* The cursor is hidden across the whole stage rather than only the
+          canvas — a pointer reappearing in the margin breaks the illusion
+          faster than its absence ever did. */}
+      <div className={showCat ? `${s.stage} ${s.hideCursor}` : s.stage}>
+        {deciding ? null : showCat ? (
           <Suspense fallback={<div className={s.blank} aria-hidden="true" />}>
-            <Field maskUrl={mask.src} stir={stir} />
+            <Field meshUrl="/cat.bin" />
           </Suspense>
         ) : (
           <Still
             label={
               able === false
                 ? 'This one needs WebGL, which this browser is not offering.'
-                : reduced
-                  ? 'Held still, because your system asks for reduced motion.'
-                  : ''
+                : 'Held still, because your system asks for reduced motion.'
             }
           />
         )}
       </div>
 
       <div className={s.bar}>
-        <p className={s.hint} aria-hidden="true">
-          {showField ? 'Move across it' : ''}
-        </p>
-        {showField && (
+        <p className={s.hint} aria-hidden="true">{showCat ? 'Move the laser' : ''}</p>
+        {showCat && (
           <button type="button" className={s.sound} onClick={toggleSound} aria-pressed={sound}>
-            {sound ? 'Sound on' : 'Sound off'}
+            {sound ? 'Purr on' : 'Purr off'}
           </button>
         )}
       </div>
 
       {/*
-        The field is a canvas, which is opaque to assistive technology
-        however it is labelled, and its content is a picture of a cat that
-        does not change. So the accessible version is not a description of
-        the animation — it is the thing the animation is of.
+        A canvas is opaque to assistive technology however it is labelled,
+        and what it holds is a cat rather than information. So this is not a
+        description of an animation — it is the thing the animation is of.
       */}
       <p className={s.srOnly}>
-        A field of small particles settled into the silhouette of a sitting cat, drifting as if
-        in a light breeze. Moving a pointer across it pushes the particles aside; they flow back
-        into place when the pointer moves on.
+        A sitting cat drawn entirely from small points of light. A red laser dot follows your
+        pointer; the cat watches it, turning its head to track it, and swipes at it with a front
+        paw when it comes close to the floor beside them.
       </p>
     </div>
   );
@@ -136,20 +104,12 @@ export default function Skittish() {
 /**
  * The still.
  *
- * Text, and no picture of the cat.
- *
- * It used to show the mask, which is a reasonable thing for someone who
- * will never see the field — and a bad thing for everyone else, because it
- * kept finding its way onto the screen a moment before the particles did
- * and giving away the shape the bloom exists to reveal. Twice I fixed the
- * path it was arriving by and twice it came back.
- *
- * So it no longer has an image to show. The failure mode is now "a sentence
- * appears" instead of "the surprise is spoiled", and the first of those is
+ * Text, and no picture of the cat. An image here kept finding its way onto
+ * the screen a moment before the real thing and giving away what was
+ * coming; the failure mode is now a sentence appearing, which is
  * recoverable.
  */
 function Still({ label }: { label: string }) {
-  if (!label) return null;
   return (
     <div className={s.still}>
       <p className={s.stillNote}>{label}</p>

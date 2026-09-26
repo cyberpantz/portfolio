@@ -1,13 +1,22 @@
 {
   "joints": [
     {
+      "name": "RigChest",
+      "at": [
+        0.02709,
+        0.04758,
+        -0.16457
+      ],
+      "parent": -1
+    },
+    {
       "name": "RigNeck1",
       "at": [
         0.28101,
         0.11746,
         -0.1728
       ],
-      "parent": -1
+      "parent": 0
     },
     {
       "name": "RigNeck2",
@@ -16,7 +25,7 @@
         0.18673,
         -0.17803
       ],
-      "parent": 0
+      "parent": 1
     },
     {
       "name": "RigNeck3",
@@ -25,7 +34,7 @@
         0.30198,
         -0.18182
       ],
-      "parent": 1
+      "parent": 2
     },
     {
       "name": "RigNeck4",
@@ -34,7 +43,7 @@
         0.43229,
         -0.18423
       ],
-      "parent": 2
+      "parent": 3
     },
     {
       "name": "RigHead",
@@ -43,7 +52,7 @@
         0.52914,
         -0.18883
       ],
-      "parent": 3
+      "parent": 4
     },
     {
       "name": "RigLEar1",
@@ -52,7 +61,7 @@
         0.71204,
         -0.05137
       ],
-      "parent": 4
+      "parent": 5
     },
     {
       "name": "RigLEar2",
@@ -61,7 +70,7 @@
         0.78716,
         0.00394
       ],
-      "parent": 5
+      "parent": 6
     },
     {
       "name": "RigREar1",
@@ -70,7 +79,7 @@
         0.71346,
         -0.35135
       ],
-      "parent": 4
+      "parent": 5
     },
     {
       "name": "RigREar2",
@@ -79,7 +88,7 @@
         0.79023,
         -0.40708
       ],
-      "parent": 7
+      "parent": 8
     },
     {
       "name": "RigLFLeg1",
@@ -88,7 +97,7 @@
         0.23613,
         0.02069
       ],
-      "parent": -1
+      "parent": 0
     },
     {
       "name": "RigLFLeg2",
@@ -97,7 +106,7 @@
         -0.17623,
         -0.01234
       ],
-      "parent": 9
+      "parent": 10
     },
     {
       "name": "RigLFLeg3",
@@ -106,7 +115,7 @@
         -0.62315,
         -0.0732
       ],
-      "parent": 10
+      "parent": 11
     },
     {
       "name": "RigLFLegAnkle",
@@ -115,7 +124,7 @@
         -0.76302,
         -0.09582
       ],
-      "parent": 11
+      "parent": 12
     },
     {
       "name": "RigTail1",
@@ -133,7 +142,7 @@
         -0.77103,
         -0.10139
       ],
-      "parent": 13
+      "parent": 14
     },
     {
       "name": "RigTail3",
@@ -142,7 +151,7 @@
         -0.77582,
         0.04526
       ],
-      "parent": 14
+      "parent": 15
     },
     {
       "name": "RigTail4",
@@ -151,7 +160,7 @@
         -0.77728,
         0.23023
       ],
-      "parent": 15
+      "parent": 16
     },
     {
       "name": "RigTail5",
@@ -160,7 +169,7 @@
         -0.78301,
         0.4283
       ],
-      "parent": 16
+      "parent": 17
     },
     {
       "name": "RigTail6",
@@ -169,8 +178,7 @@
         -0.7852,
         0.56906
       ],
-      "parent": 17
+      "parent": 18
     }
-  ],
-  "points": 120000
+  ]
 }

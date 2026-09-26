@@ -29,10 +29,14 @@
  * alone wastes a wide one. `min()` of both is the only version that behaves
  * in a laptop window turned any which way.
  */
+.hideCursor { cursor: none; }
+
 .stage {
   position: relative;
-  width: min(100%, 76vh, 860px);
-  aspect-ratio: 1;
+  /* Wider than tall now. The cat sits, but it sits with a tail laid out
+     beside it, and a square crops that into the margin. */
+  width: min(100%, 1100px);
+  aspect-ratio: 4 / 3;
   /* Pointer events are the entire interface, so nothing may swallow them. */
   touch-action: none;
 }
