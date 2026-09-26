@@ -93,7 +93,14 @@ function hold(u, v, secs = 14) {
        for must not move with the reaching. */
     if (d.clip !== 'swipe') paw = [world[w + 3], world[w + 7], world[w + 11]];
   }
-  return { clip: d.clip, face: relative(d.facing), y: laserAt(u, v).y, seen, travel };
+  /* Ear fold and head pitch, summed the way the rig applies them, so what
+     is measured is what the cat actually does rather than one term of it. */
+  const ear = -(d.turns.filter((x) => x.joint === BONE.RigLEar1)
+    .reduce((a, x) => a + x.pitch, 0)) * 180 / Math.PI;
+  const look = TUNING.chain.reduce(
+    (a, [n]) => a + d.turns.filter((x) => x.joint === BONE[n]).reduce((b, x) => b + x.pitch, 0), 0
+  ) * 180 / Math.PI;
+  return { clip: d.clip, face: relative(d.facing), y: laserAt(u, v).y, seen, travel, ears: ear, look };
 }
 
 const deg = (x) => `${x.toFixed(0)}°`;
@@ -105,11 +112,25 @@ const deg = (x) => `${x.toFixed(0)}°`;
   ok('and stays sitting up there', r.clip === 'sit', [...r.seen].join('/'));
 }
 {
+  /*
+   * Low and near: the dot is at the cat's feet, where there is nothing to
+   * stalk. It sits up and stares down at it instead — measured at about
+   * 0.95 from the cat, inside the 1.2 it takes to be worth stalking.
+   */
   const r = hold(0, -0.85);
   ok('pointer bottom centre: the cat faces the viewer',
      Math.abs(r.face) < 35, `facing ${deg(r.face)} off the camera`);
-  ok('and is down over it, not sitting', r.clip !== 'sit', [...r.seen].join('/'));
-  ok('and gets close enough to swipe at it', r.seen.has('swipe'), [...r.seen].join('/'));
+  ok('and sits up rather than stalking it', !r.seen.has('sneak'), [...r.seen].join('/'));
+  ok('and puts its ears back about it', r.ears > 20, `${deg(r.ears)} of ear`);
+  ok('and looks down far enough to actually see it', r.look < -35,
+     `head pitched ${deg(r.look)}`);
+}
+{
+  /* Low and off to the side: far enough away to be worth getting up for. */
+  const r = hold(-0.85, -0.8, 18);
+  ok('pointer low and to the side: it does stalk', r.seen.has('sneak'),
+     [...r.seen].join('/'));
+  ok('and its ears stay up while it does', r.ears < 8, `${deg(r.ears)} of ear`);
 }
 {
   /* On top of the cat there is no direction to face, so it should stop
@@ -139,7 +160,9 @@ const deg = (x) => `${x.toFixed(0)}°`;
   let paw = [0.9, -0.76, -0.09];
   let poised = 0, struck = 0, wasSwipe = false;
   for (let i = 0; i < 30 / dt; i++) {
-    const d = cat.update(dt, laserAt(0, -0.85), head, paw);
+    /* Low and close in — where the cat sits up, stares, and swats. A dot
+       further out is something it stalks instead, and never reaches. */
+    const d = cat.update(dt, laserAt(0, -0.5), head, paw);
     if (d.clip === 'swipe') {
       if (!wasSwipe) poised++;
       if (d.time > TUNING.poiseAt + 1e-6) struck++;

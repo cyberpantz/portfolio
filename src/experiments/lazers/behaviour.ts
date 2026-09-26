@@ -46,7 +46,18 @@ export const TUNING = {
      generous because a cat really does turn nearly side-on; pitch is not,
      because a cat lifts its chin far less than it feels like it does. */
   yawMax: 62 * DEG,
+  /*
+   * Up and down are not the same.
+   *
+   * A cat lifts its chin far less than it feels like it does, and drops it
+   * a very long way — to eat, to wash, to watch something by its feet.
+   * Measured: a laser on the floor at the middle of the frame sits 49°
+   * below the head. Held at a symmetric 26° the cat could not actually
+   * look at the thing it was supposed to be staring at, and gazed into the
+   * middle distance over the top of it.
+   */
   pitchMax: 26 * DEG,
+  pitchDown: 52 * DEG,
 
   /*
    * How the turn is shared out along the neck.
@@ -137,6 +148,34 @@ export const TUNING = {
   hold: 1.1,
 
   /*
+   * How far away a thing has to be before stalking it is worth doing.
+   *
+   * Stalking something already at your feet is absurd — there is nothing
+   * to close. A cat with a dot right in front of it sits up and stares at
+   * it instead, which is a completely different and much more pointed
+   * piece of body language.
+   *
+   * Measured against the frame: with the pointer low, the middle of the
+   * canvas lands about 0.95 from the cat and the sides reach 1.3 to 2.0.
+   * 1.2 separates "in front of my face" from "over there".
+   */
+  stalkFrom: 1.2,
+
+  /*
+   * Ears.
+   *
+   * Flattened back is the whole tell. Rotating them backward about the
+   * cat's lateral axis is the readable part of it; the sideways splay a
+   * real cat adds would need a roll, which a yaw-and-pitch pose cannot
+   * express and which reads as almost nothing at this point density.
+   *
+   * The base turns further than the tip, so the ear folds rather than
+   * hinging like a flap.
+   */
+  earsBack: 34 * DEG,
+  earsFor: 0.55,
+
+  /*
    * The paw.
    *
    * A cat with a dot near its foot does not swat at it on sight. It lifts
@@ -152,18 +191,23 @@ export const TUNING = {
    * on for another four tenths of a second doing nothing, and playing that
    * tail just delays the cat's next move.
    */
-  pawRange: 0.42,
   /*
-   * How far ABOVE its own foot the cat will swat.
+   * Reach, measured in three dimensions from the paw itself.
    *
-   * Reach alone is not enough: measured horizontally, a dot resting on the
-   * cat's chest is 0.41 from its paw, which is inside the 0.42 reach, so
-   * the cat sat there batting at its own ribs. A cat swats at things on
-   * the ground. Measured against the paw rather than a fixed height,
-   * because the paw drops when the animal crouches and a fixed number is
-   * wrong in one pose or the other.
+   * Flat distance plus a height gate was the obvious way and it was a
+   * mess: a dot resting on the cat's chest is only 0.41 from its paw
+   * measured horizontally, so the cat batted at its own ribs, and the
+   * height cutoff that excluded it also excluded most of the floor —
+   * leaving a band about a tenth of the frame wide where a swipe was
+   * possible at all.
+   *
+   * Straight-line distance separates them with room to spare. Measured:
+   * the dot on the chest sits 0.95 from the paw; dots on the floor within
+   * a body-length run 0.60 to 0.75. From the paw, because the paw drops
+   * when the animal crouches and a fixed point is wrong in one pose or the
+   * other.
    */
-  pawReachUp: 0.55,
+  pawRange: 0.8,
   poiseAt: 0.18,
   swipeEnd: 0.62,
   /* How long it hovers before committing, and how long it waits after. */
@@ -198,6 +242,8 @@ export class Cat {
   private seen = { x: 0, y: 0, has: false };
   private dwell = 0;
   private interest = 0;
+  /** 0 at ease, 1 staring down at something sitting right in front of it. */
+  private annoyed = 0;
 
   private body = 0;
   private shoulders = 0;
@@ -259,8 +305,20 @@ export class Cat {
     if (this.clip !== 'swipe') this.pawRest = paw;
 
     /* ---- the floor, and what the cat is doing about it ----------------- */
-    const low = s.present && s.y < TUNING.crouchFrom;
+    /*
+     * Two different things can be true of a laser on the floor, and they
+     * call for opposite behaviour. Far off, it is prey: the cat gets up
+     * and stalks it. Right at its feet, there is nothing to stalk, so it
+     * sits up and stares down at it instead — and gets visibly annoyed
+     * about it, which is the more interesting of the two to watch.
+     */
+    const pv = this.pivot();
+    const ground = s.present ? Math.hypot(s.x - pv[0], s.z - pv[2]) : Infinity;
+    const onFloor = s.present && s.y < TUNING.crouchFrom;
+    const low = onFloor && ground > TUNING.stalkFrom;
+    const underfoot = onFloor && ground <= TUNING.stalkFrom;
     this.offFloor = low ? 0 : this.offFloor + dt;
+    this.annoyed += ((underfoot ? 1 : 0) - this.annoyed) * Math.min(1, dt * 1.6);
 
     if (this.clip === 'swipe') {
       this.paw(dt, s);
@@ -305,7 +363,7 @@ export class Cat {
 
         /* Pitch is well behaved everywhere: straight overhead it saturates
            at `pitchMax`, which is a cat looking up. */
-        this.want.pitch = clamp(Math.atan2(dy, reach), -TUNING.pitchMax, TUNING.pitchMax);
+        this.want.pitch = clamp(Math.atan2(dy, reach), -TUNING.pitchDown, TUNING.pitchMax);
 
         /* Yaw is not. Inside `overhead` the horizontal direction is noise,
            so the cat keeps the aim it had. */
@@ -402,6 +460,7 @@ export class Cat {
       turns.push({ joint: j, yaw: this.aim.yaw * share, pitch: this.aim.pitch * share });
     }
 
+    this.ears(turns);
     this.tail(turns);
 
     return {
@@ -502,11 +561,31 @@ export class Cat {
    */
   private inReach(s: Sense): boolean {
     if (!s.present) return false;
-    if (s.y > this.pawRest[1] + TUNING.pawReachUp) return false;
-    return Math.hypot(s.x - this.pawRest[0], s.z - this.pawRest[2]) < TUNING.pawRange;
+    return Math.hypot(s.x - this.pawRest[0], s.y - this.pawRest[1], s.z - this.pawRest[2])
+      < TUNING.pawRange;
   }
 
   /* ---------------------------------------------------------- the tail */
+
+  /**
+   * Ears back, when something will not leave.
+   *
+   * These ride on top of whatever the clip is doing, and the ear bones
+   * hang off the head — so the head aims first and the ears fold on the
+   * result, which is the order the animal does it in.
+   */
+  private ears(turns: Turn[]): void {
+    if (this.annoyed < 0.01) return;
+    const back = this.annoyed * TUNING.earsBack;
+    for (const [name, share] of [
+      ['RigLEar1', 1], ['RigREar1', 1],
+      ['RigLEar2', TUNING.earsFor], ['RigREar2', TUNING.earsFor],
+    ] as [string, number][]) {
+      const j = BONE[name];
+      if (j === undefined) continue;
+      turns.push({ joint: j, yaw: 0, pitch: -back * share });
+    }
+  }
 
   /**
    * A travelling wave down the tail.
@@ -520,8 +599,8 @@ export class Cat {
    * the sitting cat has a dead tail.
    */
   private tail(turns: Turn[]): void {
-    const amp = (1.1 + 3.4 * this.interest) * DEG;
-    const speed = 0.5 + 1.5 * this.interest;
+    const amp = (1.1 + 3.4 * this.interest + 5.0 * this.annoyed) * DEG;
+    const speed = (0.5 + 1.5 * this.interest) * (1 + 1.1 * this.annoyed);
     for (let i = 0; i < 6; i++) {
       const j = BONE[`RigTail${i + 1}`];
       if (j === undefined) continue;

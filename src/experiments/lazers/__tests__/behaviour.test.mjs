@@ -28,8 +28,17 @@ function run(cat, pt, secs, log) {
 }
 
 const HIGH = { x: 1.5, y: 0.55, z: 0.3, present: true };
-const FLOOR = { x: 1.0, y: -0.8, z: 0.15, present: true };
+/*
+ * Two floors, because they mean different things now.
+ *
+ * `FLOOR` is out at 1.9 from the cat — past the 1.2 it takes for stalking
+ * to be worth doing, so the cat gets up and goes. `UNDERFOOT` is at 0.63,
+ * where there is nothing to close and it sits up and stares instead.
+ */
+const FLOOR = { x: 1.9, y: -0.8, z: 0.6, present: true };
+const UNDERFOOT = { x: 0.6, y: -0.6, z: 0.3, present: true };
 const turn = (d, j) => d.turns.find((t) => t.joint === j) ?? { yaw: 0, pitch: 0 };
+const sum = (d, j) => d.turns.filter((t) => t.joint === j).reduce((a, t) => a + t.pitch, 0);
 
 /* --- the cat sits until something goes near the floor ------------------ */
 {
@@ -54,6 +63,30 @@ const turn = (d, j) => d.turns.find((t) => t.joint === j) ?? { yaw: 0, pitch: 0 
   const up = run(cat, HIGH, 6, back);
   ok('sits back down when the laser leaves the floor', up.clip === 'sit', back.join(' → '));
   ok('sits down through a transition too', back.includes('settle'), back.join(' → '));
+}
+
+/* --- a dot at its feet is a different matter -------------------------- */
+{
+  const cat = new Cat(() => 0.5);
+  const log = [];
+  run(cat, HIGH, 1, log);
+  const d = run(cat, UNDERFOOT, 8, log);
+  ok('does not stalk something already at its feet', !log.includes('sneak'),
+     log.join(' → '));
+  ok('puts its ears back at it instead',
+     -sum(d, BONE.RigLEar1) > 20 * (Math.PI / 180),
+     `${deg(-sum(d, BONE.RigLEar1))}° of ear`);
+  /* The head has to be able to get there: a dot on the floor in front of
+     a sitting cat is about 49° below its head, and a symmetric 26° limit
+     left it staring over the top of the thing. */
+  ok('and looks down far enough to see it',
+     sum(d, BONE.RigHead) + sum(d, BONE.RigNeck4) + sum(d, BONE.RigNeck3) < -35 * (Math.PI / 180),
+     `${deg(sum(d, BONE.RigHead) + sum(d, BONE.RigNeck4) + sum(d, BONE.RigNeck3))}°`);
+
+  /* And it lets go once the dot leaves. */
+  const calm = run(cat, HIGH, 5);
+  ok('and the ears come back up afterwards',
+     -sum(calm, BONE.RigLEar1) < 3 * (Math.PI / 180), `${deg(-sum(calm, BONE.RigLEar1))}°`);
 }
 
 /* --- the swipe is a real clip, and it is not continuous ---------------- */
