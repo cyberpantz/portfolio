@@ -2,12 +2,11 @@
  * Lazers — a cat made of points, watching a laser dot.
  *
  * This file owns everything that is not the cat: whether the machine can
- * draw it, whether the visitor wants motion or sound, and what to show when
- * the answer to either is no.
+ * draw it, whether the visitor wants motion, and what to show when the
+ * answer to either is no.
  */
 
-import { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react';
-import { SynthPurr, type Purr } from './purr';
+import { lazy, Suspense, useEffect, useState } from 'react';
 import s from './lazers.module.css';
 
 /* ~600KB of three.js has no business loading for someone who will be shown
@@ -24,35 +23,17 @@ function canRunWebGL(): boolean {
 }
 
 export default function Lazers() {
-  /* Three separate facts. Conflating capability with preference is how you
+  /* Two separate facts. Conflating capability with preference is how you
      build a control that cannot be undone. */
   const [able, setAble] = useState<boolean | null>(null);
   const [reduced, setReduced] = useState(false);
-  const [sound, setSound] = useState(false);
-  const purr = useRef<Purr | null>(null);
 
   useEffect(() => {
     setAble(canRunWebGL());
     setReduced(!!window.matchMedia?.('(prefers-reduced-motion: reduce)').matches);
   }, []);
 
-  useEffect(() => () => purr.current?.stop(), []);
 
-  const toggleSound = useCallback(async () => {
-    if (sound) {
-      purr.current?.stop();
-      purr.current = null;
-      setSound(false);
-      return;
-    }
-    /* Created inside the click, because every browser requires a gesture
-       and a context made anywhere else arrives suspended and silent. */
-    const p = new SynthPurr();
-    await p.start();
-    p.setEnergy(0.35);
-    purr.current = p;
-    setSound(p.running);
-  }, [sound]);
 
   const deciding = able === null;
   const showCat = able === true && !reduced;
@@ -80,11 +61,6 @@ export default function Lazers() {
 
       <div className={s.bar}>
         <p className={s.hint} aria-hidden="true">{showCat ? 'Move the laser' : ''}</p>
-        {showCat && (
-          <button type="button" className={s.sound} onClick={toggleSound} aria-pressed={sound}>
-            {sound ? 'Purr on' : 'Purr off'}
-          </button>
-        )}
       </div>
 
       {/*
