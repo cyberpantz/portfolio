@@ -85,6 +85,29 @@ export const TUNING = {
   bodyNotice: 14 * DEG,
 
   /*
+   * Directly above a joint there is no direction to face.
+   *
+   * Aiming is `atan2` of a horizontal offset. Put the laser over the point
+   * you are measuring from and that offset goes to zero, where atan2 is
+   * undefined and a pixel of hand tremor swings the answer through a
+   * half-circle. Inside this radius the cat keeps the heading it had and
+   * just tips its head — which is what a cat does with something held over
+   * it: it looks up, it does not pirouette.
+   */
+  overhead: 0.3,
+
+  /*
+   * Once committed to a turn, see it through.
+   *
+   * Re-deciding the heading every time the neck runs out of travel lets
+   * the cat argue with itself: it commits, the turn moves the head, the
+   * new reading disagrees, it commits the other way. A turn holds until
+   * the hips have nearly arrived, or until it has plainly stalled.
+   */
+  arrived: 9 * DEG,
+  recommit: 1.4,
+
+  /*
    * The turn is not rigid.
    *
    * `shoulders` chase the target; the hips chase the shoulders, slower.
@@ -126,6 +149,11 @@ function clamp(v: number, lo: number, hi: number): number {
   return v < lo ? lo : v > hi ? hi : v;
 }
 
+/** An angle difference brought into (−π, π]. */
+function wrap(a: number): number {
+  return a - Math.PI * 2 * Math.round(a / (Math.PI * 2));
+}
+
 export class Cat {
   private t = 0;
   private aim = { yaw: 0, pitch: 0 };
@@ -137,6 +165,7 @@ export class Cat {
   private body = 0;
   private shoulders = 0;
   private bodyWant = 0;
+  private sinceCommit = 99;
 
   /** The clip playing, the one fading out, and the fade's progress. */
   private clip = 'sit';
@@ -164,6 +193,7 @@ export class Cat {
   update(dt: number, world: Sense, head: [number, number, number]): Drive {
     this.t += dt;
     this.time += dt;
+    this.sinceCommit += dt;
     this.fromTime += dt;
     if (this.fade < 1) this.fade = Math.min(1, this.fade + dt / TUNING.fade);
 
@@ -223,16 +253,49 @@ export class Cat {
          * the cursor, which is funny exactly once.
          */
         const dx = s.x - head[0], dy = s.y - head[1], dz = s.z - head[2];
-        const wanted = -Math.atan2(dz, dx);
-        this.want.yaw = clamp(wanted, -TUNING.yawMax, TUNING.yawMax);
-        this.want.pitch = clamp(Math.atan2(dy, Math.hypot(dx, dz)), -TUNING.pitchMax, TUNING.pitchMax);
+        const reach = Math.hypot(dx, dz);
 
-        /* Whatever the neck cannot cover becomes a heading change, and
-           only past `bodyNotice` — otherwise the cat creeps round by a
-           degree at a time and never stops moving. */
-        const overflow = wanted - this.want.yaw;
-        if (Math.abs(overflow) > TUNING.bodyNotice || Math.abs(wanted) > TUNING.bodyAt) {
-          this.bodyWant = this.body + overflow;
+        /* Pitch is well behaved everywhere: straight overhead it saturates
+           at `pitchMax`, which is a cat looking up. */
+        this.want.pitch = clamp(Math.atan2(dy, reach), -TUNING.pitchMax, TUNING.pitchMax);
+
+        /* Yaw is not. Inside `overhead` the horizontal direction is noise,
+           so the cat keeps the aim it had. */
+        if (reach > TUNING.overhead) {
+          this.want.yaw = clamp(-Math.atan2(dz, dx), -TUNING.yawMax, TUNING.yawMax);
+        }
+
+        /*
+         * The body decides from the PIVOT, not from the head.
+         *
+         * Measuring the turn from the head is a feedback loop, because
+         * turning is what moves the head. The head swings about half a
+         * body-length as the cat comes round, so a laser nearer than that
+         * ends up on the other side of it, the next reading disagrees with
+         * the last, and the cat argues with itself — six hundred degrees
+         * of travel from a pointer sitting still near the middle of the
+         * frame, which is exactly where a hand rests.
+         *
+         * The pivot is the point the cat rotates ABOUT. It does not move
+         * when the cat turns, by definition, so reading the heading from
+         * it cannot feed back. The head still aims at the laser; it just
+         * no longer gets a vote on which way the body goes.
+         */
+        const pv = this.pivot();
+        const bx = s.x - pv[0], bz = s.z - pv[2];
+        if (Math.hypot(bx, bz) > TUNING.overhead) {
+          const toward = -Math.atan2(bz, bx);
+          /* Whatever the neck cannot cover becomes a heading change, and
+             only past `bodyNotice` — otherwise the cat creeps round by a
+             degree at a time and never stops moving. */
+          const overflow = toward - clamp(toward, -TUNING.yawMax, TUNING.yawMax);
+          const worth = Math.abs(overflow) > TUNING.bodyNotice || Math.abs(toward) > TUNING.bodyAt;
+          const free = Math.abs(wrap(this.bodyWant - this.body)) < TUNING.arrived
+            || this.sinceCommit > TUNING.recommit;
+          if (worth && free) {
+            this.bodyWant = this.body + overflow;
+            this.sinceCommit = 0;
+          }
         }
       }
       this.interest += (1 - this.interest) * Math.min(1, dt * 2.5);

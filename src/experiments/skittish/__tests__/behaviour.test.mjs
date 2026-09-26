@@ -127,5 +127,65 @@ const turn = (d, j) => d.turns.find((t) => t.joint === j) ?? { yaw: 0, pitch: 0 
   ok('the blend is a fraction', d.blend >= 0 && d.blend <= 1);
 }
 
+/* --- the cat does not argue with itself -------------------------------- */
+{
+  /*
+   * The head RIDES the body, so it has to ride it here too.
+   *
+   * An earlier version of this harness held the head at its resting place
+   * and found nothing wrong, because the bug is a feedback loop: the cat
+   * turns, the turn moves the head, the next reading taken from the head
+   * disagrees with the last, and it turns back. With the head pinned there
+   * is no loop and the test passes a cat that spins on the spot.
+   */
+  const REST = [0.58, 0.53, -0.19];
+  const ride = (facing, pivot) => {
+    const c = Math.cos(facing), s = Math.sin(facing);
+    const X = REST[0] - pivot[0], Z = REST[2] - pivot[2];
+    return [pivot[0] + X * c + Z * s, REST[1], pivot[2] - X * s + Z * c];
+  };
+
+  const spin = (at, secs = 20) => {
+    const cat = new Cat();
+    let head = REST, pivot = [0.143, 0, -0.133];
+    let prev = 0, dir = 0, flips = 0, travel = 0;
+    for (let i = 0; i < secs / dt; i++) {
+      const d = cat.update(dt, at(i * dt), head);
+      pivot = d.pivot;
+      head = ride(d.facing, pivot);
+      const v = d.facing - prev;
+      travel += Math.abs(v);
+      const sg = Math.sign(v);
+      if (sg && dir && sg !== dir && Math.abs(v) > 2e-4) flips++;
+      if (sg) dir = sg;
+      prev = d.facing;
+    }
+    return { flips, travel: (travel * 180) / Math.PI };
+  };
+
+  /* A hand resting near the middle of the frame, moving the way a hand
+     does. This is the case that spun the cat through 591 degrees. */
+  const middle = spin((t) => ({
+    x: 0.10 * Math.sin(t * 1.7), y: 0.95, z: 0.10 * Math.cos(t * 1.3), present: true,
+  }));
+  ok('does not oscillate with the laser above it',
+     middle.flips === 0 && middle.travel < 180,
+     `${middle.flips} reversals, ${middle.travel.toFixed(0)}° travelled`);
+
+  const centre = spin((t) => ({
+    x: 0.10 * Math.sin(t * 1.7), y: 0.35, z: 0.10 * Math.cos(t * 1.3), present: true,
+  }));
+  ok('does not oscillate with the laser on top of it',
+     centre.flips === 0 && centre.travel < 180,
+     `${centre.flips} reversals, ${centre.travel.toFixed(0)}° travelled`);
+
+  /* And it still turns when there is a real reason to: a laser that walks
+     round behind it should produce a turn, not a standoff. */
+  const behind = spin(() => ({ x: -1.3, y: 0.3, z: 0.9, present: true }), 10);
+  ok('still turns to face a laser behind it', behind.travel > 45,
+     `${behind.travel.toFixed(0)}° travelled`);
+  ok('and does not overshoot getting there', behind.flips <= 1, `${behind.flips} reversals`);
+}
+
 console.log(fail ? `\n${fail} failed` : '\nall passed');
 process.exit(fail ? 1 : 0);
