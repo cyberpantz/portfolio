@@ -43,3 +43,12 @@ src/data/raw/
 # esbuild side-output from the test bundler. It was committed once by
 # accident and then showed up as a diff on every test run.
 src/experiments/*/__tests__/.bundle.*
+
+# Third-party reference assets. Things downloaded to look at and measure
+# against — not to ship. A personal-use-licensed model is fine to study on
+# a laptop and is not fine in a public repo, and `git add -A` does not know
+# the difference.
+docs/resources/Cat_v1_L3*/
+docs/resources/**/*.obj
+docs/resources/**/*.fbx
+docs/resources/**/*.mtl
