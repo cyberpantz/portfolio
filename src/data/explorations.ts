@@ -39,6 +39,17 @@ export interface Exploration {
 
 export const EXPLORATIONS: Exploration[] = [
   {
+    id: 'skittish',
+    /* In progress. Reachable at /explorations/skittish, off the grid and
+       noindexed until it earns a place. */
+    hidden: true,
+    name: 'Skittish',
+    type: 'Toy',
+    tags: ['WebGL', 'GPGPU', 'Shaders', 'Web Audio'],
+    url: '/explorations/skittish',
+    desc: 'A hundred thousand particles settle into the shape of a sitting cat and move like cloth on a line. Reach for it and they flow away from your hand; stop reaching and they find their places again. It purrs, quietly, if you let it.',
+  },
+  {
     id: 'tilt',
     /* Off the grid while the writing is worked on. The page still builds and
        is reachable at /explorations/tilt; the layout noindexes it so a draft
