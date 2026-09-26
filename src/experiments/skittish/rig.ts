@@ -262,7 +262,28 @@ export function subtrees(rig: Rig): Uint8Array[] {
   return out.map((a) => Uint8Array.from(a));
 }
 
-/** `world · invBind` per bone, which is what the shader consumes. */
+/**
+ * `world · invBind` per bone, TRANSPOSED, ready for the bone texture.
+ *
+ * Everything above is row-major, which is how the arithmetic reads. The
+ * shader is not: it rebuilds each matrix with `mat4(a, b, c, d)`, and
+ * GLSL's mat4 constructor takes COLUMNS, so what the texture must hold is
+ * the transpose.
+ *
+ * This is not a detail that announces itself. Feeding the row-major form
+ * to the shader does not blank the cat or throw — it draws a cat-shaped
+ * spray of shredded fans, because transposing a rigid transform turns its
+ * translation into three stray scale terms. `three.js` hides this by
+ * making `Matrix4.toArray` column-major; hand-rolled matrices have to
+ * remember it.
+ */
 export function skinMatrices(rig: Rig, world: Float32Array, out: Float32Array): void {
-  for (let b = 0; b < rig.bones; b++) mul(out, b * 16, world, b * 16, rig.invBind, b * 16);
+  const m = skinMatrices.m ??= new Float32Array(16);
+  for (let b = 0; b < rig.bones; b++) {
+    mul(m, 0, world, b * 16, rig.invBind, b * 16);
+    for (let r = 0; r < 4; r++) {
+      for (let c = 0; c < 4; c++) out[b * 16 + c * 4 + r] = m[r * 4 + c];
+    }
+  }
 }
+skinMatrices.m = undefined as Float32Array | undefined;
