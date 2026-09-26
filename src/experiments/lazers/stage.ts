@@ -16,18 +16,39 @@ export const CAM_FOV = 34;
 export const CAM_DIR: readonly [number, number, number] = norm([0.62, 0.22, 1]);
 
 /*
- * Far enough back to leave air around the animal.
+ * Far enough back for everything the cat DOES, not just for how it sits.
  *
- * At 3.05 the cat filled about nine tenths of the frame's height, which is
- * a portrait rather than a scene — and the laser needs somewhere to be that
- * is not on top of the cat. 3.7 puts it at roughly three quarters and gives
- * the dot room to circle.
+ * Framed on the sitting pose it filled about four fifths of the height,
+ * which looked right until it moved: measured across every clip and eight
+ * headings, the range of motion came to 118% of the frame. It was being
+ * cut off at the bottom by nearly a fifth of the frame and at the sides by
+ * nearly half — the body and the tail going off the edge whenever it stood
+ * up or turned side-on.
+ *
+ * 4.6 is the closest the camera can sit and still keep all of that inside
+ * the frame vertically. What is left is about 9% of the width lost off the
+ * side in one pose: a standing cat turned fully broadside, the widest
+ * silhouette it has. Losing a tail tip at the edge of frame in that one
+ * transient reads as a crop; losing the feet off the bottom of every
+ * standing pose reads as a bug.
+ *
+ * The cat is smaller for it — 65% of the frame's height rather than 83% —
+ * but the frame itself grew when the caption came off, so on screen it
+ * gives up rather less than that.
  */
-export const CAM_DIST = 3.7;
+export const CAM_DIST = 4.6;
 
-/** What the camera aims at: slightly above the middle, so the cat sits low
-    in frame with headroom rather than centred like a specimen. */
-export const CAM_LOOK: readonly [number, number, number] = [0, 0.12, 0];
+/*
+ * What the camera aims at, and it is BELOW the cat, not above.
+ *
+ * Aiming above the middle puts the subject low in frame, which is why this
+ * was +0.12 — headroom, rather than a specimen centred in a box. But the
+ * cat rises when it stands and reaches when it swipes, so headroom was the
+ * wrong thing to buy: it needed floor. −0.31 centres the whole range of
+ * motion, and leaves about a quarter of the frame clear beneath a sitting
+ * one.
+ */
+export const CAM_LOOK: readonly [number, number, number] = [0, -0.31, 0];
 
 /**
  * How far the pointer plane is tilted from facing the camera toward lying

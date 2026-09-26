@@ -106,7 +106,7 @@ export const TUNING = {
    * just tips its head — which is what a cat does with something held over
    * it: it looks up, it does not pirouette.
    */
-  overhead: 0.3,
+  overhead: 0.55,
 
   /*
    * The same idea for the head, and much smaller.
@@ -178,8 +178,8 @@ export const TUNING = {
    * how long the cat stays down after the laser leaves the floor, so a
    * pointer wavering at the threshold does not make it bob up and down.
    */
-  crouchFrom: -0.02,
-  crouchAt: -0.45,
+  crouchFrom: -0.35,
+  crouchAt: -0.78,
   hold: 1.1,
 
   /*
@@ -191,10 +191,10 @@ export const TUNING = {
    * piece of body language.
    *
    * Measured against the frame: with the pointer low, the middle of the
-   * canvas lands about 0.95 from the cat and the sides reach 1.3 to 2.0.
-   * 1.2 separates "in front of my face" from "over there".
+   * canvas lands about 1.54 from the cat and the bottom corners reach 1.84
+   * and 2.09. 1.7 separates "in front of my face" from "over there".
    */
-  stalkFrom: 1.2,
+  stalkFrom: 1.7,
 
   /*
    * Ears.

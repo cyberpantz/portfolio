@@ -31,12 +31,12 @@ const HIGH = { x: 1.5, y: 0.55, z: 0.3, present: true };
 /*
  * Two floors, because they mean different things now.
  *
- * `FLOOR` is out at 1.9 from the cat — past the 1.2 it takes for stalking
- * to be worth doing, so the cat gets up and goes. `UNDERFOOT` is at 0.63,
+ * `FLOOR` is out at 1.93 from the cat — past the 1.7 it takes for stalking
+ * to be worth doing, so the cat gets up and goes. `UNDERFOOT` is at 0.92,
  * where there is nothing to close and it sits up and stares instead.
  */
-const FLOOR = { x: 1.9, y: -0.8, z: 0.6, present: true };
-const UNDERFOOT = { x: 0.6, y: -0.6, z: 0.3, present: true };
+const FLOOR = { x: 2.0, y: -0.8, z: 0.4, present: true };
+const UNDERFOOT = { x: 1.0, y: -0.6, z: 0.2, present: true };
 const turn = (d, j) => d.turns.find((t) => t.joint === j) ?? { yaw: 0, pitch: 0 };
 const sum = (d, j) => d.turns.filter((t) => t.joint === j).reduce((a, t) => a + t.pitch, 0);
 
@@ -96,7 +96,7 @@ const sum = (d, j) => d.turns.filter((t) => t.joint === j).reduce((a, t) => a + 
   run(cat, FLOOR, 3);
   let swipes = 0;
   let was = '';
-  const near = { x: 0.95, y: -0.8, z: 0.05, present: true };
+  const near = { x: 0.9, y: -0.5, z: 0.0, present: true };
   for (let i = 0; i < 20 / dt; i++) {
     const d = cat.update(dt, near, HEAD);
     if (d.clip === 'swipe' && was !== 'swipe') swipes++;

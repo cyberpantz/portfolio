@@ -127,7 +127,7 @@ const deg = (x) => `${x.toFixed(0)}°`;
 }
 {
   /* Low and off to the side: far enough away to be worth getting up for. */
-  const r = hold(-0.85, -0.8, 18);
+  const r = hold(-0.9, -0.8, 18);
   ok('pointer low and to the side: it does stalk', r.seen.has('sneak'),
      [...r.seen].join('/'));
   ok('and its ears stay up while it does', r.ears < 8, `${deg(r.ears)} of ear`);
@@ -139,13 +139,12 @@ const deg = (x) => `${x.toFixed(0)}°`;
   ok('pointer on the cat: it stops turning',
      (r.travel * 180) / Math.PI < 15, `${deg((r.travel * 180) / Math.PI)} travelled`);
   /*
-   * And does nothing else either. A dot resting on the cat's own chest is
-   * 0.41 from its paw measured horizontally, just inside the 0.42 reach —
-   * so before the height gate was measured against the paw rather than
-   * against a fixed number, the cat sat there batting at its own ribs.
+   * And stays sitting. With the camera aimed lower, the middle of the frame
+   * falls near the cat's front feet rather than on its body — so a paw may
+   * well come up for it, which is fine. What it must not do is get up.
    */
-  ok('and sits, rather than batting at its own chest',
-     [...r.seen].every((c) => c === 'sit'), [...r.seen].join('/'));
+  ok('and does not get up for it',
+     !r.seen.has('sneak') && !r.seen.has('rise'), [...r.seen].join('/'));
 }
 {
   const l = hold(-0.85, 0.1), r = hold(0.85, 0.1);
@@ -217,7 +216,7 @@ const deg = (x) => `${x.toFixed(0)}°`;
   for (let i = 0; i < 30 / dt; i++) {
     /* Low and close in — where the cat sits up, stares, and swats. A dot
        further out is something it stalks instead, and never reaches. */
-    const d = cat.update(dt, laserAt(0, -0.5), head, paw);
+    const d = cat.update(dt, laserAt(0, -0.25), head, paw);
     if (d.clip === 'swipe') {
       if (!wasSwipe) poised++;
       if (d.time > TUNING.poiseAt + 1e-6) struck++;

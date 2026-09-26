@@ -40,9 +40,6 @@ export interface Exploration {
 export const EXPLORATIONS: Exploration[] = [
   {
     id: 'lazers',
-    /* In progress. Reachable at /explorations/lazers, off the grid and
-       noindexed until it earns a place. */
-    hidden: true,
     name: 'Lazers',
     type: 'Toy',
     tags: ['WebGL', 'Shaders', 'GPU skinning', 'Rigging'],
