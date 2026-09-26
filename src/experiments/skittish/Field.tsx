@@ -151,6 +151,7 @@ function composePose(pose: Pose, out: Float32Array): void {
 type Ptr = { x: number; y: number; z: number; present: boolean };
 
 function Cloud3D({ cloud, ptr }: { cloud: Cloud; ptr: React.MutableRefObject<Ptr> }) {
+  const group = useRef<THREE.Points>(null);
   const gl = useThree((s) => s.gl);
   const camera = useThree((s) => s.camera);
   const cat = useMemo(() => new Cat(), []);
@@ -245,12 +246,22 @@ function Cloud3D({ cloud, ptr }: { cloud: Cloud; ptr: React.MutableRefObject<Ptr
        integrated, so it cannot explode — but the cat would teleport, and a
        clamp is cheaper than explaining that. */
     const dt = Math.min(delta, 1 / 20);
-    composePose(cat.update(dt, ptr.current), boneData);
+    const { pose, facing } = cat.update(dt, ptr.current);
+    composePose(pose, boneData);
     boneTex.needsUpdate = true;
+    /*
+     * The heading is an object rotation, not a bone.
+     *
+     * Turning the whole animal is not a joint doing anything — every bone
+     * keeps its pose and the thing they belong to swings round. Trying to
+     * express it as a root bone would mean re-baking with the pelvis
+     * unfrozen, for a transform three.js already applies for free.
+     */
+    if (group.current) group.current.rotation.y = facing;
     material.uniforms.uScale.value = (gl.getPixelRatio() * state.size.height) / 700;
   });
 
-  return <points geometry={geometry} material={material} frustumCulled={false} />;
+  return <points ref={group} geometry={geometry} material={material} frustumCulled={false} />;
 }
 
 /**
@@ -261,38 +272,48 @@ function Cloud3D({ cloud, ptr }: { cloud: Cloud; ptr: React.MutableRefObject<Ptr
  * whole interaction explains itself before anyone reads a caption. An arrow
  * pointer explains nothing.
  *
- * Drawn as a single additive point with a soft falloff, and given a small
- * tremor — a hand holding a laser is never quite still, and a perfectly
- * steady dot reads as a UI element rather than as something being held.
+ * ── Why this is a quad and not a point ──────────────────────────────────
+ *
+ * It was a point sprite, and it vanished in places. Two reasons, both
+ * intrinsic to point sprites and neither fixable by tuning:
+ *
+ *   · gl_PointSize is capped by the driver — ALIASED_POINT_SIZE_RANGE is
+ *     63 or 64 on a great many GPUs. A dot sized for a retina display asks
+ *     for about 67, and behaviour past the cap is undefined: some drivers
+ *     clamp, some drop the primitive outright.
+ *   · a point is culled on its CENTRE. Near an edge the whole sprite
+ *     disappears while half of it should still be on screen, which reads
+ *     as dead zones around the border.
+ *
+ * A quad turned to face the camera has neither limit, and costs two
+ * triangles.
  */
 function Laser({ at }: { at: React.MutableRefObject<{ x: number; y: number; z: number; present: boolean }> }) {
-  const mesh = useRef<THREE.Points>(null);
-  const geo = useMemo(() => {
-    const g = new THREE.BufferGeometry();
-    g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(3), 3));
-    g.boundingSphere = new THREE.Sphere(new THREE.Vector3(), 10);
-    return g;
-  }, []);
+  const mesh = useRef<THREE.Mesh>(null);
+  const geo = useMemo(() => new THREE.PlaneGeometry(1, 1), []);
   const mat = useMemo(
     () => new THREE.ShaderMaterial({
-      uniforms: { uSize: { value: 26 }, uScale: { value: 1 } },
+      uniforms: { uT: { value: 0 } },
       vertexShader: `
-        uniform float uSize; uniform float uScale;
+        varying vec2 vUv;
         void main() {
-          vec4 mv = modelViewMatrix * vec4(position, 1.0);
-          gl_Position = projectionMatrix * mv;
-          gl_PointSize = uSize * uScale;
+          vUv = uv;
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
         }`,
       fragmentShader: `
         precision mediump float;
+        uniform float uT;
+        varying vec2 vUv;
         void main() {
-          float d = length(gl_PointCoord - 0.5) * 2.0;
+          float d = length(vUv - 0.5) * 2.0;
           if (d > 1.0) discard;
-          /* A hot core with a wide soft halo, which is what a laser on a
-             surface actually looks like — not a flat disc. */
-          float core = smoothstep(0.34, 0.0, d);
-          float halo = smoothstep(1.0, 0.16, d) * 0.5;
-          gl_FragColor = vec4(mix(vec3(1.0, 0.16, 0.12), vec3(1.0, 0.72, 0.68), core), core + halo);
+          /* A hot core inside a wide soft halo, which is what a laser on a
+             surface looks like — not a flat disc. The core flickers very
+             slightly, the way a cheap diode does. */
+          float core = smoothstep(0.30, 0.0, d) * (0.93 + 0.07 * sin(uT * 47.0));
+          float halo = smoothstep(1.0, 0.14, d) * 0.45;
+          vec3 tint = mix(vec3(1.0, 0.13, 0.10), vec3(1.0, 0.78, 0.74), core);
+          gl_FragColor = vec4(tint, clamp(core + halo, 0.0, 1.0));
         }`,
       transparent: true,
       depthTest: false,
@@ -303,22 +324,30 @@ function Laser({ at }: { at: React.MutableRefObject<{ x: number; y: number; z: n
   );
   useEffect(() => () => { geo.dispose(); mat.dispose(); }, [geo, mat]);
 
-  useFrame(({ clock, gl, size }) => {
+  useFrame(({ clock, camera }) => {
     if (!mesh.current) return;
     const p = at.current;
     mesh.current.visible = p.present;
     if (!p.present) return;
+
     const t = clock.elapsedTime;
+    /* A hand holding a laser is never quite still, and a perfectly steady
+       dot reads as a UI element rather than as something being held. */
     const shake = 0.004;
     mesh.current.position.set(
       p.x + Math.sin(t * 23.1) * shake,
       p.y + Math.sin(t * 19.7 + 1.3) * shake,
       p.z,
     );
-    mat.uniforms.uScale.value = (gl.getPixelRatio() * size.height) / 700;
+    /* Billboard, and scale with distance so the dot holds a constant size
+       on screen however the camera is framed. */
+    mesh.current.quaternion.copy(camera.quaternion);
+    const d = mesh.current.position.distanceTo(camera.position);
+    mesh.current.scale.setScalar(d * 0.055);
+    mat.uniforms.uT.value = t;
   });
 
-  return <points ref={mesh} geometry={geo} material={mat} frustumCulled={false} />;
+  return <mesh ref={mesh} geometry={geo} material={mat} frustumCulled={false} renderOrder={10} />;
 }
 
 function Rig() {

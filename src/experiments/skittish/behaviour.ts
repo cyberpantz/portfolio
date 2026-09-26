@@ -54,6 +54,21 @@ export const TUNING = {
   pawSwipe: 0.42,
   pawEvery: [0.55, 1.5] as [number, number],
 
+  /*
+   * When the body gives up and turns.
+   *
+   * A cat aims in three stages: eyes, then head, then body. The head takes
+   * every small correction, and the body only commits once the head has
+   * run out of neck. `bodyAt` is where that happens — past this much yaw
+   * the shoulders come round and the head un-cranes as they do.
+   *
+   * Slower than the head by a wide margin, because turning a whole animal
+   * is a decision and turning a head is a glance.
+   */
+  bodyAt: 38 * DEG,
+  bodyTurn: 0.62,
+  bodyNotice: 14 * DEG,
+
   /* Breath, at rest and when the cat is interested. A watching cat holds
      its breath a little. */
   breathe: 1.9 * DEG,
@@ -100,14 +115,33 @@ export class Cat {
   private interest = 0;
 
   /** 0 at rest, 1 at full stretch, and the phase of the current swipe. */
+  /** Which way the whole animal is facing, and where it wants to face. */
+  private body = 0;
+  private bodyWant = 0;
+
   private paw = 0;
   private swiping = false;
   private swipeT = 0;
   private nextSwipe = 0;
 
-  update(dt: number, s: Sense): Pose {
+  /** The body's heading, in radians about the world up axis. */
+  get facing(): number {
+    return this.body;
+  }
+
+  update(dt: number, world: Sense): { pose: Pose; facing: number } {
     this.t += dt;
     const pose: Pose = new Map();
+
+    /*
+     * Everything below works in the cat's own frame.
+     *
+     * The body turns, so a pointer that has not moved in the world HAS
+     * moved relative to the cat. Doing the head and paw maths in world
+     * space would make the cat chase its own rotation — it turns toward
+     * the laser, which then appears to have shifted, so it turns again.
+     */
+    const s = this.toLocal(world);
 
     /* ---- deciding where to look -------------------------------------- */
     if (s.present) {
@@ -131,8 +165,21 @@ export class Cat {
          */
         const head = JOINTS[JOINT.RigHead].at;
         const dx = s.x - head[0], dy = s.y - head[1], dz = s.z - head[2];
-        this.want.yaw = clamp(-Math.atan2(dz, dx), -TUNING.yawMax, TUNING.yawMax);
+        const wanted = -Math.atan2(dz, dx);
+        this.want.yaw = clamp(wanted, -TUNING.yawMax, TUNING.yawMax);
         this.want.pitch = clamp(Math.atan2(dy, Math.hypot(dx, dz)), -TUNING.pitchMax, TUNING.pitchMax);
+
+        /*
+         * Hand the overflow to the body.
+         *
+         * Whatever the neck cannot cover becomes a heading change, and
+         * only past `bodyNotice` — otherwise the cat creeps round by a
+         * degree at a time and never stops moving.
+         */
+        const overflow = wanted - this.want.yaw;
+        if (Math.abs(overflow) > TUNING.bodyNotice || Math.abs(wanted) > TUNING.bodyAt) {
+          this.bodyWant = this.body + overflow;
+        }
       }
       this.interest += (1 - this.interest) * Math.min(1, dt * 2.5);
     } else {
@@ -146,6 +193,17 @@ export class Cat {
     const k = 1 - Math.exp(-dt / TUNING.turn);
     this.aim.yaw += (this.want.yaw - this.aim.yaw) * k;
     this.aim.pitch += (this.want.pitch - this.aim.pitch) * k;
+
+    /*
+     * The body follows, slowly, and the head gives back what it borrowed.
+     *
+     * As the shoulders come round, the angle the neck has to hold shrinks
+     * — which happens for free, because the head's target is recomputed in
+     * the cat's own frame each time it re-aims. The head leads and then
+     * relaxes, which is the shape of the real movement.
+     */
+    const bk = 1 - Math.exp(-dt / TUNING.bodyTurn);
+    this.body += (this.bodyWant - this.body) * bk;
 
     for (const [name, share] of TUNING.chain) {
       const j = JOINT[name];
@@ -175,7 +233,19 @@ export class Cat {
     /* ---- the paw ----------------------------------------------------- */
     this.bat(dt, s, pose);
 
-    return pose;
+    return { pose, facing: this.body };
+  }
+
+  /** World pointer into the cat's frame — the inverse of its heading. */
+  private toLocal(w: Sense): Sense {
+    const c = Math.cos(-this.body), sn = Math.sin(-this.body);
+    /* Rotation about the world up axis: x and z turn, y is untouched. */
+    return {
+      x: w.x * c + w.z * sn,
+      y: w.y,
+      z: -w.x * sn + w.z * c,
+      present: w.present,
+    };
   }
 
   /**
