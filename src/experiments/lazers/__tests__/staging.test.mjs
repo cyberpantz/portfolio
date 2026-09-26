@@ -153,6 +153,61 @@ const deg = (x) => `${x.toFixed(0)}°`;
      `left ${deg(l.face)} vs right ${deg(r.face)}`);
 }
 
+/* --- a dot going back and forth at its feet ---------------------------- */
+{
+  /*
+   * The neck does this, not the hips.
+   *
+   * Sitting and fixed on something underfoot, a sideways sweep of the hand
+   * should move the head and leave the body alone — the dot is close, so a
+   * small move swings a large angle at the pivot, and a body that answers
+   * every one of them shuffles on the spot forever. The neck reaches 62°
+   * either way, which is most of the frame at that distance.
+   */
+  const cat = new Cat(steady());
+  let head = [0.58, 0.53, -0.19];
+  let paw = [0.9, -0.76, -0.09];
+  let bodyTravel = 0, prevBody = 0;
+  let minYaw = 1e9, maxYaw = -1e9;
+
+  for (let i = 0; i < 26 / dt; i++) {
+    const now = i * dt;
+    /* Settle facing it for six seconds, then sweep left and right. */
+    /* ±0.30 of the frame. Measured: at this distance the dot sits 0.58
+       from the cat, and the neck's 62° covers out to about ±0.38 — past
+       that the body genuinely has to help, and should. */
+    const u = now < 6 ? 0 : 0.30 * Math.sin((now - 6) * 1.5);
+    const d = cat.update(dt, laserAt(u, -0.5), head, paw);
+
+    sampleClip(rig, rig.clips.get(d.clip), d.time, q, t);
+    if (d.from && d.blend < 1) {
+      sampleClip(rig, rig.clips.get(d.from), d.fromTime, q2, t2);
+      blendPose(rig.bones, q, t, q2, t2, 1 - d.blend);
+    }
+    composeWorld(rig, q, t, world);
+    for (const tn of d.turns) turnSubtree(rig, world, kids, tn.joint, tn.yaw, tn.pitch);
+    const h = BONE.RigHead * 16, w = BONE.RigLFLegAnkle * 16;
+    head = [world[h + 3], world[h + 7], world[h + 11]];
+    if (d.clip !== 'swipe') paw = [world[w + 3], world[w + 7], world[w + 11]];
+
+    if (now > 6) {
+      bodyTravel += Math.abs(d.facing - prevBody);
+      const yaw = TUNING.chain.reduce(
+        (a, [n]) => a + d.turns.filter((x) => x.joint === BONE[n]).reduce((b, x) => b + x.yaw, 0), 0
+      );
+      minYaw = Math.min(minYaw, yaw);
+      maxYaw = Math.max(maxYaw, yaw);
+    }
+    prevBody = d.facing;
+  }
+
+  const swept = ((maxYaw - minYaw) * 180) / Math.PI;
+  ok('a dot sweeping at its feet is followed by the head',
+     swept > 30, `${swept.toFixed(0)}° of neck`);
+  ok('and the body stays where it is',
+     (bodyTravel * 180) / Math.PI < 20, `${deg((bodyTravel * 180) / Math.PI)} of body`);
+}
+
 /* --- the paw goes up before it comes down ------------------------------ */
 {
   const cat = new Cat(steady());

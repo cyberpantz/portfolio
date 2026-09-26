@@ -109,6 +109,41 @@ export const TUNING = {
   overhead: 0.3,
 
   /*
+   * The same idea for the head, and much smaller.
+   *
+   * The head sits about 0.44 forward of the pivot, so once the cat has
+   * turned to face something a body-length away, that thing is only a
+   * couple of tenths from its nose — well inside a dead zone sized for the
+   * body. The head then stopped aiming entirely and sat pinned at its 62°
+   * limit while the dot went back and forth in front of it.
+   *
+   * The zone only has to cover the case it was built for: a laser directly
+   * above the skull, where the horizontal direction to it is genuinely
+   * undefined. A tenth of a body does that and leaves the near field to be
+   * tracked properly.
+   */
+  overheadHead: 0.12,
+
+  /*
+   * How far round a thing has to go before a cat that has ALREADY squared
+   * up to it will turn again.
+   *
+   * Two thresholds, not one. Acquiring something takes `bodyNotice`, so a
+   * dot arriving at the cat's feet gets faced properly. Once the body has
+   * arrived and settled, the bar goes up to this: the dot is close, a
+   * small move of the hand swings a large angle, and a body that answers
+   * every one of them shuffles on the spot forever. Between the two the
+   * neck does the work, which is what it is for.
+   *
+   * A single threshold fails whichever way it is set. Low, and the cat
+   * shuffles; high, and it never turns to face the thing in the first
+   * place — it sat at 58° off, watching out of the corner of its eye.
+   */
+  bodyRound: 75 * DEG,
+  /** How long the hips must hold still before the wider bar applies. */
+  squaredFor: 0.5,
+
+  /*
    * Once committed to a turn, see it through.
    *
    * Re-deciding the heading every time the neck runs out of travel lets
@@ -249,6 +284,8 @@ export class Cat {
   private shoulders = 0;
   private bodyWant = 0;
   private sinceCommit = 99;
+  /** How long the body has been where it wanted to be. */
+  private squared = 0;
 
   /** The clip playing, the one fading out, and the fade's progress. */
   private clip = 'sit';
@@ -286,6 +323,9 @@ export class Cat {
     this.t += dt;
     this.time += dt;
     this.sinceCommit += dt;
+    this.squared = Math.abs(wrap(this.bodyWant - this.body)) < TUNING.arrived
+      ? this.squared + dt
+      : 0;
     this.fromTime += dt;
     if (this.fade < 1) this.fade = Math.min(1, this.fade + dt / TUNING.fade);
 
@@ -343,9 +383,25 @@ export class Cat {
 
     /* ---- deciding where to look --------------------------------------- */
     if (s.present) {
+      /*
+       * A cat with something at its feet does not do the deliberate
+       * thing.
+       *
+       * `notice` and `settle` are what make it hold still and then commit,
+       * and at a distance that is the whole character. Up close, with a
+       * dot going back and forth in front of its nose, the same pause
+       * reads as a cat that is not paying attention — the head arrives
+       * somewhere the dot has already left. So both shrink to almost
+       * nothing as the cat fixes on something underfoot, and the neck
+       * spring tightens with them.
+       */
+      const keen = this.annoyed;
+      const notice = TUNING.notice * (1 - 0.85 * keen);
+      const settle = TUNING.settle * (1 - 0.9 * keen);
+
       const moved = this.seen.has ? Math.hypot(s.x - this.seen.x, s.y - this.seen.y) : Infinity;
-      this.dwell = moved > TUNING.notice ? this.dwell + dt : 0;
-      if (this.dwell > TUNING.settle) {
+      this.dwell = moved > notice ? this.dwell + dt : 0;
+      if (this.dwell > settle) {
         this.dwell = 0;
         this.seen = { x: s.x, y: s.y, has: true };
 
@@ -365,11 +421,18 @@ export class Cat {
            at `pitchMax`, which is a cat looking up. */
         this.want.pitch = clamp(Math.atan2(dy, reach), -TUNING.pitchDown, TUNING.pitchMax);
 
-        /* Yaw is not. Inside `overhead` the horizontal direction is noise,
-           so the cat keeps the aim it had. */
-        if (reach > TUNING.overhead) {
-          this.want.yaw = clamp(-Math.atan2(dz, dx), -TUNING.yawMax, TUNING.yawMax);
+        /*
+         * Yaw is not. Inside `overheadHead` the horizontal direction is
+         * noise — and the answer there is to look STRAIGHT AHEAD, not to
+         * hold the last angle. Holding it leaves the cat with its head
+         * cranked hard over, staring past a dot that is under its own
+         * chin, which is what it did.
+         */
+        let wanted = 0;
+        if (reach > TUNING.overheadHead) {
+          wanted = -Math.atan2(dz, dx);
         }
+        this.want.yaw = clamp(wanted, -TUNING.yawMax, TUNING.yawMax);
 
         /*
          * The body decides from the PIVOT, not from the head.
@@ -387,9 +450,8 @@ export class Cat {
          * it cannot feed back. The head still aims at the laser; it just
          * no longer gets a vote on which way the body goes.
          */
-        const pv = this.pivot();
         const bx = s.x - pv[0], bz = s.z - pv[2];
-        if (Math.hypot(bx, bz) > TUNING.overhead) {
+        if (ground > TUNING.overhead) {
           /*
            * The body goes all the way round, not just as far as the neck
            * cannot reach.
@@ -406,13 +468,27 @@ export class Cat {
            * fifth of a second and the hips take three times that, so the
            * look happens first and the body catches up.
            */
+          /*
+           * Watching something at its feet, the body stays put.
+           *
+           * The dot is close, so a small sideways move of the hand swings
+           * a large angle at the pivot, and a body that answers every one
+           * of them shuffles continuously. It has no reason to: the neck
+           * covers 62° either way, which is most of the frame at that
+           * distance. So while the cat is fixed on something underfoot the
+           * body only moves when the NECK has run out — measured at the
+           * head, where the running out actually happens.
+           */
           const toward = -Math.atan2(bz, bx);
-          const worth = Math.abs(toward) > TUNING.bodyNotice;
+          const holding = underfoot && this.squared > TUNING.squaredFor;
+          const worth = Math.abs(toward)
+            > (holding ? TUNING.bodyRound : TUNING.bodyNotice);
           const free = Math.abs(wrap(this.bodyWant - this.body)) < TUNING.arrived
             || this.sinceCommit > TUNING.recommit;
           if (worth && free) {
             this.bodyWant = this.shoulders + toward;
             this.sinceCommit = 0;
+            this.squared = 0;
           }
         }
       }
@@ -425,7 +501,7 @@ export class Cat {
       this.interest += (0 - this.interest) * Math.min(1, dt * 0.8);
     }
 
-    const k = 1 - Math.exp(-dt / TUNING.turn);
+    const k = 1 - Math.exp(-dt / (TUNING.turn * (1 - 0.5 * this.annoyed)));
     this.aim.yaw += (this.want.yaw - this.aim.yaw) * k;
     this.aim.pitch += (this.want.pitch - this.aim.pitch) * k;
 
