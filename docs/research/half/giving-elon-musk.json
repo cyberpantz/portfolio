@@ -1,0 +1,15 @@
+{
+ "person": "Elon Musk",
+ "lifetimeGivingBillions": 0.406,
+ "lifetimeGivingAsOf": "2024-11",
+ "lifetimeGivingSource": "Forbes (Dec 2024 Musk Foundation article, via search summary)",
+ "lifetimeGivingUrl": "https://www.forbes.com/sites/juliegoldenberg/2024/12/23/elon-musk-worlds-richest-person-donated-to-these-groups-last-year/",
+ "lifetimeGivingStatus": "needs-check",
+ "forbesPhilanthropyScore": 1,
+ "forbesScoreUrl": "https://www.forbes.com/profile/elon-musk/",
+ "forbesScoreYear": 2026,
+ "pledgeWealthAtSigningBillions": 2.0,
+ "pledgeSigningYear": 2012,
+ "pledgeUrl": "https://www.forbes.com/sites/hayleycuccinello/2020/09/08/elon-musk-has-promised-to-give-at-least-half-his-fortune-to-charity-heres-how-much-hes-donated-so-far/",
+ "notes": "Forbes $406M lifetime out-the-door figure (as of Nov 2024) seen only in a search summary; page fetch returned empty. Forbes Feb 2026 list says Musk not in top 25 and that Musk+Page+Ellison+Bezos lifetime combined < $7.2B. IPS Giving Pledge at 15 (Jul 2025) says Musk has 'given an estimated $8.4 billion to charity since' 2012, mostly to his foundation/DAFs (not out-the-door). Wealth at signing $2B per Forbes 2020. Score 1 = <1% of net worth (Forbes 400 profile, Sept 2026)."
+}

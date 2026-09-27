@@ -1,0 +1,19 @@
+{
+  "person": "Jensen Huang",
+  "foundation": "Jen-Hsun & Lori Huang Foundation",
+  "ein": "26-1551239",
+  "fiscalYear": 2024,
+  "fmvAssets": 9212451171,
+  "noncharitableAssets": 7175772576,
+  "minimumInvestmentReturn": 358788629,
+  "distributableAmount": 350039456,
+  "qualifyingDistributions": 126336116,
+  "payoutRate": 0.01371,
+  "metMinimum": false,
+  "officerCompensation": 0,
+  "exciseTaxOnUndistributed": false,
+  "undistributedIncomeCarried": 344613960,
+  "url": "https://projects.propublica.org/nonprofits/organizations/261551239/202523219349107292/full",
+  "status": "primary",
+  "notes": "EIN CORRECTION: supplied EIN 20-5827287 does not match; ProPublica lists Jen-Hsun & Lori Huang Foundation as EIN 26-1551239 (Palo Alto, c/o Frank Rimerman & Co). Read from ProPublica full-text of IRS e-filed XML, FYE Dec 2024 (2024 form numbering: Part IX l.5/l.6, Part X l.7, Part XI l.4, Part XII, Part VII officers, Part VI-B q2a = No). 2024 qualifying distributions ($126.3M) were well below the 2024 distributable amount ($350.0M): $120,910,620 was applied to satisfy 2023 undistributed income and only $5,425,496 to 2024, leaving $344,613,960 undistributed income for 2024 that must be distributed in 2025 (within the 12-month grace period, so no section 4942 tax is yet triggered). Assets nearly tripled (FMV $3.4B at end-2023 to $9.2B at end-2024) due to NVIDIA stock appreciation; noncharitable-use assets use average monthly FMV so lag year-end. Officers Lori Huang (President) and Jen-Hsun Huang (Secretary & CFO) $0 compensation; no paid employees. A newer FY2024 PDF (filed June 2026) is also listed but the e-file object above is the FY2024 return."
+}

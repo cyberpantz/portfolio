@@ -1,0 +1,19 @@
+{
+  "person": "Jeff Bezos",
+  "foundation": "Bezos Family Foundation",
+  "ein": "91-2073258",
+  "fiscalYear": 2024,
+  "fmvAssets": 155026395,
+  "noncharitableAssets": 216854918,
+  "minimumInvestmentReturn": 10842746,
+  "distributableAmount": 10527135,
+  "qualifyingDistributions": 361755557,
+  "payoutRate": 2.33351,
+  "metMinimum": true,
+  "officerCompensation": 725000,
+  "exciseTaxOnUndistributed": false,
+  "undistributedIncomeCarried": 0,
+  "url": "https://projects.propublica.org/nonprofits/organizations/912073258/202533119349102158/full",
+  "status": "primary",
+  "notes": "EIN CORRECTION: supplied EIN 91-2144006 does not match; ProPublica lists Bezos Family Foundation as EIN 91-2073258 (Seattle, WA). Read from ProPublica full-text of IRS e-filed XML, FYE Dec 2024 (2024 form numbering: Part IX/X/XI/XII, Part VII officers, Part VI-B q2a). IMPORTANT CAVEAT: this foundation is controlled by Jeff Bezos's parents Jacklyn and Miguel Bezos (Chair and VP/Secretary); Jeff Bezos is listed only as an uncompensated director, and the foundation is funded by family contributions, not primarily by Jeff. Payout rate is far above 5% because 2024 qualifying distributions ($361.8M) exceeded year-end FMV assets ($155.0M); excess distributions carryover to 2025 is $765,288,993. Officer compensation: only President John Deasy paid ($725,000 salary + $37,670 benefits); all Bezos family directors $0. Other Bezos-controlled entity on ProPublica: Bezos Earth Fund Foundation, EIN 93-1868994 (Washington, DC, 501(c)(3), NTEE C30) -- not read here; Jeff Bezos's Day One Fund / Courage & Civility awards are not separately listed as a private foundation under a Bezos name. Bezos Earth Fund Foundation (EIN 93-1868994) does file Form 990-PF as a private OPERATING foundation (ruling Jan 2024; FY2023 filing shows $0 assets, $13.9M expenses funded by liabilities, $0 distributable amount; a FY2024 filing exists, object 202533099349101443, not read within budget). It is a pass-through operating vehicle, not an endowed grantmaking foundation; Bezos's $10B Earth Fund pledge is largely disbursed via LLC/DAF structures that do not file 990-PF."
+}

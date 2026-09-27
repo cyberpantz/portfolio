@@ -1,0 +1,19 @@
+{
+  "person": "Larry Page",
+  "foundation": "Carl Victor Page Memorial Foundation",
+  "ein": "20-1922957",
+  "fiscalYear": 2024,
+  "fmvAssets": 7193124690,
+  "noncharitableAssets": 6755529294,
+  "minimumInvestmentReturn": 337776465,
+  "distributableAmount": 326481609,
+  "qualifyingDistributions": 286081457,
+  "payoutRate": 0.03977,
+  "metMinimum": false,
+  "officerCompensation": 0,
+  "exciseTaxOnUndistributed": false,
+  "undistributedIncomeCarried": 310230169,
+  "url": "https://projects.propublica.org/nonprofits/organizations/201922957/202513189349105506/full",
+  "status": "primary",
+  "notes": "EIN CORRECTION: the supplied EIN 20-0187513 returns no ProPublica record; the Carl Victor Page Memorial Foundation is EIN 20-1922957 (Palo Alto, CA). Read from ProPublica full-text rendering of IRS e-filed XML for FYE Dec 2024 (2024 form part numbering: Part IX min investment return, Part X distributable amount, Part XI qualifying distributions, Part XII undistributed income, Part VII officers, Part VI-B question 2a). Qualifying distributions ($286.1M) were below the 2024 distributable amount ($326.5M); $269,830,017 was applied to 2023 undistributed income and $16,251,440 to 2024, leaving $310,230,169 undistributed income for 2024 to be distributed in 2025 (this is within the one-year grace period, so no 4942 excise tax; Part VI-B 2a answered No). Officers Page, Southworth, Osborne all $0 compensation. metMinimum is false on a same-year comparison but the foundation is not delinquent under the 12-month rule."
+}

@@ -1,0 +1,19 @@
+{
+  "person": "Michael Dell",
+  "foundation": "Michael & Susan Dell Foundation",
+  "ein": "36-4336415",
+  "fiscalYear": 2024,
+  "fmvAssets": 7770844151,
+  "noncharitableAssets": 5897370807,
+  "minimumInvestmentReturn": 294868540,
+  "distributableAmount": 269260732,
+  "qualifyingDistributions": 247517242,
+  "payoutRate": 0.03185,
+  "metMinimum": false,
+  "officerCompensation": 568840,
+  "exciseTaxOnUndistributed": false,
+  "undistributedIncomeCarried": 0,
+  "url": "https://projects.propublica.org/nonprofits/organizations/364336415/202543189349104239/full",
+  "status": "primary",
+  "notes": "EIN confirmed. Read from ProPublica full-text of IRS e-filed XML, FYE Dec 2024 (2024 form numbering: Part IX l.5/l.6, Part X l.7, Part XI l.4, Part XII, Part VII officers, Part VI-B q2a = No). Qualifying distributions ($247.5M) were below the 2024 distributable amount ($269.3M) on a same-year basis, but the shortfall was covered by prior-year excess distributions carryover (Part XII line 5/6a): undistributed income for 2024 is $0 and excess distributions carryover to 2025 is $446,879,792, so no section 4942 excise tax. FMV jumped from $5.4B (2023) to $7.8B after a $3.57B contribution in 2023; noncharitable-use assets ($5.9B) use the average-monthly-FMV method. Officer compensation (Part VII line 1) is Executive Director/Secretary Janet Mountain $568,840 (plus $74,758 benefits); Michael Dell, Susan Dell, Alexander Dell and Marc Lisker $0. Highest-paid employees (not officers) include COO Anand Srinivasan $492,144 and General Counsel Robert Lindsey $352,245."
+}

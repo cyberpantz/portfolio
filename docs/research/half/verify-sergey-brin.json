@@ -1,0 +1,19 @@
+{
+  "person": "Sergey Brin",
+  "foundation": "Sergey Brin Family Foundation",
+  "ein": "47-2107200",
+  "fiscalYear": 2024,
+  "fmvAssets": 4309591153,
+  "noncharitableAssets": 4255934368,
+  "minimumInvestmentReturn": 212796718,
+  "distributableAmount": 206249323,
+  "qualifyingDistributions": 722413394,
+  "payoutRate": 0.16763,
+  "metMinimum": true,
+  "officerCompensation": 0,
+  "exciseTaxOnUndistributed": false,
+  "undistributedIncomeCarried": 0,
+  "url": "https://projects.propublica.org/nonprofits/organizations/472107200/202533169349103858/full",
+  "status": "primary",
+  "notes": "EIN CORRECTION: supplied EIN 20-1966064 does not match; ProPublica lists Sergey Brin Family Foundation as EIN 47-2107200 (San Francisco, c/o Pacific Foundation Services). Read from ProPublica full-text of IRS e-filed XML, FYE Dec 2024 (2024 form numbering: Part IX l.5/l.6, Part X l.7, Part XI l.4, Part XII, Part VII officers, Part VI-B q2a = No). 2024 qualifying distributions ($722.4M) were ~3.5x the distributable amount; undistributed income for 2024 is $0 and excess distributions carryover to 2025 is $1,056,003,306 (incl. $516.2M excess from 2024). Officers Brin (Director & President), Farnsworth (Treasurer), Brown (Secretary) all $0 compensation."
+}

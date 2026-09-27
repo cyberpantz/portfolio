@@ -1,0 +1,19 @@
+{
+  "person": "Larry Ellison",
+  "foundation": "The Larry Ellison Foundation",
+  "ein": "94-3269827",
+  "fiscalYear": 2024,
+  "fmvAssets": 116870960,
+  "noncharitableAssets": 51336043,
+  "minimumInvestmentReturn": 2566802,
+  "distributableAmount": null,
+  "qualifyingDistributions": 95430618,
+  "payoutRate": 0.81655,
+  "metMinimum": null,
+  "officerCompensation": 0,
+  "exciseTaxOnUndistributed": false,
+  "undistributedIncomeCarried": null,
+  "url": "https://projects.propublica.org/nonprofits/organizations/943269827/202503169349101225/full",
+  "status": "primary",
+  "notes": "EIN CORRECTION: supplied EIN 94-3241640 returns no ProPublica record and a name search for 'Lawrence Ellison Foundation' finds nothing; the matching entity is 'The Larry Ellison Foundation', EIN 94-3269827 (Walnut Creek, CA, c/o Howson & Simon LLP; ruling 1997; sole director/president Lawrence J Ellison). Read from ProPublica full-text of IRS e-filed XML, FYE Dec 2024 (2024 form numbering). IMPORTANT: this is a PRIVATE OPERATING FOUNDATION (section 4942(j)(3)); Part X (distributable amount) and Part XII (undistributed income) are left blank as the form instructs, so distributableAmount, metMinimum and undistributedIncomeCarried are null (not applicable, not unreadable). Part XIII operating-foundation test: 2024 qualifying distributions $95,430,618 vs. 85% of min investment return $2,181,782; endowment alternative test 2/3 of MIR = $1,711,201; $76.4M of distributions were not used directly for active conduct (grants). Part VI-B q2a = No (no prior-year undistributed income), no 4942 excise tax. All five officers (Ellison, Marinelli, McGregor, Mori, Haratani) $0 compensation. Note payout rate vs FMV is high (~82%) because the foundation is funded annually by Ellison contributions and holds relatively little endowment; also note a separate 'Ellison Institute Research Foundation' (EIN 85-2894959, Los Angeles) exists on ProPublica and was not read."
+}

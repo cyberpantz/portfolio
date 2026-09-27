@@ -1,0 +1,19 @@
+{
+  "person": "Elon Musk",
+  "foundation": "Musk Foundation",
+  "ein": "85-2133087",
+  "fiscalYear": 2024,
+  "fmvAssets": 14733241124,
+  "noncharitableAssets": 8910172971,
+  "minimumInvestmentReturn": 445508649,
+  "distributableAmount": 446222454,
+  "qualifyingDistributions": 474381752,
+  "payoutRate": 0.0322,
+  "metMinimum": true,
+  "officerCompensation": 0,
+  "exciseTaxOnUndistributed": false,
+  "undistributedIncomeCarried": 393649885,
+  "url": "https://projects.propublica.org/nonprofits/organizations/852133087/202543219349108074/full",
+  "status": "primary",
+  "notes": "Read from ProPublica full-text rendering of IRS e-filed XML (FYE Dec 2024). The 2024 Form 990-PF renumbers parts: min investment return is Part IX (l.5/l.6), distributable amount Part X l.7, qualifying distributions Part XI l.4, undistributed income Part XII, officer comp Part VII, statements Part VI-A/VI-B. Part VI-B line 2a (undistributed income for years before 2024) answered No, so no section 4942 excise tax indicated. Part XII line 6f: undistributed income for 2024 of $393,649,885 must be distributed in 2025; 2023 undistributed income of $421,809,183 was fully satisfied by 2024 distributions. Officers Musk, Birchall, Simon all $0 compensation. Distributable amount includes $1,000,000 recoveries (line 4)."
+}

@@ -1,0 +1,19 @@
+{
+  "person": "Mark Zuckerberg",
+  "foundation": "Chan Zuckerberg Initiative Foundation",
+  "ein": "45-5002209",
+  "fiscalYear": 2024,
+  "fmvAssets": 7499068854,
+  "noncharitableAssets": 7181615406,
+  "minimumInvestmentReturn": 359080770,
+  "distributableAmount": 360142735,
+  "qualifyingDistributions": 391740902,
+  "payoutRate": 0.05224,
+  "metMinimum": true,
+  "officerCompensation": 0,
+  "exciseTaxOnUndistributed": false,
+  "undistributedIncomeCarried": 175208357,
+  "url": "https://projects.propublica.org/nonprofits/organizations/455002209/202503219349107430/full",
+  "status": "primary",
+  "notes": "EIN confirmed; ProPublica/IRS legal name is 'Chan Zuckerberg Initiative Foundation' (Palo Alto, c/o Apercen Partners). Read from ProPublica full-text of IRS e-filed XML, FYE Dec 2024 (2024 form numbering: Part IX l.5/l.6, Part X l.7, Part XI l.4, Part XII, Part VII, Part VI-B q2a = No). 2024 qualifying distributions ($391.7M) exceeded the 2024 distributable amount, but $206.8M of them was first applied to 2023 undistributed income, so undistributed income for 2024 carried is $175,208,357 (must be distributed in 2025; within the grace period, no 4942 tax). Officers/trustees (Zuckerberg, Castellanos, Neufeld, Manca) all $0 compensation; the foundation does however have 295+ employees paid over $50k with top staff at $614k-$961k (Part VII line 2). Distributable amount ($360.1M) slightly exceeds min investment return because of recoveries/adjustments."
+}

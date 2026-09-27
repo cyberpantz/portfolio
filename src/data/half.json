@@ -1,0 +1,1506 @@
+{
+  "built": "2026-09-27",
+  "summary": {
+    "listDate": "2026-09-01",
+    "count": 25,
+    "americans": 16,
+    "totalWealth": 4676900000000,
+    "pledgers": 6,
+    "lifetimeKnown": 9,
+    "lifetimeTotal": 177300000000,
+    "filingsRead": 13,
+    "foundationAssets": 170415491486,
+    "foundationPaidOut": 15548802407,
+    "shortfallThisYear": [
+      "larry-page",
+      "michael-dell",
+      "jensen-huang",
+      "thomas-peterffy"
+    ],
+    "carriedForward": 1223702371,
+    "scores": {
+      "1": 6,
+      "2": 8,
+      "3": 0,
+      "4": 0,
+      "5": 3
+    }
+  },
+  "people": [
+    {
+      "rank": 1,
+      "slug": "elon-musk",
+      "name": "Elon Musk",
+      "citizenship": "United States",
+      "source": "Tesla, SpaceX, Self Made",
+      "filesUS": true,
+      "wealth": 929000000000,
+      "wealthAsOf": "2026-09-27",
+      "wealthStatus": "secondary",
+      "score": 1,
+      "pledge": {
+        "signed": true,
+        "year": 2012,
+        "wealthAtSigning": 2000000000
+      },
+      "lifetime": {
+        "amount": 406000000,
+        "asOf": "2024-11",
+        "source": "Forbes (Dec 2024 Musk Foundation article, via search summary)",
+        "status": "needs-check"
+      },
+      "foundation": {
+        "name": "Musk Foundation",
+        "ein": "85-2133087",
+        "fiscalYear": 2024,
+        "notHis": false,
+        "assets": 14733241124,
+        "paidOut": 474381752,
+        "required": 446222454,
+        "payoutRate": 3.22,
+        "metMinimum": true,
+        "carriedForward": 393649885,
+        "officerPay": 0,
+        "operating": false,
+        "status": "primary",
+        "note": "Read from ProPublica full-text rendering of IRS e-filed XML (FYE Dec 2024). The 2024 Form 990-PF renumbers parts: min investment return is Part IX (l.5/l.6), distributable amount Part X l.7, qualifying distributions Part XI l.4, undistributed income Part XII, officer comp Part VII, statements Part VI-A/VI-B. Part VI-B line 2a (undistributed income for years before 2024) answered No, so no section 4942 excise tax indicated. Part XII line 6f: undistributed income for 2024 of $393,649,885 must be distributed in 2025; 2023 undistributed income of $421,809,183 was fully satisfied by 2024 distributions. Officers Musk, Birchall, Simon all $0 compensation. Distributable amount includes $1,000,000 recoveries (line 4)."
+      },
+      "political": null,
+      "record": [
+        {
+          "finding": "Musk Foundation fell $41M short of the 5% minimum distribution in 2021 and $234M short by end of 2022 (NYT reporting of 990-PF filings, via NY Post/AOL).",
+          "kind": "payout-shortfall"
+        },
+        {
+          "finding": "NYT (Dec 12, 2024) reported the foundation was $421M short of the 5% rule in 2023, the third consecutive year; earlier gaps were later covered to avoid penalty tax.",
+          "kind": "payout-shortfall"
+        },
+        {
+          "finding": "NYT (Mar 2024) 'Elon Musk Has a Giant Charity. Its Money Stays Close to Home': roughly half of grants through 2022 went to entities tied to Musk, his employees or companies.",
+          "kind": "related-party"
+        },
+        {
+          "finding": "Original Musk Foundation (EIN 77-0587507, CA) filed a dissolution/liquidation statement with its FY ending June 2021 990-PF; successor entity is EIN 85-2133087 (TX, exemption Sept 2020).",
+          "kind": "other"
+        },
+        {
+          "finding": "NYT (Mar 2024) reported that through 2022 about half of grants went to organizations tied to Musk, his employees, or his companies; NYT (Dec 2024) reported $470M of $474M given in 2024 went to 'The Foundation', led by a Musk aide.",
+          "kind": "related-party"
+        }
+      ],
+      "derived": {
+        "foundationShareOfWealth": 1.59,
+        "yearGivenShareOfWealth": 0.05,
+        "lifetimeShareOfWealth": null,
+        "growthSincePledge": 464.5,
+        "yearsToHalf": 978
+      },
+      "coverage": {
+        "wealth": true,
+        "pledge": true,
+        "lifetime": false,
+        "filing": true,
+        "political": false
+      }
+    },
+    {
+      "rank": 2,
+      "slug": "larry-page",
+      "name": "Larry Page",
+      "citizenship": "United States",
+      "source": "Google, Self Made",
+      "filesUS": true,
+      "wealth": 282300000000,
+      "wealthAsOf": "2026-09-26",
+      "wealthStatus": "secondary",
+      "score": 1,
+      "pledge": {
+        "signed": false,
+        "year": null,
+        "wealthAtSigning": null
+      },
+      "lifetime": null,
+      "foundation": {
+        "name": "Carl Victor Page Memorial Foundation",
+        "ein": "20-1922957",
+        "fiscalYear": 2024,
+        "notHis": false,
+        "assets": 7193124690,
+        "paidOut": 286081457,
+        "required": 326481609,
+        "payoutRate": 3.98,
+        "metMinimum": false,
+        "carriedForward": 310230169,
+        "officerPay": 0,
+        "operating": false,
+        "status": "primary",
+        "note": "EIN CORRECTION: the supplied EIN 20-0187513 returns no ProPublica record; the Carl Victor Page Memorial Foundation is EIN 20-1922957 (Palo Alto, CA). Read from ProPublica full-text rendering of IRS e-filed XML for FYE Dec 2024 (2024 form part numbering: Part IX min investment return, Part X distributable amount, Part XI qualifying distributions, Part XII undistributed income, Part VII officers, Part VI-B question 2a). Qualifying distributions ($286.1M) were below the 2024 distributable amount ($326.5M); $269,830,017 was applied to 2023 undistributed income and $16,251,440 to 2024, leaving $310,230,169 undistributed income for 2024 to be distributed in 2025 (this is within the one-year grace period, so no 4942 excise tax; Part VI-B 2a answered No). Officers Page, Southworth, Osborne all $0 compensation. metMinimum is false on a same-year comparison but the foundation is not delinquent under the 12-month rule."
+      },
+      "political": null,
+      "record": [
+        {
+          "finding": "Inside Philanthropy (Michael Kavate, May 10, 2023): foundation had $6.7B in assets (FMV) at end of 2021; nearly all of $227M distributed in 2020-21 went to a DAF at National Philanthropic Trust; foundation has no website, no staff, and its filings list almost no non-DAF grantees.",
+          "kind": "other"
+        },
+        {
+          "finding": "Charitable disbursements per ProPublica 990-PF extract: 2019 $642,934 (on $2.39B book assets); 2020 $31.3M; 2021 $196.3M; 2022 $276.5M; 2023 $286.2M; 2024 $286.1M.",
+          "kind": "other"
+        },
+        {
+          "finding": "Inside Philanthropy (May 2023) analysis of 990-PFs: 97.8% of ~$600M+ in grants 2017-2021 went to donor-advised funds (National Philanthropic Trust, Schwab Charitable), i.e., recipients that are not required to disclose onward grants; not a related-party finding per se.",
+          "kind": "related-party"
+        }
+      ],
+      "derived": {
+        "foundationShareOfWealth": 2.55,
+        "yearGivenShareOfWealth": 0.1,
+        "lifetimeShareOfWealth": null,
+        "growthSincePledge": null,
+        "yearsToHalf": 493
+      },
+      "coverage": {
+        "wealth": true,
+        "pledge": true,
+        "lifetime": false,
+        "filing": true,
+        "political": false
+      }
+    },
+    {
+      "rank": 3,
+      "slug": "jeff-bezos",
+      "name": "Jeff Bezos",
+      "citizenship": "United States",
+      "source": "Amazon, Self Made",
+      "filesUS": true,
+      "wealth": 369600000000,
+      "wealthAsOf": "2026-09-26",
+      "wealthStatus": "secondary",
+      "score": 2,
+      "pledge": {
+        "signed": false,
+        "year": null,
+        "wealthAtSigning": null
+      },
+      "lifetime": {
+        "amount": 4700000000,
+        "asOf": "2025-12",
+        "source": "Forbes, America's Top 25 Philanthropists 2026 (lifetime giving through end of 2025)",
+        "status": "primary"
+      },
+      "foundation": {
+        "name": "Bezos Family Foundation",
+        "ein": "91-2073258",
+        "fiscalYear": 2024,
+        "notHis": true,
+        "assets": 155026395,
+        "paidOut": 361755557,
+        "required": 10527135,
+        "payoutRate": 233.35,
+        "metMinimum": true,
+        "carriedForward": 0,
+        "officerPay": 725000,
+        "operating": false,
+        "status": "primary",
+        "note": "EIN CORRECTION: supplied EIN 91-2144006 does not match; ProPublica lists Bezos Family Foundation as EIN 91-2073258 (Seattle, WA). Read from ProPublica full-text of IRS e-filed XML, FYE Dec 2024 (2024 form numbering: Part IX/X/XI/XII, Part VII officers, Part VI-B q2a). IMPORTANT CAVEAT: this foundation is controlled by Jeff Bezos's parents Jacklyn and Miguel Bezos (Chair and VP/Secretary); Jeff Bezos is listed only as an uncompensated director, and the foundation is funded by family contributions, not primarily by Jeff. Payout rate is far above 5% because 2024 qualifying distributions ($361.8M) exceeded year-end FMV assets ($155.0M); excess distributions carryover to 2025 is $765,288,993. Officer compensation: only President John Deasy paid ($725,000 salary + $37,670 benefits); all Bezos family directors $0. Other Bezos-controlled entity on ProPublica: Bezos Earth Fund Foundation, EIN 93-1868994 (Washington, DC, 501(c)(3), NTEE C30) -- not read here; Jeff Bezos's Day One Fund / Courage & Civility awards are not separately listed as a private foundation under a Bezos name. Bezos Earth Fund Foundation (EIN 93-1868994) does file Form 990-PF as a private OPERATING foundation (ruling Jan 2024; FY2023 filing shows $0 assets, $13.9M expenses funded by liabilities, $0 distributable amount; a FY2024 filing exists, object 202533099349101443, not read within budget). It is a pass-through operating vehicle, not an endowed grantmaking foundation; Bezos's $10B Earth Fund pledge is largely disbursed via LLC/DAF structures that do not file 990-PF."
+      },
+      "political": null,
+      "record": [
+        {
+          "finding": "Bezos Earth Fund Foundation 990-PF (FY2024): officer compensation Andrew Steer (President & Director) $817,660 + $15,560 other; Douglas Varley (Secretary) $496,611 + $49,598; Tony Chan (Treasurer thru 9/30) $408,588 + $28,726. Jeffrey Bezos and Lauren Sanchez Bezos, Directors, $0.",
+          "kind": "compensation"
+        },
+        {
+          "finding": "OECD Development Co-operation Profile: Bezos Earth Fund provided USD 51 million for development in 2023 through grantmaking, a 71% real-terms decrease vs 2022; grants were 100% of gross disbursements. (OECD DAC reporting includes recipient-country breakdowns.)",
+          "kind": "other"
+        }
+      ],
+      "derived": {
+        "foundationShareOfWealth": null,
+        "yearGivenShareOfWealth": null,
+        "lifetimeShareOfWealth": 1.3,
+        "growthSincePledge": null,
+        "yearsToHalf": null
+      },
+      "coverage": {
+        "wealth": true,
+        "pledge": true,
+        "lifetime": true,
+        "filing": false,
+        "political": false
+      }
+    },
+    {
+      "rank": 4,
+      "slug": "michael-dell",
+      "name": "Michael Dell",
+      "citizenship": "United States",
+      "source": "Dell Technologies, Self Made",
+      "filesUS": true,
+      "wealth": 273700000000,
+      "wealthAsOf": "2026-09-26",
+      "wealthStatus": "secondary",
+      "score": 2,
+      "pledge": {
+        "signed": null,
+        "year": null,
+        "wealthAtSigning": null
+      },
+      "lifetime": {
+        "amount": 3300000000,
+        "asOf": "2025-12",
+        "source": "Forbes, America's Top 25 Philanthropists 2026 (lifetime giving through end of 2025)",
+        "status": "primary"
+      },
+      "foundation": {
+        "name": "Michael & Susan Dell Foundation",
+        "ein": "36-4336415",
+        "fiscalYear": 2024,
+        "notHis": false,
+        "assets": 7770844151,
+        "paidOut": 247517242,
+        "required": 269260732,
+        "payoutRate": 3.19,
+        "metMinimum": false,
+        "carriedForward": 0,
+        "officerPay": 568840,
+        "operating": false,
+        "status": "primary",
+        "note": "EIN confirmed. Read from ProPublica full-text of IRS e-filed XML, FYE Dec 2024 (2024 form numbering: Part IX l.5/l.6, Part X l.7, Part XI l.4, Part XII, Part VII officers, Part VI-B q2a = No). Qualifying distributions ($247.5M) were below the 2024 distributable amount ($269.3M) on a same-year basis, but the shortfall was covered by prior-year excess distributions carryover (Part XII line 5/6a): undistributed income for 2024 is $0 and excess distributions carryover to 2025 is $446,879,792, so no section 4942 excise tax. FMV jumped from $5.4B (2023) to $7.8B after a $3.57B contribution in 2023; noncharitable-use assets ($5.9B) use the average-monthly-FMV method. Officer compensation (Part VII line 1) is Executive Director/Secretary Janet Mountain $568,840 (plus $74,758 benefits); Michael Dell, Susan Dell, Alexander Dell and Marc Lisker $0. Highest-paid employees (not officers) include COO Anand Srinivasan $492,144 and General Counsel Robert Lindsey $352,245."
+      },
+      "political": null,
+      "record": [
+        {
+          "finding": "990-PF FY2024 officer/key-employee compensation: Janet Mountain (Exec Director/Sec/Asst Treasurer) $568,840 + $74,758 other; Anand Srinivasan (COO) $492,144 + $67,782; Robert Lindsey (General Counsel) $352,245 + $68,869; Geeta Goel (Managing Director, India) $333,189; Marita Kurian (VP Tech) $323,515; Aliya Hussaini (Portfolio Director) $301,922. Michael S. Dell (President/Director), Susan L. Dell, Dr Alexander Dell, Marc Lisker: $0.",
+          "kind": "compensation"
+        },
+        {
+          "finding": "Contributions received jumped to $3,573,647,703 in FY2023 and $1,450,477,987 in FY2024 (vs $44.1M in FY2022), taking book-value total assets from $1.64B (2022) to $5.42B (2023) to $7.77B (2024); charitable disbursements were $184.4M (2022), $171.8M (2023), $218.9M (2024).",
+          "kind": "other"
+        },
+        {
+          "finding": "FY2021 and FY2022 990-PFs include a 'Distribution from Corpus Election' schedule and FY2020 an 'Applied to Prior Year Election' schedule; FY2019-2024 filings include Expenditure Responsibility Statements and (2019, 2023, 2024) Transfers To Controlled Entities schedules.",
+          "kind": "other"
+        }
+      ],
+      "derived": {
+        "foundationShareOfWealth": 2.84,
+        "yearGivenShareOfWealth": 0.09,
+        "lifetimeShareOfWealth": 1.2,
+        "growthSincePledge": null,
+        "yearsToHalf": 540
+      },
+      "coverage": {
+        "wealth": true,
+        "pledge": false,
+        "lifetime": true,
+        "filing": true,
+        "political": false
+      }
+    },
+    {
+      "rank": 5,
+      "slug": "sergey-brin",
+      "name": "Sergey Brin",
+      "citizenship": "United States",
+      "source": "Google, Self Made",
+      "filesUS": true,
+      "wealth": 259800000000,
+      "wealthAsOf": "2026-09-27",
+      "wealthStatus": "secondary",
+      "score": 2,
+      "pledge": {
+        "signed": false,
+        "year": null,
+        "wealthAtSigning": null
+      },
+      "lifetime": {
+        "amount": 5100000000,
+        "asOf": "2025-12",
+        "source": "Forbes, America's Top 25 Philanthropists 2026 (lifetime giving through end of 2025)",
+        "status": "primary"
+      },
+      "foundation": {
+        "name": "Sergey Brin Family Foundation",
+        "ein": "47-2107200",
+        "fiscalYear": 2024,
+        "notHis": false,
+        "assets": 4309591153,
+        "paidOut": 722413394,
+        "required": 206249323,
+        "payoutRate": 16.76,
+        "metMinimum": true,
+        "carriedForward": 0,
+        "officerPay": 0,
+        "operating": false,
+        "status": "primary",
+        "note": "EIN CORRECTION: supplied EIN 20-1966064 does not match; ProPublica lists Sergey Brin Family Foundation as EIN 47-2107200 (San Francisco, c/o Pacific Foundation Services). Read from ProPublica full-text of IRS e-filed XML, FYE Dec 2024 (2024 form numbering: Part IX l.5/l.6, Part X l.7, Part XI l.4, Part XII, Part VII officers, Part VI-B q2a = No). 2024 qualifying distributions ($722.4M) were ~3.5x the distributable amount; undistributed income for 2024 is $0 and excess distributions carryover to 2025 is $1,056,003,306 (incl. $516.2M excess from 2024). Officers Brin (Director & President), Farnsworth (Treasurer), Brown (Secretary) all $0 compensation."
+      },
+      "political": null,
+      "record": [
+        {
+          "finding": "Charitable disbursements per ProPublica 990-PF extract: 2014 $0 (on $268.3M contributions received); 2015 $2.5M; 2016 $25.1M; 2017 $43.3M; 2018 $55.1M; 2019 $125.7M; 2020 $253.3M; 2021 $242.4M; 2022 $519.4M; 2023 $389.5M; 2024 $722.4M.",
+          "kind": "other"
+        },
+        {
+          "finding": "Officers Sergey Brin (Director & President), Tara Farnsworth (Treasurer), Robert Brown (Secretary; Michael Brin was Secretary through 11/30/22) report $0 compensation in every year 2016-2024.",
+          "kind": "compensation"
+        }
+      ],
+      "derived": {
+        "foundationShareOfWealth": 1.66,
+        "yearGivenShareOfWealth": 0.28,
+        "lifetimeShareOfWealth": 2,
+        "growthSincePledge": null,
+        "yearsToHalf": 173
+      },
+      "coverage": {
+        "wealth": true,
+        "pledge": true,
+        "lifetime": true,
+        "filing": true,
+        "political": false
+      }
+    },
+    {
+      "rank": 6,
+      "slug": "mark-zuckerberg",
+      "name": "Mark Zuckerberg",
+      "citizenship": "United States",
+      "source": "Facebook, Self Made",
+      "filesUS": true,
+      "wealth": 258800000000,
+      "wealthAsOf": "2026-09-25",
+      "wealthStatus": "secondary",
+      "score": 2,
+      "pledge": {
+        "signed": true,
+        "year": 2010,
+        "wealthAtSigning": 4000000000
+      },
+      "lifetime": {
+        "amount": 6100000000,
+        "asOf": "2025-12",
+        "source": "Forbes, America's Top 25 Philanthropists 2026 (lifetime giving through end of 2025)",
+        "status": "primary"
+      },
+      "foundation": {
+        "name": "Chan Zuckerberg Initiative Foundation",
+        "ein": "45-5002209",
+        "fiscalYear": 2024,
+        "notHis": false,
+        "assets": 7499068854,
+        "paidOut": 391740902,
+        "required": 360142735,
+        "payoutRate": 5.22,
+        "metMinimum": true,
+        "carriedForward": 175208357,
+        "officerPay": 0,
+        "operating": false,
+        "status": "primary",
+        "note": "EIN confirmed; ProPublica/IRS legal name is 'Chan Zuckerberg Initiative Foundation' (Palo Alto, c/o Apercen Partners). Read from ProPublica full-text of IRS e-filed XML, FYE Dec 2024 (2024 form numbering: Part IX l.5/l.6, Part X l.7, Part XI l.4, Part XII, Part VII, Part VI-B q2a = No). 2024 qualifying distributions ($391.7M) exceeded the 2024 distributable amount, but $206.8M of them was first applied to 2023 undistributed income, so undistributed income for 2024 carried is $175,208,357 (must be distributed in 2025; within the grace period, no 4942 tax). Officers/trustees (Zuckerberg, Castellanos, Neufeld, Manca) all $0 compensation; the foundation does however have 295+ employees paid over $50k with top staff at $614k-$961k (Part VII line 2). Distributable amount ($360.1M) slightly exceeds min investment return because of recoveries/adjustments."
+      },
+      "political": null,
+      "record": [],
+      "derived": {
+        "foundationShareOfWealth": 2.9,
+        "yearGivenShareOfWealth": 0.15,
+        "lifetimeShareOfWealth": 2.4,
+        "growthSincePledge": 64.7,
+        "yearsToHalf": 315
+      },
+      "coverage": {
+        "wealth": true,
+        "pledge": true,
+        "lifetime": true,
+        "filing": true,
+        "political": false
+      }
+    },
+    {
+      "rank": 7,
+      "slug": "larry-ellison",
+      "name": "Larry Ellison",
+      "citizenship": "United States",
+      "source": "Oracle, Self Made",
+      "filesUS": true,
+      "wealth": 181100000000,
+      "wealthAsOf": "2026-09-26",
+      "wealthStatus": "secondary",
+      "score": 1,
+      "pledge": {
+        "signed": true,
+        "year": 2010,
+        "wealthAtSigning": null
+      },
+      "lifetime": {
+        "amount": 1000000000,
+        "asOf": "2025-07",
+        "source": "IPS, The Giving Pledge at 15 (Jul 2025)",
+        "status": "secondary"
+      },
+      "foundation": {
+        "name": "The Larry Ellison Foundation",
+        "ein": "94-3269827",
+        "fiscalYear": 2024,
+        "notHis": false,
+        "assets": 116870960,
+        "paidOut": 95430618,
+        "required": null,
+        "payoutRate": 81.65,
+        "metMinimum": null,
+        "carriedForward": null,
+        "officerPay": 0,
+        "operating": true,
+        "status": "primary",
+        "note": "EIN CORRECTION: supplied EIN 94-3241640 returns no ProPublica record and a name search for 'Lawrence Ellison Foundation' finds nothing; the matching entity is 'The Larry Ellison Foundation', EIN 94-3269827 (Walnut Creek, CA, c/o Howson & Simon LLP; ruling 1997; sole director/president Lawrence J Ellison). Read from ProPublica full-text of IRS e-filed XML, FYE Dec 2024 (2024 form numbering). IMPORTANT: this is a PRIVATE OPERATING FOUNDATION (section 4942(j)(3)); Part X (distributable amount) and Part XII (undistributed income) are left blank as the form instructs, so distributableAmount, metMinimum and undistributedIncomeCarried are null (not applicable, not unreadable). Part XIII operating-foundation test: 2024 qualifying distributions $95,430,618 vs. 85% of min investment return $2,181,782; endowment alternative test 2/3 of MIR = $1,711,201; $76.4M of distributions were not used directly for active conduct (grants). Part VI-B q2a = No (no prior-year undistributed income), no 4942 excise tax. All five officers (Ellison, Marinelli, McGregor, Mori, Haratani) $0 compensation. Note payout rate vs FMV is high (~82%) because the foundation is funded annually by Ellison contributions and holds relatively little endowment; also note a separate 'Ellison Institute Research Foundation' (EIN 85-2894959, Los Angeles) exists on ProPublica and was not read."
+      },
+      "political": {
+        "amount": 45000000,
+        "status": "secondary"
+      },
+      "record": [
+        {
+          "finding": "Fortune (June 25, 2026), citing the Wall Street Journal, reported Ellison gave about $45 million to a nonprofit backing Trump's 2024 campaign; the funding was not subject to disclosure rules and had not been previously reported. Fortune also reports Oracle was subsequently named an anchor of the $500B Stargate AI project and joined the group taking over TikTok's U.S. operations.",
+          "kind": "other"
+        }
+      ],
+      "derived": {
+        "foundationShareOfWealth": 0.06,
+        "yearGivenShareOfWealth": 0.05,
+        "lifetimeShareOfWealth": 0.6,
+        "growthSincePledge": null,
+        "yearsToHalf": 938
+      },
+      "coverage": {
+        "wealth": true,
+        "pledge": true,
+        "lifetime": true,
+        "filing": true,
+        "political": true
+      }
+    },
+    {
+      "rank": 8,
+      "slug": "jensen-huang",
+      "name": "Jensen Huang",
+      "citizenship": "United States",
+      "source": "Nvidia, Self Made",
+      "filesUS": true,
+      "wealth": 194900000000,
+      "wealthAsOf": "2026-09-27",
+      "wealthStatus": "secondary",
+      "score": 1,
+      "pledge": {
+        "signed": false,
+        "year": null,
+        "wealthAtSigning": null
+      },
+      "lifetime": null,
+      "foundation": {
+        "name": "Jen-Hsun & Lori Huang Foundation",
+        "ein": "26-1551239",
+        "fiscalYear": 2024,
+        "notHis": false,
+        "assets": 9212451171,
+        "paidOut": 126336116,
+        "required": 350039456,
+        "payoutRate": 1.37,
+        "metMinimum": false,
+        "carriedForward": 344613960,
+        "officerPay": 0,
+        "operating": false,
+        "status": "primary",
+        "note": "EIN CORRECTION: supplied EIN 20-5827287 does not match; ProPublica lists Jen-Hsun & Lori Huang Foundation as EIN 26-1551239 (Palo Alto, c/o Frank Rimerman & Co). Read from ProPublica full-text of IRS e-filed XML, FYE Dec 2024 (2024 form numbering: Part IX l.5/l.6, Part X l.7, Part XI l.4, Part XII, Part VII officers, Part VI-B q2a = No). 2024 qualifying distributions ($126.3M) were well below the 2024 distributable amount ($350.0M): $120,910,620 was applied to satisfy 2023 undistributed income and only $5,425,496 to 2024, leaving $344,613,960 undistributed income for 2024 that must be distributed in 2025 (within the 12-month grace period, so no section 4942 tax is yet triggered). Assets nearly tripled (FMV $3.4B at end-2023 to $9.2B at end-2024) due to NVIDIA stock appreciation; noncharitable-use assets use average monthly FMV so lag year-end. Officers Lori Huang (President) and Jen-Hsun Huang (Secretary & CFO) $0 compensation; no paid employees. A newer FY2024 PDF (filed June 2026) is also listed but the e-file object above is the FY2024 return."
+      },
+      "political": null,
+      "record": [
+        {
+          "finding": "Bloomberg (June 27, 2024): the Jen-Hsun & Lori Huang Foundation held 69 million Nvidia shares at end-2022 (valued at more than $8B per FoundationMark) and 'has mostly given stock to a donor-advised fund at Schwab'; headline says Huang logs 1-hour weeks at the foundation. Grants to a DAF count as qualifying distributions but are not disclosed onward.",
+          "kind": "other"
+        }
+      ],
+      "derived": {
+        "foundationShareOfWealth": 4.73,
+        "yearGivenShareOfWealth": 0.06,
+        "lifetimeShareOfWealth": null,
+        "growthSincePledge": null,
+        "yearsToHalf": 771
+      },
+      "coverage": {
+        "wealth": true,
+        "pledge": true,
+        "lifetime": false,
+        "filing": true,
+        "political": false
+      }
+    },
+    {
+      "rank": 9,
+      "slug": "steve-ballmer",
+      "name": "Steve Ballmer",
+      "citizenship": "United States",
+      "source": "Microsoft, Self Made",
+      "filesUS": false,
+      "wealth": 160200000000,
+      "wealthAsOf": "2026-09-27",
+      "wealthStatus": "secondary",
+      "score": 2,
+      "pledge": {
+        "signed": false,
+        "year": null,
+        "wealthAtSigning": null
+      },
+      "lifetime": {
+        "amount": 6500000000,
+        "asOf": "2025-12",
+        "source": "Forbes, America's Top 25 Philanthropists 2026 (lifetime giving through end of 2025)",
+        "status": "primary"
+      },
+      "foundation": {
+        "name": "Ballmer Group",
+        "files": false,
+        "currency": null,
+        "paidOut": null,
+        "paidOutYear": null,
+        "assets": null,
+        "status": "secondary"
+      },
+      "political": null,
+      "record": [
+        {
+          "finding": "Forbes (Oct 20, 2024, updated Apr 2025): Ballmer has put over $100 million into USAFacts, a nonpartisan government-data website he founded in 2017, and confirmed spending over $40 million in the 2024 election year 'to get the facts out'; Forbes says his wife Connie is the family's political donor, giving $1.25 million to groups supporting Kamala Harris in the 2024 cycle and over $14 million to liberal groups 2019-2022 per FEC filings. Forbes estimates the couple's philanthropy at more than $4 billion over the past decade.",
+          "kind": "other"
+        }
+      ],
+      "derived": {
+        "foundationShareOfWealth": null,
+        "yearGivenShareOfWealth": null,
+        "lifetimeShareOfWealth": 4.1,
+        "growthSincePledge": null,
+        "yearsToHalf": null
+      },
+      "coverage": {
+        "wealth": true,
+        "pledge": true,
+        "lifetime": true,
+        "filing": false,
+        "political": false
+      }
+    },
+    {
+      "rank": 10,
+      "slug": "amancio-ortega",
+      "name": "Amancio Ortega",
+      "citizenship": "Spain",
+      "source": "Zara, Self Made",
+      "filesUS": false,
+      "wealth": 135400000000,
+      "wealthAsOf": "2026-09-27",
+      "wealthStatus": "secondary",
+      "score": null,
+      "pledge": {
+        "signed": false,
+        "year": null,
+        "wealthAtSigning": null
+      },
+      "lifetime": null,
+      "foundation": {
+        "name": "Fundación Amancio Ortega",
+        "files": false,
+        "currency": null,
+        "paidOut": 99600000,
+        "paidOutYear": 2025,
+        "assets": null,
+        "status": "secondary"
+      },
+      "political": null,
+      "record": [],
+      "derived": {
+        "foundationShareOfWealth": null,
+        "yearGivenShareOfWealth": null,
+        "lifetimeShareOfWealth": null,
+        "growthSincePledge": null,
+        "yearsToHalf": null
+      },
+      "coverage": {
+        "wealth": true,
+        "pledge": true,
+        "lifetime": false,
+        "filing": false,
+        "political": false
+      }
+    },
+    {
+      "rank": 11,
+      "slug": "warren-buffett",
+      "name": "Warren Buffett",
+      "citizenship": "United States",
+      "source": "Berkshire Hathaway, Self Made",
+      "filesUS": true,
+      "wealth": 144600000000,
+      "wealthAsOf": "2026-09-19",
+      "wealthStatus": "secondary",
+      "score": 5,
+      "pledge": {
+        "signed": true,
+        "year": 2010,
+        "wealthAtSigning": null
+      },
+      "lifetime": {
+        "amount": 72600000000,
+        "asOf": "2026-09",
+        "source": "Forbes 400 Philanthropy Score 2026 article",
+        "status": "primary"
+      },
+      "foundation": {
+        "name": "The Susan Thompson Buffett Foundation",
+        "ein": "47-6032365",
+        "fiscalYear": 2025,
+        "notHis": false,
+        "assets": 2723259744,
+        "paidOut": 1589388023,
+        "required": 123422880,
+        "payoutRate": 58.36,
+        "metMinimum": true,
+        "carriedForward": 0,
+        "officerPay": 1958476,
+        "operating": false,
+        "status": "primary",
+        "note": "EIN CORRECTION: the supplied EIN 47-0813420 returns no organization on ProPublica; ProPublica search by name gives The Susan Thompson Buffett Foundation, Omaha NE, EIN 47-6032365, which is used here. Most recent filing is Form 990-PF for FY ending Dec 2025, filed May 11 2026, read from ProPublica full-text rendering (full_text/202641319349100634/IRS990PF). Page 1 item I FMV of all assets at end of year $2,723,259,744. Part IX line 5 net noncharitable-use assets $2,667,605,428; line 6 MIR $133,380,271. Part X: tax on investment income $21,037,979; recoveries $11,080,588; line 7 distributable amount $123,422,880. Part XI: line 1a $1,589,256,196 + line 2 $131,827 = line 4 qualifying distributions $1,589,388,023. Part XII: lines 2a/2b = 0, 6b = 0, 6f (undistributed income for 2025) = 0; excess distributions carryover to 2026 (line 9) $3,939,951,497. Part I line 13 col (a) officer/director/trustee compensation $1,958,476. Part VI-B 2a checkbox state not rendered; exciseTaxOnUndistributed=false inferred from Part XII zeros. payoutRate = 1,589,388,023 / 2,723,259,744 = 0.5836 (foundation is a pass-through for Buffett's annual Berkshire share gifts, hence very high payout). Not a private operating foundation (Part XIII blank). Status 'secondary' because Buffett's main giving is direct annual gifts of Berkshire B shares to the Gates Foundation Trust plus four family foundations (Susan Thompson Buffett, Sherwood, Howard G. Buffett, NoVo), not through a foundation he controls as an endowment. Cumulative giving per Berkshire Hathaway news release of June 27, 2025 (berkshirehathaway.com/news/jun2725.pdf): since the June 26, 2006 pledge, the five foundations have received Berkshire B shares with a value when received of about $60 billion; that 2025 gift was 12,358,321 B shares (9,433,839 to Gates Foundation Trust, 943,384 to STBF, 660,366 each to Sherwood, Howard G. Buffett and NoVo). A further Nov 10, 2025 release (nov1025.pdf) gave 2,700,000 B shares to the four family foundations (1,500,000 to STBF, 400,000 each to the other three) but states no cumulative figure."
+      },
+      "political": null,
+      "record": [
+        {
+          "finding": "In July 2026 Buffett excluded the Gates Foundation from his annual Berkshire stock gifts for the first time in 20 years, directing 9M Class B shares to the Susan Thompson Buffett Foundation and 1M each to the Sherwood, Howard G. Buffett and NoVo foundations, pending the Gates Foundation's WilmerHale review of its Epstein ties. He aims to dispose of all Berkshire shares by 2034.",
+          "kind": "other"
+        }
+      ],
+      "derived": {
+        "foundationShareOfWealth": 1.88,
+        "yearGivenShareOfWealth": 1.1,
+        "lifetimeShareOfWealth": 50.2,
+        "growthSincePledge": null,
+        "yearsToHalf": 0
+      },
+      "coverage": {
+        "wealth": true,
+        "pledge": true,
+        "lifetime": true,
+        "filing": true,
+        "political": false
+      }
+    },
+    {
+      "rank": 12,
+      "slug": "bernard-arnault",
+      "name": "Bernard Arnault",
+      "citizenship": "France",
+      "source": "LVMH",
+      "filesUS": false,
+      "wealth": 122700000000,
+      "wealthAsOf": "2026-09-27",
+      "wealthStatus": "secondary",
+      "score": null,
+      "pledge": {
+        "signed": false,
+        "year": null,
+        "wealthAtSigning": null
+      },
+      "lifetime": null,
+      "foundation": {
+        "name": "Fondation Louis Vuitton (fondation d'entreprise, LVMH)",
+        "files": false,
+        "currency": null,
+        "paidOut": null,
+        "paidOutYear": null,
+        "assets": null,
+        "status": "secondary"
+      },
+      "political": null,
+      "record": [
+        {
+          "finding": "French Court of Auditors (Cour des comptes) 2018 report on corporate-patronage tax breaks singled out the Fondation Louis Vuitton: building cost EUR 790M vs EUR 100M initial estimate, with roughly EUR 518M in tax savings for LVMH group entities; an anti-corruption association filed a complaint for 'escroquerie' and 'blanchiment de fraude fiscale' against the group and its chairman.",
+          "kind": "other"
+        },
+        {
+          "finding": "Arnault publicly defended the Fondation Louis Vuitton tax treatment as operating within the 2003 law passed by parliament (response to Le Monde reporting).",
+          "kind": "other"
+        },
+        {
+          "finding": "Cour des comptes (2018, 'Le soutien public au mécénat d'entreprises') found the Frank Gehry building cost EUR 790 million (initially estimated at EUR 100 million) and that LVMH group companies deducted approximately EUR 518 million from corporate tax under the 60% Aillagon-law mécénat credit.",
+          "kind": "related-party"
+        }
+      ],
+      "derived": {
+        "foundationShareOfWealth": null,
+        "yearGivenShareOfWealth": null,
+        "lifetimeShareOfWealth": null,
+        "growthSincePledge": null,
+        "yearsToHalf": null
+      },
+      "coverage": {
+        "wealth": true,
+        "pledge": true,
+        "lifetime": false,
+        "filing": false,
+        "political": false
+      }
+    },
+    {
+      "rank": 13,
+      "slug": "rob-walton",
+      "name": "Rob Walton",
+      "citizenship": "United States",
+      "source": "Walmart",
+      "filesUS": true,
+      "wealth": 132300000000.00002,
+      "wealthAsOf": "2026-09-26",
+      "wealthStatus": "secondary",
+      "score": 1,
+      "pledge": {
+        "signed": false,
+        "year": null,
+        "wealthAtSigning": null
+      },
+      "lifetime": null,
+      "foundation": {
+        "name": "Walton Family Foundation Inc",
+        "ein": "13-3441466",
+        "fiscalYear": 2024,
+        "notHis": false,
+        "assets": 8646248583,
+        "paidOut": 650720929,
+        "required": 413549252,
+        "payoutRate": 7.53,
+        "metMinimum": true,
+        "carriedForward": 0,
+        "officerPay": 1228771,
+        "operating": false,
+        "status": "primary",
+        "note": "SHARED FILING: the Walton Family Foundation Inc (Bentonville AR, EIN 13-3441466, verified by name via ProPublica API search) is the single family foundation for Rob, Jim and Alice Walton; the identical figures appear in verify-rob-walton.json, verify-jim-walton.json and verify-alice-walton.json. Form 990-PF for FY ending Dec 2024, filed Nov 17 2025, read from ProPublica full-text rendering (full_text/202543219349103824/IRS990PF). Page 1 item I FMV of all assets at end of year $8,646,248,583 (book value $6,143,971,109). Part IX line 5 net noncharitable-use assets $7,718,334,530; line 6 MIR $385,916,727. Part X: tax on investment income $7,804,108; line 7 distributable amount $413,549,252 (includes recoveries of amounts treated as qualifying distributions). Part XI line 4 qualifying distributions $650,720,929. Part XII: line 2a (2023) = 0, 2b prior years (2022, 2021, 2020) = 0, 6b = 0, 6f undistributed income for 2024 = 0; line 9 excess distributions carryover to 2025 $1,435,616,313. Part I line 13 officer/director/trustee compensation $1,228,771. Part VI-B 2a checkbox state not rendered in text; exciseTaxOnUndistributed=false inferred from Part XII zeros. payoutRate = 650,720,929 / 8,646,248,583 = 0.0753. Not a private operating foundation."
+      },
+      "political": {
+        "amount": 17600000,
+        "status": "needs-check"
+      },
+      "record": [
+        {
+          "finding": "United for Respect's 2024 analysis of FEC and state data found seven Walton heirs gave $21,990,900 in 186 federal transactions since Jan 1, 2023 (accessed Sept 15, 2024); Rob Walton supplied nearly all of the ~$1M raised by Big Sky Action Fund, a super PAC that passed the money to Conservative Values for Utah supporting Rep. John Curtis (R-UT). Walton family partisan giving favored Republicans by more than 13-to-1.",
+          "kind": "other"
+        }
+      ],
+      "derived": {
+        "foundationShareOfWealth": 6.54,
+        "yearGivenShareOfWealth": 0.49,
+        "lifetimeShareOfWealth": null,
+        "growthSincePledge": null,
+        "yearsToHalf": 102
+      },
+      "coverage": {
+        "wealth": true,
+        "pledge": true,
+        "lifetime": false,
+        "filing": true,
+        "political": false
+      }
+    },
+    {
+      "rank": 14,
+      "slug": "jim-walton",
+      "name": "Jim Walton",
+      "citizenship": "United States",
+      "source": "Walmart",
+      "filesUS": true,
+      "wealth": 129100000000,
+      "wealthAsOf": "2026-09-27",
+      "wealthStatus": "secondary",
+      "score": 2,
+      "pledge": {
+        "signed": false,
+        "year": null,
+        "wealthAtSigning": null
+      },
+      "lifetime": null,
+      "foundation": {
+        "name": "Walton Family Foundation Inc",
+        "ein": "13-3441466",
+        "fiscalYear": 2024,
+        "notHis": false,
+        "assets": 8646248583,
+        "paidOut": 650720929,
+        "required": 413549252,
+        "payoutRate": 7.53,
+        "metMinimum": true,
+        "carriedForward": 0,
+        "officerPay": 1228771,
+        "operating": false,
+        "status": "primary",
+        "note": "SHARED FILING: the Walton Family Foundation Inc (Bentonville AR, EIN 13-3441466, verified by name via ProPublica API search) is the single family foundation for Rob, Jim and Alice Walton; the identical figures appear in verify-rob-walton.json, verify-jim-walton.json and verify-alice-walton.json. Form 990-PF for FY ending Dec 2024, filed Nov 17 2025, read from ProPublica full-text rendering (full_text/202543219349103824/IRS990PF). Page 1 item I FMV of all assets at end of year $8,646,248,583 (book value $6,143,971,109). Part IX line 5 net noncharitable-use assets $7,718,334,530; line 6 MIR $385,916,727. Part X: tax on investment income $7,804,108; line 7 distributable amount $413,549,252 (includes recoveries of amounts treated as qualifying distributions). Part XI line 4 qualifying distributions $650,720,929. Part XII: line 2a (2023) = 0, 2b prior years (2022, 2021, 2020) = 0, 6b = 0, 6f undistributed income for 2024 = 0; line 9 excess distributions carryover to 2025 $1,435,616,313. Part I line 13 officer/director/trustee compensation $1,228,771. Part VI-B 2a checkbox state not rendered in text; exciseTaxOnUndistributed=false inferred from Part XII zeros. payoutRate = 650,720,929 / 8,646,248,583 = 0.0753. Not a private operating foundation."
+      },
+      "political": {
+        "amount": 14700000,
+        "status": "secondary"
+      },
+      "record": [
+        {
+          "finding": "United for Respect's analysis of FEC and state filings (Jan 1, 2023 - Sept 2024) lists Jim C. Walton as the top Walmart/Walton political donor at $14.7 million, including $10 million to Americans for Prosperity and over $2 million to pro-charter-school PACs (Legacy 44 PAC, Charter Public Schools PAC, Charter Schools Now).",
+          "kind": "other"
+        },
+        {
+          "finding": "Town Branch Foundation paid its Secretary, Buddy D. Philpot, $677,212 compensation plus $174,627 other in FY2024 ($589,326 + $151,964 in FY2023; $605,231 + $156,066 in FY2022); Jim and Lynne Walton take $0.",
+          "kind": "compensation"
+        }
+      ],
+      "derived": {
+        "foundationShareOfWealth": 6.7,
+        "yearGivenShareOfWealth": 0.5,
+        "lifetimeShareOfWealth": null,
+        "growthSincePledge": null,
+        "yearsToHalf": 99
+      },
+      "coverage": {
+        "wealth": true,
+        "pledge": true,
+        "lifetime": false,
+        "filing": true,
+        "political": true
+      }
+    },
+    {
+      "rank": 15,
+      "slug": "carlos-slim-helu",
+      "name": "Carlos Slim Helu",
+      "citizenship": "Mexico",
+      "source": "Telecom, Self Made",
+      "filesUS": false,
+      "wealth": 118900000000,
+      "wealthAsOf": "2026-09-20",
+      "wealthStatus": "secondary",
+      "score": null,
+      "pledge": {
+        "signed": false,
+        "year": null,
+        "wealthAtSigning": null
+      },
+      "lifetime": null,
+      "foundation": {
+        "name": "Fundación Carlos Slim, A.C. (est. 1986); related: Fundación Telmex Telcel, Fundación Inbursa",
+        "files": false,
+        "currency": null,
+        "paidOut": null,
+        "paidOutYear": null,
+        "assets": null,
+        "status": "secondary"
+      },
+      "political": null,
+      "record": [],
+      "derived": {
+        "foundationShareOfWealth": null,
+        "yearGivenShareOfWealth": null,
+        "lifetimeShareOfWealth": null,
+        "growthSincePledge": null,
+        "yearsToHalf": null
+      },
+      "coverage": {
+        "wealth": true,
+        "pledge": true,
+        "lifetime": false,
+        "filing": false,
+        "political": false
+      }
+    },
+    {
+      "rank": 16,
+      "slug": "alice-walton",
+      "name": "Alice Walton",
+      "citizenship": "United States",
+      "source": "Walmart (inherited; Forbes Self-Made Score 1)",
+      "filesUS": true,
+      "wealth": 119000000000,
+      "wealthAsOf": "2026-09-26",
+      "wealthStatus": "primary",
+      "score": 2,
+      "pledge": {
+        "signed": false,
+        "year": null,
+        "wealthAtSigning": null
+      },
+      "lifetime": {
+        "amount": 2000000000,
+        "asOf": "2024",
+        "source": "Forbes (Sept 2026 'Inside the $118 Billion Fortune of America's Richest Woman', via search summary)",
+        "status": "needs-check"
+      },
+      "foundation": {
+        "name": "Walton Family Foundation Inc",
+        "ein": "13-3441466",
+        "fiscalYear": 2024,
+        "notHis": false,
+        "assets": 8646248583,
+        "paidOut": 650720929,
+        "required": 413549252,
+        "payoutRate": 7.53,
+        "metMinimum": true,
+        "carriedForward": 0,
+        "officerPay": 1228771,
+        "operating": false,
+        "status": "primary",
+        "note": "SHARED FILING: the Walton Family Foundation Inc (Bentonville AR, EIN 13-3441466, verified by name via ProPublica API search) is the single family foundation for Rob, Jim and Alice Walton; the identical figures appear in verify-rob-walton.json, verify-jim-walton.json and verify-alice-walton.json. Form 990-PF for FY ending Dec 2024, filed Nov 17 2025, read from ProPublica full-text rendering (full_text/202543219349103824/IRS990PF). Page 1 item I FMV of all assets at end of year $8,646,248,583 (book value $6,143,971,109). Part IX line 5 net noncharitable-use assets $7,718,334,530; line 6 MIR $385,916,727. Part X: tax on investment income $7,804,108; line 7 distributable amount $413,549,252. Part XI line 4 qualifying distributions $650,720,929. Part XII: lines 2a/2b = 0, 6b = 0, 6f = 0; excess distributions carryover to 2025 $1,435,616,313. Part I line 13 officer compensation $1,228,771. Part VI-B 2a checkbox not rendered; exciseTaxOnUndistributed=false inferred from Part XII zeros. payoutRate = 650,720,929 / 8,646,248,583 = 0.0753. Not a private operating foundation. See personalFoundation for the Alice L. Walton Foundation.",
+        "personal": {
+          "name": "Alice L Walton Foundation",
+          "ein": "82-3700633",
+          "fiscalYear": 2024,
+          "assets": 5271022806,
+          "paidOut": 155806613,
+          "required": 222179335,
+          "metMinimum": false,
+          "payoutRate": 2.96
+        }
+      },
+      "political": {
+        "amount": 10000000,
+        "status": "needs-check"
+      },
+      "record": [],
+      "derived": {
+        "foundationShareOfWealth": 7.27,
+        "yearGivenShareOfWealth": 0.55,
+        "lifetimeShareOfWealth": null,
+        "growthSincePledge": null,
+        "yearsToHalf": 88
+      },
+      "coverage": {
+        "wealth": true,
+        "pledge": true,
+        "lifetime": false,
+        "filing": true,
+        "political": false
+      }
+    },
+    {
+      "rank": 17,
+      "slug": "changpeng-zhao",
+      "name": "Changpeng Zhao (CZ)",
+      "citizenship": "Canada (Forbes); born Jiangsu, China; resident Dubai, United Arab Emirates",
+      "source": "Cryptocurrency exchange (Binance), self-made (Forbes)",
+      "filesUS": false,
+      "wealth": 114600000000,
+      "wealthAsOf": "2026-09-27",
+      "wealthStatus": "primary",
+      "score": null,
+      "pledge": {
+        "signed": false,
+        "year": null,
+        "wealthAtSigning": null
+      },
+      "lifetime": null,
+      "foundation": {
+        "name": "Giggle Academy (CZ-founded free online education initiative); Binance Charity (corporate, Binance)",
+        "files": false,
+        "currency": null,
+        "paidOut": null,
+        "paidOutYear": null,
+        "assets": null,
+        "status": "secondary"
+      },
+      "political": null,
+      "record": [
+        {
+          "finding": "Nov 21, 2023: Zhao, 'a Canadian national', pleaded guilty in W.D. Washington to failing to maintain an effective anti-money-laundering program (Bank Secrecy Act) and resigned as Binance CEO; Binance Holdings pleaded guilty and agreed to $4,316,126,163 total penalty (forfeiture $2,510,650,588 + criminal fine $1,805,475,575). DOJ release links Zhao plea agreement.",
+          "kind": "court"
+        },
+        {
+          "finding": "Personal $50 million fine paid by Zhao as part of the plea (per Forbes profile editor note, which also records the four-month prison term and October 2025 pardon by Donald Trump).",
+          "kind": "penalty"
+        },
+        {
+          "finding": "Apr 30, 2024: sentenced by U.S. District Judge Richard A. Jones (Seattle) to four months in prison; prosecutors had sought three years. Binance allowed >1.5M trades (~$900M) violating U.S. sanctions.",
+          "kind": "court"
+        }
+      ],
+      "derived": {
+        "foundationShareOfWealth": null,
+        "yearGivenShareOfWealth": null,
+        "lifetimeShareOfWealth": null,
+        "growthSincePledge": null,
+        "yearsToHalf": null
+      },
+      "coverage": {
+        "wealth": true,
+        "pledge": true,
+        "lifetime": false,
+        "filing": false,
+        "political": false
+      }
+    },
+    {
+      "rank": 18,
+      "slug": "bill-gates",
+      "name": "Bill Gates",
+      "citizenship": "United States",
+      "source": "Microsoft, self-made (Forbes Self-Made Score 8)",
+      "filesUS": true,
+      "wealth": 115000000000,
+      "wealthAsOf": "2026-09-26",
+      "wealthStatus": "primary",
+      "score": 5,
+      "pledge": {
+        "signed": true,
+        "year": 2010,
+        "wealthAtSigning": null
+      },
+      "lifetime": {
+        "amount": 52600000000,
+        "asOf": "2025-12",
+        "source": "Forbes, America's Top 25 Philanthropists 2026 (lifetime giving through end of 2025)",
+        "status": "primary"
+      },
+      "foundation": {
+        "name": "Gates Foundation",
+        "ein": "56-2618866",
+        "fiscalYear": 2024,
+        "notHis": false,
+        "assets": 78673465696,
+        "paidOut": 8277152302,
+        "required": 146964033,
+        "payoutRate": 10.52,
+        "metMinimum": true,
+        "carriedForward": 0,
+        "officerPay": 13999797,
+        "operating": false,
+        "status": "primary",
+        "note": "Verified by name on ProPublica (Gates Foundation, Seattle WA, EIN 56-2618866). Form 990-PF for FY ending Dec 2024, filed Nov 14 2025, read from ProPublica full-text rendering (full_text/202523189349103667/IRS990PF). Page 1 item I FMV of all assets at end of year $78,673,465,696 (Part II line 16 col c). Part IX line 5 net noncharitable-use assets $163,150,893 and line 6 MIR $8,157,545 are small because the Foundation (a separate entity from the Gates Foundation Trust, which holds the endowment) holds mostly contributions receivable/grants payable, not investment assets. Part X line 7 distributable amount $146,964,033 (includes recoveries of amounts treated as qualifying distributions). Part XI line 4 qualifying distributions $8,277,152,302. Part XII: undistributed income line 2a (2023) = 0 and 2b (prior years) = 0; line 6b prior-years undistributed income = 0; line 6f undistributed income for 2024 = 0; excess distributions carryover to 2025 (line 9) = $5,174,284,544. Part I line 13 officer/director/trustee compensation $13,999,797 (col a). Part VI-B 2a checkbox state not rendered in ProPublica text; exciseTaxOnUndistributed=false is inferred from Part XII lines 2 and 6b being zero. payoutRate = 8,277,152,302 / 78,673,465,696 = 0.1052. Not a private operating foundation."
+      },
+      "political": {
+        "amount": 50000000,
+        "status": "secondary"
+      },
+      "record": [
+        {
+          "finding": "Gates Foundation 990-PF FY2023 (IRS extract via ProPublica): officer compensation $13,590,793; total operating/administrative expenses $1,636,590,219 vs grants paid $7,200,556,970.",
+          "kind": "compensation"
+        },
+        {
+          "finding": "Reported (NYT, Oct 2024) $50M donation to Future Forward USA Action, a Democratic-aligned nonprofit that does not disclose donors; Gates did not publicly endorse Harris. Not visible in FEC/OpenSecrets data because the recipient is a 501(c)(4).",
+          "kind": "other"
+        }
+      ],
+      "derived": {
+        "foundationShareOfWealth": 68.41,
+        "yearGivenShareOfWealth": 7.2,
+        "lifetimeShareOfWealth": 45.7,
+        "growthSincePledge": null,
+        "yearsToHalf": 1
+      },
+      "coverage": {
+        "wealth": true,
+        "pledge": true,
+        "lifetime": true,
+        "filing": true,
+        "political": true
+      }
+    },
+    {
+      "rank": 19,
+      "slug": "michael-bloomberg",
+      "name": "Michael Bloomberg",
+      "citizenship": "United States",
+      "source": "Bloomberg LP (88% owner), self-made (Forbes Self-Made Score 8)",
+      "filesUS": true,
+      "wealth": 94900000000,
+      "wealthAsOf": "2026-09-24",
+      "wealthStatus": "primary",
+      "score": 5,
+      "pledge": {
+        "signed": true,
+        "year": 2010,
+        "wealthAtSigning": null
+      },
+      "lifetime": {
+        "amount": 25400000000,
+        "asOf": "2025-12",
+        "source": "Forbes, America's Top 25 Philanthropists 2026 (lifetime giving through end of 2025)",
+        "status": "primary"
+      },
+      "foundation": {
+        "name": "Bloomberg Family Foundation Inc (Bloomberg Philanthropies)",
+        "ein": "20-5602483",
+        "fiscalYear": 2024,
+        "notHis": false,
+        "assets": 12117236821,
+        "paidOut": 1473990509,
+        "required": 569321593,
+        "payoutRate": 12.16,
+        "metMinimum": true,
+        "carriedForward": 0,
+        "officerPay": 283800,
+        "operating": false,
+        "status": "primary",
+        "note": "Verified by name on ProPublica (Bloomberg Family Foundation Inc, New York, EIN 20-5602483). Form 990-PF for FY ending Dec 2024, filed Nov 14 2025, read from ProPublica full-text rendering (full_text/202503189349103700/IRS990PF). Page 1 item I FMV of all assets at end of year $12,117,236,821. Part IX line 5 net noncharitable-use assets $11,728,927,482; line 6 MIR $586,446,374. Part X: tax on investment income $8,307,064 + income tax $8,817,717; line 7 distributable amount $569,321,593. Part XI line 4 qualifying distributions $1,473,990,509. Part XII: line 2a (2023) = 0, 2b prior years = 0, line 6b prior-years undistributed = 0, line 6f undistributed income for 2024 = 0; line 7 amounts treated as distributions out of corpus $902,523,406; line 9 excess distributions carryover to 2025 $70,736,760. Part I line 13 col (a) officer/director/trustee compensation $283,800. Part VI-B 2a checkbox state not rendered in text; exciseTaxOnUndistributed=false inferred from Part XII lines 2 and 6b = 0. payoutRate = 1,473,990,509 / 12,117,236,821 = 0.1216. Not a private operating foundation."
+      },
+      "political": {
+        "amount": 47000000,
+        "status": "needs-check"
+      },
+      "record": [
+        {
+          "finding": "Reported (Oct 2024) $50M to Future Forward USA Action (501(c)(4), donors undisclosed) plus $19M to the Future Forward super PAC; before the nonprofit gift he had ~$47M in federally disclosed 2024-cycle contributions incl. $19M to the Biden/Harris main super PAC and $10M to House Democrats (figures from search summary of Forbes/NBC/Fox reporting; not verified line-by-line on OpenSecrets).",
+          "kind": "other"
+        },
+        {
+          "finding": "Bloomberg Family Foundation 990-PF FY2023 (IRS extract): total operating and administrative expenses $425,747,870 alongside grants paid $1,005,927,588; officer compensation $275,000.",
+          "kind": "compensation"
+        }
+      ],
+      "derived": {
+        "foundationShareOfWealth": 12.77,
+        "yearGivenShareOfWealth": 1.55,
+        "lifetimeShareOfWealth": 26.8,
+        "growthSincePledge": null,
+        "yearsToHalf": 15
+      },
+      "coverage": {
+        "wealth": true,
+        "pledge": true,
+        "lifetime": true,
+        "filing": true,
+        "political": false
+      }
+    },
+    {
+      "rank": 20,
+      "slug": "thomas-peterffy",
+      "name": "Thomas Peterffy",
+      "citizenship": "United States (Hungarian-born, immigrated 1965)",
+      "source": "Discount brokerage (Interactive Brokers, founder/chairman), self-made (Forbes Self-Made Score 10)",
+      "filesUS": true,
+      "wealth": 103500000000,
+      "wealthAsOf": "2026-09-27",
+      "wealthStatus": "primary",
+      "score": 1,
+      "pledge": {
+        "signed": false,
+        "year": null,
+        "wealthAtSigning": null
+      },
+      "lifetime": null,
+      "foundation": {
+        "name": "Peterffy Foundation",
+        "ein": "47-2351448",
+        "fiscalYear": 2025,
+        "notHis": false,
+        "assets": 244462333,
+        "paidOut": 7637923,
+        "required": 10451744,
+        "payoutRate": 3.12,
+        "metMinimum": false,
+        "carriedForward": 0,
+        "officerPay": 0,
+        "operating": false,
+        "status": "primary",
+        "note": "Verified by name via ProPublica API search (Peterffy Foundation, Fort Lauderdale FL, EIN 47-2351448; directors Alexandra, Catherine and William Peterffy, all $0 comp; Thomas Peterffy himself is not listed among officers on the summary, so this is the family foundation he funded rather than one he formally directs). Most recent filing: Form 990-PF for FY ending Dec 2025, filed May 15 2026, read from ProPublica full-text rendering (full_text/202641359349102699/IRS990PF). Page 1 item I FMV of all assets at end of year $244,462,333. Part IX line 5 net noncharitable-use assets $211,974,809; line 6 MIR $10,598,740. Part X: tax on investment income $146,996; line 7 distributable amount $10,451,744 (confirmed on Part XII line 1). Part XI line 4 qualifying distributions $7,637,923. metMinimum=false in the strict single-year sense (7.64M < 10.45M), but the $2,813,821 shortfall was covered by excess distributions carryover applied to 2025 (Part XII line 5), so undistributed income for 2025 (line 6f) = 0 and no penalty arises; prior-years undistributed income (lines 2a, 2b, 6b, 6d) = 0; remaining excess distributions carryover to 2026 (line 9) $4,682,709. Part I line 13 officer/director/trustee compensation $0. Part VI-B 2a checkbox not rendered in text; exciseTaxOnUndistributed=false inferred from Part XII zeros. payoutRate = 7,637,923 / 244,462,333 = 0.0312. Not a private operating foundation."
+      },
+      "political": null,
+      "record": [
+        {
+          "finding": "Peterffy Foundation (Fort Lauderdale FL, c/o Christopher Uzpen) 990-PF FY2023 per IRS extract: FMV assets $110,978,113; grants paid $7,430,850; total expenses $8,385,943; distributable amount $5,667,695 vs exempt-purpose disbursements $8,132,785; zero contributions received in 2021-2023 (last funding: $77,984,601 in 2020, $6,008,000 in 2019). Officer compensation $0.",
+          "kind": "other"
+        },
+        {
+          "finding": "2023 (2024 cycle, state-level): three $1 million donations to Glenn Youngkin's Spirit of Virginia PAC (NBC News, Sept 2023).",
+          "kind": "other"
+        }
+      ],
+      "derived": {
+        "foundationShareOfWealth": 0.24,
+        "yearGivenShareOfWealth": 0.01,
+        "lifetimeShareOfWealth": null,
+        "growthSincePledge": null,
+        "yearsToHalf": 6775
+      },
+      "coverage": {
+        "wealth": true,
+        "pledge": true,
+        "lifetime": false,
+        "filing": true,
+        "political": false
+      }
+    },
+    {
+      "rank": 21,
+      "slug": "zhang-yiming",
+      "name": "Zhang Yiming",
+      "citizenship": "China",
+      "source": "TikTok (ByteDance), Self Made",
+      "filesUS": false,
+      "wealth": 84000000000,
+      "wealthAsOf": "2026-09-20",
+      "wealthStatus": "primary",
+      "score": null,
+      "pledge": {
+        "signed": false,
+        "year": null,
+        "wealthAtSigning": null
+      },
+      "lifetime": null,
+      "foundation": {
+        "name": "Fangmei Education Development Fund (Longyan, Fujian) - a local government-administered education fund, not a private foundation",
+        "files": false,
+        "currency": "CNY",
+        "paidOut": null,
+        "paidOutYear": null,
+        "assets": null,
+        "status": "secondary"
+      },
+      "political": null,
+      "record": [
+        {
+          "finding": "Donated 500 million yuan (about USD 77M) in June 2021 to set up the Fangmei Education Development Fund in his hometown Longyan, Fujian, named after his grandmothers; announced during the post-crackdown 'common prosperity' charity wave among Chinese tech founders.",
+          "kind": "other"
+        },
+        {
+          "finding": "Longyan Education Bureau announced May 2023 an additional 200 million yuan (about USD 28.9M) donation to the same fund.",
+          "kind": "other"
+        }
+      ],
+      "derived": {
+        "foundationShareOfWealth": null,
+        "yearGivenShareOfWealth": null,
+        "lifetimeShareOfWealth": null,
+        "growthSincePledge": null,
+        "yearsToHalf": null
+      },
+      "coverage": {
+        "wealth": true,
+        "pledge": true,
+        "lifetime": false,
+        "filing": false,
+        "political": false
+      }
+    },
+    {
+      "rank": 22,
+      "slug": "francoise-bettencourt-meyers",
+      "name": "Françoise Bettencourt Meyers",
+      "citizenship": "France",
+      "source": "L'Oréal (inherited)",
+      "filesUS": false,
+      "wealth": 95600000000,
+      "wealthAsOf": "2026-09-06",
+      "wealthStatus": "primary",
+      "score": null,
+      "pledge": {
+        "signed": false,
+        "year": null,
+        "wealthAtSigning": null
+      },
+      "lifetime": null,
+      "foundation": {
+        "name": "Fondation Bettencourt Schueller",
+        "files": false,
+        "currency": "EUR",
+        "paidOut": 85100000,
+        "paidOutYear": 2024,
+        "assets": null,
+        "status": "secondary"
+      },
+      "political": null,
+      "record": [
+        {
+          "finding": "Foundation's 2024 activity report: total mecenat activity 85.1M EUR (life sciences 16.1M, crafts/metiers d'art 4.4M, choral 3M, solidarity 11.4M; remainder incl. large operations such as Notre-Dame). 2023: 68.6M EUR (prizes 8.6M, gifts 55.5M).",
+          "kind": "other"
+        },
+        {
+          "finding": "Foundation is a top contributor to Notre-Dame de Paris reconstruction with a 100M EUR gift (press release 3 June 2024). Forbes: L'Oreal plus the family agreed to donate about USD 226M for Notre-Dame after the 2019 fire.",
+          "kind": "other"
+        },
+        {
+          "finding": "Endowment not stated in accessible 2024 report summary; French Wikipedia cites a Paris Match (2017) figure of roughly 900M EUR budget/endowment and ~500M EUR distributed cumulatively by 2017 - secondary, not verified against foundation accounts.",
+          "kind": "other"
+        }
+      ],
+      "derived": {
+        "foundationShareOfWealth": null,
+        "yearGivenShareOfWealth": null,
+        "lifetimeShareOfWealth": null,
+        "growthSincePledge": null,
+        "yearsToHalf": null
+      },
+      "coverage": {
+        "wealth": true,
+        "pledge": true,
+        "lifetime": false,
+        "filing": false,
+        "political": false
+      }
+    },
+    {
+      "rank": 23,
+      "slug": "mukesh-ambani",
+      "name": "Mukesh Ambani",
+      "citizenship": "India",
+      "source": "Diversified (Reliance Industries)",
+      "filesUS": false,
+      "wealth": 84000000000,
+      "wealthAsOf": "2026-09-27",
+      "wealthStatus": "primary",
+      "score": null,
+      "pledge": {
+        "signed": false,
+        "year": null,
+        "wealthAtSigning": null
+      },
+      "lifetime": null,
+      "foundation": {
+        "name": "Reliance Foundation (chaired by Nita Ambani; CSR arm of Reliance Industries Ltd)",
+        "files": false,
+        "currency": "INR",
+        "paidOut": 21560000000,
+        "paidOutYear": 2025,
+        "assets": null,
+        "status": "secondary"
+      },
+      "political": null,
+      "record": [
+        {
+          "finding": "RIL Integrated Annual Report 2024-25: 'In FY 2024-25, Reliance Industries Limited spent INR 2,156 Crore towards CSR' (approx. 21.56 billion INR); Reliance Foundation claims 8.6 crore lives impacted since 2010. Prior year FY2023-24: INR 1,592 crore (press).",
+          "kind": "other"
+        },
+        {
+          "finding": "Electoral bonds disclosure (Mar 2024): Qwik Supply Chain Pvt Ltd, the third-largest bond buyer at INR 410 crore (2021-22 to 2023-24; INR 385 cr to BJP, INR 25 cr to Shiv Sena), was reported by Reuters and The Reporters' Collective to be affiliated with Reliance via directors/addresses; RIL stated Qwik 'is not a subsidiary of any Reliance entity'.",
+          "kind": "other"
+        },
+        {
+          "finding": "Foundation is funded by and reports through the listed company (RIL) rather than by the family personally; spend is statutory corporate CSR.",
+          "kind": "related-party"
+        }
+      ],
+      "derived": {
+        "foundationShareOfWealth": null,
+        "yearGivenShareOfWealth": null,
+        "lifetimeShareOfWealth": null,
+        "growthSincePledge": null,
+        "yearsToHalf": null
+      },
+      "coverage": {
+        "wealth": true,
+        "pledge": true,
+        "lifetime": false,
+        "filing": false,
+        "political": false
+      }
+    },
+    {
+      "rank": 24,
+      "slug": "giancarlo-devasini",
+      "name": "Giancarlo Devasini",
+      "citizenship": "Italy",
+      "source": "Cryptocurrency (Tether), Self Made",
+      "filesUS": false,
+      "wealth": 89300000000,
+      "wealthAsOf": "2026-09-20",
+      "wealthStatus": "primary",
+      "score": null,
+      "pledge": {
+        "signed": false,
+        "year": null,
+        "wealthAtSigning": null
+      },
+      "lifetime": null,
+      "foundation": null,
+      "political": null,
+      "record": [
+        {
+          "finding": "2021: Bitfinex/Tether (of which Devasini is CFO/co-owner) paid USD 18.5M to settle the New York Attorney General's lawsuit over the use of Tether reserves to cover Bitfinex losses in 2018 (company-level settlement).",
+          "kind": "penalty"
+        },
+        {
+          "finding": "1995: accused of software piracy by Microsoft in Italy; agreed to pay a fine of one million lire to avoid prosecution (per Corriere del Ticino via Wikipedia).",
+          "kind": "penalty"
+        },
+        {
+          "finding": "Lived in Lugano 2017-2023; Tether signed an MoU ('Plan B') with the city of Lugano promoting crypto adoption - corporate/civic partnership, not charitable giving.",
+          "kind": "other"
+        }
+      ],
+      "derived": {
+        "foundationShareOfWealth": null,
+        "yearGivenShareOfWealth": null,
+        "lifetimeShareOfWealth": null,
+        "growthSincePledge": null,
+        "yearsToHalf": null
+      },
+      "coverage": {
+        "wealth": true,
+        "pledge": true,
+        "lifetime": false,
+        "filing": false,
+        "political": false
+      }
+    },
+    {
+      "rank": 25,
+      "slug": "julia-koch",
+      "name": "Julia Koch",
+      "citizenship": "United States",
+      "source": "Koch, Inc. (inherited 42% stake with her three children from David Koch, d. 2019)",
+      "filesUS": true,
+      "wealth": 84600000000,
+      "wealthAsOf": "2026-09-26",
+      "wealthStatus": "primary",
+      "score": 2,
+      "pledge": {
+        "signed": false,
+        "year": null,
+        "wealthAtSigning": null
+      },
+      "lifetime": null,
+      "foundation": {
+        "name": "David H Koch Charitable Foundation",
+        "ein": "48-0926946",
+        "fiscalYear": 2024,
+        "notHis": false,
+        "assets": 1512449,
+        "paidOut": 2108295,
+        "required": 134368,
+        "payoutRate": 139.4,
+        "metMinimum": true,
+        "carriedForward": 0,
+        "officerPay": 0,
+        "operating": false,
+        "status": "secondary",
+        "note": "Which foundation is hers: ProPublica API searches for 'David H Koch Foundation' and 'Julia Koch' return (1) David H Koch Charitable Foundation, Wichita KS, EIN 48-0926946, a 501(c)(3) private foundation filing Form 990-PF, on which Julia F Koch is listed as Director/President/Secretary ($0 comp) -- this is the entity recorded here; and (2) Julia Koch Family Foundation, Wichita KS, EIN 92-1599313, tax-exempt since Feb 2023, but it is a 501(c)(4) social-welfare organization that files Form 990 (not 990-PF), so no 990-PF payout metrics exist for it: its FY2024 Form 990 (filed Nov 14 2025) shows total assets $14,205,290, expenses $36,706,825, revenue $754,778, after a $55,000,000 contribution in FY2023; Julia F Koch is a Director. Neither entity is large: the 990-PF filer here had only $1.5M FMV at end of 2024, so status is 'secondary' -- Julia Koch's wealth is not held in a foundation she controls that files a 990-PF. Figures for the David H Koch Charitable Foundation Form 990-PF FY ending Dec 2024, filed Nov 14 2025, read from ProPublica full-text rendering (full_text/202533189349101043/IRS990PF): page 1 item I FMV of all assets at end of year $1,512,449 (noncharitable-use assets in Part IX are an average over the year, hence larger than year-end FMV: line 5 $2,729,995; line 6 MIR $136,500). Part X line 7 distributable amount $134,368 (from Part XII line 1). Part XI line 4 qualifying distributions $2,108,295. Part XII: lines 2a/2b = 0, 6b = 0, 6d = 0, 6f undistributed income for 2024 = 0; line 9 excess distributions carryover to 2025 $7,554,028. Part I line 13 officer/director/trustee compensation $0 (ProPublica summary also shows $0). Part VI-B 2a checkbox state not rendered in text; exciseTaxOnUndistributed=false inferred from Part XII zeros. payoutRate = 2,108,295 / 1,512,449 = 1.394 (foundation is spending down). Not a private operating foundation."
+      },
+      "political": null,
+      "record": [
+        {
+          "finding": "David H. Koch Charitable Foundation (990-PF, FY2024, filed Nov 14 2025): revenue $154,030, charitable disbursements $2,108,295, total assets $1,512,449 (liabilities $200,000, net assets $1,312,449). FY2023: disbursements $629,848, net assets $3,471,344. Foundation has received $0 contributions since FY2011 and net assets have wound down from $10.2M (2019) to $1.3M (2024). Officers uncompensated.",
+          "kind": "other"
+        },
+        {
+          "finding": "Julia Koch Family Philanthropy Fund (EIN 87-3659591, Wichita KS) is a 501(c)(4) social-welfare organization (donations not tax-deductible), not a private foundation; files Form 990, not 990-PF. FY2024: contributions $78.9M, expenses $22.6M, net assets $92.0M. FY2023: contributions $101.9M, expenses $91.1M, total liabilities $33.0M; FY2023 return includes Schedule L (reported conflict-of-interest / interested-party transactions). Julia F. Koch is a director, uncompensated.",
+          "kind": "related-party"
+        },
+        {
+          "finding": "Not on the Giving Pledge full signatory list (checked 2026-09-27; list modified 2026-07-29). No Koch family member appears.",
+          "kind": "other"
+        }
+      ],
+      "derived": {
+        "foundationShareOfWealth": null,
+        "yearGivenShareOfWealth": null,
+        "lifetimeShareOfWealth": null,
+        "growthSincePledge": null,
+        "yearsToHalf": null
+      },
+      "coverage": {
+        "wealth": true,
+        "pledge": true,
+        "lifetime": false,
+        "filing": false,
+        "political": false
+      }
+    }
+  ]
+}

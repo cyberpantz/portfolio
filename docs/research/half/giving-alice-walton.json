@@ -1,0 +1,15 @@
+{
+ "person": "Alice Walton",
+ "lifetimeGivingBillions": 2.0,
+ "lifetimeGivingAsOf": "2024",
+ "lifetimeGivingSource": "Forbes (Sept 2026 'Inside the $118 Billion Fortune of America's Richest Woman', via search summary)",
+ "lifetimeGivingUrl": "https://www.forbes.com/sites/andreamurphy/2026/09/16/inside-the-118-billion-fortune-of-americas-richest-woman/",
+ "lifetimeGivingStatus": "needs-check",
+ "forbesPhilanthropyScore": 2,
+ "forbesScoreUrl": "https://www.forbes.com/profile/alice-walton/",
+ "forbesScoreYear": 2026,
+ "pledgeWealthAtSigningBillions": null,
+ "pledgeSigningYear": null,
+ "pledgeUrl": "",
+ "notes": "Search summary of Forbes: 'poured more than $6 billion into five family charitable foundations that have doled out more than an estimated $2 billion of her funds through 2024'; 'America's 26th most generous philanthropist'. Page fetch returned empty, so not verified on-page. Profile score 2. Not a Giving Pledge signer."
+}
