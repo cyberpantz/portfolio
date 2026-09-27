@@ -193,6 +193,24 @@ const people = ORDER.map((slug, i) => {
   };
 });
 
+/* ------------------------------------------------------------- context */
+
+/*
+ * The evidence that is not about any one person: who has turned on the
+ * Pledge, what the assessments of it found, and the mechanisms by which a
+ * foundation can be a shelter. Carried through with its statuses; nothing
+ * marked needs-check may be quoted as fact on the page.
+ */
+const ctx = read('backlash-and-shelters.json') ?? { backlash: [], pledgeAssessments: [], shelters: [] };
+for (const x of ctx.backlash) note(x.url, 'Context: the Pledge', x.status, `backlash: ${x.who}`);
+for (const x of ctx.pledgeAssessments) note(x.url, 'Context: the Pledge', x.status, `assessment: ${x.source}`);
+for (const x of ctx.shelters) note(x.url, 'Context: shelters', x.status, `${x.mechanism}: ${x.case}`);
+const context = {
+  backlash: ctx.backlash.map(({ who, what, when, status }) => ({ who, what, when, status })),
+  assessments: ctx.pledgeAssessments.map(({ source, finding, figures, when, status }) => ({ source, finding, figures, when, status })),
+  shelters: ctx.shelters.map(({ mechanism, case: c, finding, figures, status, inTop25 }) => ({ mechanism, case: c, finding, figures, status, inTop25 })),
+};
+
 /* ------------------------------------------------------------- summary */
 
 const filers = people.filter((p) => p.foundation?.status === 'primary' && p.foundation.payoutRate != null && !p.foundation.operating && !p.foundation.notHis);
@@ -218,7 +236,7 @@ const summary = {
 /* ---------------------------------------------------------------- write */
 
 mkdirSync(dirname(OUT), { recursive: true });
-writeFileSync(OUT, JSON.stringify({ built: new Date().toISOString().slice(0, 10), summary, people }, null, 2) + '\n');
+writeFileSync(OUT, JSON.stringify({ built: new Date().toISOString().slice(0, 10), summary, people, context }, null, 2) + '\n');
 
 /* The register. Every URL the research touched, grouped by person. */
 const byPerson = new Map();
@@ -242,7 +260,8 @@ for (const p of people) {
 }
 writeFileSync(REGISTER, lines.join('\n'));
 
-console.log(`half.json — ${people.length} people, ${filers.length} verified filings, ${urls.size} sources`);
+console.log(`half.json — ${people.length} people, ${filers.length} verified filings, ${urls.size} sources, `
+  + `${context.backlash.length} backlash / ${context.assessments.length} assessments / ${context.shelters.length} shelter findings`);
 console.log(`  combined wealth $${(summary.totalWealth / 1e12).toFixed(2)}T; foundation assets read $${(summary.foundationAssets / B).toFixed(1)}B; paid out $${(summary.foundationPaidOut / B).toFixed(2)}B`);
 console.log(`  paid less than the year required: ${summary.shortfallThisYear.join(', ') || 'none'}; owed into next year $${(summary.carriedForward / B).toFixed(2)}B`);
 console.log(`  scores 1..5: ${Object.values(summary.scores).join(' / ')}`);

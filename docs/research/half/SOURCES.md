@@ -6,7 +6,7 @@ touched, grouped by person. Status is how well the figure is known:
 `needs-check` seen only in a search summary and not opened. Nothing marked
 `needs-check` may draw a bar on the page.
 
-List: Forbes real-time billionaires, 2026-09-01. 104 distinct sources.
+List: Forbes real-time billionaires, 2026-09-01. 126 distinct sources.
 
 ## 1. Elon Musk
 
@@ -33,7 +33,7 @@ List: Forbes real-time billionaires, 2026-09-01. 104 distinct sources.
 - **990-PF** — https://projects.propublica.org/nonprofits/organizations/912073258/202533119349102158/full _(primary)_
 - **giving pledge** — https://www.givingpledge.org/who-has-taken-the-pledge/ _(primary)_
 - **lifetime giving** — https://www.forbes.com/sites/forbeswealthteam/2026/02/09/americas-top-25-philanthropists---and-why-musk-page-and-ellison-arent-on-the-list/ _(primary)_
-- **on the record: compensation** — https://projects.propublica.org/nonprofits/organizations/931868994 _(secondary)_
+- **on the record: compensation, llc: Bezos Earth Fund (LLC) and Bezos Earth Fund Foundation (501(c)(3), EIN 93-1868994)** — https://projects.propublica.org/nonprofits/organizations/931868994 _(secondary/primary)_
 - **on the record: other** — https://www.oecd.org/en/publications/development-co-operation-profiles_04b376d7-en/bezos-earth-fund_0dd28128-en.html _(secondary)_
 - **wealth, Forbes philanthropy score** — https://www.forbes.com/profile/jeff-bezos/ _(secondary/primary)_
 
@@ -73,7 +73,7 @@ List: Forbes real-time billionaires, 2026-09-01. 104 distinct sources.
 
 - **990-PF** — https://projects.propublica.org/nonprofits/organizations/261551239/202523219349107292/full _(primary)_
 - **giving pledge** — https://www.givingpledge.org/pledger-list/ _(primary)_
-- **on the record: other** — https://www.bloomberg.com/news/articles/2024-06-27/nvidia-ceo-jensen-huang-has-billions-at-foundation-where-he-works-1-hour-weeks _(secondary)_
+- **on the record: other, daf: Jensen Huang — Jen-Hsun & Lori Huang Foundation (Bloomberg, June 27, 2024)** — https://www.bloomberg.com/news/articles/2024-06-27/nvidia-ceo-jensen-huang-has-billions-at-foundation-where-he-works-1-hour-weeks _(secondary/primary)_
 - **political giving 2024** — https://fortune.com/2024/11/07/warren-buffett-jensen-huang-politics-endorsements-silent-wealth-gains-trump-win/ _(needs-check)_
 - **wealth, Forbes philanthropy score** — https://www.forbes.com/profile/jensen-huang/ _(secondary/primary)_
 
