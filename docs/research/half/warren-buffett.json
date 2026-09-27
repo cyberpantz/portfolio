@@ -1,0 +1,28 @@
+{
+  "name": "Warren Buffett",
+  "citizenship": "United States",
+  "sourceOfWealth": "Berkshire Hathaway, Self Made",
+  "wealth": {"billions": 144.6, "asOf": "2026-09-19", "url": "https://www.forbes.com/profile/warren-buffett/", "status": "secondary"},
+  "givingPledge": {"signed": true, "year": 2010, "wealthAtSigningBillions": null, "url": "https://www.givingpledge.org/who-has-taken-the-pledge/"},
+  "lifetimeGiving": {"billions": 72, "source": "Forbes profile: 'So far he has given away more than $72 billion, mostly through the Gates Foundation and his kids' foundations.' CNBC (2026-07-14) reports Gates Foundation gifts alone total almost $48 billion at value when donated. berkshirehathaway.com/donate letter could not be fetched (encoded response).", "url": "https://www.forbes.com/profile/warren-buffett/", "status": "secondary"},
+  "forbesPhilanthropyScore": {"score": 5, "url": "https://www.forbes.com/profile/warren-buffett/"},
+  "foundation": {
+    "name": "The Susan Thompson Buffett Foundation",
+    "ein": "47-6032365",
+    "filesUS990PF": true,
+    "assetsBillions": 2.723,
+    "assetsYear": 2025,
+    "latestGrantsMillions": 1589.3,
+    "latestGrantsYear": 2025,
+    "met5PercentMinimum": true,
+    "payoutShortfallYears": [],
+    "relatedPartyFinding": null,
+    "url": "https://projects.propublica.org/nonprofits/organizations/476032365"
+  },
+  "political2024Cycle": {"millions": null, "url": "https://www.opensecrets.org/search?q=warren+buffett&type=donors", "status": "needs-check"},
+  "publishesGrantsByCountry": {"value": null, "url": ""},
+  "onTheRecord": [
+    {"finding": "In July 2026 Buffett excluded the Gates Foundation from his annual Berkshire stock gifts for the first time in 20 years, directing 9M Class B shares to the Susan Thompson Buffett Foundation and 1M each to the Sherwood, Howard G. Buffett and NoVo foundations, pending the Gates Foundation's WilmerHale review of its Epstein ties. He aims to dispose of all Berkshire shares by 2034.", "kind": "other", "url": "https://www.cnbc.com/2026/07/14/warren-buffett-excludes-gates-foundation-from-his-annual-donations-of-berkshire-stock.html"}
+  ],
+  "notes": "Buffett gives annually to the Gates Foundation and four family foundations (Susan Thompson Buffett Foundation, Sherwood Foundation, Howard G. Buffett Foundation, NoVo Foundation); only the largest family foundation (STBF) is recorded here. STBF FY2025 per ProPublica 990-PF extract: revenue $2,731,854,610; charitable disbursements $1,589,256,196 (98.6% of expenses); total assets $2,723,259,744 book value; contributions received $1,206,780,743; officer compensation $1,958,476. Prior years' disbursements: 2024 $986.9M, 2023 $756.4M, 2022 $542.8M. met5PercentMinimum derived from disbursements ($1.589B) far exceeding 5% of assets ($2.72B); no formal IRS payout calculation reviewed. Political 2024: OpenSecrets fetch returned empty; secondary sources (InfluenceWatch) describe modest Democratic-leaning gifts but no 2024-cycle total was seen. Forbes 'Philanthropy Score' 5 is Forbes' top tier. Giving Pledge: co-founder (2010) with Bill and Melinda French Gates per Forbes profile; givingpledge.org list page fetched but individual entry not displayed on first page."
+}

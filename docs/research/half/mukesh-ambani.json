@@ -1,0 +1,17 @@
+{
+  "name": "Mukesh Ambani",
+  "citizenship": "India",
+  "sourceOfWealth": "Diversified (Reliance Industries)",
+  "wealth": {"billions": 84, "asOf": "2026-09-27", "url": "https://www.forbes.com/profile/mukesh-ambani/", "status": "primary"},
+  "givingPledge": {"signed": false, "year": null, "wealthAtSigningBillions": null, "url": "https://givingpledge.org/pledgers"},
+  "lifetimeGiving": {"billions": null, "source": "No personal lifetime giving figure found. Reliance Foundation is funded by Reliance Industries Ltd's statutory CSR spend (Companies Act 2013 2% rule), not personal wealth: INR 2,156 crore in FY2024-25 (RIL integrated annual report).", "url": "https://www.ril.com/ar2024-25/social-and-relationship-capital.html", "status": "primary"},
+  "forbesPhilanthropyScore": {"score": null, "url": "https://www.forbes.com/profile/mukesh-ambani/"},
+  "foundation": {"name": "Reliance Foundation (chaired by Nita Ambani; CSR arm of Reliance Industries Ltd)", "ein": "", "filesUS990PF": false, "assetsBillions": null, "assetsYear": null, "latestGrantsMillions": 21560, "latestGrantsYear": 2025, "met5PercentMinimum": null, "payoutShortfallYears": null, "relatedPartyFinding": "Foundation is funded by and reports through the listed company (RIL) rather than by the family personally; spend is statutory corporate CSR.", "url": "https://www.ril.com/reports/CSR202425.pdf", "currency": "INR"},
+  "political2024Cycle": {"millions": null, "url": "https://www.reporters-collective.in/trc/company-with-reliance-links-third-largest-donor", "status": "needs-check"},
+  "publishesGrantsByCountry": {"value": false, "url": "https://www.reliancefoundation.org/about-us/annual-reports"},
+  "onTheRecord": [
+    {"finding": "RIL Integrated Annual Report 2024-25: 'In FY 2024-25, Reliance Industries Limited spent INR 2,156 Crore towards CSR' (approx. 21.56 billion INR); Reliance Foundation claims 8.6 crore lives impacted since 2010. Prior year FY2023-24: INR 1,592 crore (press).", "kind": "other", "url": "https://www.ril.com/ar2024-25/social-and-relationship-capital.html"},
+    {"finding": "Electoral bonds disclosure (Mar 2024): Qwik Supply Chain Pvt Ltd, the third-largest bond buyer at INR 410 crore (2021-22 to 2023-24; INR 385 cr to BJP, INR 25 cr to Shiv Sena), was reported by Reuters and The Reporters' Collective to be affiliated with Reliance via directors/addresses; RIL stated Qwik 'is not a subsidiary of any Reliance entity'.", "kind": "other", "url": "https://www.business-standard.com/elections/lok-sabha-election/ril-denies-links-with-qwik-supply-the-third-largest-electoral-bond-buyer-124031500390_1.html"}
+  ],
+  "notes": "Forbes real-time 9/27/26: $84B; citizenship India; source of wealth 'Diversified'; no Forbes philanthropy score visible on the profile page. latestGrantsMillions is in INR millions (2,156 crore = 21,560 million INR) for fiscal year ending 31 Mar 2025, taken from RIL's annual report page (primary). Reliance Foundation publishes its own annual reports at reliancefoundation.org but no separate endowment/asset figure was seen. Not a Giving Pledge signatory as far as seen; full-list check not performed within budget. Political 2024 figure left null: the INR 410 crore is via a company whose Reliance link RIL denies, so recorded as on-the-record only."
+}

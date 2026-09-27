@@ -1,0 +1,30 @@
+{
+  "name": "Changpeng Zhao (CZ)",
+  "citizenship": "Canada (Forbes); born Jiangsu, China; resident Dubai, United Arab Emirates",
+  "sourceOfWealth": "Cryptocurrency exchange (Binance), self-made (Forbes)",
+  "wealth": {"billions": 114.6, "asOf": "2026-09-27", "url": "https://www.forbes.com/profile/changpeng-zhao/", "status": "primary"},
+  "givingPledge": {"signed": false, "year": null, "wealthAtSigningBillions": null, "url": "https://www.givingpledge.org/pledger-list"},
+  "lifetimeGiving": {"billions": null, "source": "No cumulative personal giving figure found; Forbes profile shows no Philanthropy Score", "url": "https://www.forbes.com/profile/changpeng-zhao/", "status": "needs-check"},
+  "forbesPhilanthropyScore": {"score": null, "url": "https://www.forbes.com/profile/changpeng-zhao/"},
+  "foundation": {
+    "name": "Giggle Academy (CZ-founded free online education initiative); Binance Charity (corporate, Binance)",
+    "ein": "",
+    "filesUS990PF": false,
+    "assetsBillions": null,
+    "assetsYear": null,
+    "latestGrantsMillions": null,
+    "latestGrantsYear": null,
+    "met5PercentMinimum": null,
+    "payoutShortfallYears": null,
+    "relatedPartyFinding": null,
+    "url": "https://cointelegraph.com/news/cz-s-giggle-academy-raises-over-million-hours-after-opening-donations"
+  },
+  "political2024Cycle": {"millions": null, "url": "", "status": "needs-check"},
+  "publishesGrantsByCountry": {"value": null, "url": ""},
+  "onTheRecord": [
+    {"finding": "Nov 21, 2023: Zhao, 'a Canadian national', pleaded guilty in W.D. Washington to failing to maintain an effective anti-money-laundering program (Bank Secrecy Act) and resigned as Binance CEO; Binance Holdings pleaded guilty and agreed to $4,316,126,163 total penalty (forfeiture $2,510,650,588 + criminal fine $1,805,475,575). DOJ release links Zhao plea agreement.", "kind": "court", "url": "https://www.justice.gov/archives/opa/pr/binance-and-ceo-plead-guilty-federal-charges-4b-resolution"},
+    {"finding": "Personal $50 million fine paid by Zhao as part of the plea (per Forbes profile editor note, which also records the four-month prison term and October 2025 pardon by Donald Trump).", "kind": "penalty", "url": "https://www.forbes.com/profile/changpeng-zhao/"},
+    {"finding": "Apr 30, 2024: sentenced by U.S. District Judge Richard A. Jones (Seattle) to four months in prison; prosecutors had sought three years. Binance allowed >1.5M trades (~$900M) violating U.S. sanctions.", "kind": "court", "url": "https://www.pbs.org/newshour/economy/binance-founder-changpeng-zhao-sentenced-to-4-months-in-prison-for-allowing-money-laundering"}
+  ],
+  "notes": "No US private foundation or 990-PF found in his name (not searched exhaustively; he is a non-US person). Charitable vehicles: Giggle Academy (free K-12-style online learning platform announced by CZ in 2024). Public figures seen only via crypto trade press/search snippets (needs-check): Giggle Academy donation wallet raised ~1,311 BNB (~$1.3M) within 12 hours of opening donations (Cointelegraph); later reports of ~$11M-$11.5M BNB routed to it via GIGGLE meme-token transaction fees; CZ reportedly transferred ~$965,000 of digital assets to Giggle Academy in Aug 2026 (coinalertnews / coinokc snippets, not verified). Binance Charity is a Binance corporate arm, not a personal foundation. Political 2024: no data sought/found; as a Canadian citizen he cannot legally contribute to U.S. federal campaigns, so null. The $50M figure was not in the DOJ press release text fetched; it is stated on the Forbes profile. Forbes profile last updated Mar 10, 2026; wealth figure is Forbes real-time as of 9/27/26."
+}

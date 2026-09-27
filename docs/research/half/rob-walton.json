@@ -1,0 +1,28 @@
+{
+  "name": "Rob Walton",
+  "citizenship": "United States",
+  "sourceOfWealth": "Walmart",
+  "wealth": {"billions": 132.3, "asOf": "2026-09-26", "url": "https://www.forbes.com/profile/rob-walton/", "status": "secondary"},
+  "givingPledge": {"signed": false, "year": null, "wealthAtSigningBillions": null, "url": "https://www.givingpledge.org/pledger-list"},
+  "lifetimeGiving": {"billions": null, "source": "No cumulative personal-giving figure seen. Forbes profile editorial bullets mention no philanthropy. His personal vehicle, the Rob and Melani Walton Foundation, reports contributions received of $92.1M (2015), $71.8M (2019), $86.0M (2020), $77.8M (2021), $0 (2022), $0 (2023), $88.6M (2024) per 990-PF extracts; donor not identified in extract.", "url": "https://projects.propublica.org/nonprofits/organizations/474259772", "status": "needs-check"},
+  "forbesPhilanthropyScore": {"score": 1, "url": "https://www.forbes.com/profile/rob-walton/"},
+  "foundation": {
+    "name": "Walton Family Foundation Inc (family); individual: Rob and Melani Walton Foundation (EIN 47-4259772)",
+    "ein": "13-3441466",
+    "filesUS990PF": true,
+    "assetsBillions": 6.144,
+    "assetsYear": 2024,
+    "latestGrantsMillions": 603.5,
+    "latestGrantsYear": 2024,
+    "met5PercentMinimum": true,
+    "payoutShortfallYears": [],
+    "relatedPartyFinding": null,
+    "url": "https://projects.propublica.org/nonprofits/organizations/133441466"
+  },
+  "political2024Cycle": {"millions": 17.6, "url": "https://en.wikipedia.org/wiki/Rob_Walton", "status": "needs-check"},
+  "publishesGrantsByCountry": {"value": null, "url": ""},
+  "onTheRecord": [
+    {"finding": "United for Respect's 2024 analysis of FEC and state data found seven Walton heirs gave $21,990,900 in 186 federal transactions since Jan 1, 2023 (accessed Sept 15, 2024); Rob Walton supplied nearly all of the ~$1M raised by Big Sky Action Fund, a super PAC that passed the money to Conservative Values for Utah supporting Rep. John Curtis (R-UT). Walton family partisan giving favored Republicans by more than 13-to-1.", "kind": "other", "url": "https://united4respect.org/reports/walmart-political-spending-2024/"}
+  ],
+  "notes": "Walton Family Foundation (EIN 13-3441466) 990-PF extracts, ProPublica: FY2024 charitable disbursements $603,519,475; total assets (book) $6,143,971,109; contributions received $558,013,782; officer compensation $1,228,771. Prior years' disbursements: 2023 $677.9M (assets $5.71B), 2022 $613.2M ($5.69B), 2021 $588.0M ($5.58B), 2020 $563.7M ($4.89B), 2019 $537.7M ($4.16B). Note 2015 officer compensation line of $10,061,762. Forbes (Jim Walton profile) describes WFF as '$8.6 billion (2024 assets)' (likely fair-market value vs. book). met5PercentMinimum is derived from disbursements vs book assets (~9.8% in 2024), not from the 990-PF Part XIII calculation. Rob and Melani Walton Foundation (EIN 47-4259772, exempt Sept 2016): FY2024 total assets $441,215,835, charitable disbursements $108,474,094, contributions received $88,648,753; FY2023 disbursements $79,683,037 on $430.0M; FY2022 $59.8M on $470.8M; FY2021 $38.1M on $541.1M; FY2020 $32.4M on $464.9M; FY2019 $8.8M on $393.2M (low early-year ratios; formal payout compliance not verified). S. Robson Walton is Director/President at $0 compensation. Political 2024: the $17.6M figure comes from a WebSearch summary citing Wikipedia; OpenSecrets not fetched directly; United for Respect (primary-ish compilation of FEC data) is the sourced investigation. Not on the Giving Pledge list. Forbes Philanthropy Score 1 is Forbes' lowest tier."
+}

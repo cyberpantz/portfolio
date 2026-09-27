@@ -1,0 +1,26 @@
+{
+  "name": "Carlos Slim Helu",
+  "citizenship": "Mexico",
+  "sourceOfWealth": "Telecom, Self Made",
+  "wealth": {"billions": 118.9, "asOf": "2026-09-20", "url": "https://www.forbes.com/profile/carlos-slim-helu/", "status": "secondary"},
+  "givingPledge": {"signed": false, "year": null, "wealthAtSigningBillions": null, "url": "https://www.givingpledge.org/pledger-list"},
+  "lifetimeGiving": {"billions": null, "source": "No audited cumulative figure published. Slim's own site (carlosslim.com) lists discrete commitments: MXN 1,978 million for 2017 earthquake reconstruction; MXN 1,000 million (Fundación Carlos Slim, Fundación Telmex Telcel and Fundación Inbursa combined) for COVID-19 health actions (June 2020) plus MXN 90 million more (Oct 2020); USD 139 million cumulative to the Slim Initiative in Genomic Medicine (2013); USD 100 million pledged to polio eradication (2013); USD 100 million WWF alliance (2009); USD 110 million to Fundación ALAS (2008). Fundación Telmex endowment stated as 'more than USD 1,500 million'.", "url": "https://carlosslim.com/responsabilidad.html", "status": "needs-check"},
+  "forbesPhilanthropyScore": {"score": null, "url": "https://www.forbes.com/profile/carlos-slim-helu/"},
+  "foundation": {
+    "name": "Fundación Carlos Slim, A.C. (est. 1986); related: Fundación Telmex Telcel, Fundación Inbursa",
+    "ein": "",
+    "filesUS990PF": false,
+    "assetsBillions": null,
+    "assetsYear": null,
+    "latestGrantsMillions": null,
+    "latestGrantsYear": null,
+    "met5PercentMinimum": null,
+    "payoutShortfallYears": null,
+    "relatedPartyFinding": null,
+    "url": "https://fundacioncarlosslim.org/quienes-somos/"
+  },
+  "political2024Cycle": {"millions": null, "url": "", "status": "needs-check"},
+  "publishesGrantsByCountry": {"value": false, "url": "https://fundacioncarlosslim.org/informe/"},
+  "onTheRecord": [],
+  "notes": "Mexican citizen; foundations are Mexican A.C. entities and file no US 990-PF. Fundación Carlos Slim's 'Informe' and 'Informe anual' pages (modified 2025-09-22) render only an embedded flipbook (dearflip) and returned no text; the 'En cifras' page timed out. No asset, grant-total or country breakdown figures were visible, so foundation financials are null (not estimated). Fundación Telmex Telcel results page on carlosslim.com gives program counts 1996-2026 (e.g., 566,456 scholarships, 1,070,548 extramural surgeries, 113,416 social bails) but no peso totals. Forbes profile has no Philanthropy Score line (non-US) and its editorial bullets mention the Soumaya Museum only. Not on the Giving Pledge list; Slim has publicly declined it in past years (not verified here). Political giving: Mexico bars private individual funding of federal campaigns beyond capped amounts; no source checked. A reputable investigation on Slim's philanthropy was not located within budget."
+}

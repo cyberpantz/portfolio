@@ -1,0 +1,28 @@
+{
+  "name": "Sergey Brin",
+  "citizenship": "United States",
+  "sourceOfWealth": "Google, Self Made",
+  "wealth": {"billions": 259.8, "asOf": "2026-09-27", "url": "https://www.forbes.com/profile/sergey-brin/", "status": "secondary"},
+  "givingPledge": {"signed": false, "year": null, "wealthAtSigningBillions": null, "url": "https://www.givingpledge.org/who-has-taken-the-pledge/"},
+  "lifetimeGiving": {"billions": null, "source": "", "url": "", "status": ""},
+  "forbesPhilanthropyScore": {"score": 2, "url": "https://www.forbes.com/profile/sergey-brin/"},
+  "foundation": {
+    "name": "Sergey Brin Family Foundation",
+    "ein": "47-2107200",
+    "filesUS990PF": true,
+    "assetsBillions": 4.310,
+    "assetsYear": 2024,
+    "latestGrantsMillions": 722.4,
+    "latestGrantsYear": 2024,
+    "met5PercentMinimum": null,
+    "payoutShortfallYears": null,
+    "relatedPartyFinding": null,
+    "url": "https://projects.propublica.org/nonprofits/organizations/472107200"
+  },
+  "political2024Cycle": {"millions": null, "url": "", "status": ""},
+  "publishesGrantsByCountry": {"value": null, "url": ""},
+  "onTheRecord": [
+    {"finding": "Charitable disbursements per ProPublica 990-PF extract: 2014 $0 (on $268.3M contributions received); 2015 $2.5M; 2016 $25.1M; 2017 $43.3M; 2018 $55.1M; 2019 $125.7M; 2020 $253.3M; 2021 $242.4M; 2022 $519.4M; 2023 $389.5M; 2024 $722.4M.", "kind": "other", "url": "https://projects.propublica.org/nonprofits/organizations/472107200"},
+    {"finding": "Officers Sergey Brin (Director & President), Tara Farnsworth (Treasurer), Robert Brown (Secretary; Michael Brin was Secretary through 11/30/22) report $0 compensation in every year 2016-2024.", "kind": "compensation", "url": "https://projects.propublica.org/nonprofits/organizations/472107200"}
+  ],
+  "notes": "Foundation figures are IRS end-of-year book values from ProPublica's 990-PF extract: FY2024 total assets $4,309,591,153, liabilities $286,499,281, net assets $4,023,091,872; FY2023 total assets $4,070,439,070; FY2021 peak $4,934,252,269. Contributions received: $268.3M (2014), $293.0M (2015), $304.4M (2016), $464.0M (2021), $274.3M (2022), $57.0M (2023), $161.2M (2024). Foundation files Expenditure Responsibility Statements (2020-2024) and a 990-T for FY2024. Forbes real-time net worth $259.8B as of 9/27/26 (page last updated Sep 15, 2026); Philanthropy Score 2; Self-Made Score 9. Giving Pledge: givingpledge.org/pledger/sergey-brin/ returned no page; treat 'signed: false' as needs-check against the full signatory list. met5PercentMinimum not asserted: 2024 disbursements ($722M) vs book assets (~$4.1-4.3B) is well above 5%, and 2023 ($389M on ~$3.4-4.1B) is also above 5% on book values, but the statutory test uses FMV of non-charitable-use assets (Part XII/XIII), not read within budget; the 2014-2016 pattern (near-zero payout on $268M-$1B of assets) predates the extract's Part XIII data and is not assessed. publishesGrantsByCountry left null (foundation has no website located within budget). political2024Cycle left null (OpenSecrets pages return empty via fetch). Lifetime giving figure not seen on a primary/secondary source within budget. A search summary attributed ~$243M in 2024 climate-related awards to the foundation (needs-check; not verified)."}

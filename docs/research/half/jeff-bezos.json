@@ -1,0 +1,28 @@
+{
+  "name": "Jeff Bezos",
+  "citizenship": "United States",
+  "sourceOfWealth": "Amazon, Self Made",
+  "wealth": {"billions": 369.6, "asOf": "2026-09-26", "url": "https://www.forbes.com/profile/jeff-bezos/", "status": "secondary"},
+  "givingPledge": {"signed": false, "year": null, "wealthAtSigningBillions": null, "url": "https://www.givingpledge.org/who-has-taken-the-pledge/"},
+  "lifetimeGiving": {"billions": null, "source": "", "url": "", "status": ""},
+  "forbesPhilanthropyScore": {"score": 2, "url": "https://www.forbes.com/profile/jeff-bezos/"},
+  "foundation": {
+    "name": "Bezos Earth Fund Foundation",
+    "ein": "93-1868994",
+    "filesUS990PF": true,
+    "assetsBillions": 0.0002,
+    "assetsYear": 2024,
+    "latestGrantsMillions": 13.9,
+    "latestGrantsYear": 2024,
+    "met5PercentMinimum": null,
+    "payoutShortfallYears": null,
+    "relatedPartyFinding": null,
+    "url": "https://projects.propublica.org/nonprofits/organizations/931868994"
+  },
+  "political2024Cycle": {"millions": null, "url": "", "status": ""},
+  "publishesGrantsByCountry": {"value": true, "url": "https://www.oecd.org/en/publications/development-co-operation-profiles_04b376d7-en/bezos-earth-fund_0dd28128-en.html"},
+  "onTheRecord": [
+    {"finding": "Bezos Earth Fund Foundation 990-PF (FY2024): officer compensation Andrew Steer (President & Director) $817,660 + $15,560 other; Douglas Varley (Secretary) $496,611 + $49,598; Tony Chan (Treasurer thru 9/30) $408,588 + $28,726. Jeffrey Bezos and Lauren Sanchez Bezos, Directors, $0.", "kind": "compensation", "url": "https://projects.propublica.org/nonprofits/organizations/931868994"},
+    {"finding": "OECD Development Co-operation Profile: Bezos Earth Fund provided USD 51 million for development in 2023 through grantmaking, a 71% real-terms decrease vs 2022; grants were 100% of gross disbursements. (OECD DAC reporting includes recipient-country breakdowns.)", "kind": "other", "url": "https://www.oecd.org/en/publications/development-co-operation-profiles_04b376d7-en/bezos-earth-fund_0dd28128-en.html"}
+  ],
+  "notes": "IMPORTANT STRUCTURE CAVEAT: The IRS-registered 'Bezos Earth Fund Foundation' (EIN 93-1868994, exemption Jan 2024, Washington DC) is a small, newly formed 501(c)(3) private foundation: FY2024 total assets $223,491, liabilities $24.5M, net assets -$24.3M, contributions received $14.25M, charitable disbursements $13.9M; FY2023 shows $0 revenue and $13.9M expenses. This entity does NOT hold the $10B Bezos Earth Fund commitment (announced 2020, to be disbursed by 2030 per Inside Philanthropy/OECD summaries); the bulk of Earth Fund grantmaking appears to run through a non-990-filing vehicle (likely LLC/DAF structure), which is why filesUS990PF=true applies only to this small foundation and assetsBillions is near zero. The older 'Bezos Family Foundation' (EIN 91-2073258, ProPublica) is the foundation of Bezos's parents Jackie and Mike Bezos, not Jeff's personal vehicle, and was not profiled here. Forbes real-time net worth $369.6B as of 9/26/26 (page last updated Sep 15, 2026); Forbes Philanthropy Score 2. Giving Pledge: givingpledge.org/pledger/jeff-bezos/ returned no page; Bezos is widely reported as a non-signatory; treat as needs-check against the full list. bezosearthfund.org grants page returned no content via fetch, so grantee list not verified directly; OECD profile confirms the fund reports development grants to the OECD DAC. political2024Cycle: not checked (OpenSecrets pages return empty via fetch); left null. Lifetime giving figure not seen on a primary/secondary source within budget."}

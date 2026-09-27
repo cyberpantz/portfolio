@@ -1,0 +1,28 @@
+{
+  "name": "Steve Ballmer",
+  "citizenship": "United States",
+  "sourceOfWealth": "Microsoft, Self Made",
+  "wealth": {"billions": 160.2, "asOf": "2026-09-27", "url": "https://www.forbes.com/profile/steve-ballmer/", "status": "secondary"},
+  "givingPledge": {"signed": false, "year": null, "wealthAtSigningBillions": null, "url": "https://www.givingpledge.org/pledger-list/"},
+  "lifetimeGiving": {"billions": 7.4, "source": "Forbes profile editor's note: 'to date the Ballmers have given away more than $7.4 billion'", "url": "https://www.forbes.com/profile/steve-ballmer/", "status": "secondary"},
+  "forbesPhilanthropyScore": {"score": 2, "url": "https://www.forbes.com/profile/steve-ballmer/"},
+  "foundation": {
+    "name": "Ballmer Group",
+    "ein": "",
+    "filesUS990PF": false,
+    "assetsBillions": null,
+    "assetsYear": null,
+    "latestGrantsMillions": null,
+    "latestGrantsYear": null,
+    "met5PercentMinimum": null,
+    "payoutShortfallYears": null,
+    "relatedPartyFinding": null,
+    "url": "https://projects.propublica.org/nonprofits/api/v2/search.json?q=ballmer"
+  },
+  "political2024Cycle": {"millions": null, "url": "https://www.forbes.com/sites/kylemullins/2024/10/20/how-steve-ballmer-has-spent-100-million-in-a-new-twist-on-political-giving/", "status": "secondary"},
+  "publishesGrantsByCountry": {"value": null, "url": ""},
+  "onTheRecord": [
+    {"finding": "Forbes (Oct 20, 2024, updated Apr 2025): Ballmer has put over $100 million into USAFacts, a nonpartisan government-data website he founded in 2017, and confirmed spending over $40 million in the 2024 election year 'to get the facts out'; Forbes says his wife Connie is the family's political donor, giving $1.25 million to groups supporting Kamala Harris in the 2024 cycle and over $14 million to liberal groups 2019-2022 per FEC filings. Forbes estimates the couple's philanthropy at more than $4 billion over the past decade.", "kind": "other", "url": "https://www.forbes.com/sites/kylemullins/2024/10/20/how-steve-ballmer-has-spent-100-million-in-a-new-twist-on-political-giving/"}
+  ],
+  "notes": "Forbes profile (as of Sep 27, 2026): $160.2B, #9 in the world, Philanthropy Score 2, citizenship United States, source Microsoft (self-made); editor's note says the Ballmers have given away more than $7.4B to date (secondary; Forbes's own estimate, no underlying document seen). Giving Pledge: Ballmer does not appear on the official pledger-list page (checked Sep 27, 2026). Foundation: the Ballmers give through Ballmer Group, which is not a private foundation; ProPublica Nonprofit Explorer searches for 'ballmer group' and 'ballmer' (1,631 fuzzy results, first page reviewed) returned no Ballmer-named 501(c)(3) private foundation, so no 990-PF assets/grants/payout data are on file under that name; EIN left blank; filesUS990PF=false reflects that no such filing was found, not a confirmed legal structure. Political 2024: Steve Ballmer's own direct federal giving was not quantified in anything seen; search summary (Influence Watch, needs-check) says he gave under $40K to five Democratic candidates 2017-2024 and over $40K to the DCCC; his $40M+ 2024 USAFacts spend (Forbes) is civic/nonpartisan, not campaign giving, so political2024Cycle.millions is left null. OpenSecrets not fetched. A search summary also mentions that U.S. Rep. Kevin Kiley asked DOJ to investigate the Ballmers' 2025 wildfire-relief efforts (needs-check; not verified, not recorded in onTheRecord)."
+}

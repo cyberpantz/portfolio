@@ -1,0 +1,18 @@
+{
+  "name": "Françoise Bettencourt Meyers",
+  "citizenship": "France",
+  "sourceOfWealth": "L'Oréal (inherited)",
+  "wealth": {"billions": 95.6, "asOf": "2026-09-06", "url": "https://www.forbes.com/profile/francoise-bettencourt-meyers/", "status": "primary"},
+  "givingPledge": {"signed": false, "year": null, "wealthAtSigningBillions": null, "url": "https://givingpledge.org/pledgers"},
+  "lifetimeGiving": {"billions": null, "source": "No consolidated personal lifetime figure found. Foundation (co-founded by her with her parents, 1987) reports annual mecenat of 85.1M EUR in 2024 and 68.6M EUR in 2023; foundation gave 100M EUR to Notre-Dame restoration.", "url": "https://www.fondationbs.org/magazine/fondation/une-annee-dans-la-vie-de-la-fondation", "status": "primary"},
+  "forbesPhilanthropyScore": {"score": null, "url": "https://www.forbes.com/profile/francoise-bettencourt-meyers/"},
+  "foundation": {"name": "Fondation Bettencourt Schueller", "ein": "", "filesUS990PF": false, "assetsBillions": null, "assetsYear": null, "latestGrantsMillions": 85.1, "latestGrantsYear": 2024, "met5PercentMinimum": null, "payoutShortfallYears": null, "relatedPartyFinding": null, "url": "https://www.fondationbs.org/sites/default/files/2026-09/Rapport%20d%27activit%C3%A9%202024%20-%20Fondation%20Bettencourt%20Schueller.pdf", "currency": "EUR"},
+  "political2024Cycle": {"millions": null, "url": "", "status": "needs-check"},
+  "publishesGrantsByCountry": {"value": false, "url": "https://www.fondationbs.org/magazine/fondation/une-annee-dans-la-vie-de-la-fondation"},
+  "onTheRecord": [
+    {"finding": "Foundation's 2024 activity report: total mecenat activity 85.1M EUR (life sciences 16.1M, crafts/metiers d'art 4.4M, choral 3M, solidarity 11.4M; remainder incl. large operations such as Notre-Dame). 2023: 68.6M EUR (prizes 8.6M, gifts 55.5M).", "kind": "other", "url": "https://www.fondationbs.org/magazine/fondation/une-annee-dans-la-vie-de-la-fondation"},
+    {"finding": "Foundation is a top contributor to Notre-Dame de Paris reconstruction with a 100M EUR gift (press release 3 June 2024). Forbes: L'Oreal plus the family agreed to donate about USD 226M for Notre-Dame after the 2019 fire.", "kind": "other", "url": "https://www.gazettelabo.fr/breves/15384Fondation-Bettencourt-Schueller.html"},
+    {"finding": "Endowment not stated in accessible 2024 report summary; French Wikipedia cites a Paris Match (2017) figure of roughly 900M EUR budget/endowment and ~500M EUR distributed cumulatively by 2017 - secondary, not verified against foundation accounts.", "kind": "other", "url": "https://fr.wikipedia.org/wiki/Fondation_Bettencourt-Schueller"}
+  ],
+  "notes": "Forbes real-time profile 9/6/26: $95.6B, #22 in world; profile lists her as president of the family foundation; no Forbes philanthropy score displayed. Fondation Bettencourt Schueller is a French 'fondation reconnue d'utilité publique' (1987), files no US 990-PF; endowment/asset figure was not in the pages read (full 2024 PDF, 6.1 MB, not parsed within budget - assetsBillions left null, needs-check). Giving Pledge: not seen as signatory; full-list check not performed within budget. Foundation activity is almost entirely France-focused; no country breakdown published beyond that."
+}

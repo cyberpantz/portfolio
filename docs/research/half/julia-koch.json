@@ -1,0 +1,18 @@
+{
+  "name": "Julia Koch",
+  "citizenship": "United States",
+  "sourceOfWealth": "Koch, Inc. (inherited 42% stake with her three children from David Koch, d. 2019)",
+  "wealth": {"billions": 84.6, "asOf": "2026-09-26", "url": "https://www.forbes.com/profile/julia-koch/", "status": "primary"},
+  "givingPledge": {"signed": false, "year": null, "wealthAtSigningBillions": null, "url": "https://www.givingpledge.org/pledger-list"},
+  "lifetimeGiving": {"billions": null, "source": "No lifetime giving figure found on Forbes profile; Forbes assigns Philanthropy Score 2 (of 5).", "url": "https://www.forbes.com/profile/julia-koch/", "status": "needs-check"},
+  "forbesPhilanthropyScore": {"score": 2, "url": "https://www.forbes.com/profile/julia-koch/"},
+  "foundation": {"name": "David H. Koch Charitable Foundation (Julia F. Koch, director/president/secretary since FY2019)", "ein": "48-0926946", "filesUS990PF": true, "assetsBillions": 0.0015, "assetsYear": 2024, "latestGrantsMillions": 2.108, "latestGrantsYear": 2024, "met5PercentMinimum": null, "payoutShortfallYears": null, "relatedPartyFinding": null, "url": "https://projects.propublica.org/nonprofits/organizations/480926946", "currency": "USD"},
+  "political2024Cycle": {"millions": null, "url": "", "status": "needs-check"},
+  "publishesGrantsByCountry": {"value": false, "url": "https://projects.propublica.org/nonprofits/organizations/480926946"},
+  "onTheRecord": [
+    {"finding": "David H. Koch Charitable Foundation (990-PF, FY2024, filed Nov 14 2025): revenue $154,030, charitable disbursements $2,108,295, total assets $1,512,449 (liabilities $200,000, net assets $1,312,449). FY2023: disbursements $629,848, net assets $3,471,344. Foundation has received $0 contributions since FY2011 and net assets have wound down from $10.2M (2019) to $1.3M (2024). Officers uncompensated.", "kind": "other", "url": "https://projects.propublica.org/nonprofits/organizations/480926946"},
+    {"finding": "Julia Koch Family Philanthropy Fund (EIN 87-3659591, Wichita KS) is a 501(c)(4) social-welfare organization (donations not tax-deductible), not a private foundation; files Form 990, not 990-PF. FY2024: contributions $78.9M, expenses $22.6M, net assets $92.0M. FY2023: contributions $101.9M, expenses $91.1M, total liabilities $33.0M; FY2023 return includes Schedule L (reported conflict-of-interest / interested-party transactions). Julia F. Koch is a director, uncompensated.", "kind": "related-party", "url": "https://projects.propublica.org/nonprofits/organizations/873659591"},
+    {"finding": "Not on the Giving Pledge full signatory list (checked 2026-09-27; list modified 2026-07-29). No Koch family member appears.", "kind": "other", "url": "https://www.givingpledge.org/pledger-list"}
+  ],
+  "notes": "Forbes real-time 9/26/26: 'Julia Koch & family' $84.6B, #23 in world; Philanthropy Score 2, Self-Made Score 2; citizenship United States; residence New York. The '5% minimum' test cannot be evaluated from ProPublica's summary alone (requires Part XIII/XII of the 990-PF); disbursements of $2.1M against ~$1.5M assets in FY2024 clearly exceed 5% for that year but earlier years not computed - left null. ProPublica search also lists a 'Julia Koch Family Foundation' (EIN 92-1599313, 501(c)(4)) and 'Mary Julia Koch Foundation' (EIN 87-3681616) which were not opened within the tool budget. The Schedule L flag on the 2023 990 of the Philanthropy Fund is ProPublica's automated indicator; the underlying transaction was not read. Political 2024-cycle giving not researched within budget (FEC/OpenSecrets check needed)."
+}

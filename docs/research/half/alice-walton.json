@@ -1,0 +1,26 @@
+{
+  "name": "Alice Walton",
+  "citizenship": "United States",
+  "sourceOfWealth": "Walmart (inherited; Forbes Self-Made Score 1)",
+  "wealth": {"billions": 119, "asOf": "2026-09-26", "url": "https://www.forbes.com/profile/alice-walton/", "status": "primary"},
+  "givingPledge": {"signed": false, "year": null, "wealthAtSigningBillions": null, "url": "https://www.givingpledge.org/pledger-list"},
+  "lifetimeGiving": {"billions": null, "source": "Not stated on Forbes profile page as fetched; no cumulative figure seen", "url": "https://www.forbes.com/profile/alice-walton/", "status": "needs-check"},
+  "forbesPhilanthropyScore": {"score": 2, "url": "https://www.forbes.com/profile/alice-walton/"},
+  "foundation": {
+    "name": "Alice L. Walton Foundation",
+    "ein": "82-3700633",
+    "filesUS990PF": true,
+    "assetsBillions": 4.40,
+    "assetsYear": 2023,
+    "latestGrantsMillions": 94.96,
+    "latestGrantsYear": 2023,
+    "met5PercentMinimum": null,
+    "payoutShortfallYears": null,
+    "relatedPartyFinding": null,
+    "url": "https://projects.propublica.org/nonprofits/organizations/823700633"
+  },
+  "political2024Cycle": {"millions": 10, "url": "https://arktimes.com/arkansas-blog/2024/11/04/5-of-the-top-50-political-donors-in-the-u-s-are-from-arkansas", "status": "needs-check"},
+  "publishesGrantsByCountry": {"value": null, "url": ""},
+  "onTheRecord": [],
+  "notes": "Foundation data from ProPublica Nonprofit Explorer API (IRS extract), FY2023 990-PF: fair market value of assets $4,399,184,837 (book total assets $4,045,996,103); contributions/grants paid $94,958,378; total expenses $128,346,451; contributions received $160,640,000; 'distributable amount' field $189,186,922 and 'undistributed income' field $143,428,156 for 2023, but the 990-PF allows distribution through the following year and the filing's 'undistributed income subject to tax' checkbox is N, so met5PercentMinimum is left null (needs line-by-line PDF check: https://projects.propublica.org/nonprofits/download-filing?path=IRS%2F823700633_202312_990PF_2025010222971656.pdf). IRS BMF shows tax period 2024-12 assets $4,688,592,870 (not yet a parsed 990-PF). Prior years grants paid: 2022 $95.2M (FMV assets $3.65B), 2021 $37.4M ($4.01B), 2020 $16.9M ($3.38B, year of $2.79B contribution in), 2019 $28.7M. Separate vehicle: Walton Family Foundation Inc, EIN 13-3441466, Bentonville AR (family foundation, not solely Alice's) — https://projects.propublica.org/nonprofits/organizations/133441466. Political 2024: Arkansas Times (citing OpenSecrets) reported Alice Walton gave 'more than $10 million' in the 2024 cycle; the article page returned empty on fetch, figure comes from the search snippet — needs-check against opensecrets.org. Not on Giving Pledge signatory list (checked 2026-07-29 version of list). Forbes 'Last Updated Sep 15, 2026' notes Alice L. Walton School of Medicine (Bentonville) admitted first class in 2025 and Crystal Bridges Museum opened 2011."
+}

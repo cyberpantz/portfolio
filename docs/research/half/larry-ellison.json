@@ -1,0 +1,28 @@
+{
+  "name": "Larry Ellison",
+  "citizenship": "United States",
+  "sourceOfWealth": "Oracle, Self Made",
+  "wealth": {"billions": 181.1, "asOf": "2026-09-26", "url": "https://www.forbes.com/profile/larry-ellison/", "status": "secondary"},
+  "givingPledge": {"signed": true, "year": 2010, "wealthAtSigningBillions": null, "url": "https://www.givingpledge.org/pledger/larry-ellison/"},
+  "lifetimeGiving": {"billions": null, "source": "", "url": "", "status": ""},
+  "forbesPhilanthropyScore": {"score": 1, "url": "https://www.forbes.com/profile/larry-ellison/"},
+  "foundation": {
+    "name": "The Larry Ellison Foundation",
+    "ein": "94-3269827",
+    "filesUS990PF": true,
+    "assetsBillions": 0.117,
+    "assetsYear": 2024,
+    "latestGrantsMillions": 53.874,
+    "latestGrantsYear": 2023,
+    "met5PercentMinimum": true,
+    "payoutShortfallYears": [],
+    "relatedPartyFinding": null,
+    "url": "https://projects.propublica.org/nonprofits/organizations/943269827"
+  },
+  "political2024Cycle": {"millions": 45, "url": "https://fortune.com/2026/06/25/larry-ellison-donald-trump-45-million-donation-stargate-tiktok-paramount/", "status": "secondary"},
+  "publishesGrantsByCountry": {"value": null, "url": ""},
+  "onTheRecord": [
+    {"finding": "Fortune (June 25, 2026), citing the Wall Street Journal, reported Ellison gave about $45 million to a nonprofit backing Trump's 2024 campaign; the funding was not subject to disclosure rules and had not been previously reported. Fortune also reports Oracle was subsequently named an anchor of the $500B Stargate AI project and joined the group taking over TikTok's U.S. operations.", "kind": "other", "url": "https://fortune.com/2026/06/25/larry-ellison-donald-trump-45-million-donation-stargate-tiktok-paramount/"}
+  ],
+  "notes": "Forbes profile (as of Sep 26, 2026): $181.1B, #8 in the world, Philanthropy Score 1, citizenship United States, source of wealth Oracle (self-made); Forbes notes he became the second person ever worth more than $400B in Sept 2025. Giving Pledge: official pledger page says 'Pledged in 2010'; letter says he put virtually all assets into a trust intending to give away at least 95% of his wealth; wealth at signing not shown on that page. Foundation on file at IRS/ProPublica: The Larry Ellison Foundation, EIN 94-3269827, Walnut Creek CA, private foundation (ruling 1997). ProPublica API data (current_2026_09_16): tax period 2024-12 asset_amount $116,870,960, income $2,634,724. Latest filing with line data TY2023 990-PF: contributions received $178,874,000, grants paid $53,874,000, total assets end $192,241,904, qualifying distributions (4-yr) $66,946,459. TY2022 grants paid $45,097,156; TY2021 $40,901,000; TY2020 $18,094,513; TY2019 $23,678,931. Undistributed-income field is 0 in every extracted year 2019-2023, hence met5PercentMinimum=true with no shortfall years found (foundation is a pass-through: grants roughly equal contributions received). paidcmpncd=Y in 2019-2021 (compensation to disqualified persons reported; officer comp $173,728 in 2021, $514,267 in 2020) but the underlying text was not read. Related entity also on ProPublica: Ellison Institute Research Foundation (85-2894959, Los Angeles); the Ellison Institute of Technology (Oxford, UK) was not examined. Lifetime giving: no figure seen. Political: OpenSecrets not fetched; search summary (needs-check) says Ellison gave over $25M to the pro-Tim Scott Opportunity Matters Fund and made no federal donations in 2024 per FEC records; the $45M figure is from Fortune/WSJ (secondary)."
+}

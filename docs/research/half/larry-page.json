@@ -1,0 +1,28 @@
+{
+  "name": "Larry Page",
+  "citizenship": "United States",
+  "sourceOfWealth": "Google, Self Made",
+  "wealth": {"billions": 282.3, "asOf": "2026-09-26", "url": "https://www.forbes.com/profile/larry-page/", "status": "secondary"},
+  "givingPledge": {"signed": false, "year": null, "wealthAtSigningBillions": null, "url": "https://www.givingpledge.org/who-has-taken-the-pledge/"},
+  "lifetimeGiving": {"billions": null, "source": "", "url": "", "status": ""},
+  "forbesPhilanthropyScore": {"score": 1, "url": "https://www.forbes.com/profile/larry-page/"},
+  "foundation": {
+    "name": "Carl Victor Page Memorial Foundation",
+    "ein": "20-1922957",
+    "filesUS990PF": true,
+    "assetsBillions": 4.452,
+    "assetsYear": 2024,
+    "latestGrantsMillions": 286.1,
+    "latestGrantsYear": 2024,
+    "met5PercentMinimum": null,
+    "payoutShortfallYears": null,
+    "relatedPartyFinding": "Inside Philanthropy (May 2023) analysis of 990-PFs: 97.8% of ~$600M+ in grants 2017-2021 went to donor-advised funds (National Philanthropic Trust, Schwab Charitable), i.e., recipients that are not required to disclose onward grants; not a related-party finding per se.",
+    "url": "https://projects.propublica.org/nonprofits/organizations/201922957"
+  },
+  "political2024Cycle": {"millions": null, "url": "", "status": ""},
+  "publishesGrantsByCountry": {"value": false, "url": "https://www.insidephilanthropy.com/home/2023-5-10-larry-pages-foundation-doubled-in-size-to-hit-67-billion-in-assets-98-of-giving-goes-to-dafs"},
+  "onTheRecord": [
+    {"finding": "Inside Philanthropy (Michael Kavate, May 10, 2023): foundation had $6.7B in assets (FMV) at end of 2021; nearly all of $227M distributed in 2020-21 went to a DAF at National Philanthropic Trust; foundation has no website, no staff, and its filings list almost no non-DAF grantees.", "kind": "other", "url": "https://www.insidephilanthropy.com/home/2023-5-10-larry-pages-foundation-doubled-in-size-to-hit-67-billion-in-assets-98-of-giving-goes-to-dafs"},
+    {"finding": "Charitable disbursements per ProPublica 990-PF extract: 2019 $642,934 (on $2.39B book assets); 2020 $31.3M; 2021 $196.3M; 2022 $276.5M; 2023 $286.2M; 2024 $286.1M.", "kind": "other", "url": "https://projects.propublica.org/nonprofits/organizations/201922957"}
+  ],
+  "notes": "Foundation asset figures are IRS end-of-year book value from the ProPublica extract (total assets $4,451,884,704 FY2024; $4,024,325,038 FY2023; $3,826,155,231 FY2022; $3,530,742,616 FY2021). Fair-market value is higher (Inside Philanthropy reported $6.7B FMV at end of 2021). Officers Lawrence Page (Director/Chairman/President), Lucinda Southworth (Director & CFO), P Wayne Osborne (Secretary), all $0 compensation. Foundation also files 990-T (unrelated business income) each year 2019-2024. Giving Pledge: givingpledge.org/pledger/larry-page/ returned no page and a search summary states Page has not signed; treat 'signed: false' as needs-check against the full signatory list. Forbes real-time net worth $282.3B as of 9/26/26 (page last updated Sep 15, 2026). met5PercentMinimum left null: not computed because FMV assets not read from filing; 2019 disbursement of $0.64M on >$2.39B book assets is visibly below 5% but a private foundation has a following-year grace period, so no shortfall is asserted without reading Part XIII of the 990-PF. political2024Cycle: OpenSecrets pages returned empty via fetch; left null. Lifetime giving: no figure seen on a primary/secondary source within budget."}

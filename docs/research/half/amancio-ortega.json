@@ -1,0 +1,26 @@
+{
+  "name": "Amancio Ortega",
+  "citizenship": "Spain",
+  "sourceOfWealth": "Zara, Self Made",
+  "wealth": {"billions": 135.4, "asOf": "2026-09-27", "url": "https://www.forbes.com/profile/amancio-ortega/", "status": "secondary"},
+  "givingPledge": {"signed": false, "year": null, "wealthAtSigningBillions": null, "url": "https://www.givingpledge.org/pledger-list/"},
+  "lifetimeGiving": {"billions": null, "source": "", "url": "", "status": ""},
+  "forbesPhilanthropyScore": {"score": null, "url": "https://www.forbes.com/profile/amancio-ortega/"},
+  "foundation": {
+    "name": "Fundación Amancio Ortega",
+    "ein": "",
+    "filesUS990PF": false,
+    "assetsBillions": null,
+    "assetsYear": null,
+    "latestGrantsMillions": 99.6,
+    "latestGrantsYear": 2025,
+    "met5PercentMinimum": null,
+    "payoutShortfallYears": null,
+    "relatedPartyFinding": null,
+    "url": "https://www.faortega.org/en/institution/figures/"
+  },
+  "political2024Cycle": {"millions": null, "url": "", "status": ""},
+  "publishesGrantsByCountry": {"value": null, "url": "https://www.faortega.org/en/institution/figures/"},
+  "onTheRecord": [],
+  "notes": "Forbes profile (as of Sep 27, 2026): $135.4B, #11 in the world, citizenship Spain, source of wealth Zara (self-made); the Forbes profile shows no Philanthropy Score field for Ortega (it lists Source of Wealth, Residence, Citizenship only), so score is null. Giving Pledge: Ortega does not appear on the official pledger-list page (checked Sep 27, 2026). Foundation: Fundación Amancio Ortega (La Coruña, Spain; created 2001) is a Spanish foundation governed by Galician Law 12/2006 and Spanish Law 50/2002; it does not file a US Form 990-PF, so EIN, 5% payout test and related-party fields are not applicable (null). Its own 'Foundation in Figures' page (primary) reports: Investment in projects 2025 = EUR 99.6M total (EUR 98.8M social investment in own projects and financing to other institutions: education 12.5, social welfare 86.3; structural costs 0.85). Executed 2021-2025: EUR 514M total (education 47, social welfare 464, structural 2.5); committed 2026-2030: EUR 511M. Income 2025: EUR 83M (founder contributions 66, financial income 17); 2021-2025: EUR 1,049M (founder contributions 1,021, financial income 27). Note latestGrantsMillions is in EUR, not USD, and is 'investment in projects' rather than a grants line. Total assets were not shown on the figures page; the audited annual accounts PDF (https://www.faortega.org/documents/67/FUNDACION_AMANCIO_ORTEGA_Informe_AuditoriaCCAA_2025.pdf) is linked but was not read. Programs named are in Spain and Portugal (proton therapy programs in both national health systems) but no per-country grant table was seen, hence publishesGrantsByCountry null. Web-search summary (needs-check, faortega.org Spanish figures page and press): 2024 project investment EUR 207.6M (196.2 social welfare, 10.9 education), a EUR 100M DANA flood-relief fund in 2024, and a EUR 765M founder contribution in 2024. Political 2024 cycle: not applicable (Spanish citizen; US federal giving would be prohibited); nothing seen. Lifetime giving: no consolidated figure seen."
+}

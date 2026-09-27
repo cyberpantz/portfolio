@@ -1,0 +1,26 @@
+{
+  "name": "Mark Zuckerberg",
+  "citizenship": "United States",
+  "sourceOfWealth": "Facebook, Self Made",
+  "wealth": {"billions": 258.8, "asOf": "2026-09-25", "url": "https://www.forbes.com/profile/mark-zuckerberg/", "status": "secondary"},
+  "givingPledge": {"signed": true, "year": null, "wealthAtSigningBillions": null, "url": "https://www.givingpledge.org/pledger-list/"},
+  "lifetimeGiving": {"billions": null, "source": "", "url": "", "status": ""},
+  "forbesPhilanthropyScore": {"score": 2, "url": "https://www.forbes.com/profile/mark-zuckerberg/"},
+  "foundation": {
+    "name": "Chan Zuckerberg Initiative Foundation",
+    "ein": "45-5002209",
+    "filesUS990PF": true,
+    "assetsBillions": 7.499,
+    "assetsYear": 2024,
+    "latestGrantsMillions": 57.96,
+    "latestGrantsYear": 2023,
+    "met5PercentMinimum": null,
+    "payoutShortfallYears": null,
+    "relatedPartyFinding": null,
+    "url": "https://projects.propublica.org/nonprofits/organizations/455002209"
+  },
+  "political2024Cycle": {"millions": null, "url": "https://www.cnn.com/2024/08/27/media/mark-zuckerberg-election-season-republicans/index.html", "status": "needs-check"},
+  "publishesGrantsByCountry": {"value": null, "url": ""},
+  "onTheRecord": [],
+  "notes": "Chan Zuckerberg Initiative itself is an LLC and does not file a 990-PF. What is on file with the IRS is the Chan Zuckerberg Initiative Foundation (EIN 45-5002209, 501(c)(3) private foundation, Palo Alto). ProPublica API (data_source current_2026_09_16) lists tax period 2024-12 with asset_amount $7,499,068,854 and income $3,164,879,246 (latest_object_id 202503219349107430); the most recent filing with extracted line data is TY2023 990-PF: total assets end $6,319,675,100, contributions/grants paid per books $57,960,663, total expenses $127,622,894, distributable amount $298,792,721, undistributed income for year $206,806,524 (a 5%-payout determination was not made because carryover/following-year distributions were not examined; met5PercentMinimum left null). TY2022: grants paid $342,805,084, assets $5,412,475,782. TY2021: grants paid $841,490,044, assets $7,102,375,761. Schedule B/ Part VII-B flags: dirindirintcd=Y (2020-2023) and paidcmpncd=Y (2020, 2023) indicate transactions with disqualified persons were reported, but the actual finding text was not read; relatedPartyFinding left null. A web-search summary (needs-check) says the 2024 990-PF reported ~$235.4M across 53 grants. Forbes profile (Sep 25, 2026): net worth $258.8B, #6 world, Philanthropy Score 2; Forbes says Zuckerberg and Chan pledged in 2015 to give 99% of their Meta stake. Giving Pledge: 'Mark Zuckerberg and Priscilla Chan' appears on the official pledger-list page; the individual pledger page returned empty so signing year and wealth at signing were not seen (commonly 2010, unverified here). Lifetime giving: no figure seen. 2024-cycle political giving: OpenSecrets search returned empty; search summary (CNN, Aug 2024) says Zuckerberg said he would not fund election infrastructure in 2024 after $400M+ in 2020; no dollar figure seen. Related entities also on ProPublica: Chan Zuckerberg Biohub Inc (81-1669175), Chan Zuckerberg Initiative Advocacy (81-3742328, 501(c)(4))."
+}

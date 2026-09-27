@@ -1,0 +1,17 @@
+{
+  "name": "Zhang Yiming",
+  "citizenship": "China",
+  "sourceOfWealth": "TikTok (ByteDance), Self Made",
+  "wealth": {"billions": 84, "asOf": "2026-09-20", "url": "https://www.forbes.com/profile/zhang-yiming/", "status": "primary"},
+  "givingPledge": {"signed": false, "year": null, "wealthAtSigningBillions": null, "url": "https://givingpledge.org/pledgers"},
+  "lifetimeGiving": {"billions": null, "source": "Announced donations only: 500M CNY (2021) + 200M CNY (2023) to Fangmei Education Development Fund, Longyan; approx 700M CNY (~USD 0.1B) total announced. No published lifetime figure found.", "url": "https://www.scmp.com/tech/big-tech/article/3138327/bytedance-founder-zhang-yiming-donates-500-million-yuan-education", "status": "secondary"},
+  "forbesPhilanthropyScore": {"score": null, "url": "https://www.forbes.com/profile/zhang-yiming/"},
+  "foundation": {"name": "Fangmei Education Development Fund (Longyan, Fujian) - a local government-administered education fund, not a private foundation", "ein": "", "filesUS990PF": false, "assetsBillions": null, "assetsYear": null, "latestGrantsMillions": null, "latestGrantsYear": null, "met5PercentMinimum": null, "payoutShortfallYears": null, "relatedPartyFinding": null, "url": "https://pandaily.com/bytedance-founder-zhang-yiming-donates-28-9m-to-support-hometown-education/", "currency": "CNY"},
+  "political2024Cycle": {"millions": null, "url": "", "status": "needs-check"},
+  "publishesGrantsByCountry": {"value": false, "url": ""},
+  "onTheRecord": [
+    {"finding": "Donated 500 million yuan (about USD 77M) in June 2021 to set up the Fangmei Education Development Fund in his hometown Longyan, Fujian, named after his grandmothers; announced during the post-crackdown 'common prosperity' charity wave among Chinese tech founders.", "kind": "other", "url": "https://www.scmp.com/tech/big-tech/article/3138327/bytedance-founder-zhang-yiming-donates-500-million-yuan-education"},
+    {"finding": "Longyan Education Bureau announced May 2023 an additional 200 million yuan (about USD 28.9M) donation to the same fund.", "kind": "other", "url": "https://pandaily.com/bytedance-founder-zhang-yiming-donates-28-9m-to-support-hometown-education/"}
+  ],
+  "notes": "Forbes profile (real-time, 9/20/26) shows $84B, #25 in world, residence Singapore, citizenship China; no Forbes philanthropy score displayed on profile page. Not a Giving Pledge signatory (no entry seen; full-list check not performed within budget - treat as needs-check). No private foundation with public financials; the Fangmei fund is administered locally in Longyan and does not publish reports accessible in this search. Yahoo/SCMP also report a donation with cofounder Liang Rubo of about USD 28M to Nankai University (not independently verified here). Amounts in CNY; USD conversions as reported by press at the time."
+}

@@ -1,0 +1,18 @@
+{
+  "name": "Giancarlo Devasini",
+  "citizenship": "Italy",
+  "sourceOfWealth": "Cryptocurrency (Tether), Self Made",
+  "wealth": {"billions": 89.3, "asOf": "2026-09-20", "url": "https://www.forbes.com/profile/giancarlo-devasini/", "status": "primary"},
+  "givingPledge": {"signed": false, "year": null, "wealthAtSigningBillions": null, "url": "https://givingpledge.org/pledgers"},
+  "lifetimeGiving": {"billions": null, "source": "No personal charitable giving found in search results or Wikipedia biography; no personal foundation identified.", "url": "https://en.wikipedia.org/wiki/Giancarlo_Devasini", "status": "secondary"},
+  "forbesPhilanthropyScore": {"score": null, "url": "https://www.forbes.com/profile/giancarlo-devasini/"},
+  "foundation": {"name": "", "ein": "", "filesUS990PF": false, "assetsBillions": null, "assetsYear": null, "latestGrantsMillions": null, "latestGrantsYear": null, "met5PercentMinimum": null, "payoutShortfallYears": null, "relatedPartyFinding": null, "url": "", "currency": "EUR"},
+  "political2024Cycle": {"millions": null, "url": "", "status": "needs-check"},
+  "publishesGrantsByCountry": {"value": null, "url": ""},
+  "onTheRecord": [
+    {"finding": "2021: Bitfinex/Tether (of which Devasini is CFO/co-owner) paid USD 18.5M to settle the New York Attorney General's lawsuit over the use of Tether reserves to cover Bitfinex losses in 2018 (company-level settlement).", "kind": "penalty", "url": "https://en.wikipedia.org/wiki/Giancarlo_Devasini"},
+    {"finding": "1995: accused of software piracy by Microsoft in Italy; agreed to pay a fine of one million lire to avoid prosecution (per Corriere del Ticino via Wikipedia).", "kind": "penalty", "url": "https://www.cdt.ch/news/plan-b-giancarlo-devasini-luomo-dietro-a-tether-tra-i-piu-ricchi-ditalia-347898"},
+    {"finding": "Lived in Lugano 2017-2023; Tether signed an MoU ('Plan B') with the city of Lugano promoting crypto adoption - corporate/civic partnership, not charitable giving.", "kind": "other", "url": "https://en.wikipedia.org/wiki/Giancarlo_Devasini"}
+  ],
+  "notes": "Forbes real-time 9/20/26: $89.3B, #22 in world; Forbes editor note (Mar 2026) says he is chairman and estimated 45% owner of Tether; residence listed as Roquebrune-Cap-Martin, France (not Lugano); citizenship Italy; no Forbes philanthropy score shown. No charitable foundation, donations, or Giving Pledge signature found in any source reviewed (search plus Wikipedia). Penalty items are company-level (Bitfinex/Tether) except the 1995 Microsoft matter, which is personal and sourced through secondary reporting - needs-check."
+}

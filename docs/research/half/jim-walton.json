@@ -1,0 +1,29 @@
+{
+  "name": "Jim Walton",
+  "citizenship": "United States",
+  "sourceOfWealth": "Walmart",
+  "wealth": {"billions": 129.1, "asOf": "2026-09-27", "url": "https://www.forbes.com/profile/jim-walton/", "status": "secondary"},
+  "givingPledge": {"signed": false, "year": null, "wealthAtSigningBillions": null, "url": "https://www.givingpledge.org/pledger-list"},
+  "lifetimeGiving": {"billions": null, "source": "No cumulative personal-giving figure seen. His personal vehicle, the Town Branch Foundation, reports contributions received of $475,712,000 (2018), $21,077,911 (2019), $0 (2020), $0 (2021), $1,687,500 (2022), $0 (2023), $35,550,004 (2024) per 990-PF extracts; donor identity not shown in extract.", "url": "https://projects.propublica.org/nonprofits/organizations/823575662", "status": "needs-check"},
+  "forbesPhilanthropyScore": {"score": 2, "url": "https://www.forbes.com/profile/jim-walton/"},
+  "foundation": {
+    "name": "Walton Family Foundation Inc (family); individual: Town Branch Foundation (EIN 82-3575662)",
+    "ein": "13-3441466",
+    "filesUS990PF": true,
+    "assetsBillions": 6.144,
+    "assetsYear": 2024,
+    "latestGrantsMillions": 603.5,
+    "latestGrantsYear": 2024,
+    "met5PercentMinimum": true,
+    "payoutShortfallYears": [],
+    "relatedPartyFinding": null,
+    "url": "https://projects.propublica.org/nonprofits/organizations/133441466"
+  },
+  "political2024Cycle": {"millions": 14.7, "url": "https://united4respect.org/reports/walmart-political-spending-2024/", "status": "secondary"},
+  "publishesGrantsByCountry": {"value": null, "url": ""},
+  "onTheRecord": [
+    {"finding": "United for Respect's analysis of FEC and state filings (Jan 1, 2023 - Sept 2024) lists Jim C. Walton as the top Walmart/Walton political donor at $14.7 million, including $10 million to Americans for Prosperity and over $2 million to pro-charter-school PACs (Legacy 44 PAC, Charter Public Schools PAC, Charter Schools Now).", "kind": "other", "url": "https://united4respect.org/reports/walmart-political-spending-2024/"},
+    {"finding": "Town Branch Foundation paid its Secretary, Buddy D. Philpot, $677,212 compensation plus $174,627 other in FY2024 ($589,326 + $151,964 in FY2023; $605,231 + $156,066 in FY2022); Jim and Lynne Walton take $0.", "kind": "compensation", "url": "https://projects.propublica.org/nonprofits/organizations/823575662"}
+  ],
+  "notes": "Walton Family Foundation (EIN 13-3441466) 990-PF extracts, ProPublica: FY2024 charitable disbursements $603,519,475; total assets (book) $6,143,971,109; contributions received $558,013,782; officer compensation $1,228,771. Prior years' disbursements: 2023 $677.9M (assets $5.71B), 2022 $613.2M ($5.69B), 2021 $588.0M ($5.58B), 2020 $563.7M ($4.89B), 2019 $537.7M ($4.16B). Forbes profile: 'Jim's daughter Annie Proeitti chairs the family's $8.6 billion (2024 assets) Walton Family Foundation' (fair-market figure vs. ProPublica book value). met5PercentMinimum derived from disbursements vs book assets (~9.8% in 2024), not from Part XIII of the 990-PF. Town Branch Foundation (EIN 82-3575662, exempt Sept 2018; Jim C. Walton Director/Co-president, Lynne Walton Co-president): FY2024 total assets $499,998,797, charitable disbursements $34,126,768 (6.8% of book assets); FY2023 $43,137,118 on $470.6M; FY2022 $23,158,646 on $487.3M (4.75% of book assets; formal payout compliance not verified, carryovers possible); FY2021 $28.1M on $511.9M; FY2020 $14.6M on $502.7M (2.9%); FY2019 $12.2M on $503.3M (2.4%); FY2018 $7.1M on $478.6M. Several early years show disbursement/asset ratios under 5% but no IRS payout finding was seen, so payoutShortfallYears for Town Branch is not asserted. Political 2024: U4R figure is a compilation of FEC data through Sept 15, 2024 (partial cycle); OpenSecrets direct lookup not fetched. Search summary also cited a $500,000 gift against the Arkansas Educational Rights Amendment (2024), not verified on a primary page. Not on the Giving Pledge list. Forbes profile also notes he chairs Arvest Bank Group ($28B assets)."
+}

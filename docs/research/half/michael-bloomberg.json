@@ -1,0 +1,29 @@
+{
+  "name": "Michael Bloomberg",
+  "citizenship": "United States",
+  "sourceOfWealth": "Bloomberg LP (88% owner), self-made (Forbes Self-Made Score 8)",
+  "wealth": {"billions": 94.9, "asOf": "2026-09-24", "url": "https://www.forbes.com/profile/michael-bloomberg/", "status": "primary"},
+  "givingPledge": {"signed": true, "year": null, "wealthAtSigningBillions": null, "url": "https://www.givingpledge.org/pledger-list"},
+  "lifetimeGiving": {"billions": 25.4, "source": "Forbes profile editor note (Sep 15, 2026): 'gave away $4.3 billion in 2025 and has donated more than $25.4 billion in his lifetime'; same $25.4B and $4.3B (2025) figures appear in Bloomberg Philanthropies Annual Report 2025-2026 search summary", "url": "https://www.forbes.com/profile/michael-bloomberg/", "status": "secondary"},
+  "forbesPhilanthropyScore": {"score": 5, "url": "https://www.forbes.com/profile/michael-bloomberg/"},
+  "foundation": {
+    "name": "Bloomberg Family Foundation Inc (operates as Bloomberg Philanthropies)",
+    "ein": "20-5602483",
+    "filesUS990PF": true,
+    "assetsBillions": 11.81,
+    "assetsYear": 2023,
+    "latestGrantsMillions": 1005.93,
+    "latestGrantsYear": 2023,
+    "met5PercentMinimum": true,
+    "payoutShortfallYears": [],
+    "relatedPartyFinding": null,
+    "url": "https://projects.propublica.org/nonprofits/organizations/205602483"
+  },
+  "political2024Cycle": {"millions": 47, "url": "https://www.forbes.com/sites/saradorn/2024/10/28/michael-bloomberg-gives-harris-50-million-report-says/", "status": "needs-check"},
+  "publishesGrantsByCountry": {"value": false, "url": "https://www.bloomberg.org/annualreport/"},
+  "onTheRecord": [
+    {"finding": "Reported (Oct 2024) $50M to Future Forward USA Action (501(c)(4), donors undisclosed) plus $19M to the Future Forward super PAC; before the nonprofit gift he had ~$47M in federally disclosed 2024-cycle contributions incl. $19M to the Biden/Harris main super PAC and $10M to House Democrats (figures from search summary of Forbes/NBC/Fox reporting; not verified line-by-line on OpenSecrets).", "kind": "other", "url": "https://www.forbes.com/sites/saradorn/2024/10/28/michael-bloomberg-gives-harris-50-million-report-says/"},
+    {"finding": "Bloomberg Family Foundation 990-PF FY2023 (IRS extract): total operating and administrative expenses $425,747,870 alongside grants paid $1,005,927,588; officer compensation $275,000.", "kind": "compensation", "url": "https://projects.propublica.org/nonprofits/organizations/205602483"}
+  ],
+  "notes": "Bloomberg Philanthropies 'encompasses all of Michael R. Bloomberg's giving, including corporate, foundation, and personal philanthropy' (bloomberg.org), so the 990-PF entity (Bloomberg Family Foundation Inc, NY, c/o Geller Advisors) captures only part of the $4.3B/yr headline. IRS-extract FY2023 990-PF: FMV assets $11,808,358,665; total revenue $1,514,801,871 (contributions received $1,152,639,150); total expenses $1,431,675,458; grants paid $1,005,927,588; distributable amount $542,972,061 vs qualifying-exempt-purpose expenses $1,423,427,842 (so >5% minimum met); undistributed income 0 for 2019-2023 (the extract shows undistributed-income figures in 2011-2015, e.g. $311.6M in 2015, but the 'undistributed income subject to tax' flag is N in all years — payoutShortfallYears left empty; check PDFs before asserting a shortfall). Prior years grants paid: 2022 $977.3M (assets $11.53B), 2021 $1,065.6M ($13.05B), 2020 $497.1M ($11.11B), 2019 $1,623.9M ($8.65B). IRS BMF tax period 2024-12: assets $12,117,236,821. Annual Report 2025-2026 (PDF: https://assets.bbhub.io/dotorg/sites/64/2026/03/Bloomberg-Philanthropies_Annual-Report-2025-2026.pdf) headline: 700 cities, 150 countries; the web page does not present a per-country grants breakdown, and no downloadable grants-by-country dataset was seen, hence publishesGrantsByCountry=false (needs-check against the PDF). Giving Pledge: 'Michael R. Bloomberg' on signatory list; year not shown on list page. Forbes real-time net worth $94.9B as of 9/24/26 (#20); Forbes editor note says he has committed his Bloomberg LP stake to Bloomberg Philanthropies at death. Political figure: 47 = federally disclosed contributions before the $50M undisclosed nonprofit gift; total incl. that gift would be ~$97M but that sum is not from a single source I saw."
+}

@@ -1,0 +1,29 @@
+{
+  "name": "Bill Gates",
+  "citizenship": "United States",
+  "sourceOfWealth": "Microsoft, self-made (Forbes Self-Made Score 8)",
+  "wealth": {"billions": 115, "asOf": "2026-09-26", "url": "https://www.forbes.com/profile/bill-gates/", "status": "primary"},
+  "givingPledge": {"signed": true, "year": null, "wealthAtSigningBillions": null, "url": "https://www.givingpledge.org/pledger-list"},
+  "lifetimeGiving": {"billions": 63.9, "source": "Forbes profile editor note: 'donated more than $63.9 billion to the Gates Foundation' (Last Updated Sep 15, 2026)", "url": "https://www.forbes.com/profile/bill-gates/", "status": "secondary"},
+  "forbesPhilanthropyScore": {"score": 5, "url": "https://www.forbes.com/profile/bill-gates/"},
+  "foundation": {
+    "name": "Gates Foundation (formerly Bill & Melinda Gates Foundation)",
+    "ein": "56-2618866",
+    "filesUS990PF": true,
+    "assetsBillions": 76.95,
+    "assetsYear": 2023,
+    "latestGrantsMillions": 7200.56,
+    "latestGrantsYear": 2023,
+    "met5PercentMinimum": true,
+    "payoutShortfallYears": [],
+    "relatedPartyFinding": null,
+    "url": "https://projects.propublica.org/nonprofits/organizations/562618866"
+  },
+  "political2024Cycle": {"millions": 50, "url": "https://www.forbes.com/sites/antoniopequenoiv/2024/10/22/bill-gates-donated-50-million-to-nonprofit-supporting-kamala-harris-report-says/", "status": "secondary"},
+  "publishesGrantsByCountry": {"value": true, "url": "https://www.gatesfoundation.org/about/committed-grants"},
+  "onTheRecord": [
+    {"finding": "Gates Foundation 990-PF FY2023 (IRS extract via ProPublica): officer compensation $13,590,793; total operating/administrative expenses $1,636,590,219 vs grants paid $7,200,556,970.", "kind": "compensation", "url": "https://projects.propublica.org/nonprofits/organizations/562618866"},
+    {"finding": "Reported (NYT, Oct 2024) $50M donation to Future Forward USA Action, a Democratic-aligned nonprofit that does not disclose donors; Gates did not publicly endorse Harris. Not visible in FEC/OpenSecrets data because the recipient is a 501(c)(4).", "kind": "other", "url": "https://www.forbes.com/sites/antoniopequenoiv/2024/10/22/bill-gates-donated-50-million-to-nonprofit-supporting-kamala-harris-report-says/"}
+  ],
+  "notes": "Two-entity structure since Oct 2006: Gates Foundation (EIN 56-2618866, grant-making) and Gates Foundation Trust (holds donated investment assets from Bill Gates, Melinda French Gates and Warren Buffett; Bill Gates is trustee; separate 990-PF; names changed 2025) — https://www.gatesfoundation.org/about/financials, which posts audited statements and 990-PFs 2000-2025 (2024 Foundation 990-PF: https://docs.gatesfoundation.org/documents/2024_gf_990pf_pd.pdf; 2025 audited FS posted). ProPublica/IRS-extract FY2023 Foundation 990-PF: total revenue $7,810,137,842 (contributions received $7,797,470,287, i.e. transfers from the Trust); total expenses $8,837,147,189; grants paid $7,200,556,970; FMV assets end of year $76,951,451,400 (book $76.95B, liabilities $6.53B); 'undistributed income' 0 every year 2011-2023 in the extract, and distributable amount for this entity is small ($159.4M in 2023) because the grant-making entity is funded by Trust transfers, so met5PercentMinimum=true applies to this entity only; the Trust's own payout was not checked. Prior years grants paid: 2022 $5.91B (assets $68.9B), 2021 $4.12B ($55.0B), 2020 $3.85B ($51.8B), 2019 $4.20B ($51.0B). IRS BMF tax period 2024-12 lists assets $78,673,465,696. Committed Grants Database (1994 onward, downloadable CSV, from foundation site) — the page says it covers grants only, not contracts or PRIs; the CSV's country columns were not opened here (curl blocked), so 'publishesGrantsByCountry' relies on the database's existence and the foundation's regional office/country program structure — verify columns. Giving Pledge: Bill Gates is on the signatory list (he co-founded it in 2010); pledge year and wealth at signing not shown on the list page fetched, so left null. Forbes editor note: in 2025 Gates announced the foundation will close in 20 years; 2022 Microsoft share donation to the Trust; Microsoft stake now <1%. Forbes real-time net worth $115B as of 9/26/26, #17."
+}

@@ -1,0 +1,29 @@
+{
+  "name": "Bernard Arnault",
+  "citizenship": "France",
+  "sourceOfWealth": "LVMH",
+  "wealth": {"billions": 122.7, "asOf": "2026-09-27", "url": "https://www.forbes.com/profile/bernard-arnault/", "status": "secondary"},
+  "givingPledge": {"signed": false, "year": null, "wealthAtSigningBillions": null, "url": "https://www.givingpledge.org/pledger-list"},
+  "lifetimeGiving": {"billions": null, "source": "No cumulative personal-giving figure published. Forbes profile notes LVMH and Arnault together contributed EUR 200 million to the Notre Dame restoration (reopened Dec 2024). LVMH's philanthropy is corporate (Fondation Louis Vuitton, a corporate foundation), not disclosed as a personal cumulative total.", "url": "https://www.forbes.com/profile/bernard-arnault/", "status": "needs-check"},
+  "forbesPhilanthropyScore": {"score": null, "url": "https://www.forbes.com/profile/bernard-arnault/"},
+  "foundation": {
+    "name": "Fondation Louis Vuitton (fondation d'entreprise, LVMH)",
+    "ein": "",
+    "filesUS990PF": false,
+    "assetsBillions": null,
+    "assetsYear": null,
+    "latestGrantsMillions": null,
+    "latestGrantsYear": null,
+    "met5PercentMinimum": null,
+    "payoutShortfallYears": null,
+    "relatedPartyFinding": "Cour des comptes (2018, 'Le soutien public au mécénat d'entreprises') found the Frank Gehry building cost EUR 790 million (initially estimated at EUR 100 million) and that LVMH group companies deducted approximately EUR 518 million from corporate tax under the 60% Aillagon-law mécénat credit.",
+    "url": "https://www.lvmh.com/en/commitment-in-action/for-philanthropy/the-fondation-louis-vuitton"
+  },
+  "political2024Cycle": {"millions": null, "url": "", "status": "needs-check"},
+  "publishesGrantsByCountry": {"value": false, "url": "https://www.lvmh.com/en/commitment-in-action/for-philanthropy/the-fondation-louis-vuitton"},
+  "onTheRecord": [
+    {"finding": "French Court of Auditors (Cour des comptes) 2018 report on corporate-patronage tax breaks singled out the Fondation Louis Vuitton: building cost EUR 790M vs EUR 100M initial estimate, with roughly EUR 518M in tax savings for LVMH group entities; an anti-corruption association filed a complaint for 'escroquerie' and 'blanchiment de fraude fiscale' against the group and its chairman.", "kind": "other", "url": "https://multinationales.org/fr/actualites/la-fondation-louis-vuitton-outil-d-optimisation-fiscale-la-cour-des-comptes"},
+    {"finding": "Arnault publicly defended the Fondation Louis Vuitton tax treatment as operating within the 2003 law passed by parliament (response to Le Monde reporting).", "kind": "other", "url": "https://www.artnews.com/art-news/news/bernard-arnault-response-le-monde-report-1234793597/"}
+  ],
+  "notes": "French citizen; no US 990-PF. Fondation Louis Vuitton is a corporate foundation of LVMH (opened 2014); LVMH's page reports >11 million visitors since opening and 2025 programming but no financial figures (assets, grants). LVMH 2025 Universal Registration Document (filed with AMF 2026-03-31, https://urd.lvmh.com/en/2025) would hold sponsorship/philanthropy spend in EUR; not extracted within budget. Forbes profile shows no Philanthropy Score line for Arnault (non-US). Not on the Giving Pledge list (checked 2026-07-29 list). Political giving: France restricts corporate donations and caps individual donations; no source checked, needs-check. Wealth figure is Forbes real-time as of 2026-09-27; editorial profile last updated 2026-03-12."
+}

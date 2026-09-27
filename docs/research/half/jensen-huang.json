@@ -1,0 +1,28 @@
+{
+  "name": "Jensen Huang",
+  "citizenship": "United States",
+  "sourceOfWealth": "Nvidia, Self Made",
+  "wealth": {"billions": 194.9, "asOf": "2026-09-27", "url": "https://www.forbes.com/profile/jensen-huang/", "status": "secondary"},
+  "givingPledge": {"signed": false, "year": null, "wealthAtSigningBillions": null, "url": "https://www.givingpledge.org/pledger-list/"},
+  "lifetimeGiving": {"billions": null, "source": "", "url": "", "status": ""},
+  "forbesPhilanthropyScore": {"score": 1, "url": "https://www.forbes.com/profile/jensen-huang/"},
+  "foundation": {
+    "name": "Jen-Hsun & Lori Huang Foundation",
+    "ein": "26-1551239",
+    "filesUS990PF": true,
+    "assetsBillions": 9.212,
+    "assetsYear": 2024,
+    "latestGrantsMillions": 59.72,
+    "latestGrantsYear": 2023,
+    "met5PercentMinimum": null,
+    "payoutShortfallYears": null,
+    "relatedPartyFinding": null,
+    "url": "https://projects.propublica.org/nonprofits/organizations/261551239"
+  },
+  "political2024Cycle": {"millions": null, "url": "https://fortune.com/2024/11/07/warren-buffett-jensen-huang-politics-endorsements-silent-wealth-gains-trump-win/", "status": "needs-check"},
+  "publishesGrantsByCountry": {"value": null, "url": ""},
+  "onTheRecord": [
+    {"finding": "Bloomberg (June 27, 2024): the Jen-Hsun & Lori Huang Foundation held 69 million Nvidia shares at end-2022 (valued at more than $8B per FoundationMark) and 'has mostly given stock to a donor-advised fund at Schwab'; headline says Huang logs 1-hour weeks at the foundation. Grants to a DAF count as qualifying distributions but are not disclosed onward.", "kind": "other", "url": "https://www.bloomberg.com/news/articles/2024-06-27/nvidia-ceo-jensen-huang-has-billions-at-foundation-where-he-works-1-hour-weeks"}
+  ],
+  "notes": "Forbes profile (as of Sep 27, 2026): $194.9B, #7 in the world, Philanthropy Score 1, citizenship United States; Forbes notes gifts of $30M to Stanford and $50M (2022) to Oregon State. Giving Pledge: Huang does not appear on the official pledger-list page (checked Sep 27, 2026). Foundation: Jen-Hsun & Lori Huang Foundation, EIN 26-1551239, Palo Alto, private foundation (ruling 2008). ProPublica API (current_2026_09_16): tax period 2024-12 asset_amount $9,212,451,171, income $5,998,475,536; the TY2024 990-PF PDF is listed but its line data are not yet extracted. Latest extracted filing TY2023: total assets end $3,413,872,472 (all in corporate stock), grants paid $59,723,672, contributions received $57,733,100, minimum investment return $123,554,691, distributable amount $123,236,425, undistributed income for the year $120,910,620. TY2022: assets $1,011,788,263, grants paid $66,338,496, undistributed income $57,433,782. TY2021: assets $1,930,245,950, grants paid $31,473,289, undistributed income $62,669,286. TY2020: assets $828,345,692, grants $13,756,816. The 'undistributed income' field is non-zero in every year 2019-2023; because foundations have until the end of the following year to satisfy the 5% requirement and the carryover schedule was not read, met5PercentMinimum is left null rather than asserted; payoutShortfallYears null for the same reason. Part VII-B flag dirindirintcd=Y in 2019 only; no text read. Lifetime giving: no figure seen. Political 2024: OpenSecrets not fetched; Fortune (Nov 2024, via search summary) says Huang stayed silent on the election; no dollar figure seen."
+}

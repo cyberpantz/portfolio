@@ -1,0 +1,29 @@
+{
+  "name": "Thomas Peterffy",
+  "citizenship": "United States (Hungarian-born, immigrated 1965)",
+  "sourceOfWealth": "Discount brokerage (Interactive Brokers, founder/chairman), self-made (Forbes Self-Made Score 10)",
+  "wealth": {"billions": 103.5, "asOf": "2026-09-27", "url": "https://www.forbes.com/profile/thomas-peterffy/", "status": "primary"},
+  "givingPledge": {"signed": false, "year": null, "wealthAtSigningBillions": null, "url": "https://www.givingpledge.org/pledger-list"},
+  "lifetimeGiving": {"billions": null, "source": "No cumulative figure on Forbes profile; Forbes Philanthropy Score 1 (lowest tier)", "url": "https://www.forbes.com/profile/thomas-peterffy/", "status": "needs-check"},
+  "forbesPhilanthropyScore": {"score": 1, "url": "https://www.forbes.com/profile/thomas-peterffy/"},
+  "foundation": {
+    "name": "Peterffy Foundation",
+    "ein": "47-2351448",
+    "filesUS990PF": true,
+    "assetsBillions": 0.111,
+    "assetsYear": 2023,
+    "latestGrantsMillions": 7.43,
+    "latestGrantsYear": 2023,
+    "met5PercentMinimum": true,
+    "payoutShortfallYears": [],
+    "relatedPartyFinding": null,
+    "url": "https://projects.propublica.org/nonprofits/organizations/472351448"
+  },
+  "political2024Cycle": {"millions": null, "url": "https://www.nbcnews.com/politics/2024-election/gop-megadonor-thomas-peterffy-donates-another-1-million-glenn-youngkin-rcna97011", "status": "needs-check"},
+  "publishesGrantsByCountry": {"value": false, "url": ""},
+  "onTheRecord": [
+    {"finding": "Peterffy Foundation (Fort Lauderdale FL, c/o Christopher Uzpen) 990-PF FY2023 per IRS extract: FMV assets $110,978,113; grants paid $7,430,850; total expenses $8,385,943; distributable amount $5,667,695 vs exempt-purpose disbursements $8,132,785; zero contributions received in 2021-2023 (last funding: $77,984,601 in 2020, $6,008,000 in 2019). Officer compensation $0.", "kind": "other", "url": "https://projects.propublica.org/nonprofits/organizations/472351448"},
+    {"finding": "2023 (2024 cycle, state-level): three $1 million donations to Glenn Youngkin's Spirit of Virginia PAC (NBC News, Sept 2023).", "kind": "other", "url": "https://www.nbcnews.com/politics/2024-election/gop-megadonor-thomas-peterffy-donates-another-1-million-glenn-youngkin-rcna97011"}
+  ],
+  "notes": "Foundation is small relative to net worth: $111M FMV assets (2023) vs Forbes net worth $103.5B (real-time 9/27/26, #19). Grants paid by year: 2023 $7.43M, 2022 $7.61M (assets $105.5M), 2021 $6.26M ($132.9M), 2020 $3.88M ($107.1M), 2019 $0.30M ($15.4M), 2015 $0.27M. Undistributed income 0 in 2019-2023 and 'undistributed income subject to tax' flag N, so 5% minimum appears met each year in the extract. IRS BMF tax period 2025-12 lists assets $244,462,333 and income $36,117,832 (not yet a parsed 990-PF; suggests a large 2024/2025 contribution — check the 2024/2025 990-PF PDFs). Political 2024 cycle: no cycle total obtained; opensecrets.org biggest-donors page and the FEC API returned empty on fetch. Items seen only via search snippets (needs-check): $3M to Youngkin's Spirit of Virginia PAC in 2023 (NBC/WRIC); WHYY reported he gave $2M in one quarter after an initial $800,000 to Sentinel Action Fund (Senate Republican super PAC) and was one of its three million-dollar donors — https://whyy.org/articles/bob-casey-dave-mccormick-campaign-finance-senate-race-megadonors/. Not on Giving Pledge signatory list (2026-07-29 list). Forbes editor note: owns >560,000 acres, mostly in Florida; CEO of Interactive Brokers until Dec 2019."
+}

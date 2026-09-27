@@ -1,0 +1,30 @@
+{
+  "name": "Elon Musk",
+  "citizenship": "United States",
+  "sourceOfWealth": "Tesla, SpaceX, Self Made",
+  "wealth": {"billions": 929, "asOf": "2026-09-27", "url": "https://www.forbes.com/profile/elon-musk/", "status": "secondary"},
+  "givingPledge": {"signed": true, "year": 2012, "wealthAtSigningBillions": null, "url": "https://www.givingpledge.org/pledger/elon-musk/"},
+  "lifetimeGiving": {"billions": null, "source": "", "url": "", "status": ""},
+  "forbesPhilanthropyScore": {"score": 1, "url": "https://www.forbes.com/profile/elon-musk/"},
+  "foundation": {
+    "name": "Musk Foundation",
+    "ein": "85-2133087",
+    "filesUS990PF": true,
+    "assetsBillions": 0.463,
+    "assetsYear": 2024,
+    "latestGrantsMillions": 474.4,
+    "latestGrantsYear": 2024,
+    "met5PercentMinimum": false,
+    "payoutShortfallYears": [2021, 2022, 2023, 2024],
+    "relatedPartyFinding": "NYT (Mar 2024) reported that through 2022 about half of grants went to organizations tied to Musk, his employees, or his companies; NYT (Dec 2024) reported $470M of $474M given in 2024 went to 'The Foundation', led by a Musk aide.",
+    "url": "https://projects.propublica.org/nonprofits/organizations/852133087"
+  },
+  "political2024Cycle": {"millions": null, "url": "", "status": ""},
+  "publishesGrantsByCountry": {"value": null, "url": ""},
+  "onTheRecord": [
+    {"finding": "Musk Foundation fell $41M short of the 5% minimum distribution in 2021 and $234M short by end of 2022 (NYT reporting of 990-PF filings, via NY Post/AOL).", "kind": "payout-shortfall", "url": "https://aol.com/elon-musk-charity-broke-tax-154821102.html"},
+    {"finding": "NYT (Dec 12, 2024) reported the foundation was $421M short of the 5% rule in 2023, the third consecutive year; earlier gaps were later covered to avoid penalty tax.", "kind": "payout-shortfall", "url": "https://www.nytimes.com/2024/12/12/us/politics/musk-foundation-taxes-donations.html"},
+    {"finding": "NYT (Mar 2024) 'Elon Musk Has a Giant Charity. Its Money Stays Close to Home': roughly half of grants through 2022 went to entities tied to Musk, his employees or companies.", "kind": "related-party", "url": "https://www.nytimes.com/2024/03/10/us/elon-musk-charity.html"},
+    {"finding": "Original Musk Foundation (EIN 77-0587507, CA) filed a dissolution/liquidation statement with its FY ending June 2021 990-PF; successor entity is EIN 85-2133087 (TX, exemption Sept 2020).", "kind": "other", "url": "https://projects.propublica.org/nonprofits/organizations/770587507"}
+  ],
+  "notes": "Assets shown are IRS book value (ProPublica extract: total assets EOY $462,970,680 for FY2024; $536,153,034 FY2023; $650,716,295 FY2022; $379,579,235 FY2021). Book value greatly understates fair market value because Tesla shares are carried at cost; NYT/Wikipedia cite >$14B FMV at end of 2024 (secondary; not verified in the filing itself). Charitable disbursements per ProPublica extract: 2024 $474.4M, 2023 $236.6M, 2022 $160.6M, 2021 $160.1M, 2020 $10.2M. Contributions received: $5.70B (2021), $2.25B (2022), $73.9M (2024). Officers Elon Musk, Jared Birchall, Matilda Simon all $0 compensation. Forbes wealth figure is the real-time net worth as of 9/27/26 (Forbes editor note says Musk became a trillionaire on SpaceX IPO June 12, 2026; real-time figure displayed $929B). Giving Pledge page lists 'Pledged in 2012' with no letter text visible. OpenSecrets pages (top donors / biggest donors 2024) returned no content via fetch, so political2024Cycle left null rather than estimated. Lifetime giving figure not found on a primary or secondary source within budget. 2024 and 2023 shortfall statuses are secondary (NYT via Wikipedia/AOL summary); the 2021/2022 shortfalls were seen in the AOL/NY Post article text."}
