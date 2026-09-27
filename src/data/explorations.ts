@@ -51,6 +51,14 @@ export const EXPLORATIONS: Exploration[] = [
     desc: 'A cat drawn entirely in points, rigged to a real skeleton, watching a red dot that follows your cursor. Take the dot to the floor and it stands up and stalks. Bring it near a paw and the paw comes up, waits, and strikes. Move behind it and it turns to face you.',
   },
   {
+    id: 'cap',
+    name: 'The Cap',
+    type: 'Data',
+    tags: ['Scrollytelling', 'SVG', 'React', 'Public data'],
+    url: '/explorations/cap',
+    desc: 'Social Security tax stops on the day your wages reach the cap. For most people that day never comes. For some it is in January. Enter an income and see the date, then read down a ladder of incomes and watch the year fall away into a cliff.',
+  },
+  {
     id: 'tilt',
     /* Off the grid while the writing is worked on. The page still builds and
        is reachable at /explorations/tilt; the layout noindexes it so a draft

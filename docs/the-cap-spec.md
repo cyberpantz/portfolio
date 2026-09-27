@@ -150,6 +150,35 @@ The cap is the most promising candidate: something that runs, and then hits a wa
 and stops, while the thing driving it carries on. Find the tick and there is a
 piece here.
 
+## 7a. Mechanism — decided
+
+**The day it stops.** A year drawn as 26 paydays. A cell is inked while Social
+Security tax is coming out of it, hollow once it is not. Read down a ladder of
+incomes and the inked region falls away from the right into a cliff.
+
+Each row carries two readouts: the stop date on the right, and on the left the
+share of income actually taken — 6.2% until the base, then falling to 0.11% at
+$10M. Two dimensions, one drawing, no legend.
+
+Every chapter is a variant of that one figure:
+
+| # | Chapter | Rows |
+|---|---|---|
+| 1 | Every payday, from the first dollar | the average wage, all cells inked |
+| 2 | Only on the first $184,500 | + the base, + twice the base — the wall appears |
+| 3 | The higher the income, the earlier | the full ladder, with **your row** in the accent |
+| 4 | For Musk the question does not arise | $10M, then a dashed row with no cells, then 2021: one cell |
+| 5 | Same rate, different clock | 260 paydays against 12 tranches |
+| 6 | Three published answers | the denominator switch |
+| — | Your year | the field again, one row, one sentence |
+
+Pure SVG. Server-renderable, so the suite can hold the drawing to the data file.
+
+Built as `src/experiments/cap/`, data from `scripts/cap-data.mjs`, sources in
+`src/data/cap-sources.ts`. The suite checks the maths against the file, that
+every source is cited and every citation resolves, and that no dollar figure or
+percentage is typed into a sentence.
+
 ## 8. Sources
 
 - ProPublica, *The Secret IRS Files* —

@@ -1,0 +1,574 @@
+{
+  "built": "2026-09-26",
+  "law": {
+    "year": 2026,
+    "wageBase": 184500,
+    "wageBasePrior": 176100,
+    "averageWage": 69846.57,
+    "averageWageYear": 2024,
+    "socialSecurityRate": 0.062,
+    "medicareRate": 0.0145,
+    "additionalMedicareRate": 0.009,
+    "additionalMedicareFrom": 200000,
+    "minimumWage": 7.25,
+    "fullTimeHours": 2080,
+    "standardDeductionSingle": 16100,
+    "payPeriods": 26,
+    "wageBase2021": 142800
+  },
+  "minimum": {
+    "income": 15080,
+    "hourly": 7.25,
+    "hours": 2080,
+    "belowStandardDeduction": true,
+    "federalIncomeTax": 0,
+    "socialSecurity": 934.96,
+    "medicare": 218.66,
+    "total": 1153.62,
+    "socialSecurityRate": 6.2,
+    "shareTaxed": 100,
+    "perPayday": 44.37
+  },
+  "ladder": [
+    {
+      "id": "minimum",
+      "label": "Federal minimum wage",
+      "income": 15080,
+      "stopDay": null,
+      "stopDate": null,
+      "stopPayday": null,
+      "socialSecurity": 934.96,
+      "medicare": 218.66,
+      "total": 1153.62,
+      "socialSecurityRate": 6.2,
+      "shareTaxed": 100
+    },
+    {
+      "id": "average",
+      "label": "Average wage",
+      "income": 69846.57,
+      "stopDay": null,
+      "stopDate": null,
+      "stopPayday": null,
+      "socialSecurity": 4330.49,
+      "medicare": 1012.78,
+      "total": 5343.26,
+      "socialSecurityRate": 6.2,
+      "shareTaxed": 100
+    },
+    {
+      "id": "base",
+      "label": "The base itself",
+      "income": 184500,
+      "stopDay": null,
+      "stopDate": null,
+      "stopPayday": null,
+      "socialSecurity": 11439,
+      "medicare": 2675.25,
+      "total": 14114.25,
+      "socialSecurityRate": 6.2,
+      "shareTaxed": 100
+    },
+    {
+      "id": "twice",
+      "label": "Twice the base",
+      "income": 369000,
+      "stopDay": 183,
+      "stopDate": "2 July",
+      "stopPayday": 13,
+      "socialSecurity": 11439,
+      "medicare": 6871.5,
+      "total": 18310.5,
+      "socialSecurityRate": 3.1,
+      "shareTaxed": 50
+    },
+    {
+      "id": "half-million",
+      "label": "$500,000",
+      "income": 500000,
+      "stopDay": 135,
+      "stopDate": "15 May",
+      "stopPayday": 10,
+      "socialSecurity": 11439,
+      "medicare": 9950,
+      "total": 21389,
+      "socialSecurityRate": 2.29,
+      "shareTaxed": 36.9
+    },
+    {
+      "id": "million",
+      "label": "$1,000,000",
+      "income": 1000000,
+      "stopDay": 68,
+      "stopDate": "9 March",
+      "stopPayday": 5,
+      "socialSecurity": 11439,
+      "medicare": 21700,
+      "total": 33139,
+      "socialSecurityRate": 1.14,
+      "shareTaxed": 18.5
+    },
+    {
+      "id": "four-million",
+      "label": "$4,000,000",
+      "income": 4000000,
+      "stopDay": 17,
+      "stopDate": "17 January",
+      "stopPayday": 2,
+      "socialSecurity": 11439,
+      "medicare": 92200,
+      "total": 103639,
+      "socialSecurityRate": 0.29,
+      "shareTaxed": 4.6
+    },
+    {
+      "id": "ten-million",
+      "label": "$10,000,000",
+      "income": 10000000,
+      "stopDay": 7,
+      "stopDate": "7 January",
+      "stopPayday": 1,
+      "socialSecurity": 11439,
+      "medicare": 233200,
+      "total": 244639,
+      "socialSecurityRate": 0.11,
+      "shareTaxed": 1.8
+    }
+  ],
+  "curve": [
+    [
+      184500,
+      365
+    ],
+    [
+      193195,
+      349
+    ],
+    [
+      202300,
+      333
+    ],
+    [
+      211834,
+      318
+    ],
+    [
+      221818,
+      304
+    ],
+    [
+      232272,
+      290
+    ],
+    [
+      243218,
+      277
+    ],
+    [
+      254681,
+      265
+    ],
+    [
+      266684,
+      253
+    ],
+    [
+      279252,
+      242
+    ],
+    [
+      292413,
+      231
+    ],
+    [
+      306194,
+      220
+    ],
+    [
+      320624,
+      211
+    ],
+    [
+      335735,
+      201
+    ],
+    [
+      351558,
+      192
+    ],
+    [
+      368126,
+      183
+    ],
+    [
+      385475,
+      175
+    ],
+    [
+      403642,
+      167
+    ],
+    [
+      422665,
+      160
+    ],
+    [
+      442585,
+      153
+    ],
+    [
+      463443,
+      146
+    ],
+    [
+      485284,
+      139
+    ],
+    [
+      508155,
+      133
+    ],
+    [
+      532104,
+      127
+    ],
+    [
+      557181,
+      121
+    ],
+    [
+      583440,
+      116
+    ],
+    [
+      610937,
+      111
+    ],
+    [
+      639729,
+      106
+    ],
+    [
+      669879,
+      101
+    ],
+    [
+      701449,
+      97
+    ],
+    [
+      734508,
+      92
+    ],
+    [
+      769124,
+      88
+    ],
+    [
+      805372,
+      84
+    ],
+    [
+      843328,
+      80
+    ],
+    [
+      883073,
+      77
+    ],
+    [
+      924690,
+      73
+    ],
+    [
+      968270,
+      70
+    ],
+    [
+      1013903,
+      67
+    ],
+    [
+      1061687,
+      64
+    ],
+    [
+      1111722,
+      61
+    ],
+    [
+      1164116,
+      58
+    ],
+    [
+      1218979,
+      56
+    ],
+    [
+      1276428,
+      53
+    ],
+    [
+      1336584,
+      51
+    ],
+    [
+      1399576,
+      49
+    ],
+    [
+      1465536,
+      46
+    ],
+    [
+      1534604,
+      44
+    ],
+    [
+      1606928,
+      42
+    ],
+    [
+      1682660,
+      41
+    ],
+    [
+      1761961,
+      39
+    ],
+    [
+      1845000,
+      37
+    ],
+    [
+      1931952,
+      35
+    ],
+    [
+      2023002,
+      34
+    ],
+    [
+      2118343,
+      32
+    ],
+    [
+      2218178,
+      31
+    ],
+    [
+      2322717,
+      29
+    ],
+    [
+      2432184,
+      28
+    ],
+    [
+      2546809,
+      27
+    ],
+    [
+      2666836,
+      26
+    ],
+    [
+      2792521,
+      25
+    ],
+    [
+      2924128,
+      24
+    ],
+    [
+      3061938,
+      22
+    ],
+    [
+      3206243,
+      22
+    ],
+    [
+      3357348,
+      21
+    ],
+    [
+      3515575,
+      20
+    ],
+    [
+      3681259,
+      19
+    ],
+    [
+      3854751,
+      18
+    ],
+    [
+      4036420,
+      17
+    ],
+    [
+      4226651,
+      16
+    ],
+    [
+      4425847,
+      16
+    ],
+    [
+      4634430,
+      15
+    ],
+    [
+      4852844,
+      14
+    ],
+    [
+      5081552,
+      14
+    ],
+    [
+      5321038,
+      13
+    ],
+    [
+      5571811,
+      13
+    ],
+    [
+      5834402,
+      12
+    ],
+    [
+      6109369,
+      12
+    ],
+    [
+      6397295,
+      11
+    ],
+    [
+      6698790,
+      11
+    ],
+    [
+      7014494,
+      10
+    ],
+    [
+      7345077,
+      10
+    ],
+    [
+      7691240,
+      9
+    ],
+    [
+      8053717,
+      9
+    ],
+    [
+      8433277,
+      8
+    ],
+    [
+      8830725,
+      8
+    ],
+    [
+      9246904,
+      8
+    ],
+    [
+      9682698,
+      7
+    ],
+    [
+      10139029,
+      7
+    ],
+    [
+      10616867,
+      7
+    ],
+    [
+      11117224,
+      7
+    ]
+  ],
+  "rates": [
+    {
+      "id": "cbo",
+      "label": "Top 1%",
+      "rate": 31.5,
+      "denominator": "Income as taxed",
+      "period": "2022",
+      "source": "cbo-2022",
+      "lowest": {
+        "label": "Lowest fifth",
+        "rate": 1.4
+      },
+      "middle": {
+        "label": "Highest fifth",
+        "rate": 23.2
+      }
+    },
+    {
+      "id": "cea",
+      "label": "Wealthiest 400",
+      "rate": 8.2,
+      "denominator": "Income, including unrealised gains",
+      "period": "2010–2018",
+      "source": "cea-2021"
+    },
+    {
+      "id": "propublica",
+      "label": "Wealthiest 25",
+      "rate": 3.4,
+      "denominator": "Growth in wealth",
+      "period": "2014–2018",
+      "source": "propublica-2021",
+      "note": "ProPublica calls this the \"true tax rate\". It is their term, not a standard measure."
+    }
+  ],
+  "musk": {
+    "salary": 0,
+    "salarySince": 2019,
+    "leak": {
+      "from": 2014,
+      "to": 2018,
+      "wealthGrowth": 13900000000,
+      "incomeReported": 1520000000,
+      "taxPaid": 455000000,
+      "zeroYear": 2018,
+      "rateOnWealthGrowth": 3.27,
+      "rateOnIncomeReported": 29.9
+    },
+    "exercise": {
+      "year": 2021,
+      "taxPaid": 11000000000
+    },
+    "package": {
+      "approved": "2025-11-06",
+      "shares": 423743904,
+      "tranches": 12,
+      "years": 10,
+      "topTarget": 8500000000000,
+      "workerPaydays": 260
+    },
+    "in2021": {
+      "year": 2021,
+      "wageBase": 142800,
+      "socialSecurityMax": 8853.6,
+      "stopPayday": 1
+    }
+  },
+  "tesla": {
+    "year": 2025,
+    "usIncome": 5700000000,
+    "currentFederalTax": 0,
+    "threeYearRate": 0.4,
+    "statutoryRate": 21
+  }
+}
