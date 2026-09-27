@@ -1,0 +1,18 @@
+---
+import ExpBase from '../../layouts/ExpBase.astro';
+import ExpChrome from '../../components/exp/ExpChrome.astro';
+import Half from '../../experiments/half/Half';
+import data from '../../data/half.json';
+
+const total = `$${(data.summary.totalWealth / 1e12).toFixed(2)} trillion`;
+---
+
+<ExpBase
+  title="Half — Frank Young"
+  description={`Half, 2026 — the Giving Pledge asks the very rich for at least half. Sixteen years on, the twenty-five richest people alive hold ${total}. Nine charts on what their own IRS filings say they have given, what they have promised, and what cannot be seen. Every figure computed from ${data.summary.count} profiles, sixteen Form 990-PF filings and a register of sources, none typed by hand.`}
+>
+  <ExpChrome name="Half" kind="Data" />
+  <main id="main" class="exp-stage">
+    <Half client:visible />
+  </main>
+</ExpBase>

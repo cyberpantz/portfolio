@@ -51,6 +51,14 @@ export const EXPLORATIONS: Exploration[] = [
     desc: 'A cat drawn entirely in points, rigged to a real skeleton, watching a red dot that follows your cursor. Take the dot to the floor and it stands up and stalks. Bring it near a paw and the paw comes up, waits, and strikes. Move behind it and it turns to face you.',
   },
   {
+    id: 'half',
+    name: 'Half',
+    type: 'Data',
+    tags: ['Scrollytelling', 'SVG', 'React', 'Public filings'],
+    url: '/explorations/half',
+    desc: 'The Giving Pledge asks the very rich for at least half. The twenty-five richest people alive, their own IRS filings, and nine charts on what they have given, what they promised, and what cannot be seen — including the two men who invented the Pledge walking away from it.',
+  },
+  {
     id: 'cap',
     name: 'The Cap',
     type: 'Data',

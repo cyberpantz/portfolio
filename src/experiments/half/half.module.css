@@ -1,0 +1,501 @@
+/*
+ * Half.
+ *
+ * Tilt's stylesheet, inherited again: the sticky split, the reading column,
+ * the inks. New at the bottom: nine figures, nine forms, one palette — ink
+ * for a thing, a muted ink for its absence, the accent for the thing the
+ * chapter is about.
+ */
+
+.scrolly,
+.stacked {
+  --ink: #e8e8e0;        /* 11.61:1 on #131315 */
+  --body: #b8b8b0;       /*  7.16:1 */
+  --mute: #9d9d95;       /*  5.23:1 — labels and controls, never body copy */
+  --line: rgb(255 255 255 / 12%);
+
+  color: var(--body);
+  background: radial-gradient(120% 60% at 50% 0%, #1a1a1d 0%, #131315 60%, #0d0d0e 100%);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+  min-height: 100%;
+}
+
+/* ---------------------------------------------------------------- intro */
+
+.intro {
+  max-width: 34rem;
+  margin: 0 auto;
+  padding: clamp(48px, 12vh, 140px) 20px clamp(32px, 8vh, 80px);
+}
+.intro h1 {
+  margin: 0 0 18px;
+  font-size: clamp(2.6rem, 7vw, 4.4rem);
+  line-height: 1.02;
+  letter-spacing: -0.03em;
+  font-weight: 600;
+  color: var(--ink);
+  text-wrap: balance;
+}
+.standfirst {
+  margin: 0 0 22px;
+  font-size: clamp(1.1rem, 2.4vw, 1.35rem);
+  line-height: 1.55;
+  color: var(--ink);
+  text-wrap: pretty;
+}
+.credit {
+  margin: 0;
+  font-size: 0.85rem;
+  line-height: 1.7;
+  color: var(--mute);
+}
+
+/* ------------------------------------------------------------ scrolly */
+
+.split {
+  display: grid;
+  /* Figure first in the source would put a decorative element ahead of the
+     prose for anything that ignores CSS. Prose leads; `order` moves the
+     stage left visually only. */
+  grid-template-columns: 1fr;
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+@media (min-width: 900px) {
+  .split { grid-template-columns: minmax(0, 1.15fr) minmax(320px, 26rem); gap: clamp(32px, 5vw, 72px); }
+  .stage { order: -1; }
+}
+
+.stage {
+  position: sticky;
+  top: calc(var(--exp-chrome-h, 52px) + 16px);
+  height: min(72vh, 620px);
+  display: flex;
+  align-items: center;
+}
+.stageInner {
+  width: 100%;
+  color: var(--ink);
+  /* Cross-fading two SVGs mid-scroll produces a smear; a short opacity
+     settle on the swap reads as a change of subject instead. */
+  animation: settle 260ms ease;
+}
+@keyframes settle {
+  from { opacity: 0.35; }
+  to   { opacity: 1; }
+}
+
+.steps { padding: 12vh 0 40vh; }
+
+.step,
+.stepOn {
+  min-height: 62vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  max-width: 34rem;
+  transition: opacity 260ms ease;
+}
+/* The inactive steps recede rather than disappear: you can always read ahead,
+   which is the difference between pacing a reader and trapping one. */
+.step { opacity: 0.4; }
+.stepOn { opacity: 1; }
+
+.kicker {
+  margin: 0 0 10px;
+  font: 600 11px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--mute);
+}
+.steps h2,
+.stacked h2 {
+  margin: 0 0 14px;
+  font-size: clamp(1.5rem, 3.2vw, 2.05rem);
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  font-weight: 600;
+  color: var(--ink);
+  text-wrap: balance;
+}
+.steps p,
+.stacked p {
+  margin: 0;
+  font-size: 1.02rem;
+  line-height: 1.7;
+  text-wrap: pretty;
+}
+
+/*
+ * Present to a screen reader, absent to everyone else.
+ *
+ * The sticky stage is aria-hidden, so without this a non-visual reader would
+ * get seven chapters of prose describing charts that were never announced.
+ * Each figure is repeated here, in document order, beside the paragraph it
+ * belongs to — the same content, not a summary of it.
+ */
+.srFigure {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ------------------------------------------------------------- stacked */
+
+.stacked { padding-bottom: 8vh; }
+.stacked section {
+  max-width: 34rem;
+  margin: 0 auto;
+  padding: 0 20px clamp(40px, 8vh, 80px);
+}
+.fig {
+  margin: 28px 0 0;
+  color: var(--ink);
+}
+
+/* ------------------------------------------------- chapter 4, the flats */
+
+.smallMultiples {
+  display: grid;
+  gap: 18px;
+}
+.mini svg { color: var(--ink); }
+.mini figcaption {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--mute);
+}
+.mini figcaption b { font-weight: 500; color: var(--body); }
+
+/* -------------------------------------------------- chapter 7, lookup */
+
+.finder {
+  max-width: 44rem;
+  margin: clamp(40px, 8vh, 96px) auto 0;
+  padding: clamp(28px, 5vh, 48px) 20px 0;
+  border-top: 1px solid var(--line);
+  color: var(--body);
+}
+.finder h2 {
+  margin: 0 0 12px;
+  font-size: clamp(1.5rem, 3.2vw, 2.05rem);
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  font-weight: 600;
+  color: var(--ink);
+}
+.finderLede {
+  margin: 0 0 26px;
+  font-size: 1rem;
+  line-height: 1.7;
+  text-wrap: pretty;
+}
+
+/* ---------------------------------------------------------- conclusion */
+
+.essay {
+  max-width: 40rem;
+  margin: clamp(40px, 8vh, 96px) auto 0;
+  padding: clamp(28px, 5vh, 48px) 20px 0;
+  border-top: 1px solid var(--line);
+  color: var(--body);
+}
+.essay h2 {
+  margin: 0 0 20px;
+  font-size: clamp(1.6rem, 3.4vw, 2.1rem);
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+  font-weight: 600;
+  color: var(--ink);
+}
+.essay h3 {
+  margin: 30px 0 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+.essay p {
+  margin: 0 0 14px;
+  font-size: 1.02rem;
+  line-height: 1.75;
+  text-wrap: pretty;
+}
+
+/* A numbered citation. Small, raised, and a real link to the entry below —
+   a claim the data cannot support has to be checkable in one click. */
+.cite {
+  display: inline-block;
+  margin-left: 1px;
+  padding: 0 3px;
+  font-size: 0.66em;
+  font-weight: 600;
+  line-height: 1;
+  vertical-align: super;
+  color: var(--mute);
+  text-decoration: none;
+  border-radius: 3px;
+}
+.cite:hover { color: #131315; background: var(--ink); }
+.cite:focus-visible { outline: 2px solid var(--ink); outline-offset: 1px; }
+
+/* ------------------------------------------------------------- method */
+
+.method { margin: 0 0 34px; }
+.method div { padding: 14px 0; border-top: 1px solid var(--line); }
+.method dt {
+  margin-bottom: 4px;
+  font: 600 11px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--mute);
+}
+.method dd { margin: 0; font-size: 0.94rem; line-height: 1.7; text-wrap: pretty; }
+
+/* ------------------------------------------------------------- sources */
+
+.sources {
+  max-width: 44rem;
+  margin: clamp(40px, 8vh, 96px) auto 0;
+  padding: clamp(28px, 5vh, 48px) 20px 10vh;
+  border-top: 1px solid var(--line);
+}
+.sources h2 { margin: 0 0 12px; font-size: 1.2rem; color: var(--ink); font-weight: 600; }
+.sources > p { font-size: 0.92rem; }
+.sources ul { list-style: none; margin: 22px 0; padding: 0; }
+.sources li {
+  display: grid;
+  gap: 4px;
+  padding: 14px 0;
+  border-top: 1px solid var(--line);
+}
+.sources a { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
+.srcHead { display: flex; gap: 10px; align-items: baseline; }
+.srcHead b {
+  flex: none;
+  min-width: 1.4em;
+  font: 600 12px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace;
+  color: var(--mute);
+}
+/* What kind of evidence this is, so a reader need not recognise the publisher
+   to tell a peer-reviewed estimate from an advocacy briefing. */
+.kind {
+  display: inline-block;
+  margin-right: 8px;
+  padding: 1px 6px;
+  font-style: normal;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--body);
+  background: rgb(255 255 255 / 8%);
+  border-radius: 4px;
+}
+.srcNote { font-size: 12px; line-height: 1.6; color: var(--mute); font-style: italic; }
+.sources li { scroll-margin-top: 80px; }
+.pub { font-size: 12px; color: var(--mute); }
+.supports { font-size: 13px; line-height: 1.6; }
+.caveat { font-size: 0.86rem; line-height: 1.7; color: var(--mute); }
+
+/* ------------------------------------------------- figures and sources */
+
+/*
+ * Every chart carries its own source line. A single bibliography at the foot
+ * of the page is a promise that the reader has to go and check; a citation
+ * under the figure is one they can act on while the number is still in front
+ * of them, which is the only moment they actually want it.
+ */
+.figure { margin: 0; color: var(--ink); }
+.figure figcaption {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+  margin-top: 8px;
+  font-size: 11.5px;
+  color: var(--mute);
+}
+.figure figcaption a { color: var(--mute); text-decoration: underline; text-underline-offset: 3px; }
+.figure figcaption a:hover { color: var(--ink); }
+.hint { font-variant: all-small-caps; letter-spacing: 0.06em; }
+
+.interactive { cursor: crosshair; }
+.interactive:focus-visible { outline: 2px solid var(--ink); outline-offset: 4px; border-radius: 4px; }
+
+.linkish {
+  font: inherit;
+  color: var(--mute);
+  background: none;
+  border: 0;
+  padding: 0;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+.linkish:hover { color: var(--ink); }
+
+/* ------------------------------------------------------- the surface */
+
+.canvas {
+  position: relative;
+  width: 100%;
+  /* Taller than the flat charts. A surface viewed from near the horizon needs
+     vertical room or the tilt is squashed into nothing, which defeats it. */
+  aspect-ratio: 5 / 4;
+  max-height: 60vh;
+  border-radius: 10px;
+  overflow: hidden;
+  background: rgb(255 255 255 / 2.5%);
+  touch-action: none;
+}
+.loading {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: 12px;
+  color: var(--mute);
+}
+
+
+/* The 2D chart, kept in the accessibility tree beneath the canvas.
+   A <canvas> is opaque to assistive technology however it is labelled. */
+.srOnlyInline {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* The year chip sits on a filled rounded rect, so its text has to invert
+   against the ground rather than against the page. */
+.chipText { fill: #131315; }
+
+/* The hint can wrap at narrow widths rather than overflowing the figure,
+   which it did — the caption is a flex row and the row had nowhere to go. */
+.figure figcaption { flex-wrap: wrap; }
+
+/* --------------------------------------------- labels inside the scene */
+
+/*
+ * Rendered as DOM through drei's <Html>, positioned at points in the scene,
+ * so they travel with the geometry. The first version printed axis hints
+ * under the canvas in fixed positions, which stopped being true the instant
+ * anyone dragged the surface — a label insisting on a left and a right the
+ * object no longer had.
+ *
+ * pointer-events: none throughout, or the labels would swallow the drags and
+ * hovers meant for the surface behind them.
+ */
+.axisTick,
+.axisName {
+  pointer-events: none;
+  user-select: none;
+  white-space: nowrap;
+  font: 600 10px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--mute);
+  text-shadow: 0 0 4px #131315, 0 0 8px #131315;
+}
+.axisName { text-transform: none; letter-spacing: 0.04em; }
+
+
+
+/* --------------------------------------------------------- the figures */
+
+.fig {
+  --ink: #e8e8e0;
+  --mute: #9d9d95;
+  --dim: rgb(232 232 224 / 14%);
+  --you: #6fd0c2;
+  --warn: #e8a06a;
+  width: 100%; height: auto; display: block;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+.fig text { fill: var(--mute); font-size: 11px; letter-spacing: 0.03em; }
+.lbl { fill: var(--ink); font-size: 12px; }
+.lblMute { fill: var(--mute); font-size: 12px; }
+.sub { fill: var(--mute); font-size: 10.5px; }
+.subOff { fill: rgb(157 157 149 / 55%); font-size: 10.5px; }
+.val { fill: var(--ink); font-size: 11px; }
+.valGive { fill: var(--you); font-size: 11px; }
+.valEnd { fill: var(--ink); font-size: 11px; text-anchor: end; }
+.tick { text-anchor: middle; font-size: 10px; }
+.tickLine { stroke: var(--dim); stroke-width: 1; }
+.axis { stroke: rgb(232 232 224 / 25%); stroke-width: 1; }
+.stem { stroke: var(--dim); stroke-width: 1.5; }
+.rule { stroke: var(--warn); stroke-width: 1.5; stroke-dasharray: 4 4; }
+.ruleLbl { fill: var(--warn); font-size: 10.5px; }
+
+/* 1 — squares */
+.sq { fill: rgb(232 232 224 / 22%); stroke: rgb(232 232 224 / 30%); stroke-width: 0.75; }
+.sqTop { fill: var(--you); fill-opacity: 0.85; }
+.sqName { fill: var(--ink); font-size: 12px; font-weight: 600; }
+.sqAmt { fill: var(--mute); font-size: 11px; }
+/* On the accent square the ink has to be dark to be read at all. */
+.sqNameTop { fill: #0f0f10; font-size: 13px; font-weight: 600; }
+.sqAmtTop { fill: #0f0f10; font-size: 12px; }
+.sqTiny { fill: var(--mute); font-size: 9px; text-anchor: middle; }
+
+/* 2 — paired bars */
+.barWealth { fill: rgb(232 232 224 / 30%); }
+.barGive { fill: var(--you); }
+
+/* 3 — pledge dots */
+.dotOn { fill: var(--you); }
+.dotOff { fill: none; stroke: var(--dim); stroke-width: 1.5; }
+
+/* 4, 5 — dots on a line */
+.dotUnder { fill: var(--warn); }
+.dotOver { fill: var(--ink); }
+
+/* 6 — mechanism cards */
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 14px; }
+.card { margin: 0; padding: 12px; border: 1px solid var(--line); border-radius: 8px; background: rgb(255 255 255 / 3%); }
+.cardSvg { width: 100%; height: auto; display: block; font-family: ui-monospace, Menlo, monospace; }
+.card figcaption { margin-top: 8px; font-size: 12px; line-height: 1.5; color: var(--mute); display: grid; gap: 4px; }
+.card figcaption b { color: var(--ink); font-weight: 600; }
+.cBox { fill: none; stroke: #e8e8e0; stroke-width: 1.5; }
+.cBoxSolid { fill: #e8e8e0; }
+.cRing { fill: none; stroke: #e8e8e0; stroke-width: 1.5; stroke-dasharray: 3 4; }
+.cArrow { stroke: #9d9d95; stroke-width: 1.5; }
+.cLbl { fill: #e8e8e0; font-size: 12px; text-anchor: middle; }
+.cLblInv { fill: #131315; font-size: 12px; text-anchor: middle; font-weight: 600; }
+.cNote { fill: #9d9d95; font-size: 9.5px; text-anchor: middle; }
+
+/* 7 — the founders */
+.quote { fill: var(--ink); font-size: 11.5px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, sans-serif; font-style: italic; }
+
+/* 8 — columns */
+.col { fill: var(--ink); fill-opacity: 0.85; }
+.colEmpty { fill: var(--dim); }
+.colVal { fill: var(--ink); font-size: 14px; text-anchor: middle; font-weight: 600; }
+.colLbl { fill: var(--ink); font-size: 11px; text-anchor: middle; }
+.colSub { fill: var(--mute); font-size: 9.5px; text-anchor: middle; }
+
+/* 9 — coverage */
+.colHead { fill: var(--mute); font-size: 10px; text-anchor: middle; }
+.cellOn { fill: rgb(232 232 224 / 55%); }
+.cellOff { fill: var(--dim); }
+
+/* the big numbers used in the intro */
+.numbers { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 18px 24px; margin: 26px 0 0; }
+.numbers div { display: grid; gap: 4px; }
+.numbers b { font-size: clamp(1.6rem, 3.4vw, 2.3rem); line-height: 1; letter-spacing: -0.02em; color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
+.numbers span { font-size: 0.8rem; color: var(--mute); line-height: 1.45; }
