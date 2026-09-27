@@ -158,6 +158,16 @@ export const SOURCES: Source[] = [
     supports: '“Have they given enough? No.”',
   },
   {
+    id: 'fortune-thiel',
+    title: 'Peter Thiel warned Elon Musk to ditch the Giving Pledge',
+    publisher: 'Fortune',
+    date: '2025-10-13',
+    url: 'https://fortune.com/2025/10/13/billionaire-peter-thiel-warned-elon-musk-to-ditch-donating-to-the-giving-pledge',
+    kind: 'journalism',
+    status: 'secondary',
+    supports: 'Musk, via Thiel: “it would be much worse to give it to Bill Gates.”',
+  },
+  {
     id: 'nyt-musk-foundation',
     title: 'Half of Elon Musk’s charitable spending appears to benefit his empire',
     publisher: 'Fortune, reporting the New York Times investigation',

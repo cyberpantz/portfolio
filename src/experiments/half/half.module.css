@@ -444,8 +444,26 @@
 .ruleLbl { fill: var(--warn); font-size: 10.5px; }
 
 /* 1 — wealth circle pack */
+.bubbleGroup {
+  cursor: pointer;
+  outline: none;
+  transition: opacity 180ms ease;
+}
+.bubbleGroup circle {
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: transform 180ms cubic-bezier(.2,.8,.2,1), fill 180ms ease, stroke 180ms ease;
+}
+.bubbleGroup:hover circle,
+.bubbleGroup:focus-visible circle {
+  transform: scale(1.045);
+  stroke: var(--ink);
+  stroke-width: 2;
+}
+.bubbleGroup:focus-visible circle { filter: drop-shadow(0 0 6px rgb(111 208 194 / 55%)); }
+.bubbleMuted { opacity: 0.27; }
 .bubble { fill: rgb(232 232 224 / 22%); stroke: rgb(232 232 224 / 34%); stroke-width: 0.85; }
-.bubbleTop { fill: var(--you); fill-opacity: 0.85; }
+.bubbleTop { fill: var(--you); fill-opacity: 0.85; stroke: transparent; }
 .bubbleName,
 .bubbleAmt,
 .bubbleNameTop,
@@ -455,6 +473,28 @@
 /* On the accent circle the ink has to be dark to be read at all. */
 .fig .bubbleNameTop { fill: #0f0f10; font-size: 14px; font-weight: 600; }
 .fig .bubbleAmtTop { fill: #0f0f10; font-size: 13px; }
+.bubbleName,
+.bubbleAmt,
+.bubbleNameTop,
+.bubbleAmtTop { pointer-events: none; user-select: none; }
+
+.bubbleDetail { pointer-events: none; filter: drop-shadow(0 7px 16px rgb(0 0 0 / 38%)); }
+.bubbleDetail rect { fill: #111214; stroke: rgb(232 232 224 / 32%); stroke-width: 1; }
+.fig .bubbleDetailName { fill: var(--ink); font-size: 11px; font-weight: 700; }
+.fig .bubbleDetailStat { fill: var(--you); font-size: 10.5px; }
+.fig .bubbleDetailPledge { fill: var(--mute); font-size: 8.5px; }
+.fig .bubbleHint {
+  fill: var(--mute);
+  font-size: 9px;
+  letter-spacing: 0.07em;
+  text-anchor: middle;
+  text-transform: uppercase;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bubbleGroup,
+  .bubbleGroup circle { transition: none; }
+}
 
 /* 2 — paired bars */
 .barWealth { fill: rgb(232 232 224 / 30%); }

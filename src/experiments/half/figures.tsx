@@ -12,6 +12,7 @@
  */
 import data from '../../data/half.json';
 import { hierarchy, pack } from 'd3';
+import { useState } from 'react';
 import s from './half.module.css';
 
 type Person = (typeof data.people)[number];
@@ -47,7 +48,9 @@ const surname = (p: { slug: string; name: string }) => {
  * owns the SVG so the figure remains server-renderable and accessible.
  */
 export function WealthPack() {
-  const W = 720, H = 620;
+  const W = 720, H = 620, FOOT = 28;
+  const [hovered, setHovered] = useState<string | null>(null);
+  const [pinned, setPinned] = useState<string | null>(null);
   type PackDatum = Person | { children: Person[] };
   const root = hierarchy<PackDatum>(
     { children: PEOPLE },
@@ -56,14 +59,32 @@ export function WealthPack() {
     .sum((d) => 'wealth' in d ? d.wealth ?? 0 : 0)
     .sort((a, b) => (b.value ?? 0) - (a.value ?? 0));
   const leaves = pack<PackDatum>().size([W, H]).padding(5)(root).leaves();
+  const selected = pinned ?? hovered;
+  const selectedLeaf = leaves.find(({ data: datum }) => (datum as Person).slug === selected);
 
   return (
-    <svg className={s.fig} viewBox={`0 0 ${W} ${H}`} role="img"
+    <svg className={s.fig} viewBox={`0 0 ${W} ${H + FOOT}`} role="img"
          aria-label={`The wealth of the twenty-five as proportional circles. Circle area represents fortune. ${PEOPLE[0].name} alone is ${money(PEOPLE[0].wealth)}.`}>
       {leaves.map(({ data: datum, r, x, y }) => {
         const p = datum as Person;
+        const isSelected = selected === p.slug;
         return (
-        <g key={p.slug} transform={`translate(${x} ${y})`}>
+        <g key={p.slug}
+           className={`${s.bubbleGroup} ${selected && !isSelected ? s.bubbleMuted : ''}`}
+           transform={`translate(${x} ${y})`}
+           role="button" tabIndex={0} aria-pressed={pinned === p.slug}
+           aria-label={`${p.name}, rank ${p.rank}, ${money(p.wealth)}, ${((p.wealth! / SUMMARY.totalWealth) * 100).toFixed(1)} per cent of this group's wealth${p.pledge.signed ? ', Giving Pledge signatory' : ''}`}
+           onPointerEnter={() => setHovered(p.slug)}
+           onPointerLeave={() => setHovered(null)}
+           onFocus={() => setHovered(p.slug)}
+           onBlur={() => setHovered(null)}
+           onPointerDown={() => setPinned((current) => current === p.slug ? null : p.slug)}
+           onKeyDown={(event) => {
+             if (event.key === 'Enter' || event.key === ' ') {
+               event.preventDefault();
+               setPinned((current) => current === p.slug ? null : p.slug);
+             }
+           }}>
           <circle className={p.rank === 1 ? s.bubbleTop : s.bubble} r={r} />
           <text className={p.rank === 1 ? s.bubbleNameTop : s.bubbleName} y={-4}>
             {r > 68 ? short(p.name) : surname(p)}
@@ -72,6 +93,27 @@ export function WealthPack() {
         </g>
         );
       })}
+      {selectedLeaf && (() => {
+        const p = selectedLeaf.data as Person;
+        const width = 224, height = 62;
+        const x = Math.max(8, Math.min(W - width - 8, selectedLeaf.x < W / 2
+          ? selectedLeaf.x + selectedLeaf.r * 0.62
+          : selectedLeaf.x - selectedLeaf.r * 0.62 - width));
+        const y = Math.max(8, Math.min(H - height - 8, selectedLeaf.y - height / 2));
+        return (
+          <g className={s.bubbleDetail} transform={`translate(${x} ${y})`} aria-hidden="true">
+            <rect width={width} height={height} rx={4} />
+            <text className={s.bubbleDetailName} x={13} y={20}>#{p.rank} · {p.name}</text>
+            <text className={s.bubbleDetailStat} x={13} y={41}>
+              {money(p.wealth)} · {((p.wealth! / SUMMARY.totalWealth) * 100).toFixed(1)}% of the twenty-five
+            </text>
+            <text className={s.bubbleDetailPledge} x={13} y={55}>
+              {p.pledge.signed ? `Giving Pledge signatory${p.pledge.year ? ` since ${p.pledge.year}` : ''}` : 'Has not signed the Giving Pledge'}
+            </text>
+          </g>
+        );
+      })()}
+      <text className={s.bubbleHint} x={W / 2} y={H + 21}>Hover, focus or tap to inspect · tap again to release</text>
     </svg>
   );
 }

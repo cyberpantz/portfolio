@@ -77,7 +77,7 @@ const CHAPTERS = [
     id: 'pledge',
     kicker: 'The promise',
     title: `${spell(SUMMARY.pledgers).replace(/^\w/, (c) => c.toUpperCase())} of the twenty-five have promised half.`,
-    body: <>The Giving Pledge asks the very rich to give away at least half of what they have, during their lives or in their wills<Cite id="giving-pledge" />. About {SIGNED_PCT} percent of American billionaires have signed<Cite id="chronicle-pledge" />. The Institute for Policy Studies examined the original American signers who remain billionaires: together, they are {f15.net_worth_growth_since_2010_pct} percent richer than when the pledge began, and only one living member of that original cohort has given at least half<Cite id="ips-15" />. The Giving Pledge told the Chronicle of Philanthropy that it has helped establish “new norms of generosity,” while noting that each signer pursues philanthropy independently<Cite id="chronicle-pledge" />. {musk.name} signed in {musk.pledge.year}, when he was worth {words(musk.pledge.wealthAtSigning)}. His estimated fortune is now roughly {times(musk.derived.growthSincePledge!)} times as large.</>,
+    body: <>The Giving Pledge asks the very rich to give away at least half of what they have, during their lives or in their wills<Cite id="giving-pledge" />. About {SIGNED_PCT} percent of American billionaires have signed<Cite id="chronicle-pledge" />. The Institute for Policy Studies examined the original American signers who remain billionaires: together, they are {f15.net_worth_growth_since_2010_pct} percent richer than when the pledge began, and only one living member of that original cohort has given at least half<Cite id="ips-15" />. The Giving Pledge told the Chronicle of Philanthropy that it has helped establish “new norms of generosity,” while noting that each signer pursues philanthropy independently<Cite id="chronicle-pledge" />. {musk.name} signed in {musk.pledge.year}, when he was worth {words(musk.pledge.wealthAtSigning)}. His estimated fortune is now roughly {times(musk.derived.growthSincePledge!)} times as large. Peter Thiel has said he advised Musk against the Pledge, telling him “it would be much worse to give it to Bill Gates”<Cite id="fortune-thiel" />.</>,
     figure: <Pledge />,
   },
   {
@@ -181,7 +181,7 @@ export default function Half() {
     <article className={s.scrolly}>
       <Intro />
       <div className={s.split}>
-        <div className={s.stage} aria-hidden="true">
+        <div className={s.stage} aria-hidden={active === 0 ? undefined : true}>
           <div className={s.stageInner}>{CHAPTERS[active].figure}</div>
         </div>
         <div className={s.steps}>
@@ -191,7 +191,7 @@ export default function Half() {
               <p className={s.kicker}>{c.kicker}</p>
               <h2>{c.title}</h2>
               <p>{c.body}</p>
-              <div className={s.srFigure}>{c.figure}</div>
+              <div className={s.srFigure} aria-hidden={i === 0 ? true : undefined}>{c.figure}</div>
             </section>
           ))}
         </div>
