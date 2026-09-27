@@ -7,6 +7,8 @@
     "totalWealth": 4676900000000,
     "pledgers": 6,
     "lifetimeKnown": 9,
+    "lifetimeBounded": 8,
+    "giversFloor": 2000000000,
     "lifetimeTotal": 177300000000,
     "filingsRead": 13,
     "foundationAssets": 170415491486,
@@ -48,6 +50,12 @@
         "asOf": "2024-11",
         "source": "Forbes (Dec 2024 Musk Foundation article, via search summary)",
         "status": "needs-check"
+      },
+      "lifetimeUnder": {
+        "amount": 2000000000,
+        "asOf": "2025-12",
+        "source": "Forbes, America's Top 25 Philanthropists 2026 (25th entry, Charles Koch)",
+        "status": "primary"
       },
       "foundation": {
         "name": "Musk Foundation",
@@ -99,6 +107,7 @@
         "wealth": true,
         "pledge": true,
         "lifetime": false,
+        "lifetimeBound": true,
         "filing": true,
         "political": false
       }
@@ -120,6 +129,12 @@
         "wealthAtSigning": null
       },
       "lifetime": null,
+      "lifetimeUnder": {
+        "amount": 2000000000,
+        "asOf": "2025-12",
+        "source": "Forbes, America's Top 25 Philanthropists 2026 (25th entry, Charles Koch)",
+        "status": "primary"
+      },
       "foundation": {
         "name": "Carl Victor Page Memorial Foundation",
         "ein": "20-1922957",
@@ -162,6 +177,7 @@
         "wealth": true,
         "pledge": true,
         "lifetime": false,
+        "lifetimeBound": true,
         "filing": true,
         "political": false
       }
@@ -188,6 +204,7 @@
         "source": "Forbes, America's Top 25 Philanthropists 2026 (lifetime giving through end of 2025)",
         "status": "primary"
       },
+      "lifetimeUnder": null,
       "foundation": {
         "name": "Bezos Family Foundation",
         "ein": "91-2073258",
@@ -226,6 +243,7 @@
         "wealth": true,
         "pledge": true,
         "lifetime": true,
+        "lifetimeBound": false,
         "filing": false,
         "political": false
       }
@@ -252,6 +270,7 @@
         "source": "Forbes, America's Top 25 Philanthropists 2026 (lifetime giving through end of 2025)",
         "status": "primary"
       },
+      "lifetimeUnder": null,
       "foundation": {
         "name": "Michael & Susan Dell Foundation",
         "ein": "36-4336415",
@@ -294,6 +313,7 @@
         "wealth": true,
         "pledge": false,
         "lifetime": true,
+        "lifetimeBound": false,
         "filing": true,
         "political": false
       }
@@ -320,6 +340,7 @@
         "source": "Forbes, America's Top 25 Philanthropists 2026 (lifetime giving through end of 2025)",
         "status": "primary"
       },
+      "lifetimeUnder": null,
       "foundation": {
         "name": "Sergey Brin Family Foundation",
         "ein": "47-2107200",
@@ -358,6 +379,7 @@
         "wealth": true,
         "pledge": true,
         "lifetime": true,
+        "lifetimeBound": false,
         "filing": true,
         "political": false
       }
@@ -384,6 +406,7 @@
         "source": "Forbes, America's Top 25 Philanthropists 2026 (lifetime giving through end of 2025)",
         "status": "primary"
       },
+      "lifetimeUnder": null,
       "foundation": {
         "name": "Chan Zuckerberg Initiative Foundation",
         "ein": "45-5002209",
@@ -413,6 +436,7 @@
         "wealth": true,
         "pledge": true,
         "lifetime": true,
+        "lifetimeBound": false,
         "filing": true,
         "political": false
       }
@@ -439,6 +463,7 @@
         "source": "IPS, The Giving Pledge at 15 (Jul 2025)",
         "status": "secondary"
       },
+      "lifetimeUnder": null,
       "foundation": {
         "name": "The Larry Ellison Foundation",
         "ein": "94-3269827",
@@ -476,6 +501,7 @@
         "wealth": true,
         "pledge": true,
         "lifetime": true,
+        "lifetimeBound": false,
         "filing": true,
         "political": true
       }
@@ -497,6 +523,12 @@
         "wealthAtSigning": null
       },
       "lifetime": null,
+      "lifetimeUnder": {
+        "amount": 2000000000,
+        "asOf": "2025-12",
+        "source": "Forbes, America's Top 25 Philanthropists 2026 (25th entry, Charles Koch)",
+        "status": "primary"
+      },
       "foundation": {
         "name": "Jen-Hsun & Lori Huang Foundation",
         "ein": "26-1551239",
@@ -531,6 +563,7 @@
         "wealth": true,
         "pledge": true,
         "lifetime": false,
+        "lifetimeBound": true,
         "filing": true,
         "political": false
       }
@@ -557,6 +590,7 @@
         "source": "Forbes, America's Top 25 Philanthropists 2026 (lifetime giving through end of 2025)",
         "status": "primary"
       },
+      "lifetimeUnder": null,
       "foundation": {
         "name": "Ballmer Group",
         "files": false,
@@ -584,6 +618,7 @@
         "wealth": true,
         "pledge": true,
         "lifetime": true,
+        "lifetimeBound": false,
         "filing": false,
         "political": false
       }
@@ -605,6 +640,7 @@
         "wealthAtSigning": null
       },
       "lifetime": null,
+      "lifetimeUnder": null,
       "foundation": {
         "name": "Fundación Amancio Ortega",
         "files": false,
@@ -627,6 +663,7 @@
         "wealth": true,
         "pledge": true,
         "lifetime": false,
+        "lifetimeBound": false,
         "filing": false,
         "political": false
       }
@@ -653,6 +690,7 @@
         "source": "Forbes 400 Philanthropy Score 2026 article",
         "status": "primary"
       },
+      "lifetimeUnder": null,
       "foundation": {
         "name": "The Susan Thompson Buffett Foundation",
         "ein": "47-6032365",
@@ -687,6 +725,7 @@
         "wealth": true,
         "pledge": true,
         "lifetime": true,
+        "lifetimeBound": false,
         "filing": true,
         "political": false
       }
@@ -708,6 +747,7 @@
         "wealthAtSigning": null
       },
       "lifetime": null,
+      "lifetimeUnder": null,
       "foundation": {
         "name": "Fondation Louis Vuitton (fondation d'entreprise, LVMH)",
         "files": false,
@@ -743,6 +783,7 @@
         "wealth": true,
         "pledge": true,
         "lifetime": false,
+        "lifetimeBound": false,
         "filing": false,
         "political": false
       }
@@ -764,6 +805,12 @@
         "wealthAtSigning": null
       },
       "lifetime": null,
+      "lifetimeUnder": {
+        "amount": 2000000000,
+        "asOf": "2025-12",
+        "source": "Forbes, America's Top 25 Philanthropists 2026 (25th entry, Charles Koch)",
+        "status": "primary"
+      },
       "foundation": {
         "name": "Walton Family Foundation Inc",
         "ein": "13-3441466",
@@ -801,6 +848,7 @@
         "wealth": true,
         "pledge": true,
         "lifetime": false,
+        "lifetimeBound": true,
         "filing": true,
         "political": false
       }
@@ -822,6 +870,12 @@
         "wealthAtSigning": null
       },
       "lifetime": null,
+      "lifetimeUnder": {
+        "amount": 2000000000,
+        "asOf": "2025-12",
+        "source": "Forbes, America's Top 25 Philanthropists 2026 (25th entry, Charles Koch)",
+        "status": "primary"
+      },
       "foundation": {
         "name": "Walton Family Foundation Inc",
         "ein": "13-3441466",
@@ -863,6 +917,7 @@
         "wealth": true,
         "pledge": true,
         "lifetime": false,
+        "lifetimeBound": true,
         "filing": true,
         "political": true
       }
@@ -884,6 +939,7 @@
         "wealthAtSigning": null
       },
       "lifetime": null,
+      "lifetimeUnder": null,
       "foundation": {
         "name": "Fundación Carlos Slim, A.C. (est. 1986); related: Fundación Telmex Telcel, Fundación Inbursa",
         "files": false,
@@ -906,6 +962,7 @@
         "wealth": true,
         "pledge": true,
         "lifetime": false,
+        "lifetimeBound": false,
         "filing": false,
         "political": false
       }
@@ -931,6 +988,12 @@
         "asOf": "2024",
         "source": "Forbes (Sept 2026 'Inside the $118 Billion Fortune of America's Richest Woman', via search summary)",
         "status": "needs-check"
+      },
+      "lifetimeUnder": {
+        "amount": 2000000000,
+        "asOf": "2025-12",
+        "source": "Forbes, America's Top 25 Philanthropists 2026 (25th entry, Charles Koch)",
+        "status": "primary"
       },
       "foundation": {
         "name": "Walton Family Foundation Inc",
@@ -974,6 +1037,7 @@
         "wealth": true,
         "pledge": true,
         "lifetime": false,
+        "lifetimeBound": true,
         "filing": true,
         "political": false
       }
@@ -995,6 +1059,7 @@
         "wealthAtSigning": null
       },
       "lifetime": null,
+      "lifetimeUnder": null,
       "foundation": {
         "name": "Giggle Academy (CZ-founded free online education initiative); Binance Charity (corporate, Binance)",
         "files": false,
@@ -1030,6 +1095,7 @@
         "wealth": true,
         "pledge": true,
         "lifetime": false,
+        "lifetimeBound": false,
         "filing": false,
         "political": false
       }
@@ -1056,6 +1122,7 @@
         "source": "Forbes, America's Top 25 Philanthropists 2026 (lifetime giving through end of 2025)",
         "status": "primary"
       },
+      "lifetimeUnder": null,
       "foundation": {
         "name": "Gates Foundation",
         "ein": "56-2618866",
@@ -1097,6 +1164,7 @@
         "wealth": true,
         "pledge": true,
         "lifetime": true,
+        "lifetimeBound": false,
         "filing": true,
         "political": true
       }
@@ -1123,6 +1191,7 @@
         "source": "Forbes, America's Top 25 Philanthropists 2026 (lifetime giving through end of 2025)",
         "status": "primary"
       },
+      "lifetimeUnder": null,
       "foundation": {
         "name": "Bloomberg Family Foundation Inc (Bloomberg Philanthropies)",
         "ein": "20-5602483",
@@ -1164,6 +1233,7 @@
         "wealth": true,
         "pledge": true,
         "lifetime": true,
+        "lifetimeBound": false,
         "filing": true,
         "political": false
       }
@@ -1185,6 +1255,12 @@
         "wealthAtSigning": null
       },
       "lifetime": null,
+      "lifetimeUnder": {
+        "amount": 2000000000,
+        "asOf": "2025-12",
+        "source": "Forbes, America's Top 25 Philanthropists 2026 (25th entry, Charles Koch)",
+        "status": "primary"
+      },
       "foundation": {
         "name": "Peterffy Foundation",
         "ein": "47-2351448",
@@ -1223,6 +1299,7 @@
         "wealth": true,
         "pledge": true,
         "lifetime": false,
+        "lifetimeBound": true,
         "filing": true,
         "political": false
       }
@@ -1244,6 +1321,7 @@
         "wealthAtSigning": null
       },
       "lifetime": null,
+      "lifetimeUnder": null,
       "foundation": {
         "name": "Fangmei Education Development Fund (Longyan, Fujian) - a local government-administered education fund, not a private foundation",
         "files": false,
@@ -1275,6 +1353,7 @@
         "wealth": true,
         "pledge": true,
         "lifetime": false,
+        "lifetimeBound": false,
         "filing": false,
         "political": false
       }
@@ -1296,6 +1375,7 @@
         "wealthAtSigning": null
       },
       "lifetime": null,
+      "lifetimeUnder": null,
       "foundation": {
         "name": "Fondation Bettencourt Schueller",
         "files": false,
@@ -1331,6 +1411,7 @@
         "wealth": true,
         "pledge": true,
         "lifetime": false,
+        "lifetimeBound": false,
         "filing": false,
         "political": false
       }
@@ -1352,6 +1433,7 @@
         "wealthAtSigning": null
       },
       "lifetime": null,
+      "lifetimeUnder": null,
       "foundation": {
         "name": "Reliance Foundation (chaired by Nita Ambani; CSR arm of Reliance Industries Ltd)",
         "files": false,
@@ -1387,6 +1469,7 @@
         "wealth": true,
         "pledge": true,
         "lifetime": false,
+        "lifetimeBound": false,
         "filing": false,
         "political": false
       }
@@ -1408,6 +1491,7 @@
         "wealthAtSigning": null
       },
       "lifetime": null,
+      "lifetimeUnder": null,
       "foundation": null,
       "political": null,
       "record": [
@@ -1435,6 +1519,7 @@
         "wealth": true,
         "pledge": true,
         "lifetime": false,
+        "lifetimeBound": false,
         "filing": false,
         "political": false
       }
@@ -1456,6 +1541,12 @@
         "wealthAtSigning": null
       },
       "lifetime": null,
+      "lifetimeUnder": {
+        "amount": 2000000000,
+        "asOf": "2025-12",
+        "source": "Forbes, America's Top 25 Philanthropists 2026 (25th entry, Charles Koch)",
+        "status": "primary"
+      },
       "foundation": {
         "name": "David H Koch Charitable Foundation",
         "ein": "48-0926946",
@@ -1498,6 +1589,7 @@
         "wealth": true,
         "pledge": true,
         "lifetime": false,
+        "lifetimeBound": true,
         "filing": false,
         "political": false
       }

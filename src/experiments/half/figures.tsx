@@ -122,7 +122,7 @@ export function WealthPack() {
 
 /** Paired bars on ONE scale. The giving bar is the point: it is a hairline. */
 export function Paired() {
-  const rows = PEOPLE.filter((p) => p.coverage.lifetime).sort((a, b) => (b.wealth ?? 0) - (a.wealth ?? 0));
+  const rows = PEOPLE.filter((p) => p.coverage.lifetime || p.coverage.lifetimeBound).sort((a, b) => (b.wealth ?? 0) - (a.wealth ?? 0));
   const W = 720, L = 150, R = 80, H = 30;
   const max = Math.max(...rows.map((p) => p.wealth ?? 0));
   const w = (v: number) => ((W - L - R) * v) / max;
@@ -131,14 +131,17 @@ export function Paired() {
          aria-label="Wealth and lifetime giving, drawn to the same scale">
       {rows.map((p, i) => {
         const y = 10 + i * H;
-        const give = p.lifetime!.amount;
+        const bound = !p.coverage.lifetime;
+        const give = bound ? p.lifetimeUnder!.amount : p.lifetime!.amount;
+        const gw = Math.max(1.5, w(give));
         return (
           <g key={p.slug} transform={`translate(0 ${y})`}>
             <text className={s.lbl} x={0} y={14}>{short(p.name)}</text>
             <rect className={s.barWealth} x={L} y={2} width={w(p.wealth!)} height={8} rx={1} />
-            <rect className={s.barGive} x={L} y={12} width={Math.max(1.5, w(give))} height={8} rx={1} />
+            {/* An open bar to Forbes' floor: the giving is somewhere inside it. */}
+            <rect className={bound ? s.barGiveBound : s.barGive} x={L} y={12} width={gw} height={8} rx={1} />
             <text className={s.val} x={L + w(p.wealth!) + 6} y={10}>{money(p.wealth)}</text>
-            <text className={s.valGive} x={L + Math.max(1.5, w(give)) + 6} y={20}>{money(give)}</text>
+            <text className={bound ? s.valGiveBound : s.valGive} x={L + gw + 6} y={20}>{bound ? `under ${money(give)}` : money(give)}</text>
           </g>
         );
       })}

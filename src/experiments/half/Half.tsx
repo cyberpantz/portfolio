@@ -84,7 +84,7 @@ const CHAPTERS = [
     id: 'paired',
     kicker: 'The public record',
     title: 'Known lifetime giving, measured against current wealth.',
-    body: <>The upper bar is the current fortune; the lower is reported lifetime giving, where a defensible estimate exists<Cite id="forbes-top-givers" />. {buffett.name} has given away an estimated {words(buffett.lifetime!.amount)}, and {gates.name} {words(gates.lifetime!.amount)}. For most of the list, the lower bar is a hairline. Where no bar appears, this review found no independently reported or self-published estimate strong enough to plot.</>,
+    body: <>The upper bar is the current fortune; the lower is lifetime giving as Forbes counts it — money that has left the donor’s hands, not money moved into a foundation<Cite id="forbes-top-givers" />. {buffett.name} has given away an estimated {words(buffett.lifetime!.amount)}, and {gates.name} {words(gates.lifetime!.amount)}. Forbes ranks only American givers, and its list of twenty-five ends at {words(SUMMARY.giversFloor)}; {spell(SUMMARY.lifetimeBounded)} Americans here, {musk.name} and {page.name} among them, are absent from it, so their giving falls somewhere inside the open bar. The {spell(foreign)} who are not American are not counted by Forbes at all, and this review found no comparable independent tally for them.</>,
     figure: <Paired />,
   },
   {

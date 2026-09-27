@@ -499,6 +499,9 @@
 /* 2 — paired bars */
 .barWealth { fill: rgb(232 232 224 / 30%); }
 .barGive { fill: var(--you); }
+/* Bounded, not measured: an outline the true figure sits somewhere inside. */
+.barGiveBound { fill: none; stroke: var(--you); stroke-width: 1; stroke-dasharray: 3 2; }
+.valGiveBound { fill: var(--mute); font-size: 11px; }
 
 /* 3 — pledge dots */
 .dotOn { fill: var(--you); }

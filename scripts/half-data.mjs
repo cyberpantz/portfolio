@@ -39,6 +39,17 @@ const ORDER = [
 ];
 
 /*
+ * Forbes' list of America's top 25 philanthropists (9 February 2026) is
+ * ranked by lifetime out-the-door giving through 2025. Its 25th entry,
+ * Charles Koch, stands at $2.0 billion, and the article names Musk and
+ * Page as not making the cut. So any American on our list who is absent
+ * from theirs has given less than this — a bound the chart can draw where
+ * no figure exists. Non-Americans are outside the list's scope entirely.
+ */
+const GIVERS_FLOOR = { amount: 2.0e9, asOf: '2025-12', source: 'Forbes, America\'s Top 25 Philanthropists 2026 (25th entry, Charles Koch)', status: 'primary' };
+const isAmerican = (base) => /^United States/.test(base.citizenship ?? '');
+
+/*
  * Judgements the research files cannot make for themselves. Each is a
  * decision about attribution, stated here so it is reviewable rather than
  * buried in a merge.
@@ -101,6 +112,8 @@ const people = ORDER.map((slug, i) => {
       : null;
   note(g?.lifetimeGivingUrl, name, g?.lifetimeGivingStatus, 'lifetime giving');
   note(base.lifetimeGiving?.url, name, base.lifetimeGiving?.status, 'lifetime giving');
+  /* An American with no plottable figure is bounded by Forbes' floor. */
+  const lifetimeUnder = isAmerican(base) && !(lifetime && lifetime.status !== 'needs-check') ? GIVERS_FLOOR : null;
 
   const score = g?.forbesPhilanthropyScore ?? base.forbesPhilanthropyScore?.score ?? null;
   note(g?.forbesScoreUrl || base.forbesPhilanthropyScore?.url, name, 'primary', 'Forbes philanthropy score');
@@ -185,9 +198,10 @@ const people = ORDER.map((slug, i) => {
     citizenship: base.citizenship, source: base.sourceOfWealth,
     filesUS: files,
     wealth, wealthAsOf: base.wealth?.asOf ?? null, wealthStatus: base.wealth?.status ?? null,
-    score, pledge, lifetime, foundation, political, record, derived,
+    score, pledge, lifetime, lifetimeUnder, foundation, political, record, derived,
     coverage: {
       wealth: !!wealth, pledge: pledge.signed !== null, lifetime: !!lifetime && lifetime.status !== 'needs-check',
+      lifetimeBound: !!lifetimeUnder,
       filing: !!(foundation && foundation.status === 'primary' && !foundation.notHis), political: !!political && political.status !== 'needs-check',
     },
   };
@@ -221,6 +235,8 @@ const summary = {
   totalWealth: people.reduce((a, p) => a + (p.wealth ?? 0), 0),
   pledgers: people.filter((p) => p.pledge.signed).length,
   lifetimeKnown: people.filter((p) => p.coverage.lifetime).length,
+  lifetimeBounded: people.filter((p) => p.coverage.lifetimeBound).length,
+  giversFloor: GIVERS_FLOOR.amount,
   lifetimeTotal: people.filter((p) => p.coverage.lifetime).reduce((a, p) => a + p.lifetime.amount, 0),
   filingsRead: filers.length,
   foundationAssets: filers.reduce((a, p) => a + p.foundation.assets, 0),

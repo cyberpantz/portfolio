@@ -39,7 +39,7 @@ export const SOURCES: Source[] = [
     url: 'https://www.forbes.com/sites/forbeswealthteam/2026/02/09/americas-top-25-philanthropists---and-why-musk-page-and-ellison-arent-on-the-list/',
     kind: 'journalism',
     status: 'primary',
-    supports: 'Lifetime giving through 2025 for Buffett, Gates, Bloomberg, Ballmer, Zuckerberg, Brin, Bezos and Dell.',
+    supports: 'Lifetime giving through 2025 for Buffett, Gates, Bloomberg, Ballmer, Zuckerberg, Brin, Bezos and Dell; that the list’s 25th entry stands at $2.0 billion, and that Musk and Page did not make it — the bound drawn for the Americans absent from the list.',
   },
   {
     id: 'irs-990pf',

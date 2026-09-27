@@ -41,6 +41,15 @@ ok(PEOPLE[0].slug === 'elon-musk', 'Musk is first');
 ok(PEOPLE.find((p) => p.slug === 'jeff-bezos')!.foundation?.notHis === true, "the Bezos Family Foundation is flagged as not his");
 ok(PEOPLE.find((p) => p.slug === 'jeff-bezos')!.coverage.filing === false, "and does not count as a filing of his");
 ok(SUMMARY.scores['3'] === 0 && SUMMARY.scores['4'] === 0, 'the score chart\'s finding — no 3s or 4s — holds in the data');
+{
+  /* Forbes' floor bounds every American with no figure, and nobody else. */
+  const americans = PEOPLE.filter((p) => /^United States/.test(p.citizenship ?? ''));
+  const bounded = PEOPLE.filter((p) => p.coverage.lifetimeBound);
+  ok(bounded.every((p) => americans.includes(p) && !p.coverage.lifetime), 'a bound is drawn only for an American without a figure');
+  ok(bounded.length === americans.length - americans.filter((p) => p.coverage.lifetime).length, 'every American without a figure is bounded');
+  ok(bounded.every((p) => p.lifetimeUnder!.amount === SUMMARY.giversFloor), 'the bound is the list floor');
+  ok(PEOPLE.filter((p) => p.coverage.lifetime).every((p) => !/^United States/.test(p.citizenship ?? '') || p.lifetime!.amount >= SUMMARY.giversFloor || p.lifetime!.status !== 'primary'), 'no American is plotted below the floor from the list itself');
+}
 ok(SUMMARY.pledgers >= 5, `${SUMMARY.pledgers} pledgers`);
 ok(SUMMARY.carriedForward > 0, 'something is carried forward');
 
