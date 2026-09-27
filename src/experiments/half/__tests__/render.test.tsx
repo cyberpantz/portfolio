@@ -11,7 +11,7 @@ import type { ReactElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import data from '../../../data/half.json';
 import { SOURCES, assertNoUnverifiedClaims } from '../../../data/half-sources';
-import { Squares, Paired, Pledge, Payout, Horizon, Mechanisms, Founders, Scores, Coverage, PEOPLE, SUMMARY } from '../figures';
+import { WealthPack, Paired, Pledge, Payout, Horizon, Mechanisms, Founders, Scores, Coverage, PEOPLE, SUMMARY } from '../figures';
 import Half from '../Half';
 
 let fails = 0;
@@ -47,7 +47,7 @@ ok(SUMMARY.carriedForward > 0, 'something is carried forward');
 /* ---- every figure renders, and draws something --------------------- */
 console.log('Figures render');
 const CH: [string, ReactElement, number][] = [
-  ['squares', <Squares />, 25], ['paired', <Paired />, 8], ['pledge', <Pledge />, 25],
+  ['wealth pack', <WealthPack />, 25], ['paired', <Paired />, 8], ['pledge', <Pledge />, 25],
   ['payout', <Payout />, 8], ['horizon', <Horizon />, 6], ['mechanisms', <Mechanisms />, 3],
   ['founders', <Founders />, 4], ['scores', <Scores />, 5], ['coverage', <Coverage />, 25],
 ];

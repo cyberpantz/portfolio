@@ -91,7 +91,7 @@ export const SOURCES: Source[] = [
     url: 'https://www.philanthropy.com/news/is-the-giving-pledge-living-up-to-its-potential/',
     kind: 'journalism',
     status: 'primary',
-    supports: 'That about 13% of American billionaires have signed.',
+    supports: 'That about 13% of American billionaires have signed, and the Giving Pledge response that it has helped establish new norms of generosity while signers pursue philanthropy independently.',
   },
   {
     id: 'berkshire-2024',
@@ -156,16 +156,6 @@ export const SOURCES: Source[] = [
     kind: 'journalism',
     status: 'secondary',
     supports: '“Have they given enough? No.”',
-  },
-  {
-    id: 'fortune-thiel',
-    title: 'Peter Thiel warned Elon Musk to ditch the Giving Pledge',
-    publisher: 'Fortune',
-    date: '2025-10-13',
-    url: 'https://fortune.com/2025/10/13/billionaire-peter-thiel-warned-elon-musk-to-ditch-donating-to-the-giving-pledge',
-    kind: 'journalism',
-    status: 'secondary',
-    supports: 'Musk, via Thiel: “it would be much worse to give it to Bill Gates.”',
   },
   {
     id: 'nyt-musk-foundation',

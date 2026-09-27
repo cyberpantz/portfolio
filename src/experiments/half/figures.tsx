@@ -3,7 +3,7 @@
  *
  * Nine chapters, nine forms. Tilt's rule: if two chapters would look the
  * same, one of them is not a chapter. Each drawing here is the one that
- * answers its question and no other — proportional area for size, a shared
+ * answers its question and no other — packed area for size, a shared
  * scale for wealth against giving, a threshold for the payout rule, a
  * timeline for a promise, a grid for what is missing.
  *
@@ -11,6 +11,7 @@
  * the data file. No number here is typed: it is read from half.json.
  */
 import data from '../../data/half.json';
+import { hierarchy, pack } from 'd3';
 import s from './half.module.css';
 
 type Person = (typeof data.people)[number];
@@ -27,7 +28,7 @@ export const money = (n: number | null | undefined) =>
   : `$${Math.round(n).toLocaleString('en-US')}`;
 const short = (name: string) => name.replace(' Helu', '').replace(' (CZ)', '').replace('Françoise ', '').replace(' Meyers', '');
 /**
- * Surname only — for a square or a cell too small for the whole name.
+ * Surname only — for a circle or a cell too small for the whole name.
  * Three Waltons and a Chinese name order need saying by hand.
  */
 const TIGHT: Record<string, string> = {
@@ -39,47 +40,38 @@ const surname = (p: { slug: string; name: string }) => {
   return parts.length > 1 ? parts[parts.length - 1] : parts[0];
 };
 
-/* ------------------------------------------------------- 1. the squares */
+/* ------------------------------------------------ 1. the wealth circle pack */
 
 /**
- * Twenty-five squares, area proportional to wealth, packed in rank order.
- * Area rather than height because a number this size only reads as area —
- * a bar for Musk would leave the other twenty-four as a ruler's ticks.
+ * Twenty-five circles, area proportional to wealth, packed by D3. React still
+ * owns the SVG so the figure remains server-renderable and accessible.
  */
-export function Squares() {
-  const W = 720, GAP = 6;
-  const max = Math.max(...PEOPLE.map((p) => p.wealth ?? 0));
-  const big = 300; // side of the largest square
-  const side = (w: number) => big * Math.sqrt((w || 0) / max);
-  /* Row-pack greedily; the first square takes its own row. */
-  const rows: { p: Person; sd: number }[][] = [];
-  let row: { p: Person; sd: number }[] = [], x = 0;
-  for (const p of PEOPLE) {
-    const sd = side(p.wealth ?? 0);
-    if (x + sd > W && row.length) { rows.push(row); row = []; x = 0; }
-    row.push({ p, sd }); x += sd + GAP;
-  }
-  if (row.length) rows.push(row);
-  let y = 0;
-  const placed: { p: Person; sd: number; x: number; y: number }[] = [];
-  for (const r of rows) {
-    const h = Math.max(...r.map((c) => c.sd));
-    let cx = 0;
-    for (const c of r) { placed.push({ ...c, x: cx, y: y + (h - c.sd) }); cx += c.sd + GAP; }
-    y += h + GAP;
-  }
+export function WealthPack() {
+  const W = 720, H = 620;
+  type PackDatum = Person | { children: Person[] };
+  const root = hierarchy<PackDatum>(
+    { children: PEOPLE },
+    (d) => 'children' in d ? d.children : undefined,
+  )
+    .sum((d) => 'wealth' in d ? d.wealth ?? 0 : 0)
+    .sort((a, b) => (b.value ?? 0) - (a.value ?? 0));
+  const leaves = pack<PackDatum>().size([W, H]).padding(5)(root).leaves();
+
   return (
-    <svg className={s.fig} viewBox={`0 0 ${W} ${y}`} role="img"
-         aria-label={`The wealth of the twenty-five as proportional squares. ${PEOPLE[0].name} alone is ${money(PEOPLE[0].wealth)}.`}>
-      {placed.map(({ p, sd, x, y }) => (
+    <svg className={s.fig} viewBox={`0 0 ${W} ${H}`} role="img"
+         aria-label={`The wealth of the twenty-five as proportional circles. Circle area represents fortune. ${PEOPLE[0].name} alone is ${money(PEOPLE[0].wealth)}.`}>
+      {leaves.map(({ data: datum, r, x, y }) => {
+        const p = datum as Person;
+        return (
         <g key={p.slug} transform={`translate(${x} ${y})`}>
-          <rect className={p.rank === 1 ? s.sqTop : s.sq} width={sd} height={sd} rx={sd > 40 ? 4 : 2} />
-          {sd > 118 && <text className={p.rank === 1 ? s.sqNameTop : s.sqName} x={8} y={18}>{short(p.name)}</text>}
-          {sd <= 118 && sd > 54 && <text className={s.sqName} x={8} y={18}>{surname(p)}</text>}
-          {sd > 54 && <text className={p.rank === 1 ? s.sqAmtTop : s.sqAmt} x={8} y={34}>{money(p.wealth)}</text>}
-          {sd <= 54 && sd > 28 && <text className={s.sqTiny} x={sd / 2} y={sd / 2 + 4}>{p.rank}</text>}
+          <circle className={p.rank === 1 ? s.bubbleTop : s.bubble} r={r} />
+          <text className={p.rank === 1 ? s.bubbleNameTop : s.bubbleName} y={-4}>
+            {r > 68 ? short(p.name) : surname(p)}
+          </text>
+          <text className={p.rank === 1 ? s.bubbleAmtTop : s.bubbleAmt} y={14}>{money(p.wealth)}</text>
         </g>
-      ))}
+        );
+      })}
     </svg>
   );
 }
@@ -185,7 +177,10 @@ export function Horizon() {
     .sort((a, b) => a.year - b.year);
   const W = 720, L = 150, R = 60, H = 24, TOP = 26;
   const maxYear = Math.max(...rows.map((r) => r.year));
-  const x = (yr: number) => L + ((W - L - R) * Math.log10(1 + yr - now)) / Math.log10(1 + maxYear - now);
+  // Stabilize SSR hydration: JS engines can disagree in the final decimal
+  // place for logarithmic coordinates, even though the rendered pixel is
+  // identical.
+  const x = (yr: number) => Number((L + ((W - L - R) * Math.log10(1 + yr - now)) / Math.log10(1 + maxYear - now)).toFixed(6));
   const ticks = [1, 10, 100, 1000].filter((t) => t <= maxYear - now);
   return (
     <svg className={s.fig} viewBox={`0 0 ${W} ${TOP + rows.length * H + 14}`} role="img"
@@ -236,20 +231,20 @@ export function Mechanisms() {
   return (
     <div className={s.cards}>
       <Card title="The donor-advised fund"
-            caption={<>Money goes in and is counted as given. The fund need never say where it goes next. The Huang foundation held {dafShares} Nvidia shares and sent {dafShare} percent of its grants to one.</>}>
+            caption={<>The contribution is counted as distributed; the fund need not disclose where it goes next. The Huang foundation held {dafShares} Nvidia shares and sent {dafShare} percent of its grants to one.</>}>
         <rect className={s.cBox} x={70} y={20} width={60} height={50} rx={4} />
         <line className={s.cArrow} x1={10} y1={45} x2={64} y2={45} markerEnd="url(#h-arrow)" />
         <text className={s.cLbl} x={100} y={49}>DAF</text>
         <text className={s.cNote} x={140} y={49}>no outlet</text>
       </Card>
       <Card title="The charitable LLC"
-            caption={<>A company, not a charity: no public return, no disclosure of what it pays or whom it funds, and it may lobby. Bezos’s filed vehicle reported no grants and {money(dollars(llcSpend))} of expenses.</>}>
+            caption={<>A company, not a charity: no public return, no disclosure of what it pays or funds, and lobbying is permitted. Bezos’s one filed vehicle reported no grants and {money(dollars(llcSpend))} of expenses.</>}>
         <rect className={s.cBoxSolid} x={60} y={15} width={80} height={60} rx={4} />
         <text className={s.cLblInv} x={100} y={49}>LLC</text>
         <text className={s.cNote} x={100} y={86}>no filing, no window</text>
       </Card>
       <Card title="The related party"
-            caption={<>The grant goes to something the donor already owns or runs. The Walton Family Foundation gave {money(dollars(cb))} to the Walton museum in one year; about half of the Musk Foundation’s grants went to Musk interests.</>}>
+            caption={<>The grant supports an institution the founder owns or runs. The Walton Family Foundation gave {money(dollars(cb))} to the Walton museum in one year; about half of the Musk Foundation’s grants went to Musk interests.</>}>
         <circle className={s.cRing} cx={100} cy={45} r={30} />
         <text className={s.cLbl} x={100} y={49}>back</text>
         <text className={s.cNote} x={100} y={86}>to the donor’s own interests</text>

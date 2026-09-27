@@ -56,7 +56,7 @@ export const EXPLORATIONS: Exploration[] = [
     type: 'Data',
     tags: ['Scrollytelling', 'SVG', 'React', 'Public filings'],
     url: '/explorations/half',
-    desc: 'The Giving Pledge asks the very rich for at least half. The twenty-five richest people alive, their own IRS filings, and nine charts on what they have given, what they promised, and what cannot be seen — including the two men who invented the Pledge walking away from it.',
+    desc: 'The Giving Pledge asks the very rich for at least half. Nine charts compare the fortunes, promises, reported giving and public filings of the twenty-five richest people alive — including the gaps where no comparable public record exists.',
   },
   {
     id: 'cap',
@@ -205,4 +205,3 @@ export const THUMB_DRIFT = [
 
 /** Drift for card `i`, wrapping if the list outgrows the table. */
 export const driftFor = (i: number) => THUMB_DRIFT[i % THUMB_DRIFT.length];
-

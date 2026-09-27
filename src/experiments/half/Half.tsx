@@ -11,7 +11,7 @@ import { useEffect, useRef, useState } from 'react';
 import data from '../../data/half.json';
 import { SOURCES, byId } from '../../data/half-sources';
 import {
-  Squares, Paired, Pledge, Payout, Horizon, Mechanisms, Founders, Scores, Coverage,
+  WealthPack, Paired, Pledge, Payout, Horizon, Mechanisms, Founders, Scores, Coverage,
   PEOPLE, SUMMARY, CONTEXT, money,
 } from './figures';
 import s from './half.module.css';
@@ -60,6 +60,8 @@ const nonFilers = PEOPLE.filter((p) => !p.filesUS).length;
 const foreign = PEOPLE.filter((p) => !/^United States/.test(p.citizenship ?? '')).length;
 const withNothing = PEOPLE.filter((p) => !p.filesUS && !p.foundation?.paidOut).length;
 const publishOwn = nonFilers - withNothing;
+const scored = Object.values(SUMMARY.scores).reduce((sum, n) => sum + n, 0);
+const unscored = SUMMARY.count - scored;
 const now = Number(data.built.slice(0, 4));
 const muskHalf = now + (musk.derived.yearsToHalf ?? 0);
 
@@ -68,63 +70,63 @@ const CHAPTERS = [
     id: 'pile',
     kicker: 'The twenty-five',
     title: `Between them, ${words(SUMMARY.totalWealth)}.`,
-    body: <>These are the twenty-five richest people alive, as Forbes counted them on {longDate(SUMMARY.listDate)}<Cite id="forbes-list" />, drawn as squares whose area is their fortune. The teal one is {musk.name}. At {words(musk.wealth)}<Cite id="forbes-profiles" /> he is worth more than the next three together, and the square is the only way to show it: as a bar, everyone else would be a tick on his ruler.</>,
-    figure: <Squares />,
-  },
-  {
-    id: 'paired',
-    kicker: 'Wealth against giving',
-    title: 'What each has given, drawn to the same scale as what each has.',
-    body: <>The upper bar is the fortune; the lower is lifetime giving, where a figure exists<Cite id="forbes-top-givers" />. {buffett.name} has given away {words(buffett.lifetime!.amount)}, and {gates.name} {words(gates.lifetime!.amount)}, and you can see it. For most of the list the lower bar is a hairline. Where there is no bar at all, it is because nobody — not Forbes, not the Chronicle of Philanthropy, not the person — has ever put a number on it.</>,
-    figure: <Paired />,
+    body: <>These are the twenty-five richest people alive, as Forbes counted them on {longDate(SUMMARY.listDate)}<Cite id="forbes-list" />. Each circle’s area represents a fortune. The teal circle is {musk.name}: at {words(musk.wealth)}<Cite id="forbes-profiles" />, he is worth more than the next three people combined. On a conventional bar chart, nearly everyone else would be reduced to a mark along his scale.</>,
+    figure: <WealthPack />,
   },
   {
     id: 'pledge',
     kicker: 'The promise',
     title: `${spell(SUMMARY.pledgers).replace(/^\w/, (c) => c.toUpperCase())} of the twenty-five have promised half.`,
-    body: <>The Giving Pledge asks the very rich to give away at least half of what they have, in life or at death<Cite id="giving-pledge" />. About {SIGNED_PCT} percent of American billionaires have signed<Cite id="chronicle-pledge" />. Those who did are, as a group, {f15.net_worth_growth_since_2010_pct} percent richer than the day they signed, and exactly one living signatory has kept the promise<Cite id="ips-15" />. {musk.name} signed in {musk.pledge.year}, when he was worth {words(musk.pledge.wealthAtSigning)}. He is now worth roughly {times(musk.derived.growthSincePledge!)} times that. Peter Thiel says he told him “it would be much worse to give it to Bill Gates”<Cite id="fortune-thiel" />.</>,
+    body: <>The Giving Pledge asks the very rich to give away at least half of what they have, during their lives or in their wills<Cite id="giving-pledge" />. About {SIGNED_PCT} percent of American billionaires have signed<Cite id="chronicle-pledge" />. The Institute for Policy Studies examined the original American signers who remain billionaires: together, they are {f15.net_worth_growth_since_2010_pct} percent richer than when the pledge began, and only one living member of that original cohort has given at least half<Cite id="ips-15" />. The Giving Pledge told the Chronicle of Philanthropy that it has helped establish “new norms of generosity,” while noting that each signer pursues philanthropy independently<Cite id="chronicle-pledge" />. {musk.name} signed in {musk.pledge.year}, when he was worth {words(musk.pledge.wealthAtSigning)}. His estimated fortune is now roughly {times(musk.derived.growthSincePledge!)} times as large.</>,
     figure: <Pledge />,
+  },
+  {
+    id: 'paired',
+    kicker: 'The public record',
+    title: 'Known lifetime giving, measured against current wealth.',
+    body: <>The upper bar is the current fortune; the lower is reported lifetime giving, where a defensible estimate exists<Cite id="forbes-top-givers" />. {buffett.name} has given away an estimated {words(buffett.lifetime!.amount)}, and {gates.name} {words(gates.lifetime!.amount)}. For most of the list, the lower bar is a hairline. Where no bar appears, this review found no independently reported or self-published estimate strong enough to plot.</>,
+    figure: <Paired />,
   },
   {
     id: 'payout',
     kicker: 'The foundations',
-    title: 'The law asks a foundation to give away five percent a year. Here is who does.',
-    body: <>Every American private foundation must file a public return with the IRS, and these figures are read from those returns, line by line<Cite id="irs-990pf" />. Last year the {huang.name} foundation paid out {pct(huang.foundation!.payoutRate!)} of the {words(huang.foundation!.assets)} it holds. {page.name}’s paid out {pct(page.foundation!.payoutRate!)}; {dell.name}’s {pct(dell.foundation!.payoutRate!)}; the Musk Foundation {pct(musk.foundation!.payoutRate!)}. Four — {shortfall} — gave less than the year required, and between them the foundations on this chart still owe {words(SUMMARY.carriedForward)}. Across the 144 largest foundations in the country the median is {MEDIAN_PAYOUT} percent: the minimum, met and not exceeded<Cite id="ips-2026" />.</>,
+    title: 'What their foundations distributed last year.',
+    body: <>American private foundations file annual public returns with the IRS. In general, they must make qualifying distributions equal to roughly five percent of their assets, although prior excess distributions and subsequent-year payments can alter what is due in any one year<Cite id="irs-990pf" />. The latest return for the {huang.name} foundation reports distributions equal to {pct(huang.foundation!.payoutRate!)} of its {words(huang.foundation!.assets)} in assets. {page.name}’s reported {pct(page.foundation!.payoutRate!)}; {dell.name}’s {pct(dell.foundation!.payoutRate!)}; the Musk Foundation {pct(musk.foundation!.payoutRate!)}. Four — {shortfall} — reported undistributed income carried into the following year, totaling {words(SUMMARY.carriedForward)}. Among the country’s 144 billion-dollar foundations, the median payout in 2024 was {MEDIAN_PAYOUT} percent<Cite id="ips-2026" />.</>,
     figure: <Payout />,
   },
   {
-    id: 'horizon',
-    kicker: 'At that rate',
-    title: 'The year each of them would reach half.',
-    body: <>Take what each foundation paid out last year, hold it steady, and count forward to the day the giving reaches half the fortune. {gates.name} gets there almost at once; he is nearly there already. {bloomberg.name} arrives in {now + (bloomberg.derived.yearsToHalf ?? 0)}. {musk.name} arrives in the year {muskHalf}. The axis is logarithmic because it has to be.</>,
-    figure: <Horizon />,
-  },
-  {
     id: 'mechanisms',
-    kicker: 'How it stays home',
-    title: 'Three ways to give money without letting go of it.',
-    body: <>A grant to a donor-advised fund counts, to the IRS, as money paid out — and the fund need never say where it goes next. The {huang.name} foundation has given mostly to one<Cite id="bloomberg-huang" />. A limited-liability company, the structure Mark Zuckerberg chose, files no public return at all<Cite id="forbes-czi" />. And a foundation may give to things its founder already owns: about half of the Musk Foundation’s grants in 2021 and 2022 went to interests tied to Musk<Cite id="nyt-musk-foundation" />, and in 2010 the Walton Family Foundation gave {words(WALTON_CB)} to Crystal Bridges, the Walton art museum in the Walton home town, against {words(WALTON_OTHER)} to everything else in the region<Cite id="wff-crystal-bridges" />. The four largest donor-advised-fund sponsors now hold ${DAF_HELD} for every dollar they grant<Cite id="ips-2026" />.</>,
+    kicker: 'What “given” can mean',
+    title: 'Three structures that change control, timing and disclosure.',
+    body: <>A contribution to a donor-advised fund is irrevocable: the sponsor owns the money, while the donor retains advisory privileges. The contribution counts as a foundation distribution, but the individual account has no annual payout requirement and need not disclose its eventual recipients; the {huang.name} foundation has directed most of its giving to one such fund<Cite id="bloomberg-huang" />. A limited-liability company, such as the Chan Zuckerberg Initiative, can make grants, investments and political contributions without filing a Form 990<Cite id="forbes-czi" />. A foundation can also support institutions closely associated with its founders: reporting found that about half of the Musk Foundation’s 2021 and 2022 grants benefited Musk’s businesses, associates or family<Cite id="nyt-musk-foundation" />; in 2010 the Walton Family Foundation granted {words(WALTON_CB)} to the family-founded Crystal Bridges museum and {words(WALTON_OTHER)} to its other home-region programs<Cite id="wff-crystal-bridges" />. These arrangements are not equivalent, but each complicates the distance between a charitable transfer and money reaching an independent recipient. The four largest donor-advised-fund sponsors held ${DAF_HELD} in assets for every dollar they granted in 2025<Cite id="ips-2026" />.</>,
     figure: <Mechanisms />,
   },
   {
+    id: 'horizon',
+    kicker: 'A static projection',
+    title: 'At last year’s rate, how long would half take?',
+    body: <>Freeze each fortune at its current estimate, subtract known lifetime giving, and repeat the latest foundation payout every year: this is when the total reaches half. It is an illustration, not a forecast; it assumes neither investment returns nor future changes in wealth or giving. {gates.name} is nearly there already. At the modeled rate, {bloomberg.name} reaches half in {now + (bloomberg.derived.yearsToHalf ?? 0)}. {musk.name} reaches it in {muskHalf}. The logarithmic axis is necessary to show dates separated by centuries on one scale.</>,
+    figure: <Horizon />,
+  },
+  {
     id: 'founders',
-    kicker: 'The men who invented it',
-    title: 'Sixteen years on, its founders are walking away from it.',
-    body: <>Warren Buffett and Bill Gates launched the Pledge in 2010. In 2024 Buffett announced that his commitments to the Gates Foundation would end with his death<Cite id="berkshire-2024" />. In 2025 he wrote that his “grand philanthropic plans … did not prove feasible”<Cite id="berkshire-2025" />. In July 2026 he gave his remaining Berkshire shares to his children’s foundations and, for the first time in twenty years, nothing to Gates<Cite id="berkshire-2026" /> — the end of a {words(48e9)} relationship<Cite id="fortune-buffett-gates" />. Gates, for his part, will close his foundation in 2045<Cite id="npr-gates-2045" />. Asked whether the billionaires had given enough, Melinda French Gates answered in one word: “No.”<Cite id="fortune-french-gates" /></>,
+    kicker: 'The founders change course',
+    title: 'Sixteen years later, their philanthropic plans have changed.',
+    body: <>Warren Buffett and Bill Gates launched the Pledge in 2010. In 2024 Buffett said his commitments to the Gates Foundation would end with his death<Cite id="berkshire-2024" />. The next year he wrote that his “grand philanthropic plans … did not prove feasible” and accelerated gifts to foundations run by his children<Cite id="berkshire-2025" />. In July 2026, for the first time in twenty years, his annual Berkshire gift included nothing for Gates<Cite id="berkshire-2026" /> — ending a relationship through which he had contributed {words(48e9)}<Cite id="fortune-buffett-gates" />. Gates, meanwhile, plans to spend down and close his foundation in 2045<Cite id="npr-gates-2045" />. These are not retreats from philanthropy; they are departures from the institutional arrangement that accompanied the Pledge’s creation. Asked, “Have they given enough?” Melinda French Gates answered: “No.”<Cite id="fortune-french-gates" /></>,
     figure: <Founders />,
   },
   {
     id: 'scores',
-    kicker: 'Forbes’ own grade',
-    title: 'Nobody scored a three. Nobody scored a four.',
-    body: <>Forbes grades every billionaire’s giving from one to five, by the share of their wealth they have given away<Cite id="forbes-profiles" />. Of these twenty-five, {spell(SUMMARY.scores['1'])} scored one, {spell(SUMMARY.scores['2'])} scored two, and {spell(SUMMARY.scores['5'])} scored five. There is nobody in the middle. On this list you are either Buffett, Gates and Bloomberg, or you are not.</>,
+    kicker: 'Forbes’ philanthropy score',
+    title: `Among the ${spell(scored)} people Forbes scored, nobody received a three or four.`,
+    body: <>Forbes assigns a philanthropy score from one to five according to the share of a fortune given away<Cite id="forbes-profiles" />. It scored {spell(scored)} of the twenty-five people in this analysis; {spell(unscored)} had no score. Of those rated, {spell(SUMMARY.scores['1'])} received a one, {spell(SUMMARY.scores['2'])} a two, and {spell(SUMMARY.scores['5'])} a five. The empty middle is striking, but it also reflects the limits of the measure: the scores compress different forms, timing and evidence of giving into a single grade.</>,
     figure: <Scores />,
   },
   {
     id: 'coverage',
-    kicker: 'What cannot be seen',
-    title: `${spell(nonFilers).replace(/^\w/, (c) => c.toUpperCase())} of the twenty-five file nothing at all.`,
-    body: <>The chart above exists because American law makes a private foundation open its books every year<Cite id="irs-990pf" />. No other country on this list asks the same. {spell(foreign).replace(/^\w/, (c) => c.toUpperCase())} of the twenty-five are not American, and one who is, Steve Ballmer, gives through a company that need not file. Of the {spell(nonFilers)}, {spell(publishOwn)} publish a figure of their own choosing; {spell(withNothing)} publish nothing. Their squares in the first chart are as large as anyone’s. That is all this piece can say about them, and it is the point.</>,
+    kicker: 'The limits of disclosure',
+    title: `For ${spell(nonFilers)} of the twenty-five, no comparable public filing is available.`,
+    body: <>The foundation chart is possible because American private foundations disclose their finances each year<Cite id="irs-990pf" />. For the non-American fortunes in this group, this review found no comparable standardized public return. {spell(foreign).replace(/^\w/, (c) => c.toUpperCase())} of the twenty-five are not American; another, Steve Ballmer, gives through a company that is not required to file a foundation return. Of the {spell(nonFilers)} without comparable filings, {spell(publishOwn)} disclose some giving figures on their own terms, while this review found no usable distribution figure for {spell(withNothing)}. Absence from the chart is therefore not evidence of an absence of giving. It is evidence of what the public record cannot establish.</>,
     figure: <Coverage />,
   },
 ] as const;
@@ -207,20 +209,21 @@ function Intro() {
     <header className={s.intro}>
       <h1>Half</h1>
       <p className={s.standfirst}>
-        In 2010 the richest people in the world were asked to promise away half of what they had.
-        Sixteen years on, the twenty-five richest people alive hold {words(SUMMARY.totalWealth)} between
-        them. This is what their own filings say they have given.
+        In 2010, Bill Gates and Warren Buffett asked the world’s billionaires to give away at least half
+        their wealth, during their lives or in their wills. Sixteen years later, {spell(SUMMARY.pledgers)} {' '}
+        of the twenty-five richest people have signed. Together, the twenty-five are worth about
+        {' '}{words(SUMMARY.totalWealth)}. Public filings reveal what some of their foundations distributed,
+        how much remains inside them and, in many cases, how little the public record can tell us.
       </p>
       <div className={s.numbers}>
         <div><b>{SUMMARY.pledgers}</b><span>of the {SUMMARY.count} have signed</span></div>
         <div><b>{money(SUMMARY.foundationPaidOut)}</b><span>paid out by their foundations in their latest filed year</span></div>
-        <div><b>{money(SUMMARY.carriedForward)}</b><span>owed into the following year</span></div>
+        <div><b>{money(SUMMARY.carriedForward)}</b><span>reported as undistributed income carried forward</span></div>
         <div><b>{SUMMARY.scores['1']}</b><span>scored one out of five by Forbes</span></div>
       </div>
       <p className={s.credit}>
-        Wealth as of {longDate(SUMMARY.listDate)}. Foundation figures are read from IRS Form 990-PF at
-        fair-market value. Every number on this page is computed from the sources listed at the end;
-        none is typed by hand.
+        Wealth as of {longDate(SUMMARY.listDate)}. Foundation figures come from IRS Form 990-PF and use
+        fair-market asset values. The methodology and source record appear at the end.
       </p>
     </header>
   );
@@ -240,28 +243,29 @@ function Notes() {
   const bezos = by('jeff-bezos');
   return (
     <section className={s.essay} id="notes">
-      <p className={s.kicker}>What this is not saying</p>
-      <h2>Read the filings, not the headlines.</h2>
+      <p className={s.kicker}>How to read the record</p>
+      <h2>What the evidence shows—and what it does not.</h2>
 
-      <h3>That nobody gives</h3>
+      <h3>Giving is not absent</h3>
       <p>
         {buffett.name} has given away {words(buffett.lifetime!.amount)}<Cite id="forbes-top-givers" />,
         {' '}{gates.name} {words(gates.lifetime!.amount)}, {bloomberg.name} {words(bloomberg.lifetime!.amount)}.
         {' '}{brin.name}’s foundation paid out {pct(brin.foundation!.payoutRate!)} of its assets last
-        year<Cite id="irs-990pf" />, more than three times what the law requires. The people who founded the
-        Pledge are the reason the top of every chart here is not empty.
+        year<Cite id="irs-990pf" />, more than three times the general distribution requirement. The people
+        who founded the Pledge account for nearly all of the clearly documented large-scale giving in this group.
       </p>
 
-      <h3>That a foundation is a fraud</h3>
+      <h3>The five-percent rule</h3>
       <p>
         Paying out less than five percent in a year is legal; the balance is owed by the end of the
         next<Cite id="irs-990pf" />. A donor-advised fund is legal. An LLC is legal. The one case of
         foundation self-dealing on this page that a court has ruled on comes from outside the
-        twenty-five, and is labelled so<Cite id="nyag-trump" />. What the filings show is not a crime.
-        It is what the rules permit, and how fully the rules are used.
+        twenty-five, and is labelled so<Cite id="nyag-trump" />. The filings do not, by themselves,
+        establish misconduct. They show how much the rules require, how distributions are counted and
+        how much discretion the structures preserve.
       </p>
 
-      <h3>That the Bezos foundation is his</h3>
+      <h3>Attributing Bezos giving</h3>
       <p>
         The only Bezos foundation that files a public return is run by his parents; he is an unpaid
         director, and its figures are not shown as his giving. His own vehicle reported no grants at all
@@ -271,12 +275,13 @@ function Notes() {
         second chart and nowhere else.
       </p>
 
-      <h3>What it costs the rest of us</h3>
+      <h3>The public subsidy</h3>
       <p>
-        A gift of appreciated stock escapes the capital-gains tax and earns the income-tax deduction
-        both<Cite id="tpc-subsidy" />. The Institute for Policy Studies puts the public’s share of a
-        top-bracket gift at up to {SUBSIDY} on the dollar<Cite id="ips-15" />. Every dollar in these
-        foundations was, in part, tax that was never paid.
+        A charitable contribution of appreciated stock can avoid capital-gains tax while also producing
+        an income-tax deduction<Cite id="tpc-subsidy" />. Using assumptions for an ultra-wealthy donor,
+        the Institute for Policy Studies estimates a combined public subsidy of up to {SUBSIDY} on the
+        dollar<Cite id="ips-15" />. The precise subsidy varies with the asset, the donor and the deduction;
+        the larger point is that private charitable choices are partly financed through foregone public revenue.
       </p>
 
       <dl className={s.method}>
@@ -314,5 +319,5 @@ function Sources() {
 }
 
 /* Referenced so the build keeps them and the suite can render them alone. */
-export const FIGURES = { Squares, Paired, Pledge, Payout, Horizon, Mechanisms, Founders, Scores, Coverage };
+export const FIGURES = { WealthPack, Paired, Pledge, Payout, Horizon, Mechanisms, Founders, Scores, Coverage };
 export { fmt };

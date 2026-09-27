@@ -53,7 +53,7 @@ export default function Lazers() {
             label={
               able === false
                 ? 'This one needs WebGL, which this browser is not offering.'
-                : 'Held still, because your system asks for reduced motion.'
+                : 'No animations because reduced motion is enabled.'
             }
           />
         )}

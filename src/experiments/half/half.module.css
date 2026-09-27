@@ -443,15 +443,18 @@
 .rule { stroke: var(--warn); stroke-width: 1.5; stroke-dasharray: 4 4; }
 .ruleLbl { fill: var(--warn); font-size: 10.5px; }
 
-/* 1 — squares */
-.sq { fill: rgb(232 232 224 / 22%); stroke: rgb(232 232 224 / 30%); stroke-width: 0.75; }
-.sqTop { fill: var(--you); fill-opacity: 0.85; }
-.sqName { fill: var(--ink); font-size: 12px; font-weight: 600; }
-.sqAmt { fill: var(--mute); font-size: 11px; }
-/* On the accent square the ink has to be dark to be read at all. */
-.sqNameTop { fill: #0f0f10; font-size: 13px; font-weight: 600; }
-.sqAmtTop { fill: #0f0f10; font-size: 12px; }
-.sqTiny { fill: var(--mute); font-size: 9px; text-anchor: middle; }
+/* 1 — wealth circle pack */
+.bubble { fill: rgb(232 232 224 / 22%); stroke: rgb(232 232 224 / 34%); stroke-width: 0.85; }
+.bubbleTop { fill: var(--you); fill-opacity: 0.85; }
+.bubbleName,
+.bubbleAmt,
+.bubbleNameTop,
+.bubbleAmtTop { text-anchor: middle; }
+.fig .bubbleName { fill: var(--ink); font-size: 11.5px; font-weight: 600; }
+.fig .bubbleAmt { fill: var(--mute); font-size: 10.5px; }
+/* On the accent circle the ink has to be dark to be read at all. */
+.fig .bubbleNameTop { fill: #0f0f10; font-size: 14px; font-weight: 600; }
+.fig .bubbleAmtTop { fill: #0f0f10; font-size: 13px; }
 
 /* 2 — paired bars */
 .barWealth { fill: rgb(232 232 224 / 30%); }

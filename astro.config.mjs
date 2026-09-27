@@ -39,5 +39,11 @@ export default defineConfig({
     // @astrojs/tailwind is retired and never declared support past Astro 5.
     plugins: [tailwindcss()],
     assetsInclude: ['**/*.glsl'],
+    // Keep every hydrated island on the same React instance. This also
+    // prevents Vite dependency re-optimization (for example, after adding
+    // D3) from leaving a running dev session with split React runtimes.
+    resolve: {
+      dedupe: ['react', 'react-dom'],
+    },
   },
 });
