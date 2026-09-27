@@ -216,35 +216,43 @@ export function Horizon() {
 
 /** Three mechanisms, each a small diagram with its named case. */
 export function Mechanisms() {
-  const pick = (m: string) => CONTEXT.shelters.find((x) => x.mechanism === m && x.inTop25 && x.status !== 'needs-check');
-  const daf = pick('daf'), llc = pick('llc'), rel = pick('related-party');
-  const Card = ({ title, children, caption }: { title: string; children: React.ReactNode; caption?: string }) => (
+  const figOf = (m: string, key: string) => {
+    const hit = CONTEXT.shelters.find((x) => x.mechanism === m && x.inTop25 && x.figures && key in (x.figures as object));
+    return hit ? (hit.figures as Record<string, string | number>)[key] : null;
+  };
+  /* Captions written, not pasted: the research strings are for the register. */
+  const dafShares = figOf('daf', 'nvidia_shares_in_foundation');
+  const dafShare = figOf('daf', 'share_of_grants_to_DAF_pct');
+  const llcSpend = figOf('llc', 'fy2023_expenses_usd');
+  const cb = figOf('related-party', 'crystal_bridges_grants_2010_usd');
+  const dollars = (v: string | number | null) => v == null ? null : Number(String(v).replace(/[^\d.]/g, ''));
+
+  const Card = ({ title, children, caption }: { title: string; children: React.ReactNode; caption: React.ReactNode }) => (
     <figure className={s.card}>
       <svg viewBox="0 0 200 90" className={s.cardSvg} aria-hidden="true">{children}</svg>
-      <figcaption><b>{title}</b>{caption && <span>{caption}</span>}</figcaption>
+      <figcaption><b>{title}</b><span>{caption}</span></figcaption>
     </figure>
   );
   return (
     <div className={s.cards}>
-      <Card title="The donor-advised fund" caption={daf ? `${daf.case.split(' — ')[0]}: ${daf.finding.slice(0, 120)}…` : undefined}>
-        {/* money goes in; the box has no outlet */}
+      <Card title="The donor-advised fund"
+            caption={<>Money goes in and is counted as given. The fund need never say where it goes next. The Huang foundation held {dafShares} Nvidia shares and sent {dafShare} percent of its grants to one.</>}>
         <rect className={s.cBox} x={70} y={20} width={60} height={50} rx={4} />
         <line className={s.cArrow} x1={10} y1={45} x2={64} y2={45} markerEnd="url(#h-arrow)" />
         <text className={s.cLbl} x={100} y={49}>DAF</text>
         <text className={s.cNote} x={140} y={49}>no outlet</text>
       </Card>
-      <Card title="The charitable LLC" caption={llc ? `${llc.case.split(' (')[0]}: ${llc.finding.slice(0, 120)}…` : undefined}>
-        {/* a box with no window: nothing is disclosed */}
+      <Card title="The charitable LLC"
+            caption={<>A company, not a charity: no public return, no disclosure of what it pays or whom it funds, and it may lobby. Bezos’s filed vehicle reported no grants and {money(dollars(llcSpend))} of expenses.</>}>
         <rect className={s.cBoxSolid} x={60} y={15} width={80} height={60} rx={4} />
         <text className={s.cLblInv} x={100} y={49}>LLC</text>
         <text className={s.cNote} x={100} y={86}>no filing, no window</text>
       </Card>
-      <Card title="The related party" caption={rel ? `${rel.case.split(' (')[0]}: ${rel.finding.slice(0, 120)}…` : undefined}>
-        {/* a loop back to where it came from */}
+      <Card title="The related party"
+            caption={<>The grant goes to something the donor already owns or runs. The Walton Family Foundation gave {money(dollars(cb))} to the Walton museum in one year; about half of the Musk Foundation’s grants went to Musk interests.</>}>
         <circle className={s.cRing} cx={100} cy={45} r={30} />
-        <line className={s.cArrow} x1={100} y1={15} x2={100} y2={15} />
         <text className={s.cLbl} x={100} y={49}>back</text>
-        <text className={s.cNote} x={100} y={86}>to the donor's own interests</text>
+        <text className={s.cNote} x={100} y={86}>to the donor’s own interests</text>
       </Card>
       <svg width="0" height="0" aria-hidden="true">
         <defs><marker id="h-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#9d9d95" /></marker></defs>

@@ -16,8 +16,19 @@ import {
 } from './figures';
 import s from './half.module.css';
 
-const pct = (n: number) => `${n}%`;
+/* Prose speaks its numbers; the charts abbreviate theirs. */
+const pct = (n: number) => `${(Math.round(n * 10) / 10).toString()} percent`;
 const fmt = (n: number) => n.toLocaleString('en-US');
+const words = (n: number | null | undefined) =>
+  n == null ? '—'
+  : n >= 1e12 ? `$${(n / 1e12).toFixed(2)} trillion`
+  : n >= 1e9 ? `$${(n / 1e9) % 1 ? (n / 1e9).toFixed(1) : (n / 1e9).toFixed(0)} billion`
+  : n >= 1e6 ? `$${Math.round(n / 1e6)} million`
+  : `$${Math.round(n).toLocaleString('en-US')}`;
+const longDate = (iso: string) => new Date(iso + 'T00:00:00Z')
+  .toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
+const times = (x: number) => `${Math.round(x / 10) * 10}`;
+const spell = (n: number) => ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve'][n] ?? String(n);
 const by = (slug: string) => {
   const p = PEOPLE.find((x) => x.slug === slug);
   if (!p) throw new Error(`Half: no person "${slug}"`);
@@ -41,9 +52,14 @@ const SIGNED_PCT = (chronicle.figures as Record<string, number>).us_billionaires
 const dollars = (v: string | number) => Number(String(v).replace(/[^\d.]/g, ''));
 const WALTON_CB = dollars(fig('related-party', 'crystal_bridges_grants_2010_usd'));
 const WALTON_OTHER = dollars(fig('related-party', 'other_home_region_2010_usd'));
-const shortfall = SUMMARY.shortfallThisYear.map((slug) => by(slug).name.split(' ').pop()).join(', ');
+const shortfall = (() => {
+  const names = SUMMARY.shortfallThisYear.map((slug) => by(slug).name.split(' ').pop()!);
+  return names.length > 1 ? `${names.slice(0, -1).join(', ')} and ${names[names.length - 1]}` : names[0] ?? '';
+})();
 const nonFilers = PEOPLE.filter((p) => !p.filesUS).length;
+const foreign = PEOPLE.filter((p) => !/^United States/.test(p.citizenship ?? '')).length;
 const withNothing = PEOPLE.filter((p) => !p.filesUS && !p.foundation?.paidOut).length;
+const publishOwn = nonFilers - withNothing;
 const now = Number(data.built.slice(0, 4));
 const muskHalf = now + (musk.derived.yearsToHalf ?? 0);
 
@@ -51,64 +67,64 @@ const CHAPTERS = [
   {
     id: 'pile',
     kicker: 'The twenty-five',
-    title: `${money(SUMMARY.totalWealth)}, between them.`,
-    body: <>Forbes’ real-time list, {SUMMARY.listDate}<Cite id="forbes-list" />. Drawn to area. {musk.name.split(' ')[1]} alone is {money(musk.wealth)}<Cite id="forbes-profiles" /> — more than the next three together.</>,
+    title: `Between them, ${words(SUMMARY.totalWealth)}.`,
+    body: <>These are the twenty-five richest people alive, as Forbes counted them on {longDate(SUMMARY.listDate)}<Cite id="forbes-list" />, drawn as squares whose area is their fortune. The teal one is {musk.name}. At {words(musk.wealth)}<Cite id="forbes-profiles" /> he is worth more than the next three together, and the square is the only way to show it: as a bar, everyone else would be a tick on his ruler.</>,
     figure: <Squares />,
   },
   {
     id: 'paired',
     kicker: 'Wealth against giving',
-    title: 'To the same scale.',
-    body: <>Lifetime giving, where it is known, drawn beside the fortune it came from<Cite id="forbes-top-givers" />. {buffett.name.split(' ')[1]} has given {money(buffett.lifetime!.amount)}; {gates.name.split(' ')[1]} {money(gates.lifetime!.amount)}. For the rest of the list the lower bar is a hairline, or absent because no figure exists.</>,
+    title: 'What each has given, drawn to the same scale as what each has.',
+    body: <>The upper bar is the fortune; the lower is lifetime giving, where a figure exists<Cite id="forbes-top-givers" />. {buffett.name} has given away {words(buffett.lifetime!.amount)}, and {gates.name} {words(gates.lifetime!.amount)}, and you can see it. For most of the list the lower bar is a hairline. Where there is no bar at all, it is because nobody — not Forbes, not the Chronicle of Philanthropy, not the person — has ever put a number on it.</>,
     figure: <Paired />,
   },
   {
     id: 'pledge',
     kicker: 'The promise',
-    title: `${SUMMARY.pledgers} of ${SUMMARY.count} have signed.`,
-    body: <>The Giving Pledge asks for at least half, in life or at death<Cite id="giving-pledge" />. Across all American billionaires, about {SIGNED_PCT}% have signed<Cite id="chronicle-pledge" />. Signatories’ wealth has grown {f15.net_worth_growth_since_2010_pct}% since they signed; one living pledger has met it<Cite id="ips-15" />. {musk.name.split(' ')[1]} signed at {money(musk.pledge.wealthAtSigning)} and is now {musk.derived.growthSincePledge}× that. Peter Thiel says he told Musk “it would be much worse to give it to Bill Gates”<Cite id="fortune-thiel" />.</>,
+    title: `${spell(SUMMARY.pledgers).replace(/^\w/, (c) => c.toUpperCase())} of the twenty-five have promised half.`,
+    body: <>The Giving Pledge asks the very rich to give away at least half of what they have, in life or at death<Cite id="giving-pledge" />. About {SIGNED_PCT} percent of American billionaires have signed<Cite id="chronicle-pledge" />. Those who did are, as a group, {f15.net_worth_growth_since_2010_pct} percent richer than the day they signed, and exactly one living signatory has kept the promise<Cite id="ips-15" />. {musk.name} signed in {musk.pledge.year}, when he was worth {words(musk.pledge.wealthAtSigning)}. He is now worth roughly {times(musk.derived.growthSincePledge!)} times that. Peter Thiel says he told him “it would be much worse to give it to Bill Gates”<Cite id="fortune-thiel" />.</>,
     figure: <Pledge />,
   },
   {
     id: 'payout',
     kicker: 'The foundations',
-    title: 'The law asks for five per cent a year.',
-    body: <>Read from each foundation’s own IRS filing<Cite id="irs-990pf" />. {huang.name.split(' ')[1]}’s paid out {pct(huang.foundation!.payoutRate!)} of {money(huang.foundation!.assets)}. {page.name.split(' ')[1]}’s {pct(page.foundation!.payoutRate!)}, {dell.name.split(' ')[1]}’s {pct(dell.foundation!.payoutRate!)}, {musk.name.split(' ')[1]}’s {pct(musk.foundation!.payoutRate!)}. {shortfall} paid less than the year required; {money(SUMMARY.carriedForward)} is owed into next year. Across the 144 largest foundations the median is {MEDIAN_PAYOUT}% — the minimum, met and not exceeded<Cite id="ips-2026" />.</>,
+    title: 'The law asks a foundation to give away five percent a year. Here is who does.',
+    body: <>Every American private foundation must file a public return with the IRS, and these figures are read from those returns, line by line<Cite id="irs-990pf" />. Last year the {huang.name} foundation paid out {pct(huang.foundation!.payoutRate!)} of the {words(huang.foundation!.assets)} it holds. {page.name}’s paid out {pct(page.foundation!.payoutRate!)}; {dell.name}’s {pct(dell.foundation!.payoutRate!)}; the Musk Foundation {pct(musk.foundation!.payoutRate!)}. Four — {shortfall} — gave less than the year required, and between them the foundations on this chart still owe {words(SUMMARY.carriedForward)}. Across the 144 largest foundations in the country the median is {MEDIAN_PAYOUT} percent: the minimum, met and not exceeded<Cite id="ips-2026" />.</>,
     figure: <Payout />,
   },
   {
     id: 'horizon',
     kicker: 'At that rate',
-    title: 'The year they would reach half.',
-    body: <>Take the latest year’s payout and hold it steady. {musk.name.split(' ')[1]} would have given away half his fortune in the year {muskHalf}. {brin.name.split(' ')[1]}, whose foundation paid out {pct(brin.foundation!.payoutRate!)}, is the exception on this list. The axis is logarithmic, because it has to be.</>,
+    title: 'The year each of them would reach half.',
+    body: <>Take what each foundation paid out last year, hold it steady, and count forward to the day the giving reaches half the fortune. {gates.name} gets there almost at once; he is nearly there already. {bloomberg.name} arrives in {now + (bloomberg.derived.yearsToHalf ?? 0)}. {musk.name} arrives in the year {muskHalf}. The axis is logarithmic because it has to be.</>,
     figure: <Horizon />,
   },
   {
     id: 'mechanisms',
     kicker: 'How it stays home',
-    title: 'Given, and not gone.',
-    body: <>A grant to a donor-advised fund counts as paid out and is never disclosed onward; the {huang.name.split(' ')[1]} foundation has mostly given stock to one<Cite id="bloomberg-huang" />. An LLC files nothing<Cite id="forbes-czi" />. About half the Musk Foundation’s grants in 2021–22 went to interests tied to Musk<Cite id="nyt-musk-foundation" />. In 2010 the Walton Family Foundation gave {money(WALTON_CB)} to Crystal Bridges, the Walton museum in the Walton home town, and {money(WALTON_OTHER)} to everything else there<Cite id="wff-crystal-bridges" />. The four largest DAF sponsors hold ${DAF_HELD} for every dollar they grant<Cite id="ips-2026" />.</>,
+    title: 'Three ways to give money without letting go of it.',
+    body: <>A grant to a donor-advised fund counts, to the IRS, as money paid out — and the fund need never say where it goes next. The {huang.name} foundation has given mostly to one<Cite id="bloomberg-huang" />. A limited-liability company, the structure Mark Zuckerberg chose, files no public return at all<Cite id="forbes-czi" />. And a foundation may give to things its founder already owns: about half of the Musk Foundation’s grants in 2021 and 2022 went to interests tied to Musk<Cite id="nyt-musk-foundation" />, and in 2010 the Walton Family Foundation gave {words(WALTON_CB)} to Crystal Bridges, the Walton art museum in the Walton home town, against {words(WALTON_OTHER)} to everything else in the region<Cite id="wff-crystal-bridges" />. The four largest donor-advised-fund sponsors now hold ${DAF_HELD} for every dollar they grant<Cite id="ips-2026" />.</>,
     figure: <Mechanisms />,
   },
   {
     id: 'founders',
     kicker: 'The men who invented it',
-    title: 'Sixteen years on.',
-    body: <>Buffett and Gates launched the Pledge in 2010. In 2024 Buffett said his commitments to the Gates Foundation would expire at his death<Cite id="berkshire-2024" />; in 2025 that “grand philanthropic plans … did not prove feasible”<Cite id="berkshire-2025" />; in July 2026 he gave his remaining shares to his children’s foundations and the Gates Foundation nothing, for the first time since 2006<Cite id="berkshire-2026" /> — after {money(48e9)}<Cite id="fortune-buffett-gates" />. Gates will close his foundation in 2045<Cite id="npr-gates-2045" />. Melinda French Gates, on the Pledge: “Have they given enough? No.”<Cite id="fortune-french-gates" /></>,
+    title: 'Sixteen years on, its founders are walking away from it.',
+    body: <>Warren Buffett and Bill Gates launched the Pledge in 2010. In 2024 Buffett announced that his commitments to the Gates Foundation would end with his death<Cite id="berkshire-2024" />. In 2025 he wrote that his “grand philanthropic plans … did not prove feasible”<Cite id="berkshire-2025" />. In July 2026 he gave his remaining Berkshire shares to his children’s foundations and, for the first time in twenty years, nothing to Gates<Cite id="berkshire-2026" /> — the end of a {words(48e9)} relationship<Cite id="fortune-buffett-gates" />. Gates, for his part, will close his foundation in 2045<Cite id="npr-gates-2045" />. Asked whether the billionaires had given enough, Melinda French Gates answered in one word: “No.”<Cite id="fortune-french-gates" /></>,
     figure: <Founders />,
   },
   {
     id: 'scores',
     kicker: 'Forbes’ own grade',
-    title: 'No one scored a three or a four.',
-    body: <>Forbes rates every billionaire’s giving from one to five, as a share of wealth given away<Cite id="forbes-profiles" />. Of the twenty-five: {SUMMARY.scores['1']} scored one, {SUMMARY.scores['2']} scored two, {SUMMARY.scores['5']} scored five. The middle is empty.</>,
+    title: 'Nobody scored a three. Nobody scored a four.',
+    body: <>Forbes grades every billionaire’s giving from one to five, by the share of their wealth they have given away<Cite id="forbes-profiles" />. Of these twenty-five, {spell(SUMMARY.scores['1'])} scored one, {spell(SUMMARY.scores['2'])} scored two, and {spell(SUMMARY.scores['5'])} scored five. There is nobody in the middle. On this list you are either Buffett, Gates and Bloomberg, or you are not.</>,
     figure: <Scores />,
   },
   {
     id: 'coverage',
     kicker: 'What cannot be seen',
-    title: `${nonFilers} of the ${SUMMARY.count} file nothing in the United States.`,
-    body: <>A private foundation there must file a public return every year<Cite id="irs-990pf" />. Nowhere else on this list is that true. Three of the {nonFilers} publish a figure of their own; {withNothing} publish nothing at all. Their squares in the first chapter are as large as anyone’s.</>,
+    title: `${spell(nonFilers).replace(/^\w/, (c) => c.toUpperCase())} of the twenty-five file nothing at all.`,
+    body: <>The chart above exists because American law makes a private foundation open its books every year<Cite id="irs-990pf" />. No other country on this list asks the same. {spell(foreign).replace(/^\w/, (c) => c.toUpperCase())} of the twenty-five are not American, and one who is, Steve Ballmer, gives through a company that need not file. Of the {spell(nonFilers)}, {spell(publishOwn)} publish a figure of their own choosing; {spell(withNothing)} publish nothing. Their squares in the first chart are as large as anyone’s. That is all this piece can say about them, and it is the point.</>,
     figure: <Coverage />,
   },
 ] as const;
@@ -191,19 +207,20 @@ function Intro() {
     <header className={s.intro}>
       <h1>Half</h1>
       <p className={s.standfirst}>
-        The Giving Pledge asks the very rich for at least half. Sixteen years on, the twenty-five
-        richest people alive hold {money(SUMMARY.totalWealth)}. This is what their own filings say
-        they have given.
+        In 2010 the richest people in the world were asked to promise away half of what they had.
+        Sixteen years on, the twenty-five richest people alive hold {words(SUMMARY.totalWealth)} between
+        them. This is what their own filings say they have given.
       </p>
       <div className={s.numbers}>
         <div><b>{SUMMARY.pledgers}</b><span>of the {SUMMARY.count} have signed</span></div>
-        <div><b>{money(SUMMARY.foundationPaidOut)}</b><span>paid out by their foundations in the latest year read</span></div>
+        <div><b>{money(SUMMARY.foundationPaidOut)}</b><span>paid out by their foundations in their latest filed year</span></div>
         <div><b>{money(SUMMARY.carriedForward)}</b><span>owed into the following year</span></div>
         <div><b>{SUMMARY.scores['1']}</b><span>scored one out of five by Forbes</span></div>
       </div>
       <p className={s.credit}>
-        Wealth as of {SUMMARY.listDate}. Foundation figures from IRS Form 990-PF, fair-market value,
-        read line by line. Every figure is computed from the sources at the end; none is typed by hand.
+        Wealth as of {longDate(SUMMARY.listDate)}. Foundation figures are read from IRS Form 990-PF at
+        fair-market value. Every number on this page is computed from the sources listed at the end;
+        none is typed by hand.
       </p>
     </header>
   );
@@ -226,47 +243,49 @@ function Notes() {
       <p className={s.kicker}>What this is not saying</p>
       <h2>Read the filings, not the headlines.</h2>
 
-      <h3>Not that nobody gives</h3>
+      <h3>That nobody gives</h3>
       <p>
-        {buffett.name} has given {money(buffett.lifetime!.amount)}<Cite id="forbes-top-givers" />,
-        {' '}{gates.name} {money(gates.lifetime!.amount)}, {bloomberg.name} {money(bloomberg.lifetime!.amount)}.
+        {buffett.name} has given away {words(buffett.lifetime!.amount)}<Cite id="forbes-top-givers" />,
+        {' '}{gates.name} {words(gates.lifetime!.amount)}, {bloomberg.name} {words(bloomberg.lifetime!.amount)}.
         {' '}{brin.name}’s foundation paid out {pct(brin.foundation!.payoutRate!)} of its assets last
-        year<Cite id="irs-990pf" />. The Pledge’s founders are the reason the top of the chart is not empty.
+        year<Cite id="irs-990pf" />, more than three times what the law requires. The people who founded the
+        Pledge are the reason the top of every chart here is not empty.
       </p>
 
-      <h3>Not that a foundation is a fraud</h3>
+      <h3>That a foundation is a fraud</h3>
       <p>
-        Paying out less than five per cent in a year is legal; the balance is owed by the end of the
-        next<Cite id="irs-990pf" />. A donor-advised fund is legal. An LLC is legal. The one
-        court-adjudicated case of foundation self-dealing cited here is from outside the twenty-five,
-        and is labelled so<Cite id="nyag-trump" />. What the filings show is not crime. It is what the
-        rules permit, and how fully it is used.
+        Paying out less than five percent in a year is legal; the balance is owed by the end of the
+        next<Cite id="irs-990pf" />. A donor-advised fund is legal. An LLC is legal. The one case of
+        foundation self-dealing on this page that a court has ruled on comes from outside the
+        twenty-five, and is labelled so<Cite id="nyag-trump" />. What the filings show is not a crime.
+        It is what the rules permit, and how fully the rules are used.
       </p>
 
-      <h3>Not that the Bezos foundation is his</h3>
+      <h3>That the Bezos foundation is his</h3>
       <p>
         The only Bezos foundation that files a public return is run by his parents; he is an unpaid
-        director, and its figures are not shown as his giving. His own vehicle filed
-        {' '}{money(0)} of grants against {money(13.9e6)} of expenses in its last return<Cite id="propublica-bezos-earth" />.
-        No lifetime figure for {bezos.name.split(' ')[1]} is drawn: the one that exists is {money(bezos.lifetime?.amount)}
-        {' '}through 2025<Cite id="forbes-top-givers" />, against {money(bezos.wealth)}.
+        director, and its figures are not shown as his giving. His own vehicle reported no grants at all
+        and {words(13.9e6)} of expenses in its last return<Cite id="propublica-bezos-earth" />. The one
+        lifetime figure that exists for {bezos.name.split(' ')[1]} — {words(bezos.lifetime?.amount)} through
+        2025<Cite id="forbes-top-givers" />, against a fortune of {words(bezos.wealth)} — is drawn in the
+        second chart and nowhere else.
       </p>
 
       <h3>What it costs the rest of us</h3>
       <p>
-        A gift of appreciated stock avoids the capital-gains tax and takes the income-tax deduction
-        both<Cite id="tpc-subsidy" />. The Institute for Policy Studies puts the public share of a
-        top-bracket gift at up to {SUBSIDY} on the dollar<Cite id="ips-15" />.
-        Every dollar in these foundations was, in part, redirected tax.
+        A gift of appreciated stock escapes the capital-gains tax and earns the income-tax deduction
+        both<Cite id="tpc-subsidy" />. The Institute for Policy Studies puts the public’s share of a
+        top-bracket gift at up to {SUBSIDY} on the dollar<Cite id="ips-15" />. Every dollar in these
+        foundations was, in part, tax that was never paid.
       </p>
 
       <dl className={s.method}>
-        <div><dt>The list</dt><dd>Forbes real-time, {SUMMARY.listDate}. Ranks move daily; the date is the fact.</dd></div>
-        <div><dt>Payout rate</dt><dd>Qualifying distributions divided by fair-market value of assets, both from the same year’s Form 990-PF. Book values were rejected — they understate assets several-fold, and made one foundation appear to pay out more than it held.</dd></div>
-        <div><dt>Years to half</dt><dd>(half of wealth, less lifetime giving) ÷ the latest year’s payout. A projection of a rate, not a forecast.</dd></div>
-        <div><dt>Attribution</dt><dd>Two calls are made in the build script, where they can be read: the Bezos Family Foundation is not his giving; the Buffett filing was read from the IRS e-file and is primary.</dd></div>
-        <div><dt>Status</dt><dd>Every source is graded. Nothing marked needs-check draws a bar. The full register — {' '}every URL the research touched — is <code>docs/research/half/SOURCES.md</code>.</dd></div>
-        <div><dt>Built</dt><dd>{data.built}, by <code>scripts/half-data.mjs</code>.</dd></div>
+        <div><dt>The list</dt><dd>Forbes’ real-time ranking on {longDate(SUMMARY.listDate)}. Ranks move daily; the date is the fact.</dd></div>
+        <div><dt>Payout rate</dt><dd>Qualifying distributions divided by the fair-market value of assets, both from the same year’s Form 990-PF. Book values were rejected: they understate assets several-fold, and made one foundation appear to pay out more than it held.</dd></div>
+        <div><dt>Years to half</dt><dd>Half the fortune, less lifetime giving, divided by the latest year’s payout. A rate carried forward, not a forecast.</dd></div>
+        <div><dt>Attribution</dt><dd>Two judgements are made in the build script, where they can be read: the Bezos Family Foundation is not his giving, and the Buffett filing was read from the IRS e-file and counts as primary.</dd></div>
+        <div><dt>Status</dt><dd>Every source is graded. Nothing seen only in a search summary draws a bar. The full register — every URL the research touched — is <code>docs/research/half/SOURCES.md</code>.</dd></div>
+        <div><dt>Built</dt><dd>{longDate(data.built)}, by <code>scripts/half-data.mjs</code>.</dd></div>
       </dl>
     </section>
   );

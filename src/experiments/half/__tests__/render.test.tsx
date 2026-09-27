@@ -70,7 +70,9 @@ try {
   ok(page.length > 20000, `piece rendered ${page.length} chars`);
   for (const slug of ['jensen-huang', 'larry-page', 'elon-musk']) {
     const p = PEOPLE.find((x) => x.slug === slug)!;
-    ok(page.includes(`${p.foundation!.payoutRate}%`), `${p.name}'s payout rate is on the page`);
+    /* The prose rounds to one decimal and says "percent"; the figure keeps two. */
+    const r1 = (Math.round(p.foundation!.payoutRate! * 10) / 10).toString();
+    ok(page.includes(`${r1} percent`) || page.includes(`${p.foundation!.payoutRate}%`), `${p.name}'s payout rate is on the page`);
   }
   ok(page.includes('Have they given enough'), 'the French Gates quote is on the page');
   ok(!page.includes('undefined') && !page.includes('NaN'), 'no undefined or NaN leaked into the page');
