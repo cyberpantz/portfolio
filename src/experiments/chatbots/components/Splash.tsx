@@ -38,8 +38,7 @@ export function Splash({ data, onDone }: { data: SplashData; onDone: () => void 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
 
-  /* The scratch scene plays before any words; the others lead with them. */
-  const textStart = data.scene === 'scratch' ? 1700 : 300;
+  const textStart = 300;
   const span = Math.max(1, data.ms * 0.88 - textStart);
   const line = t < textStart ? -1 : Math.min(data.lines.length - 1, Math.floor(((t - textStart) / span) * data.lines.length));
   const status = Math.min(data.status.length - 1, Math.floor((t / data.ms) * data.status.length));
@@ -73,22 +72,48 @@ export function Splash({ data, onDone }: { data: SplashData; onDone: () => void 
   );
 }
 
-/* Toe centres; each claw tip sits on the head of one mark. */
-const TOES: [number, number][] = [[94, 8], [133, 26], [173, 26], [211, 8]];
+/*
+ * Claw marks: four slashes, top-right to bottom-left, staggered like a
+ * real swipe. Each is [x0, y0, x1, y1, width] in a 200-unit box.
+ */
+const MARKS: [number, number, number, number, number][] = [
+  [100, 16, 24, 112, 10],
+  [128, 12, 36, 152, 14],
+  [158, 30, 60, 178, 14],
+  [180, 80, 104, 180, 11],
+];
+
+/* A repeatable pseudo-random number in [0, 1): the same tear every render. */
+const rnd = (i: number, k: number, salt: number) => {
+  const x = Math.sin(i * 12.9898 + k * 78.233 + salt * 37.719) * 43758.5453;
+  return x - Math.floor(x);
+};
 
 /**
- * One torn mark, from its claw's x down the glass: a slight drift in the
- * direction of the rake, and a small deterministic wobble every few
- * pixels so it reads as torn rather than ruled.
+ * One slash as a filled shape: pointed at both ends, widest in the middle,
+ * and torn along both edges. Most of the edge wanders irregularly; now and
+ * then a notch is bitten out or a spike tears outward, which is what makes
+ * it read as a gouge rather than a drawn line.
  */
-function tear(x0: number, k: number) {
-  const pts: string[] = [];
-  for (let y = -20, n = 0; y <= 640; y += 16, n++) {
-    const wobble = Math.sin(n * 2.3 + k * 1.7) * 2.2 + Math.sin(n * 0.7 + k) * 1.4;
-    const drift = (y / 640) * (6 + k * 2);
-    pts.push(`${(x0 + wobble + drift).toFixed(1)} ${y}`);
+function slash([x0, y0, x1, y1, W]: (typeof MARKS)[number], k: number) {
+  const dx = x1 - x0, dy = y1 - y0, len = Math.hypot(dx, dy);
+  const nx = -dy / len, ny = dx / len;
+  const N = 46, left: [number, number][] = [], right: [number, number][] = [];
+  const edge = (i: number, side: number) => {
+    const r = rnd(i, k, side);
+    if (r > 0.86) return 1.75; // a torn spike
+    if (r < 0.1) return 0.3; // a notch bitten out
+    return 0.7 + rnd(i, k, side + 5) * 0.6;
+  };
+  for (let i = 0; i <= N; i++) {
+    const t = Math.min(1, Math.max(0, (i + (rnd(i, k, 9) - 0.5) * 0.6) / N));
+    const w = (W / 2) * Math.pow(Math.sin(Math.PI * t), 0.7);
+    const cx = x0 + dx * t, cy = y0 + dy * t;
+    const a = w * edge(i, 1), b = w * edge(i, 2);
+    left.push([cx + nx * a, cy + ny * a]);
+    right.push([cx - nx * b, cy - ny * b]);
   }
-  return `M${pts.join(' L')}`;
+  return `M${[...left, ...right.reverse()].map(([x, y]) => `${x.toFixed(1)} ${y.toFixed(1)}`).join(' L')} Z`;
 }
 
 function Scene({ scene }: { scene: SplashData['scene'] }) {
@@ -100,30 +125,10 @@ function Scene({ scene }: { scene: SplashData['scene'] }) {
     );
   }
   if (scene === 'scratch') {
-    /*
-     * Four claws raked down the glass. Each mark is a slightly bowed stroke
-     * with a ragged edge, drawn on the same clock as the paw that makes it,
-     * so the paw appears to be doing the tearing.
-     */
-    const marks = [94, 133, 173, 211].map(tear);
+    /* Still, on purpose: the damage is already done when you arrive. */
     return (
-      <svg className={sp.scratch} viewBox="0 0 300 600" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-        {marks.map((d, i) => (
-          <g key={i} style={{ ['--i' as string]: i }}>
-            <path className={sp.gouge} pathLength={1} d={d} />
-            <path className={sp.gougeLight} pathLength={1} d={d} />
-          </g>
-        ))}
-        {/* Toes below the pad: raking downward, the claws lead. */}
-        <g className={sp.paw}>
-          <ellipse cx="152" cy="-40" rx="46" ry="38" />
-          {TOES.map(([x, y], i) => (
-            <g key={i}>
-              <path className={sp.claw} d={`M${x - 5} ${y + 16} L${x} ${y + 34} L${x + 5} ${y + 16} Z`} />
-              <ellipse cx={x} cy={y} rx={i === 0 || i === 3 ? 16 : 17} ry={i === 0 || i === 3 ? 20 : 22} />
-            </g>
-          ))}
-        </g>
+      <svg className={sp.scratch} viewBox="0 0 200 200" aria-hidden="true">
+        {MARKS.map((m, i) => <path key={i} d={slash(m, i)} />)}
       </svg>
     );
   }

@@ -30,9 +30,8 @@ export const FELINE: Scenario = {
   id: 'feline',
   title: 'Feline Forensics',
   /*
-   * The cat arrives first. A paw drags down the glass and leaves four
-   * claw marks behind it; the brand is written over the damage, which is
-   * the entire consultation in one gesture.
+   * Four claw marks, already there when you arrive, over the brand's name:
+   * the entire consultation in one picture.
    */
   splash: {
     scene: 'scratch',

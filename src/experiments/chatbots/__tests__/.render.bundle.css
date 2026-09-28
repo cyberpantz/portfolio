@@ -1785,54 +1785,18 @@
 }
 .splash_scratch {
   position: absolute;
-  inset: 0;
   z-index: 1;
-  width: 100%;
-  height: 100%;
+  top: 9%;
+  left: 50%;
+  width: 150px;
+  height: 150px;
+  transform: translateX(-50%);
 }
-.splash_gouge,
-.splash_gougeLight {
-  fill: none;
-  stroke-linecap: round;
-  stroke-dasharray: 1;
-  stroke-dashoffset: 1;
-  animation: splash_draw 1300ms cubic-bezier(0.5, 0, 0.3, 1) calc(150ms + var(--i) * 40ms) forwards;
-}
-.splash_gouge {
-  stroke: color-mix(in srgb, var(--s-ai-ink) 22%, transparent);
-  stroke-width: 9;
-  stroke-linejoin: round;
-}
-.splash_claw {
-  fill: color-mix(in srgb, var(--s-ai-ink) 60%, var(--s-surface));
-}
-.splash_gougeLight {
-  stroke: color-mix(in srgb, var(--s-accent) 70%, transparent);
-  stroke-width: 3;
-  transform: translateX(-2px);
-}
-.splash_paw {
-  fill: color-mix(in srgb, var(--s-ai-ink) 85%, var(--s-accent));
-  transform: translateY(-120px);
-  animation: splash_rake 1300ms cubic-bezier(0.5, 0, 0.3, 1) 150ms forwards;
-}
-@keyframes splash_rake {
-  0% {
-    transform: translateY(-120px);
-  }
-  85% {
-    transform: translateY(640px);
-  }
-  100% {
-    transform: translateY(760px);
-  }
+.splash_scratch path {
+  fill: var(--s-ai-ink);
 }
 [data-scene=scratch] .splash_copy {
-  background:
-    radial-gradient(
-      closest-side,
-      var(--s-surface) 55%,
-      transparent);
+  padding-top: 150px;
 }
 .splash_party {
   position: absolute;
@@ -1887,12 +1851,9 @@
     animation: none !important;
     transition: none !important;
   }
-  .splash_pulse path,
-  .splash_gouge,
-  .splash_gougeLight {
+  .splash_pulse path {
     stroke-dashoffset: 0;
   }
-  .splash_paw,
   .splash_bit {
     display: none;
   }
