@@ -5,6 +5,7 @@ import { useDirector } from './director/useDirector';
 import { OutcomeBadge } from './components/OutcomeBadge';
 import { BeatView } from './components/BeatView';
 import { Composer, type ComposerHandle } from './components/Composer';
+import { Splash } from './components/Splash';
 import { Rig, type Mode } from './apparatus/Rig';
 import { Tray } from './apparatus/Tray';
 import a from './apparatus/apparatus.module.css';
@@ -118,10 +119,42 @@ export default function Chatbots({
   }, [mode]);
   const inspected = inspect ? (scenario.nodes[inspect] ?? null) : null;
 
+  /* ---- the brand's intro, once per scenario per browser ------------
+   *
+   * Decided in an effect, so the server render (and every test) is the
+   * conversation, never the splash. Marked as seen when it starts rather
+   * than when it ends: a visitor who skips, or switches away halfway, has
+   * seen it. Not in the browser (index mode), not on a deep link, not on
+   * the bare device used for screenshots.
+   *
+   * When it ends the conversation restarts, so the first message arrives
+   * in front of the visitor rather than having played behind the curtain.
+   */
+  const [splashFor, setSplashFor] = useState<ScenarioId | null>(null);
+  useEffect(() => {
+    if (!apparatus || startAt || mode !== 'play' || !scenario.splash) { setSplashFor(null); return; }
+    const key = `fy:chatbots-splash:${skin}`;
+    let seen = false;
+    try {
+      seen = localStorage.getItem(key) === '1';
+      if (!seen) localStorage.setItem(key, '1');
+    } catch { /* storage refused: show it; there is no way to remember */ }
+    setSplashFor(seen ? null : skin);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [skin]);
+  const splash = splashFor === skin ? scenario.splash : undefined;
+  const endSplash = () => {
+    setSplashFor(null);
+    d.restart();
+  };
+
   const fill = (line: Line) => composer.current?.fill(line.text);
 
   const device = (
     <div className={`${s.device} sb-skin sb-morph`} data-skin={skin}>
+      {splash ? (
+        <Splash key={skin} data={splash} onDone={endSplash} />
+      ) : (<>
       {/* The badge reports on a conversation. There isn't one in here. */}
       {!inspected && <OutcomeBadge scenario={scenario} strip={d.strip} />}
 
@@ -254,6 +287,7 @@ export default function Chatbots({
         onSend={d.send}
         onStashChange={setHasStash}
       />
+      </>)}
     </div>
   );
 

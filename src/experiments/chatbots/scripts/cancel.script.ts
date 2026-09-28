@@ -60,6 +60,41 @@ export const CANCEL: Scenario = {
   id: 'cancel',
   title: 'Cancel Anytime',
   /*
+   * The needy one runs longest, hangs its own progress bar at 99 percent,
+   * and asks to be missed on the way out. Every line is something a real
+   * retention flow has said with a straight face.
+   */
+  /*
+   * You arrived to cancel. It throws you a party.
+   *
+   * Tone-deaf on purpose and all the way down: a loyalty celebration for
+   * someone at the exit, a status readout that renews you "for your
+   * convenience", a progress bar that hangs at 99 percent, and a skip
+   * button that asks to be missed. Every line is something a real
+   * retention flow has said with a straight face.
+   */
+  splash: {
+    scene: 'party',
+    wordmark: 'Cancel Anytime™',
+    lines: [
+      'Welcome back! 🎉',
+      'We knew you’d stay.',
+      'Happy 3-year loyalty anniversary!',
+      'Your commitment has unlocked: more of the same.',
+    ],
+    status: [
+      'Rolling out the red carpet…',
+      'Queueing celebratory confetti…',
+      'Pre-renewing your plan for your convenience…',
+      'Locating the cancel button…',
+      'Still locating…',
+    ],
+    fine: 'Cancel Anytime™ is a trademark, not a promise.',
+    skip: 'Skip (we’ll miss you)',
+    ms: 7600,
+    stallAt: 0.99,
+  },
+  /*
    * The title is the product's own promise, quoted back at it. Every
    * one of these says it on the pricing page.
    */

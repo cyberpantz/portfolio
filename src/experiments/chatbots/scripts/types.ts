@@ -316,6 +316,37 @@ export type Lexicon = {
 
 export type ScenarioId = 'care' | 'family' | 'feline' | 'cancel';
 
+/**
+ * The brand's own intro, shown the first time a visitor opens a scenario.
+ *
+ * It is the product talking about itself, so it lives in the script with
+ * the rest of the product's voice — never in the component, which only
+ * times and draws it. Each one pushes its product's self-image a notch
+ * past plausible: that is the joke, and it is aimed at the company,
+ * never at the person who came for help.
+ */
+export type Splash = {
+  /**
+   * The scene that opens it, each the brand's own situation acted out:
+   * a heartbeat line for the triage product, a paw raking down the glass
+   * for the cat one, a party for the one you came to leave.
+   */
+  scene: 'pulse' | 'scratch' | 'party';
+  wordmark: string;
+  /** Taglines, one at a time, in order. */
+  lines: string[];
+  /** The progress readout beneath, in order across the whole run. */
+  status: string[];
+  /** The small print under everything. */
+  fine: string;
+  /** The skip button's label. It is always there; only the words change. */
+  skip: string;
+  /** Total running time in ms, before the conversation starts. */
+  ms: number;
+  /** Where the progress bar hangs, 0–1, if it hangs. */
+  stallAt?: number;
+};
+
 export type Scenario = {
   id: ScenarioId;
   title: string;
@@ -345,6 +376,8 @@ export type Scenario = {
     /** The rest, behind a disclosure. */
     more: string;
   };
+  /** The first-visit intro. Optional: a scenario without one simply starts. */
+  splash?: Splash;
   voice: Voice;
   options: Option[];
   /**

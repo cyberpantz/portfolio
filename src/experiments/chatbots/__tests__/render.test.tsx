@@ -16,6 +16,7 @@ import { ScenarioMenu } from '../apparatus/ScenarioMenu';
 import { ScenarioTabs } from '../apparatus/ScenarioTabs';
 import { BeatView } from '../components/BeatView';
 import { OutcomeBadge } from '../components/OutcomeBadge';
+import { Splash } from '../components/Splash';
 import type { Beat, Chip, NodeId } from '../scripts/types';
 import { classify, RECOVERY_NODE, STRIKES } from '../input/classify';
 
@@ -655,6 +656,28 @@ ok(
 // the tabpanel advertises points at nothing.
 ok(tabsHtml.includes('aria-controls="p"'), 'tabs do not point at their panel');
 console.log('  selection and panel wiring agree');
+
+/* ---- the splash ----------------------------------------------------
+ * Only ever shown in the browser, so nothing above renders it. Each
+ * scenario's must render whole, carry a way out, and obey the same
+ * banned-string rules as the rest of the product's voice.
+ */
+console.log('\nSplash');
+for (const sc of SCENARIO_LIST) {
+  const sd = SCENARIOS[sc.id].splash;
+  ok(sd, `${sc.id}: no splash`);
+  if (!sd) continue;
+  const html = renderToStaticMarkup(<Splash data={sd} onDone={() => {}} />);
+  ok(html.includes(sd.wordmark.replace(/&/g, '&amp;')), `${sc.id}: splash wordmark missing`);
+  ok(html.includes(`data-scene="${sd.scene}"`), `${sc.id}: splash scene not drawn`);
+  ok(/<button[^>]*>/.test(html) && html.includes(sd.skip.replace(/'/g, '&#x27;')), `${sc.id}: splash has no skip button`);
+  ok(html.includes(sd.status[0]), `${sc.id}: splash first status missing`);
+  ok(!/undefined|NaN/.test(html), `${sc.id}: splash leaked undefined/NaN`);
+  ok(sd.lines.length > 0 && sd.status.length > 0 && sd.ms >= 2000 && sd.ms <= 9000, `${sc.id}: splash timing or copy out of range`);
+  const words = [sd.wordmark, ...sd.lines, ...sd.status, sd.fine, sd.skip].join(' ');
+  ok(!/Loading\.\.\.|Are you sure\?|Something went wrong|\bOops\b/i.test(words), `${sc.id}: splash uses a banned string`);
+}
+console.log(`  ${SCENARIO_LIST.length} splashes render`);
 
 console.log(fails ? `\n${fails} FAILED\n` : '\nAll render checks passed\n');
 process.exit(fails ? 1 : 0);

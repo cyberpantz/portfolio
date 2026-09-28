@@ -30,6 +30,25 @@ export const FELINE: Scenario = {
   id: 'feline',
   title: 'Feline Forensics',
   /*
+   * The cat arrives first. A paw drags down the glass and leaves four
+   * claw marks behind it; the brand is written over the damage, which is
+   * the entire consultation in one gesture.
+   */
+  splash: {
+    scene: 'scratch',
+    wordmark: 'Feline Forensics',
+    lines: ['Every scratch tells a story.', 'The story is always the sofa.'],
+    status: [
+      'Measuring claw depth…',
+      'Cross-referencing hairballs…',
+      'Interviewing the suspect…',
+      'Suspect declined to comment.',
+    ],
+    fine: 'No screens were harmed. This one was.',
+    skip: 'Skip briefing',
+    ms: 6400,
+  },
+  /*
    * Written like a person, on the third try.
    *
    * First it was a note about the machinery — "the same engine, a

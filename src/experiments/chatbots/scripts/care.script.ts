@@ -22,6 +22,20 @@ export const CARE: Scenario = {
   id: 'care',
   title: 'Care Navigator',
   /*
+   * Simple on purpose. One heartbeat line, the name, and a light touch:
+   * this is the product people open when they are worried, so its intro
+   * is short and stays out of the way.
+   */
+  splash: {
+    scene: 'pulse',
+    wordmark: 'Care Navigator',
+    lines: ['Your health. Navigated.™', 'Proudly not a doctor.'],
+    status: ['Getting ready…', 'Ready when you are.'],
+    fine: 'Not a substitute for care, navigation, or a navigator.',
+    skip: 'Skip intro',
+    ms: 3200,
+  },
+  /*
    * Yours, tightened. "A demonstration usage of various components and
    * states" stacks three abstract nouns before it says anything, and
    * "AI driven" wants a hyphen as a compound modifier. What the sentence
