@@ -206,8 +206,10 @@
 
 /* ---------------------------------------------------------- conclusion */
 
+/* Full content width, like the charts above it; the notes and the method
+   sit in grids so each column keeps a readable measure (~60 characters). */
 .essay {
-  max-width: 40rem;
+  max-width: 1240px;
   margin: clamp(40px, 8vh, 96px) auto 0;
   padding: clamp(28px, 5vh, 48px) 20px 0;
   border-top: 1px solid var(--line);
@@ -228,6 +230,14 @@
   letter-spacing: -0.01em;
   color: var(--ink);
 }
+.essay > h2 { max-width: 34ch; text-wrap: balance; }
+.noteGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
+  gap: 8px clamp(28px, 4vw, 56px);
+  margin-bottom: clamp(24px, 4vh, 40px);
+}
+.noteGrid h3 { margin-top: 22px; }
 .essay p {
   margin: 0 0 14px;
   font-size: 1.02rem;
@@ -254,7 +264,12 @@
 
 /* ------------------------------------------------------------- method */
 
-.method { margin: 0 0 34px; }
+.method {
+  margin: 0 0 34px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
+  column-gap: clamp(24px, 3vw, 40px);
+}
 .method div { padding: 14px 0; border-top: 1px solid var(--line); }
 .method dt {
   margin-bottom: 4px;

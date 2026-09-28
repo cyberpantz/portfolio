@@ -259,12 +259,14 @@ function Notes() {
     <section className={s.essay} id="notes">
       <p className={s.kicker}>{text(need(head, 'kicker'))}</p>
       <h2>{text(need(head, 'title'))}</h2>
-      {BLOCKS.filter((b) => b.kind === 'note').map((b, i) => (
-        <div key={i}>
-          <h3>{text(need(b, 'heading'))}</h3>
-          {paras(need(b, 'body'))}
-        </div>
-      ))}
+      <div className={s.noteGrid}>
+        {BLOCKS.filter((b) => b.kind === 'note').map((b, i) => (
+          <div key={i}>
+            <h3>{text(need(b, 'heading'))}</h3>
+            {paras(need(b, 'body'))}
+          </div>
+        ))}
+      </div>
       <dl className={s.method}>
         {BLOCKS.filter((b) => b.kind === 'method').map((b, i) => (
           <div key={i}><dt>{text(need(b, 'term'))}</dt><dd>{text(need(b, 'body'))}</dd></div>
