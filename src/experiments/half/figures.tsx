@@ -47,8 +47,28 @@ const surname = (p: { slug: string; name: string }) => {
  * Twenty-five circles, area proportional to wealth, packed by D3. React still
  * owns the SVG so the figure remains server-renderable and accessible.
  */
-export function WealthPack() {
-  const W = 720, H = 620, FOOT = 28;
+/** What the public can see of each person's giving. */
+export type Disclosure = 'filed' | 'own' | 'none';
+export const disclosureOf = (p: Person): Disclosure =>
+  p.filesUS ? 'filed' : p.foundation?.paidOut ? 'own' : 'none';
+export const DISCLOSURE: Record<Disclosure, string> = {
+  filed: 'Foundation return on file',
+  own: 'Only their own figures',
+  none: 'No public accounting found',
+};
+export const disclosureGroups = () => (['filed', 'own', 'none'] as Disclosure[]).map((k) => {
+  const people = PEOPLE.filter((p) => disclosureOf(p) === k);
+  return { k, people, wealth: people.reduce((a, p) => a + (p.wealth ?? 0), 0) };
+});
+
+/**
+ * The opening circles, and — with mode="disclosure" — the same circles in
+ * the same places, shaded by what the public record shows of each fortune's
+ * giving. The piece ends on the picture it began with.
+ */
+export function WealthPack({ mode = 'wealth' }: { mode?: 'wealth' | 'disclosure' }) {
+  const disc = mode === 'disclosure';
+  const W = 720, H = 620, FOOT = disc ? 40 : 28;
   const [hovered, setHovered] = useState<string | null>(null);
   const [pinned, setPinned] = useState<string | null>(null);
   type PackDatum = Person | { children: Person[] };
@@ -64,7 +84,9 @@ export function WealthPack() {
 
   return (
     <svg className={s.fig} viewBox={`0 0 ${W} ${H + FOOT}`} role="img"
-         aria-label={`The wealth of the twenty-five as proportional circles. Circle area represents fortune. ${PEOPLE[0].name} alone is ${money(PEOPLE[0].wealth)}.`}>
+         aria-label={disc
+           ? `The same circles, shaded by what is public: ${disclosureGroups().map((g) => `${DISCLOSURE[g.k]}, ${g.people.length} people, ${money(g.wealth)}`).join('; ')}.`
+           : `The wealth of the twenty-five as proportional circles. Circle area represents fortune. ${PEOPLE[0].name} alone is ${money(PEOPLE[0].wealth)}.`}>
       {leaves.map(({ data: datum, r, x, y }) => {
         const p = datum as Person;
         const isSelected = selected === p.slug;
@@ -85,11 +107,20 @@ export function WealthPack() {
                setPinned((current) => current === p.slug ? null : p.slug);
              }
            }}>
-          <circle className={p.rank === 1 ? s.bubbleTop : s.bubble} r={r} />
-          <text className={p.rank === 1 ? s.bubbleNameTop : s.bubbleName} y={-4}>
-            {r > 68 ? short(p.name) : surname(p)}
-          </text>
-          <text className={p.rank === 1 ? s.bubbleAmtTop : s.bubbleAmt} y={14}>{money(p.wealth)}</text>
+          {(() => {
+            const top = !disc && p.rank === 1;
+            const d = disclosureOf(p);
+            const cls = disc ? (d === 'filed' ? s.discFiled : d === 'own' ? s.discOwn : s.discNone) : top ? s.bubbleTop : s.bubble;
+            return (
+              <>
+                <circle className={cls} r={r} />
+                <text className={top ? s.bubbleNameTop : disc && d !== 'filed' ? s.discName : s.bubbleName} y={-4}>
+                  {r > 68 ? short(p.name) : surname(p)}
+                </text>
+                <text className={top ? s.bubbleAmtTop : s.bubbleAmt} y={14}>{money(p.wealth)}</text>
+              </>
+            );
+          })()}
         </g>
         );
       })}
@@ -108,12 +139,21 @@ export function WealthPack() {
               {money(p.wealth)} · {((p.wealth! / SUMMARY.totalWealth) * 100).toFixed(1)}% of the twenty-five
             </text>
             <text className={s.bubbleDetailPledge} x={13} y={55}>
-              {p.pledge.signed ? `Giving Pledge signatory${p.pledge.year ? ` since ${p.pledge.year}` : ''}` : 'Has not signed the Giving Pledge'}
+              {disc ? DISCLOSURE[disclosureOf(p)]
+                : p.pledge.signed ? `Giving Pledge signatory${p.pledge.year ? ` since ${p.pledge.year}` : ''}` : 'Has not signed the Giving Pledge'}
             </text>
           </g>
         );
       })()}
-      <text className={s.bubbleHint} x={W / 2} y={H + 21}>Hover, focus or tap to inspect · tap again to release</text>
+      {disc ? disclosureGroups().map((g, i) => (
+        <g key={g.k} transform={`translate(${i * (W / 3) + 8} ${H + 20})`}>
+          <circle className={g.k === 'filed' ? s.discFiled : g.k === 'own' ? s.discOwn : s.discNone} cx={7} cy={0} r={7} />
+          <text className={s.legend} x={22} y={-2}>{DISCLOSURE[g.k]}</text>
+          <text className={s.legendSub} x={22} y={13}>{g.people.length} people · {money(g.wealth)}</text>
+        </g>
+      )) : (
+        <text className={s.bubbleHint} x={W / 2} y={H + 21}>Hover, focus or tap to inspect · tap again to release</text>
+      )}
     </svg>
   );
 }
@@ -410,30 +450,3 @@ export function Scores() {
   );
 }
 
-/* ---------------------------------------------------- 9. what cannot be seen */
-
-/** Person by field: what is on the record and what is not. */
-export function Coverage() {
-  const cols: [keyof Person['coverage'], string][] = [
-    ['wealth', 'wealth'], ['pledge', 'pledge'], ['lifetime', 'lifetime giving'], ['filing', 'a filing read'], ['political', 'political giving'],
-  ];
-  const W = 720, L = 190, CW = (W - L) / cols.length, RH = 22, TOP = 26;
-  return (
-    <svg className={s.fig} viewBox={`0 0 ${W} ${TOP + PEOPLE.length * RH}`} role="img"
-         aria-label="For each person, which figures are on the record">
-      {cols.map(([, label], j) => <text key={label} className={s.colHead} x={L + j * CW + CW / 2} y={12}>{label}</text>)}
-      {PEOPLE.map((p, i) => {
-        const y = TOP + i * RH;
-        return (
-          <g key={p.slug}>
-            <text className={p.filesUS ? s.lbl : s.lblMute} x={0} y={y + 14}>{short(p.name)}</text>
-            {cols.map(([k], j) => (
-              <rect key={k} className={p.coverage[k] ? s.cellOn : s.cellOff}
-                    x={L + j * CW + 4} y={y + 3} width={CW - 8} height={RH - 6} rx={2} />
-            ))}
-          </g>
-        );
-      })}
-    </svg>
-  );
-}

@@ -11,7 +11,7 @@ import type { ReactElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import data from '../../../data/half.json';
 import { SOURCES, assertNoUnverifiedClaims } from '../../../data/half-sources';
-import { shareOf, scoreRows, scoreGap, WealthPack, Paired, Payout, Horizon, Mechanisms, Scores, Coverage, PEOPLE, SUMMARY } from '../figures';
+import { shareOf, scoreRows, scoreGap, WealthPack, Paired, Payout, Horizon, Mechanisms, Scores, disclosureGroups, PEOPLE, SUMMARY } from '../figures';
 import Half from '../Half';
 
 let fails = 0;
@@ -58,7 +58,7 @@ console.log('Figures render');
 const CH: [string, ReactElement, number][] = [
   ['wealth pack', <WealthPack />, 25], ['paired', <Paired />, 8],
   ['payout', <Payout />, 8], ['horizon', <Horizon />, 6], ['mechanisms', <Mechanisms />, 3],
-  ['scores', <Scores />, 5], ['coverage', <Coverage />, 25],
+  ['scores', <Scores />, 5], ['disclosure', <WealthPack mode="disclosure" />, 25],
 ];
 for (const [name, el, marks] of CH) {
   try {
@@ -103,6 +103,15 @@ console.log('Scores');
   ok(!rows.some((r) => r.share > g.below.share && r.share < g.above.share), 'nobody sits inside the gap');
   /* The headline's claim: everyone is either at a fifth or more, or under a twentieth (ceilings included). */
   ok(rows.every((r) => (!r.bound && r.share >= 0.2) || r.share < 0.05), 'every scored person is above a fifth or below a twentieth');
+}
+
+/* ---- the closing chapter's groups partition the twenty-five ---------- */
+console.log('Disclosure');
+{
+  const g = disclosureGroups();
+  ok(g.reduce((a, x) => a + x.people.length, 0) === 25, 'every person is in exactly one disclosure group');
+  ok(Math.abs(g.reduce((a, x) => a + x.wealth, 0) - SUMMARY.totalWealth) < 1e6, 'the groups sum to the total wealth');
+  ok(g[2].people.some((p) => p.slug === 'steve-ballmer'), 'Ballmer is among those with no public accounting, as the text says');
 }
 
 /* ---- the whole piece ------------------------------------------------ */

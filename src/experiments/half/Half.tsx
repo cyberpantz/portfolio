@@ -12,7 +12,7 @@ import { useEffect, useRef, useState } from 'react';
 import data from '../../data/half.json';
 import { SOURCES, byId } from '../../data/half-sources';
 import {
-  WealthPack, Paired, Payout, Horizon, Mechanisms, Scores, Coverage,
+  WealthPack, Paired, Payout, Horizon, Mechanisms, Scores, disclosureGroups,
   PEOPLE, SUMMARY, CONTEXT, money, shareOf, pctLbl, scoreGap, scoreRows,
 } from './figures';
 import s from './half.module.css';
@@ -22,7 +22,7 @@ const pct = (n: number) => `${(Math.round(n * 10) / 10).toString()} percent`;
 const fmt = (n: number) => n.toLocaleString('en-US');
 const words = (n: number | null | undefined) =>
   n == null ? '—'
-  : n >= 1e12 ? `$${(n / 1e12).toFixed(2)} trillion`
+  : n >= 1e12 ? `$${+(n / 1e12).toFixed(2)} trillion`
   : n >= 1e9 ? `$${(n / 1e9) % 1 ? (n / 1e9).toFixed(1) : (n / 1e9).toFixed(0)} billion`
   : n >= 1e6 ? `$${Math.round(n / 1e6)} million`
   : `$${Math.round(n).toLocaleString('en-US')}`;
@@ -60,10 +60,11 @@ const shortfall = (() => {
   const names = SUMMARY.shortfallThisYear.map((slug) => by(slug).name.split(' ').pop()!);
   return names.length > 1 ? `${names.slice(0, -1).join(', ')} and ${names[names.length - 1]}` : names[0] ?? '';
 })();
-const nonFilers = PEOPLE.filter((p) => !p.filesUS).length;
 const foreign = PEOPLE.filter((p) => !/^United States/.test(p.citizenship ?? '')).length;
-const withNothing = PEOPLE.filter((p) => !p.filesUS && !p.foundation?.paidOut).length;
-const publishOwn = nonFilers - withNothing;
+/* The closing chapter's groups, from the same rule the figure draws with. */
+const [filedG, ownG, noneG] = disclosureGroups();
+const listNames = (ps: { name: string }[]) => ps.map((p) => short2(p.name)).join(', ').replace(/, ([^,]*)$/, ' and $1');
+const short2 = (n: string) => n.replace(' Helu', '').replace(' (CZ)', '');
 const scored = Object.values(SUMMARY.scores).reduce((sum, n) => sum + n, 0);
 const unscored = SUMMARY.count - scored;
 /* The empty stretch in the score chart, found in the data rather than asserted. */
@@ -122,9 +123,9 @@ const CHAPTERS = [
   {
     id: 'coverage',
     kicker: 'The limits of disclosure',
-    title: `${spell(nonFilers).replace(/^\w/, (c) => c.toUpperCase())} of the twenty-five have no comparable public filing.`,
-    body: <>The foundation chart exists because American foundations must publish their accounts<Cite id="irs-990pf" />. The {spell(foreign)} non-Americans file no comparable return, and Steve Ballmer gives through a company that need not. Of these {spell(nonFilers)}, {spell(publishOwn)} publish figures of their own; for {spell(withNothing)}, this review found none. Missing from a chart is not the same as not giving. It is what the record cannot show.</>,
-    figure: <Coverage />,
+    title: `For ${words(ownG.wealth + noneG.wealth)} of this wealth, no public return shows what is given.`,
+    body: <>American private foundations must publish their accounts every year<Cite id="irs-990pf" />. These are the opening circles again, shaded by what that rule reveals. {cap(spell(filedG.people.length))} fortunes have a foundation return on file. {cap(spell(ownG.people.length))} — {listNames(ownG.people)} — publish only figures of their own. For {spell(noneG.people.length)}, among them Steve Ballmer, whose giving runs through a company, this review found no public accounting at all. And a return shows only the foundation: not the LLC, not the donor-advised fund, not the gift made directly. Missing from a chart is not the same as not giving. It is what the record cannot show.</>,
+    figure: <WealthPack mode="disclosure" />,
   },
 ] as const;
 
@@ -425,5 +426,5 @@ function Sources() {
 }
 
 /* Referenced so the build keeps them and the suite can render them alone. */
-export const FIGURES = { WealthPack, Paired, Payout, Horizon, Mechanisms, Scores, Coverage };
+export const FIGURES = { WealthPack, Paired, Payout, Horizon, Mechanisms, Scores };
 export { fmt };
