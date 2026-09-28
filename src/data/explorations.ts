@@ -48,7 +48,7 @@ export const EXPLORATIONS: Exploration[] = [
     cover: lazersCover,
     coverAlt:
       'A cat drawn entirely from small points of light on near-black, sitting with its tail curled round, head turned toward a red laser dot beside its ear.',
-    desc: 'A cat drawn entirely in points, rigged to a real skeleton, watching a red dot that follows your cursor. Take the dot to the floor and it stands up and stalks. Bring it near a paw and the paw comes up, waits, and strikes. Move behind it and it turns to face you.',
+    desc: 'A cat made entirely of points of light, with a real skeleton and no plans for the evening beyond the red dot. Put the dot on the floor and it stalks. Put it near a paw and it waits, longer than is polite, then strikes. Put it at its feet and it sits down, flattens its ears and makes clear this is beneath it. It has never caught the dot. It remains optimistic.',
   },
   {
     id: 'half',
