@@ -48,7 +48,7 @@ export const EXPLORATIONS: Exploration[] = [
     cover: lazersCover,
     coverAlt:
       'A cat drawn entirely from small points of light on near-black, sitting with its tail curled round, head turned toward a red laser dot beside its ear.',
-    desc: 'This cat has a real skeleton, a graphics card and one unshakeable belief: the red dot must be stopped. You are the red dot. It will stalk you across the floor, wind up a paw with the patience of a Victorian assassin, and miss. Then it will act like it meant to. Park the dot at its feet and it sits down and looks at you like you have disappointed it personally. You have.',
+    desc: 'The red dot is back, and the cat is watching it. A WebGL experiment with a rigged model, GPU skinning, and a shader that draws the cat from points of light.',
   },
   {
     id: 'half',
