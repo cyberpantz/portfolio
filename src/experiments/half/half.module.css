@@ -502,6 +502,37 @@
 /* 2 — paired bars */
 .barWealth { fill: rgb(232 232 224 / 30%); }
 .barGive { fill: var(--you); }
+/* The whole, when bars become shares: a track the given part fills. */
+.barTrack { fill: rgb(232 232 224 / 12%); }
+
+/* Interactive figure: the switch moves the same people, it does not cut to
+   a new chart. Widths animate where the browser supports SVG geometry in
+   CSS and snap where it does not; rows and labels ride transforms. */
+.interactive { display: grid; gap: 14px; }
+.row, .row text { transition: transform 480ms cubic-bezier(.2,.7,.2,1), opacity 240ms ease; }
+.row rect { transition: width 480ms cubic-bezier(.2,.7,.2,1), fill 240ms ease; }
+.fade { transition: opacity 240ms ease; }
+@media (prefers-reduced-motion: reduce) { .row, .row text, .row rect, .fade { transition: none; } }
+
+.controls { display: flex; flex-wrap: wrap; gap: 10px 22px; padding-left: 0; }
+.seg { display: flex; align-items: center; gap: 2px; }
+.segLbl { font: 600 10px/1 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .12em; text-transform: uppercase; color: var(--mute); margin-right: 8px; }
+.segBtn, .segOn {
+  font: 500 12px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+  padding: 7px 10px;
+  border: 1px solid rgb(232 232 224 / 18%);
+  background: transparent;
+  color: var(--mute);
+  cursor: pointer;
+  border-radius: 0;
+}
+.seg > button:first-of-type { border-radius: 3px 0 0 3px; }
+.seg > button:last-of-type { border-radius: 0 3px 3px 0; }
+.seg > button + button { margin-left: -1px; }
+.segBtn:hover { color: var(--ink); border-color: rgb(232 232 224 / 34%); }
+.segOn { color: #0f0f10; background: var(--you); border-color: var(--you); position: relative; }
+.segBtn:focus-visible, .segOn:focus-visible { outline: 2px solid var(--you); outline-offset: 2px; position: relative; z-index: 1; }
+
 /* Bounded, not measured: an outline the true figure sits somewhere inside. */
 .barGiveBound { fill: none; stroke: var(--you); stroke-width: 1; stroke-dasharray: 3 2; }
 .valGiveBound { fill: var(--mute); font-size: 11px; }

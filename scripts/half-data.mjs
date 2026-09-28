@@ -47,6 +47,12 @@ const ORDER = [
  * no figure exists. Non-Americans are outside the list's scope entirely.
  */
 const GIVERS_FLOOR = { amount: 2.0e9, asOf: '2025-12', source: 'Forbes, America\'s Top 25 Philanthropists 2026 (25th entry, Charles Koch)', status: 'primary' };
+/*
+ * The household translation's yardstick: median family net worth, Federal
+ * Reserve Survey of Consumer Finances 2022 (published October 2023, the
+ * latest survey out). In 2022 dollars.
+ */
+const HOUSEHOLD = { amount: 192900, year: 2022, source: 'Federal Reserve, Survey of Consumer Finances 2022, table 2' };
 const isAmerican = (base) => /^United States/.test(base.citizenship ?? '');
 
 /*
@@ -237,6 +243,8 @@ const summary = {
   lifetimeKnown: people.filter((p) => p.coverage.lifetime).length,
   lifetimeBounded: people.filter((p) => p.coverage.lifetimeBound).length,
   giversFloor: GIVERS_FLOOR.amount,
+  household: HOUSEHOLD.amount,
+  householdYear: HOUSEHOLD.year,
   lifetimeTotal: people.filter((p) => p.coverage.lifetime).reduce((a, p) => a + p.lifetime.amount, 0),
   filingsRead: filers.length,
   foundationAssets: filers.reduce((a, p) => a + p.foundation.assets, 0),

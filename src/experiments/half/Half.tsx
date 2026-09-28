@@ -85,7 +85,8 @@ const CHAPTERS = [
     id: 'paired',
     kicker: 'The public record',
     title: 'Known lifetime giving, measured against current wealth.',
-    body: <>The upper bar is the fortune; the lower is lifetime giving as Forbes counts it — money that has left the donor’s hands, not money parked in a foundation<Cite id="forbes-top-givers" />. {buffett.name} has given an estimated {words(buffett.lifetime!.amount)}; {gates.name}, {words(gates.lifetime!.amount)}. Forbes’ list of top American givers ends at {words(SUMMARY.giversFloor)}. {spell(SUMMARY.lifetimeBounded).replace(/^\w/, (c) => c.toUpperCase())} Americans here, {musk.name} and {page.name} among them, are not on it: their giving sits somewhere inside the open bar. The {spell(foreign)} who are not American are not counted at all.</>,
+    body: <>The upper bar is the fortune; the lower is lifetime giving as Forbes counts it — money that has left the donor’s hands, not money parked in a foundation<Cite id="forbes-top-givers" />. Forbes’ list of top American givers ends at {words(SUMMARY.giversFloor)}; {spell(SUMMARY.lifetimeBounded)} Americans here, {musk.name} and {page.name} among them, are not on it, so their giving sits inside the open bar. The {spell(foreign)} who are not American are not counted at all. As a share, giving is measured against everything they have had, the method the Institute for Policy Studies uses to judge the Pledge<Cite id="ips-15" />; at family scale, the same proportions are applied to a typical American family’s {money(SUMMARY.household)}<Cite id="fed-scf-2022" />.</>,
+    interactive: true,
     figure: <Paired />,
   },
   {
@@ -182,7 +183,10 @@ export default function Half() {
     <article className={s.scrolly}>
       <Intro />
       <div className={s.split}>
-        <div className={s.stage} aria-hidden={active === 0 ? undefined : true}>
+        {/* Hidden from assistive tech — its figures are repeated beside each
+            paragraph — except where the figure has controls, which must be
+            reachable where they are seen. */}
+        <div className={s.stage} aria-hidden={active === 0 || 'interactive' in CHAPTERS[active] ? undefined : true}>
           <div className={s.stageInner}>{CHAPTERS[active].figure}</div>
         </div>
         <div className={s.steps}>
@@ -192,7 +196,9 @@ export default function Half() {
               <p className={s.kicker}>{c.kicker}</p>
               <h2>{c.title}</h2>
               <p>{c.body}</p>
-              <div className={s.srFigure} aria-hidden={i === 0 ? true : undefined}>{c.figure}</div>
+              {!('interactive' in c) && (
+                <div className={s.srFigure} aria-hidden={i === 0 ? true : undefined}>{c.figure}</div>
+              )}
             </section>
           ))}
         </div>

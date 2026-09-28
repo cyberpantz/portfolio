@@ -121,31 +121,103 @@ export function WealthPack() {
 /* ------------------------------------------------ 2. wealth against giving */
 
 /** Paired bars on ONE scale. The giving bar is the point: it is a hairline. */
+type View = 'dollars' | 'share' | 'family';
+type Order = 'wealth' | 'given' | 'share';
+const VIEWS: [View, string][] = [['dollars', 'Dollars'], ['share', 'Share given'], ['family', 'Family scale']];
+const ORDERS: [Order, string][] = [['wealth', 'Fortune'], ['given', 'Given'], ['share', 'Share']];
+
+/**
+ * Share given, as the Institute for Policy Studies measures the Pledge:
+ * giving over everything the person has had — what they kept plus what
+ * they gave. Crossing one half means half has actually gone.
+ */
+export const shareOf = (given: number, wealth: number) => given / (given + wealth);
+/** Percent to a sensible precision: one decimal under ten, whole above. */
+const pctLbl = (f: number) => { const v = f * 100; return `${v < 10 ? v.toFixed(v < 1 ? 2 : 1) : Math.round(v)}%`; };
+/** Family-scale dollars, rounded so the translation does not overclaim. */
+const famLbl = (n: number) => money(n < 1000 ? Math.round(n / 10) * 10 : Math.round(n / 100) * 100);
+
+/**
+ * Wealth against giving, with three readings of the same rows. Bars change
+ * width and rows change place by CSS transition, so a switch reads as the
+ * same people moving rather than a new chart.
+ */
 export function Paired() {
-  const rows = PEOPLE.filter((p) => p.coverage.lifetime || p.coverage.lifetimeBound).sort((a, b) => (b.wealth ?? 0) - (a.wealth ?? 0));
-  const W = 720, L = 150, R = 80, H = 30;
-  const max = Math.max(...rows.map((p) => p.wealth ?? 0));
-  const w = (v: number) => ((W - L - R) * v) / max;
+  const [view, setView] = useState<View>('dollars');
+  const [order, setOrder] = useState<Order>('wealth');
+
+  const rows = PEOPLE.filter((p) => p.coverage.lifetime || p.coverage.lifetimeBound).map((p) => {
+    const bound = !p.coverage.lifetime;
+    const given = bound ? p.lifetimeUnder!.amount : p.lifetime!.amount;
+    return { p, bound, given, wealth: p.wealth!, share: shareOf(given, p.wealth!) };
+  });
+  /* Bounds are ceilings, not measurements, so they sort after every
+     measured row whatever the key — never above a figure they might trail. */
+  const key = (r: (typeof rows)[number]) => order === 'wealth' ? r.wealth : order === 'given' ? r.given : r.share;
+  const sorted = [...rows].sort((a, b) =>
+    order === 'wealth' ? b.wealth - a.wealth
+    : a.bound !== b.bound ? (a.bound ? 1 : -1)
+    : key(b) - key(a));
+  const place = new Map(sorted.map((r, i) => [r.p.slug, i]));
+
+  const W = 720, L = 150, R = 96, H = 30, TOP = 34;
+  const FULL = W - L - R;
+  const max = Math.max(...rows.map((r) => r.wealth));
+  const dollars = view === 'dollars';
+  const topW = (r: (typeof rows)[number]) => dollars ? (FULL * r.wealth) / max : FULL;
+  const giveW = (r: (typeof rows)[number]) => Math.max(1.5, dollars ? (FULL * r.given) / max : FULL * r.share);
+  const giveLbl = (r: (typeof rows)[number]) => {
+    const v = dollars ? money(r.given) : view === 'share' ? pctLbl(r.share) : famLbl(SUMMARY.household * r.share);
+    return r.bound ? `under ${v}` : v;
+  };
+  const header = dollars
+    ? 'Fortune, and lifetime giving as Forbes counts it'
+    : view === 'share'
+      ? 'Share of everything they have had, given away'
+      : `Each fortune shrunk to a typical family’s ${money(SUMMARY.household)}: given away`;
+  const H_ALL = TOP + rows.length * H + 8;
+  const described = sorted.map((r) => `${r.p.name} ${giveLbl(r)}`).join('; ');
+
   return (
-    <svg className={s.fig} viewBox={`0 0 ${W} ${rows.length * H + 20}`} role="img"
-         aria-label="Wealth and lifetime giving, drawn to the same scale">
-      {rows.map((p, i) => {
-        const y = 10 + i * H;
-        const bound = !p.coverage.lifetime;
-        const give = bound ? p.lifetimeUnder!.amount : p.lifetime!.amount;
-        const gw = Math.max(1.5, w(give));
-        return (
-          <g key={p.slug} transform={`translate(0 ${y})`}>
-            <text className={s.lbl} x={0} y={14}>{short(p.name)}</text>
-            <rect className={s.barWealth} x={L} y={2} width={w(p.wealth!)} height={8} rx={1} />
-            {/* An open bar to Forbes' floor: the giving is somewhere inside it. */}
-            <rect className={bound ? s.barGiveBound : s.barGive} x={L} y={12} width={gw} height={8} rx={1} />
-            <text className={s.val} x={L + w(p.wealth!) + 6} y={10}>{money(p.wealth)}</text>
-            <text className={bound ? s.valGiveBound : s.valGive} x={L + gw + 6} y={20}>{bound ? `under ${money(give)}` : money(give)}</text>
+    <div className={s.interactive}>
+      <div className={s.controls}>
+        <div role="group" aria-label="Measure" className={s.seg}>
+          <span className={s.segLbl} aria-hidden="true">Show</span>
+          {VIEWS.map(([v, label]) => (
+            <button key={v} type="button" aria-pressed={view === v} className={view === v ? s.segOn : s.segBtn}
+                    onClick={() => setView(v)}>{label}</button>
+          ))}
+        </div>
+        <div role="group" aria-label="Sort by" className={s.seg}>
+          <span className={s.segLbl} aria-hidden="true">Sort</span>
+          {ORDERS.map(([o, label]) => (
+            <button key={o} type="button" aria-pressed={order === o} className={order === o ? s.segOn : s.segBtn}
+                    onClick={() => setOrder(o)}>{label}</button>
+          ))}
+        </div>
+      </div>
+      <svg className={s.fig} viewBox={`0 0 ${W} ${H_ALL}`} role="img" aria-live="polite"
+           aria-label={`${header}. ${described}.`}>
+        <text className={s.sub} x={L} y={12}>{header}</text>
+        {/* The Pledge, as a line: only meaningful once bars are shares. */}
+        <g className={s.fade} style={{ opacity: dollars ? 0 : 1 }}>
+          <line className={s.rule} x1={L + FULL / 2} x2={L + FULL / 2} y1={TOP - 12} y2={H_ALL - 4} />
+          <text className={s.ruleLbl} x={L + FULL / 2 + 6} y={TOP - 4}>half — the Pledge</text>
+        </g>
+        {rows.map((r) => (
+          <g key={r.p.slug} className={s.row} style={{ transform: `translateY(${TOP + place.get(r.p.slug)! * H}px)` }}>
+            <text className={s.lbl} x={0} y={14}>{short(r.p.name)}</text>
+            <rect className={dollars ? s.barWealth : s.barTrack} x={L} y={2} height={7} rx={1} style={{ width: topW(r) }} />
+            <rect className={r.bound ? s.barGiveBound : s.barGive} x={L} y={15} height={7} rx={1} style={{ width: giveW(r) }} />
+            <text className={s.val} x={L + 6} y={9} style={{ transform: `translateX(${topW(r)}px)`, opacity: dollars ? 1 : 0 }}>
+              {money(r.wealth)}
+            </text>
+            <text className={r.bound ? s.valGiveBound : s.valGive} x={L + 6} y={22.5}
+                  style={{ transform: `translateX(${giveW(r)}px)` }}>{giveLbl(r)}</text>
           </g>
-        );
-      })}
-    </svg>
+        ))}
+      </svg>
+    </div>
   );
 }
 

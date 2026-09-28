@@ -219,6 +219,17 @@ export const SOURCES: Source[] = [
     supports: '$1,203,290,308 to Crystal Bridges in 2010, against $45 million to all other home-region work.',
   },
   {
+    id: 'fed-scf-2022',
+    title: 'Changes in U.S. Family Finances from 2019 to 2022: Evidence from the Survey of Consumer Finances',
+    publisher: 'Board of Governors of the Federal Reserve System',
+    date: '2023-10',
+    url: 'https://www.federalreserve.gov/publications/files/scf23.pdf',
+    kind: 'government',
+    status: 'primary',
+    supports: 'Median family net worth of $192,900 in 2022 — the yardstick for the household-scale view.',
+    note: 'The most recent survey published. In 2022 dollars; not adjusted to 2026.',
+  },
+  {
     id: 'tpc-subsidy',
     title: 'How large are individual income tax incentives for charitable giving?',
     publisher: 'Tax Policy Center',

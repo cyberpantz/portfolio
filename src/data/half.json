@@ -1,5 +1,5 @@
 {
-  "built": "2026-09-27",
+  "built": "2026-09-28",
   "summary": {
     "listDate": "2026-09-01",
     "count": 25,
@@ -9,6 +9,8 @@
     "lifetimeKnown": 9,
     "lifetimeBounded": 8,
     "giversFloor": 2000000000,
+    "household": 192900,
+    "householdYear": 2022,
     "lifetimeTotal": 177300000000,
     "filingsRead": 13,
     "foundationAssets": 170415491486,

@@ -11,7 +11,7 @@ import type { ReactElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import data from '../../../data/half.json';
 import { SOURCES, assertNoUnverifiedClaims } from '../../../data/half-sources';
-import { WealthPack, Paired, Pledge, Payout, Horizon, Mechanisms, Founders, Scores, Coverage, PEOPLE, SUMMARY } from '../figures';
+import { shareOf, WealthPack, Paired, Pledge, Payout, Horizon, Mechanisms, Founders, Scores, Coverage, PEOPLE, SUMMARY } from '../figures';
 import Half from '../Half';
 
 let fails = 0;
@@ -69,6 +69,21 @@ for (const [name, el, marks] of CH) {
   } catch (e) {
     fails++; console.error(`  FAIL  ${name} threw: ${(e as Error).message}`);
   }
+}
+
+/* ---- the interactive chart ------------------------------------------ */
+console.log('Wealth against giving, interactive');
+{
+  const html = renderToStaticMarkup(<Paired />);
+  ok((html.match(/<button\b/g) ?? []).length === 6, 'six control buttons');
+  ok((html.match(/aria-pressed="true"/g) ?? []).length === 2, 'one choice pressed in each group');
+  ok(/role="group" aria-label="Measure"/.test(html) && /aria-label="Sort by"/.test(html), 'control groups are labelled');
+  /* IPS's measure: giving over everything had, so half means half gone. */
+  ok(Math.abs(shareOf(1, 1) - 0.5) < 1e-9, 'giving equal to what is kept is one half');
+  const b = PEOPLE.find((p) => p.slug === 'warren-buffett')!;
+  const sb = shareOf(b.lifetime!.amount, b.wealth!);
+  ok(sb > 0.3 && sb < 0.5, `Buffett's share ${sb} is between a third and a half`);
+  ok(SUMMARY.household > 100000 && SUMMARY.household < 300000, 'the family yardstick is a plausible median');
 }
 
 /* ---- the whole piece ------------------------------------------------ */
