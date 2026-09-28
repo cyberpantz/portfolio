@@ -102,7 +102,7 @@ export const EXPLORATIONS: Exploration[] = [
      * times.
      */
     coverAlt:
-      'A chat interface asking "Show me where. Be honest." above a line drawing of a sofa, with options to tap the arms, back, cushions or underneath.',
+      'A dark chat interface. The user has written "I want to cancel my subscription"; the assistant, Robin, replies "Absolutely — I can start that for you right now", then asks why, offering four answers including "I never meant to subscribe".',
   },
   {
     id: 'clickwheel',
