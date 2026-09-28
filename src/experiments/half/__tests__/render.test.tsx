@@ -99,6 +99,11 @@ try {
     ok(page.includes(`${r1} percent`) || page.includes(`${p.foundation!.payoutRate}%`), `${p.name}'s payout rate is on the page`);
   }
   ok(page.includes('Have they given enough'), 'the French Gates quote is on the page');
+  {
+    const table = page.match(/<table[^>]*>[\s\S]*?<\/table>/)?.[0] ?? '';
+    for (const p of PEOPLE.filter((x) => x.pledge.signed === true)) ok(table.includes(p.name), `${p.name} is in the signers table`);
+    ok((table.match(/<tr>/g) ?? []).length === SUMMARY.pledgers + 1, 'the signers table has one row per signer');
+  }
   ok(/popovertarget="pledge-note"/i.test(page) && /id="pledge-note" popover="auto"/.test(page), 'the Pledge note is a native popover with a trigger');
   ok(!page.includes('undefined') && !page.includes('NaN'), 'no undefined or NaN leaked into the page');
 } catch (e) {

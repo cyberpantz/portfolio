@@ -584,7 +584,7 @@
   margin: 34px 0 30px;
 }
 @media (max-width: 640px) { .numbers { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-.numbers div {
+.numbers > div {
   display: grid;
   grid-template-rows: auto auto 1fr;
   align-content: start;
@@ -621,6 +621,10 @@
 .more:hover { color: var(--ink); }
 .more:focus-visible, .popClose:focus-visible { outline: 2px solid var(--you); outline-offset: 3px; }
 
+/* A popover is hidden by a zero-specificity UA rule; any author rule that
+   sets display on it (as `.numbers div` once did) keeps it on screen after
+   it closes. Say it outright. */
+.pop:not(:popover-open) { display: none; }
 .pop {
   width: min(36rem, calc(100vw - 32px));
   max-height: calc(100dvh - 64px);
@@ -654,3 +658,23 @@
   cursor: pointer;
 }
 .popClose:hover { border-color: var(--you); }
+
+/* The signers: a small table with a gauge to the half line. The gauge's
+   full width is one half, so a filled gauge is a kept promise. */
+.signers { width: 100%; margin: 4px 0 20px; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+.signers caption {
+  text-align: left; padding-bottom: 8px;
+  font: 600 10px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: .12em; text-transform: uppercase; color: var(--mute);
+}
+.signers th, .signers td { padding: 8px 10px 8px 0; text-align: left; border-top: 1px solid rgb(232 232 224 / 12%); font-size: .88rem; line-height: 1.3; }
+.signers thead th { font: 500 10px/1.3 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .08em; text-transform: uppercase; color: var(--mute); border-top: 0; padding-bottom: 6px; }
+.signers tbody th { font-weight: 600; color: var(--ink); }
+.signers td { color: var(--mute); white-space: nowrap; }
+.signers td:last-child { padding-right: 0; }
+.given { display: inline-flex; align-items: center; gap: 8px; color: var(--ink); }
+.givenBar { position: relative; display: inline-block; width: 64px; height: 6px; background: rgb(232 232 224 / 12%); border-radius: 1px; overflow: hidden; }
+.givenFill, .givenFillBound { position: absolute; inset: 0 auto 0 0; max-width: 100%; background: var(--you); }
+.givenFillBound { background: none; outline: 1px dashed var(--you); outline-offset: -1px; }
+.givenHalf { position: absolute; top: -2px; bottom: -2px; right: 0; width: 1.5px; background: var(--warn); }
+@media (max-width: 480px) { .signers td:nth-child(3), .signers th:nth-child(3) { display: none; } }

@@ -133,7 +133,7 @@ const ORDERS: [Order, string][] = [['wealth', 'Fortune'], ['given', 'Given'], ['
  */
 export const shareOf = (given: number, wealth: number) => given / (given + wealth);
 /** Percent to a sensible precision: one decimal under ten, whole above. */
-const pctLbl = (f: number) => { const v = f * 100; return `${v < 10 ? v.toFixed(v < 1 ? 2 : 1) : Math.round(v)}%`; };
+export const pctLbl = (f: number) => { const v = f * 100; return `${v < 10 ? v.toFixed(v < 1 ? 2 : 1) : Math.round(v)}%`; };
 /** Family-scale dollars, rounded so the translation does not overclaim. */
 const famLbl = (n: number) => money(n < 1000 ? Math.round(n / 10) * 10 : Math.round(n / 100) * 100);
 

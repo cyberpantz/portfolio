@@ -13,7 +13,7 @@ import data from '../../data/half.json';
 import { SOURCES, byId } from '../../data/half-sources';
 import {
   WealthPack, Paired, Payout, Horizon, Mechanisms, Scores, Coverage,
-  PEOPLE, SUMMARY, CONTEXT, money,
+  PEOPLE, SUMMARY, CONTEXT, money, shareOf, pctLbl,
 } from './figures';
 import s from './half.module.css';
 
@@ -254,6 +254,47 @@ function Figure({ n, label, children, more }: { n: string; label: string; childr
 }
 
 /**
+ * Who among the twenty-five signed, and how far each has got. "Given" is
+ * the same share the wealth-against-giving chart uses — giving over
+ * everything had — so one half here means the promise is kept.
+ */
+function SignerTable() {
+  const rows = PEOPLE.filter((p) => p.pledge.signed === true).map((p) => {
+    const bound = !p.coverage.lifetime;
+    const given = p.coverage.lifetime ? p.lifetime!.amount : p.lifetimeUnder?.amount ?? null;
+    return { p, bound, share: given != null ? shareOf(given, p.wealth!) : null };
+  });
+  return (
+    <table className={s.signers}>
+      <caption>The {spell(rows.length)} signers among the twenty-five</caption>
+      <thead>
+        <tr><th scope="col">Signer</th><th scope="col">Signed</th><th scope="col">Worth now</th><th scope="col">Given so far</th></tr>
+      </thead>
+      <tbody>
+        {rows.map(({ p, bound, share }) => (
+          <tr key={p.slug}>
+            <th scope="row">{p.name}</th>
+            <td>{p.pledge.year ?? '—'}</td>
+            <td>{money(p.wealth)}</td>
+            <td>
+              {share == null ? '—' : (
+                <span className={s.given}>
+                  <span className={s.givenBar} aria-hidden="true">
+                    <span className={bound ? s.givenFillBound : s.givenFill} style={{ width: `${Math.max(2, share * 200)}%` }} />
+                    <span className={s.givenHalf} />
+                  </span>
+                  {bound ? `under ${pctLbl(share)}` : pctLbl(share)}
+                </span>
+              )}
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+}
+
+/**
  * The Pledge, told once and on request. It is the occasion for the piece,
  * not its subject, so it lives behind the figure it explains. A native
  * popover: no script to open or close it, Escape and light-dismiss for free.
@@ -272,6 +313,7 @@ function PledgeNote() {
           remain billionaires are {f15.net_worth_growth_since_2010_pct} percent richer than when they signed;
           one living original signer has given half<Cite id="ips-15" />.
         </p>
+        <SignerTable />
         <p>
           {musk.name} signed in {musk.pledge.year} worth {words(musk.pledge.wealthAtSigning)}, and is now worth
           about {times(musk.derived.growthSincePledge!)} times that. Peter Thiel says he told him “it would be
