@@ -1,13 +1,4 @@
 #!/usr/bin/env sh
-# Bundles with esbuild so the real components run, not a mock of them.
+# Kept for `pnpm test:half`; the work is in run.mjs.
 set -e
-DIR="$(cd "$(dirname "$0")" && pwd)"
-cd "$DIR/../../../.."
-npx esbuild "$DIR/render.test.tsx" --bundle --platform=node --format=cjs \
-  --jsx=automatic --target=node20 --loader:.css=empty --loader:.json=json \
-  --outfile="$DIR/.bundle.cjs" --log-level=warning
-node "$DIR/.bundle.cjs"
-rm -f "$DIR"/.bundle.*
-# A crash is not a pass: absence of this line is the signal.
-echo
-echo "HALF SUITE PASSED"
+node "$(cd "$(dirname "$0")" && pwd)/run.mjs"

@@ -12,7 +12,9 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import data from '../../../data/half.json';
 import { SOURCES, assertNoUnverifiedClaims } from '../../../data/half-sources';
 import { shareOf, scoreRows, scoreGap, WealthPack, Paired, Payout, Horizon, Mechanisms, Scores, disclosureGroups, PEOPLE, SUMMARY } from '../figures';
-import Half from '../Half';
+import Half, { BLOCKS } from '../Half';
+import { VALUES } from '../values';
+import { inline, parseArticle } from '../article';
 
 let fails = 0;
 const ok = (c: unknown, m: string) => { if (!c) { fails++; console.error('  FAIL  ' + m); } };
@@ -117,6 +119,7 @@ console.log('Disclosure');
 /* ---- the whole piece ------------------------------------------------ */
 console.log('The piece renders');
 let page = '';
+const CHAPTER_IDS = BLOCKS.filter((b) => b.kind === 'chapter').map((b) => b.id!);
 try {
   page = renderToStaticMarkup(<Half />);
   ok(page.length > 20000, `piece rendered ${page.length} chars`);
@@ -158,19 +161,37 @@ console.log('Statuses');
   }
 }
 
-/* ---- nobody typed a number into a sentence -------------------------- */
-console.log('Prose');
+/* ---- the article file ------------------------------------------------ */
+console.log('Article');
 {
   const fs = require('node:fs') as typeof import('node:fs');
   const path = require('node:path') as typeof import('node:path');
-  const src = fs.readFileSync(path.resolve(process.cwd(), 'src/experiments/half/Half.tsx'), 'utf8');
-  ok(src.length > 6000, `read ${src.length} chars of Half.tsx — wrong file?`);
-  const TYPED = /(?:^|[>\s])[^<{}\n]*(\$\d[\d,]+|\b\d+(?:\.\d+)?\s?%)[^<{}\n]*/g;
-  const literals = (src.match(TYPED) ?? [])
-    .filter((l) => !/^\s*(\/\/|\/\*|\*|import|const|let|return|ok\(|[a-zA-Z]+[:=(])/.test(l.trim()))
-    .map((l) => l.trim());
-  ok(literals.length === 0, `typed figures in prose:\n    ${literals.join('\n    ')}`);
-  ok(TYPED.test('<p>They hold $4.68T and pay 3.2%.</p>'), 'the typed-figure lint does not catch a typed figure');
+  const raw = fs.readFileSync(path.resolve(process.cwd(), 'src/experiments/half/article.md'), 'utf8');
+  ok(raw.length > 6000, `read ${raw.length} chars of article.md — wrong file?`);
+
+  /* Nobody typed a number into a sentence: no $ figure, no %, outside {values} and comments. */
+  const prose = raw.replace(/<!--[\s\S]*?-->/g, '').replace(/\{[^}]*\}/g, '');
+  const typed = prose.split('\n').filter((l) => /\$\s?\d|\d\s?%/.test(l));
+  ok(typed.length === 0, `typed figures in article.md:\n    ${typed.join('\n    ')}`);
+
+  /* Every value is used somewhere, so values.ts carries no dead numbers. */
+  for (const k of Object.keys(VALUES)) ok(new RegExp(`\\{${k}(\\|cap)?\\}`).test(raw), `value {${k}} is defined but never used`);
+
+  ok(CHAPTER_IDS.length === BLOCKS.filter((b) => b.kind === 'chapter').length, 'every chapter block renders');
+  for (const id of CHAPTER_IDS) ok(page.includes(`id="${id}"`), `chapter ${id} is on the page`);
+
+  /* The guard rails fail loudly, naming the problem. */
+  const throws = (f: () => unknown, re: RegExp, what: string) => {
+    try { f(); ok(false, `${what} did not throw`); } catch (e) { ok(re.test((e as Error).message), `${what} threw the wrong error: ${(e as Error).message}`); }
+  };
+  const C = { cite: () => null };
+  throws(() => inline('{nope}', VALUES, C), /no value named \{nope\}/, 'an unknown value');
+  throws(() => inline('<script>x</script>', VALUES, C), /<script> is not an allowed tag/, 'a disallowed tag');
+  throws(() => inline('<a onclick="x">y</a>', VALUES, C), /not an allowed attribute/, 'a disallowed attribute');
+  throws(() => inline('<em>open', VALUES, C), /never closed/, 'an unclosed tag');
+  throws(() => inline('<cite/>', VALUES, C), /needs src/, 'a cite without a source');
+  throws(() => parseArticle('words before any block'), /stray text/, 'text outside a block');
+  ok(renderToStaticMarkup(<>{inline('a <em>b</em> {count|cap} &amp; c', VALUES, C)}</>) === `a <em>b</em> ${VALUES.count} &amp; c`, 'inline HTML and values render');
 }
 
 console.log(fails ? `\n${fails} failed` : '\nall passed');
