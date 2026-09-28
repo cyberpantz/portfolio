@@ -52,6 +52,9 @@ export const EXPLORATIONS: Exploration[] = [
   },
   {
     id: 'half',
+    /* Off the grid until it is up to standard. The page still builds at
+       /explorations/half and is noindexed while hidden. */
+    hidden: true,
     name: 'Half',
     type: 'Data',
     tags: ['Scrollytelling', 'SVG', 'React', 'Public filings'],
