@@ -60,6 +60,9 @@ export const EXPLORATIONS: Exploration[] = [
   },
   {
     id: 'cap',
+    /* Off the grid: a first cut to be re-centred or deleted. The page still
+       builds at /explorations/cap and is noindexed while hidden. */
+    hidden: true,
     name: 'The Cap',
     type: 'Data',
     tags: ['Scrollytelling', 'SVG', 'React', 'Public data'],
