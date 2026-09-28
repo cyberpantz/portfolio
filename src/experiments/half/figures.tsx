@@ -350,23 +350,69 @@ export function Mechanisms() {
 /* ------------------------------------------------------------ 8. the score */
 
 /** Forbes' 1–5 philanthropy score across the twenty-five. */
+/** Forbes' score bands, as shares given: 1 is under 1%, 5 is 20% or more. */
+const BANDS = [
+  { k: 1, lo: 0, hi: 0.01 }, { k: 2, lo: 0.01, hi: 0.05 }, { k: 3, lo: 0.05, hi: 0.10 },
+  { k: 4, lo: 0.10, hi: 0.20 }, { k: 5, lo: 0.20, hi: 1 },
+];
+
+/** The scored, each at their share given, with the gap either side named. */
+export function scoreRows() {
+  return PEOPLE.filter((p) => p.score != null && (p.coverage.lifetime || p.coverage.lifetimeBound)).map((p) => {
+    const bound = !p.coverage.lifetime;
+    const given = bound ? p.lifetimeUnder!.amount : p.lifetime!.amount;
+    return { p, bound, share: shareOf(given, p.wealth!), score: p.score as number };
+  }).sort((a, b) => b.share - a.share);
+}
+/** The widest empty stretch between neighbours: the highest share below it, the lowest above. */
+export function scoreGap() {
+  const r = scoreRows().filter((x) => !x.bound);
+  let best = { below: r[r.length - 1], above: r[0], ratio: 1 };
+  for (let i = 0; i < r.length - 1; i++) {
+    const ratio = r[i].share / r[i + 1].share;
+    if (ratio > best.ratio) best = { above: r[i], below: r[i + 1], ratio };
+  }
+  return best;
+}
+
+/**
+ * One row per scored person, on a log scale of share given, over Forbes'
+ * five bands. A histogram of scores counts people; this shows them, and
+ * shows that the empty bands are a gap in the people, not in the grading.
+ */
 export function Scores() {
-  const counts = [1, 2, 3, 4, 5].map((k) => ({ k, n: (SUMMARY.scores as Record<string, number>)[k] ?? 0 }));
-  const W = 720, H = 200, L = 40, BW = 100, GAP = 30;
-  const max = Math.max(...counts.map((c) => c.n), 1);
+  const rows = scoreRows();
+  const W = 720, L = 150, R = 40, H = 22, TOP = 40;
+  const MIN = 0.001, MAX = 0.6;
+  const x = (f: number) => L + ((W - L - R) * Math.log10(Math.max(f, MIN) / MIN)) / Math.log10(MAX / MIN);
+  const BOTTOM = TOP + rows.length * H;
+  const empty = (k: number) => !rows.some((r) => r.score === k);
   return (
-    <svg className={s.fig} viewBox={`0 0 ${W} ${H + 40}`} role="img"
-         aria-label={`Forbes philanthropy scores: ${counts.map((c) => `${c.n} scored ${c.k}`).join(', ')}`}>
-      {counts.map((c, i) => {
-        const x = L + i * (BW + GAP), h = (H * c.n) / max;
+    <svg className={s.fig} viewBox={`0 0 ${W} ${BOTTOM + 30}`} role="img"
+         aria-label={`Share of wealth given, by person, against Forbes' score bands: ${rows.map((r) => `${r.p.name} ${r.bound ? 'under ' : ''}${pctLbl(r.share)}, score ${r.score}`).join('; ')}`}>
+      {BANDS.map((b) => {
+        const x0 = x(Math.max(b.lo, MIN)), x1 = x(Math.min(b.hi, MAX));
         return (
-          <g key={c.k}>
-            <rect className={c.n ? s.col : s.colEmpty} x={x} y={H - h} width={BW} height={Math.max(h, 2)} rx={3} />
-            <text className={s.colVal} x={x + BW / 2} y={H - h - 8}>{c.n}</text>
-            <text className={s.colLbl} x={x + BW / 2} y={H + 20}>score {c.k}</text>
-            <text className={s.colSub} x={x + BW / 2} y={H + 34}>
-              {['under 1% given', '1–4.99%', '5–9.99%', '10–19.99%', '20% or more'][i]}
-            </text>
+          <g key={b.k}>
+            <rect className={empty(b.k) ? s.bandEmpty : b.k % 2 ? s.bandA : s.bandB} x={x0} y={TOP - 6} width={x1 - x0} height={BOTTOM - TOP + 6} />
+            <text className={empty(b.k) ? s.bandLblEmpty : s.bandLbl} x={(x0 + x1) / 2} y={TOP - 14}>{b.k}</text>
+            {empty(b.k) && <text className={s.bandNobody} x={(x0 + x1) / 2} y={(TOP + BOTTOM) / 2}>nobody</text>}
+          </g>
+        );
+      })}
+      <text className={s.sub} x={L} y={12}>Forbes score, over the share of each fortune given away</text>
+      {[0.001, 0.01, 0.05, 0.1, 0.2, 0.5].map((t) => (
+        <text key={t} className={s.tick} x={x(t)} y={BOTTOM + 16}>{`${+(t * 100).toPrecision(2)}%`}</text>
+      ))}
+      {rows.map((r, i) => {
+        const y = TOP + i * H + H / 2;
+        const cx = x(r.share);
+        return (
+          <g key={r.p.slug}>
+            <text className={s.lbl} x={0} y={y + 4}>{short(r.p.name)}</text>
+            {/* A ceiling, not a point: the true share is somewhere left of the ring. */}
+            {r.bound && <line className={s.boundTail} x1={x(MIN)} x2={cx - 5} y1={y} y2={y} />}
+            <circle className={r.bound ? s.dotBound : s.dotGiven} cx={cx} cy={y} r={4.5} />
           </g>
         );
       })}

@@ -13,7 +13,7 @@ import data from '../../data/half.json';
 import { SOURCES, byId } from '../../data/half-sources';
 import {
   WealthPack, Paired, Payout, Horizon, Mechanisms, Scores, Coverage,
-  PEOPLE, SUMMARY, CONTEXT, money, shareOf, pctLbl,
+  PEOPLE, SUMMARY, CONTEXT, money, shareOf, pctLbl, scoreGap,
 } from './figures';
 import s from './half.module.css';
 
@@ -66,6 +66,8 @@ const withNothing = PEOPLE.filter((p) => !p.filesUS && !p.foundation?.paidOut).l
 const publishOwn = nonFilers - withNothing;
 const scored = Object.values(SUMMARY.scores).reduce((sum, n) => sum + n, 0);
 const unscored = SUMMARY.count - scored;
+/* The empty stretch in the score chart, found in the data rather than asserted. */
+const gap = scoreGap();
 const now = Number(data.built.slice(0, 4));
 const muskHalf = now + (musk.derived.yearsToHalf ?? 0);
 
@@ -109,8 +111,8 @@ const CHAPTERS = [
   {
     id: 'scores',
     kicker: 'Forbes’ philanthropy score',
-    title: `Of the ${spell(scored)} Forbes scored, none got a three or a four.`,
-    body: <>Forbes grades giving from one to five by the share of a fortune given away<Cite id="forbes-profiles" />. It scored {spell(scored)} of the twenty-five; {spell(unscored)} have no score. {spell(SUMMARY.scores['1']).replace(/^\w/, (c) => c.toUpperCase())} got a one, {spell(SUMMARY.scores['2'])} a two, {spell(SUMMARY.scores['5'])} a five. The middle is empty — though a single grade flattens a great deal.</>,
+    title: `Nobody has given between ${pctLbl(gap.below.share)} and ${pctLbl(gap.above.share)}.`,
+    body: <>Forbes grades giving from one, under 1 percent of a fortune given away, to five, 20 percent or more<Cite id="forbes-profiles" />. It scored the {spell(scored)} Americans; the {spell(unscored)} others have no score. Measured as share given, they split cleanly. {gap.above.p.name} and the two above him made giving a habit that kept pace with their fortunes; Buffett has given Berkshire shares every year since 2006<Cite id="berkshire-2024" />. Below {gap.below.p.name}, fortunes have outgrown giving: {musk.name}’s is up about {times(musk.derived.growthSincePledge!)} times since he signed the Pledge. The middle bands are empty because reaching them means giving faster than the fortune grows.</>,
     figure: <Scores />,
   },
   {

@@ -102,7 +102,7 @@ export const SOURCES: Source[] = [
     url: 'https://www.berkshirehathaway.com/news/jun2824.pdf',
     kind: 'government',
     status: 'primary',
-    supports: 'That his lifetime commitments to the Gates Foundation “expire upon my death”, and that his estate goes to a trust overseen by his children.',
+    supports: 'That his lifetime commitments to the Gates Foundation “expire upon my death”, that his estate goes to a trust overseen by his children, and that the annual share gifts follow a schedule set in 2006.',
     note: 'A company release, not a government document; primary because it is his own statement.',
   },
   {

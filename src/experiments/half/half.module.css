@@ -678,3 +678,15 @@
 .givenFillBound { background: none; outline: 1px dashed var(--you); outline-offset: -1px; }
 .givenHalf { position: absolute; top: -2px; bottom: -2px; right: 0; width: 1.5px; background: var(--warn); }
 @media (max-width: 480px) { .signers td:nth-child(3), .signers th:nth-child(3) { display: none; } }
+
+/* Score strip: Forbes' bands behind one row per person. */
+.fig .bandA { fill: rgb(232 232 224 / 4%); }
+.fig .bandB { fill: rgb(232 232 224 / 8%); }
+.fig .bandEmpty { fill: rgb(232 160 106 / 7%); stroke: rgb(232 160 106 / 35%); stroke-dasharray: 3 3; }
+.fig .bandLbl { fill: var(--mute); font-size: 11px; text-anchor: middle; font-weight: 600; }
+.fig .bandLblEmpty { fill: var(--warn); font-size: 11px; text-anchor: middle; font-weight: 600; }
+.fig .bandNobody { fill: var(--warn); font-size: 10.5px; text-anchor: middle; letter-spacing: .08em; }
+.fig .tick { fill: var(--mute); font-size: 10px; text-anchor: middle; }
+.fig .dotGiven { fill: var(--you); }
+.fig .dotBound { fill: #18181a; stroke: var(--you); stroke-width: 1.5; }
+.fig .boundTail { stroke: var(--you); stroke-opacity: .45; stroke-width: 1; stroke-dasharray: 2 3; }

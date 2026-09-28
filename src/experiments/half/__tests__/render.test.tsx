@@ -11,7 +11,7 @@ import type { ReactElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import data from '../../../data/half.json';
 import { SOURCES, assertNoUnverifiedClaims } from '../../../data/half-sources';
-import { shareOf, WealthPack, Paired, Payout, Horizon, Mechanisms, Scores, Coverage, PEOPLE, SUMMARY } from '../figures';
+import { shareOf, scoreRows, scoreGap, WealthPack, Paired, Payout, Horizon, Mechanisms, Scores, Coverage, PEOPLE, SUMMARY } from '../figures';
 import Half from '../Half';
 
 let fails = 0;
@@ -84,6 +84,23 @@ console.log('Wealth against giving, interactive');
   const sb = shareOf(b.lifetime!.amount, b.wealth!);
   ok(sb > 0.3 && sb < 0.5, `Buffett's share ${sb} is between a third and a half`);
   ok(SUMMARY.household > 100000 && SUMMARY.household < 300000, 'the family yardstick is a plausible median');
+}
+
+/* ---- the score chart's claim holds ----------------------------------- */
+console.log('Scores');
+{
+  const rows = scoreRows();
+  ok(rows.length === 17, `${rows.length} scored rows`);
+  /* Our share and Forbes' band must agree, or one of them is wrong. A bound is
+     a ceiling, so it only has to leave room for the band. */
+  const band = (f: number) => f < 0.01 ? 1 : f < 0.05 ? 2 : f < 0.10 ? 3 : f < 0.20 ? 4 : 5;
+  for (const r of rows) {
+    if (r.bound) ok(band(r.share) >= r.score, `${r.p.name}: ceiling ${r.share} leaves no room for score ${r.score}`);
+    else ok(band(r.share) === r.score, `${r.p.name}: share ${r.share} is band ${band(r.share)}, Forbes says ${r.score}`);
+  }
+  const g = scoreGap();
+  ok(g.below.p.slug === 'steve-ballmer' && g.above.p.slug === 'michael-bloomberg', `the gap is ${g.below.p.name}–${g.above.p.name}`);
+  ok(!rows.some((r) => r.share > g.below.share && r.share < g.above.share), 'nobody sits inside the gap');
 }
 
 /* ---- the whole piece ------------------------------------------------ */
