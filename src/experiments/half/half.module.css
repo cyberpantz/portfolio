@@ -91,6 +91,9 @@
 .step,
 .stepOn {
   min-height: 62vh;
+  /* A floor, not a guarantee: a long chapter outgrows it, so the space
+     between chapters has to come from padding, not from the min-height. */
+  padding-block: clamp(40px, 9vh, 96px);
   display: flex;
   flex-direction: column;
   justify-content: center;
