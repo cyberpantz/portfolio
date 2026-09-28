@@ -302,17 +302,7 @@ export function Horizon() {
 
 /** Three mechanisms, each a small diagram with its named case. */
 export function Mechanisms() {
-  const figOf = (m: string, key: string) => {
-    const hit = CONTEXT.shelters.find((x) => x.mechanism === m && x.inTop25 && x.figures && key in (x.figures as object));
-    return hit ? (hit.figures as Record<string, string | number>)[key] : null;
-  };
-  /* Captions written, not pasted: the research strings are for the register. */
-  const dafShares = figOf('daf', 'nvidia_shares_in_foundation');
-  const dafShare = figOf('daf', 'share_of_grants_to_DAF_pct');
-  const llcSpend = figOf('llc', 'fy2023_expenses_usd');
-  const cb = figOf('related-party', 'crystal_bridges_grants_2010_usd');
-  const dollars = (v: string | number | null) => v == null ? null : Number(String(v).replace(/[^\d.]/g, ''));
-
+  /* Definitions only; the chapter text carries the cases. */
   const Card = ({ title, children, caption }: { title: string; children: React.ReactNode; caption: React.ReactNode }) => (
     <figure className={s.card}>
       <svg viewBox="0 0 200 90" className={s.cardSvg} aria-hidden="true">{children}</svg>
@@ -322,20 +312,20 @@ export function Mechanisms() {
   return (
     <div className={s.cards}>
       <Card title="The donor-advised fund"
-            caption={<>The contribution is counted as distributed; the fund need not disclose where it goes next. The Huang foundation held {dafShares} Nvidia shares and sent {dafShare} percent of its grants to one.</>}>
+            caption={<>An account at a sponsoring charity. The donor takes the deduction when money goes in and advises on grants later. There is no payout rule, and recipients need not be disclosed.</>}>
         <rect className={s.cBox} x={70} y={20} width={60} height={50} rx={4} />
         <line className={s.cArrow} x1={10} y1={45} x2={64} y2={45} markerEnd="url(#h-arrow)" />
         <text className={s.cLbl} x={100} y={49}>DAF</text>
-        <text className={s.cNote} x={140} y={49}>no outlet</text>
+        <text className={s.cNote} x={100} y={86}>no payout rule</text>
       </Card>
       <Card title="The charitable LLC"
-            caption={<>A company, not a charity: no public return, no disclosure of what it pays or funds, and lobbying is permitted. Bezos’s one filed vehicle reported no grants and {money(dollars(llcSpend))} of expenses.</>}>
+            caption={<>A company rather than a charity. It can make grants, investments and political contributions, and files no public charitable return.</>}>
         <rect className={s.cBoxSolid} x={60} y={15} width={80} height={60} rx={4} />
         <text className={s.cLblInv} x={100} y={49}>LLC</text>
         <text className={s.cNote} x={100} y={86}>no filing, no window</text>
       </Card>
       <Card title="The related party"
-            caption={<>The grant supports an institution the founder owns or runs. The Walton Family Foundation gave {money(dollars(cb))} to the Walton museum in one year; about half of the Musk Foundation’s grants went to Musk interests.</>}>
+            caption={<>A grant that benefits the donor’s own family, businesses or associates. Direct self-dealing is prohibited; benefit at one remove often is not.</>}>
         <circle className={s.cRing} cx={100} cy={45} r={30} />
         <text className={s.cLbl} x={100} y={49}>back</text>
         <text className={s.cNote} x={100} y={86}>to the donor’s own interests</text>

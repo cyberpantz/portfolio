@@ -1793,8 +1793,7 @@
         "finding": "Bloomberg: the foundation held 69 million Nvidia shares by end-2022 (worth >$8B per FoundationMark) and 'has mostly given stock to a donor-advised fund at Schwab'; Huang 'logs 1-hour weeks' at it. Search summary of Bloomberg/other coverage: 84% of the foundation's grants went to the 'GeForce Fund' DAF at DAFgiving360 (Schwab Charitable). NYT (Dec 2024, 'How one of the world's richest men is avoiding $8 billion in taxes') reported the estate-tax avoidance; Seattle Times syndication and NYT URLs did not render/were blocked.",
         "figures": {
           "nvidia_shares_in_foundation": "69 million",
-          "value_usd": ">8 billion",
-          "share_of_grants_to_DAF_pct": 84
+          "value_usd": ">8 billion"
         },
         "status": "primary",
         "inTop25": true

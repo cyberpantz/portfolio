@@ -1,377 +1,376 @@
 {
- "backlash": [
-  {
-   "who": "Warren Buffett",
-   "what": "June 28, 2024 Berkshire release announcing annual gifts to the Gates Foundation Trust and four family foundations: 'My will provides that more than 99% of my estate is destined for philanthropic usage. The lifetime commitments expire upon my death.' Fortune (2024-06-28, cited by Fortune 2026) and Inside Philanthropy report that in an accompanying WSJ interview he said the Gates Foundation 'has no money coming after my death' and the remainder goes to a charitable trust overseen by his three children (WSJ interview itself not opened).",
-   "when": "2024-06",
-   "url": "https://www.berkshirehathaway.com/news/jun2824.pdf",
-   "status": "primary"
-  },
-  {
-   "who": "Warren Buffett",
-   "what": "Nov 10, 2025 Thanksgiving letter, announcing accelerated gifts to his children's foundations: 'Early on, I contemplated various grand philanthropic plans. Though I was stubborn, these did not prove feasible. During my many years, I've also watched ill-conceived wealth transfers by political hacks, dynastic choices and, yes, inept or quirky philanthropists.' Also: 'Ruling from the grave does not have a great record.' Fortune (2025-12-04) characterises this as Buffett appearing 'to distance himself from the Giving Pledge'. The letter does not mention the Giving Pledge by name.",
-   "when": "2025-11",
-   "url": "https://www.berkshirehathaway.com/news/nov1025.pdf",
-   "status": "primary"
-  },
-  {
-   "who": "Warren Buffett",
-   "what": "July 14, 2026 Berkshire release: 12,000,000 B shares donated only to the four family foundations; the Gates Foundation receives none for the first time since 2006. 'My goal is to dispose of all of my Berkshire shares within about eight years... my remaining shares will be donated to the four foundations one way or the other by December 31, 2034.'",
-   "when": "2026-07",
-   "url": "https://www.berkshirehathaway.com/news/jul1426.pdf",
-   "status": "primary"
-  },
-  {
-   "who": "Warren Buffett (Fortune write-up)",
-   "what": "Fortune: Buffett 'is quietly ending one of the biggest philanthropic relationships in history' after $48B to the Gates Foundation; WSJ reported he paused the mid-year gift pending a WilmerHale review of the foundation's Epstein ties; Buffett to CNBC March 2026 on the Gates Foundation: 'I'll wait and see what unfolds' and 'there was a lot I didn't know'; Gates Foundation statement: Buffett's gifts total 'more than $47 billion'.",
-   "when": "2026-07",
-   "url": "https://fortune.com/2026/07/14/warren-buffett-ends-48-billion-gates-foundation-donations-redirects-wealth-to-childrens-family-foundations/",
-   "status": "secondary"
-  },
-  {
-   "who": "Bill Gates",
-   "what": "May 8, 2025: announces the Gates Foundation will close Dec 31, 2045 and spend ~$200B; 'People will say a lot of things about me when I die, but I am determined that 'he died rich' will not be one of them' (Gates Notes blog, quoted by NPR). To NPR on Musk/USAID: 'this is one where I think he made a mistake'; NPR cites his NYT quote that 'the world's richest man has been involved in the deaths of the world's poorest children.' On the Pledge: 'I'm trying to set an example by giving 98% of the money I have.'",
-   "when": "2025-05",
-   "url": "https://www.npr.org/2025/05/08/nx-s1-5391316/bill-gates-foundation-ending-microsoft-philanthropy-billions",
-   "status": "secondary",
-   "note": "Gates Notes post itself would not render via fetch; NPR reproduces the quote and interview."
-  },
-  {
-   "who": "Bill Gates (Forbes on Musk)",
-   "what": "Forbes headline: 'Bill Gates Accuses Musk Of Killing Over A Million Children With USAID Cuts—Accelerates Charity Timeline'. Search summary reports Forbes estimates Musk's out-the-door lifetime giving at $620M through 2023, under 1% of his wealth.",
-   "when": "2025-05",
-   "url": "https://www.forbes.com/sites/tylerroush/2025/05/08/bill-gates-will-close-gates-foundation-in-2045-after-donating-99-of-his-fortune/",
-   "status": "needs-check",
-   "note": "Seen only in search result, not opened."
-  },
-  {
-   "who": "Elon Musk (via Peter Thiel)",
-   "what": "Thiel, in lectures reported by Reuters (Oct 9, 2025) and Fortune, says he warned Musk that Pledge money would go 'to left-wing nonprofits that will be chosen by Bill Gates'; Musk reportedly replied: 'What am I supposed to do—give it to my children? You know, it would be much worse to give it to Bill Gates.' Fortune notes Musk 'reportedly signed the pledge in 2012.' Search summary of NYT (2026-03-15, 'The Billionaire Backlash Against a Philanthropic Dream') says Thiel told the NYT the pledge has 'run out of energy' and that he has privately urged about a dozen signatories to reconsider.",
-   "when": "2025-10",
-   "url": "https://fortune.com/2025/10/13/billionaire-peter-thiel-warned-elon-musk-to-ditch-donating-to-the-giving-pledge-bill-gates-donation-left-wing-nonprofits/",
-   "status": "secondary",
-   "note": "Reuters and NYT URLs blocked from fetch: https://www.reuters.com/world/us/peter-thiel-talk-antichrist-says-he-told-elon-musk-not-give-wealth-charity-2025-10-09/ ; https://www.nytimes.com/2026/03/15/business/the-billionaire-backlash-against-a-philanthropic-dream.html"
-  },
-  {
-   "who": "Elon Musk (own remarks)",
-   "what": "TED interview April 2022: 'If you say philanthropy is a love of humanity, they [his companies] are philanthropy.' DealBook Nov 2023: 'What I care about is the reality of goodness, not the perception of it.' (both as quoted by Fortune, 2024-03-11).",
-   "when": "2022-04",
-   "url": "https://fortune.com/2024/03/11/elon-musk-tesla-billionaire-charity-donation-non-profit-foundation/",
-   "status": "secondary"
-  },
-  {
-   "who": "Melinda French Gates",
-   "what": "May 13, 2024: resigns as co-chair of the Gates Foundation effective June 7, 2024, with $12.5B from Bill Gates's personal wealth for her own philanthropy: 'the time is right for me to move forward into the next chapter of my philanthropy' (search summary; CNBC).",
-   "when": "2024-05",
-   "url": "https://www.cnbc.com/2024/05/13/melinda-french-gates-to-resign-from-gates-foundation-will-pursue-own-philanthropy-with-12point5-billion-grant.html",
-   "status": "needs-check",
-   "note": "Seen in search result only."
-  },
-  {
-   "who": "Melinda French Gates",
-   "what": "Wired interview (Dec 2025), quoted by Fortune: asked whether Pledge signatories have given enough: 'Have they given enough? No.' Also: 'Okay, have those people actually been giving money? Some of them, yes, some of them at massive scale.'",
-   "when": "2025-12",
-   "url": "https://fortune.com/2025/12/04/melinda-french-gates-rips-billionaire-class-giving-pledge/",
-   "status": "secondary"
-  },
-  {
-   "who": "Scott Bessent (US Treasury Secretary)",
-   "what": "Dec 3, 2025, per Fortune: called the Giving Pledge 'well intentioned' but 'very amorphous', said wealthy people signed out of fear the public would 'come at it with pitchforks', and that not many billionaires had delivered.",
-   "when": "2025-12",
-   "url": "https://fortune.com/2025/12/04/melinda-french-gates-rips-billionaire-class-giving-pledge/",
-   "status": "secondary"
-  },
-  {
-   "who": "Mark Zuckerberg / Jeff Bezos (non-signer)",
-   "what": "Quoted in IPS Gilded Giving 2026: Zuckerberg: 'the idea that you make money with a company and then find a way to do good with a philanthropy is a really outdated way of thinking about things.' Bezos: 'If I do my job right, the value to society and civilization from my for-profit companies will be much, much larger than the good that I do with my charitable giving.'",
-   "when": "2026-09",
-   "url": "https://ips-dc.org/philanthropy-under-oligarchy/",
-   "status": "secondary"
-  },
-  {
-   "who": "Signatories removed/left the list",
-   "what": "NOT FOUND as a documented list. IPS notes the Pledge 'does not serve as an oversight body, nor does it police its signatories.' Search summaries (Benzinga/Yahoo, Mar 2026, citing NYT) report signups fell from 113 families in the first five years to 72, then 43, with 4 in 2024 and 14 in 2025, and that 'some billionaires have been backing out' — no named departures found in opened sources.",
-   "when": "2026-03",
-   "url": "https://www.benzinga.com/markets/tech/26/03/51262181/the-giving-pledge-warren-buffett-bill-gates-launched-to-inspire-billionaire-philanthropy-is-losing-steam-signups-drop-from-113-to-just-14-in-2025",
-   "status": "needs-check"
-  }
- ],
- "pledgeAssessments": [
-  {
-   "source": "Institute for Policy Studies, 'The Giving Pledge at 15' (Collins, DeVaan, Flannery, Petegorsky)",
-   "finding": "'15 years on, the Giving Pledge is unfulfilled, unfulfillable, and not our ticket to a fairer, better future.' Only one living 2010 US pledger set (Laura and John Arnold) has fulfilled; 8 of 22 deceased pledgers fulfilled; only Chuck Feeney gave it all before death. 80% of original pledgers' giving went to private foundations.",
-   "figures": {
-    "total_signers": 256,
-    "us_signers": 194,
-    "us_signers_still_billionaires": 110,
-    "their_combined_wealth_usd": "1.7 trillion",
-    "original_2010_us_pledgers": 57,
-    "original_still_billionaires": 32,
-    "original_billionaires_combined_wealth_usd": "908 billion",
-    "net_worth_growth_since_2010_pct": 283,
-    "inflation_adjusted_growth_pct": 166,
-    "zuckerberg_chan_growth_pct": ">4000",
-    "original_pledgers_given_usd": "206 billion",
-    "to_private_foundations_usd": "164 billion (80%)",
-    "to_DAFs_usd": "~5 billion (likely undercount)",
-    "44_foundations_assets_2023_usd": "120 billion",
-    "median_foundation_payout_pct": 9.2,
-    "deceased_pledgers": 22,
-    "deceased_fulfilled": 8,
-    "living_fulfilled": "1 (Arnolds)",
-    "shortfall_if_all_living_fulfilled_today_usd": "367 billion",
-    "treasury_loss_if_deducted_usd": "up to 272 billion",
-    "public_subsidy_per_dollar": "up to 74 cents"
-   },
-   "when": "2025-07-30",
-   "url": "https://ips-dc.org/report-giving-pledge-at-15/",
-   "status": "primary",
-   "pdf": "https://ips-dc.org/wp-content/uploads/2025/07/report_giving_pledge_at_15.pdf",
-   "data": "https://inequality.org/wp-content/uploads/2025/07/Giving-Pledge-at-15-Data-Tables.xlsx"
-  },
-  {
-   "source": "Institute for Policy Studies, 'Gilded Giving 2020 / Giving Pledge at 10' (as summarised in search results; NPQ and Inside Philanthropy)",
-   "finding": "62 US pledgers who were billionaires in 2010 saw combined assets rise from $376B (2010) to $734B (2020); nine more than tripled, incl. Zuckerberg (+1,783%), Doerr (+416%), Benioff (+400%).",
-   "figures": {
-    "cohort": 62,
-    "wealth_2010_usd": "376 billion",
-    "wealth_2020_usd": "734 billion"
-   },
-   "when": "2020-08",
-   "url": "https://nonprofitquarterly.org/voices-from-the-field-giving-pledge-at-10-peril-and-possibility/",
-   "status": "needs-check",
-   "note": "Figures from search summary; the IPS 2020 report page not opened."
-  },
-  {
-   "source": "Institute for Policy Studies, 'Gilded Giving 2026: Philanthropy Under Oligarchy'",
-   "finding": "'The Giving Pledge has only added a handful of new signatories and is facing intense backlash from right-wing givers like Peter Thiel and Elon Musk.' Broader: 'philanthropy... has become part of that defense of extreme wealth.'",
-   "figures": {
-    "see_shelters": "payout and DAF figures recorded under shelters"
-   },
-   "when": "2026-09-15",
-   "url": "https://ips-dc.org/philanthropy-under-oligarchy/",
-   "status": "primary",
-   "pdf": "https://ips-dc.org/wp-content/uploads/2026/09/GG26-September-2026-FINAL_formatted1.pdf"
-  },
-  {
-   "source": "Fortune (Sydney Lake), 'Melinda French Gates rips into billionaire class, saying Giving Pledge has fallen short'",
-   "finding": "Aggregates: French Gates 'Have they given enough? No'; Bessent calls it a failure; Buffett's 'did not prove feasible' letter; cites IPS. Also: John and Laura Arnold gave $204M in 2024 (Forbes) with net worth ~$2.9B; MacKenzie Scott ~$20B in five years, still worth ~$40B.",
-   "figures": {},
-   "when": "2025-12-04",
-   "url": "https://fortune.com/2025/12/04/melinda-french-gates-rips-billionaire-class-giving-pledge/",
-   "status": "secondary"
-  },
-  {
-   "source": "Fortune (Jessica Coacci) on Thiel/Musk",
-   "finding": "'America's billionaires have only pledged or donated $185 billion of their $5.7 trillion combined wealth in the last decade' (Fortune, Sept 2025 analysis, linked).",
-   "figures": {
-    "pledged_or_donated_10yr_usd": "185 billion",
-    "combined_wealth_usd": "5.7 trillion"
-   },
-   "when": "2025-10-13",
-   "url": "https://fortune.com/2025/10/13/billionaire-peter-thiel-warned-elon-musk-to-ditch-donating-to-the-giving-pledge-bill-gates-donation-left-wing-nonprofits/",
-   "status": "secondary"
-  },
-  {
-   "source": "Chronicle of Philanthropy, 'Is the Giving Pledge Living Up to Its Potential?'",
-   "finding": "Chronicle (Maria Di Mento) on the IPS report: the Pledge 'has largely failed'; only 13% of US billionaires have signed; 'almost 80 percent of original signers' charitable gifts have gone toward their foundations, and about 2.5 percent... to donor-advised funds, providing tax reductions before any of their money reaches working charities.' Collins: 'their wealth is accelerating and growing faster than they're giving it away'; 'We're just going to see huge amounts of money parked in family-controlled foundations.' Giving Pledge spokeswoman: 'The Giving Pledge has helped create new norms of generosity... Each signatory pursues their philanthropy individually.' Names the 8 deceased fulfillers: Feeney, Jim & Virginia Stowers, Barron Hilton, Lorry Lokey, Herb & Marion Sandler, Victoria Sant, Ted & Vada Stanley, Boone Pickens. Forbes net worths cited: Gates ~$117B, French Gates ~$30B, Buffett ~$143B.",
-   "figures": {
-    "us_billionaires_signed_pct": 13,
-    "original_signers_gifts_to_foundations_pct": "~80",
-    "to_DAFs_pct": 2.5,
-    "original_signers_given_usd": "201 billion"
-   },
-   "when": "2025-07-30",
-   "url": "https://www.philanthropy.com/news/is-the-giving-pledge-living-up-to-its-potential/",
-   "status": "primary"
-  },
-  {
-   "source": "CNBC, 'The Giving Pledge was meant to turbocharge philanthropy. Few billionaires got on board.'",
-   "finding": "NOT OPENED (page returned empty). Search summary: 'After 15 years, the Giving Pledge yields mixed results.'",
-   "figures": {},
-   "when": "2025-08-07",
-   "url": "https://www.cnbc.com/2025/08/07/giving-pledge-buffett-gates-billionaires-philanthropy.html",
-   "status": "needs-check"
-  },
-  {
-   "source": "Academic: 'Billionaires in Global Philanthropy: a Decade of the Giving Pledge', Society (Springer), 2021 (PMC8147574)",
-   "finding": "Per Fortune's characterisation: studies show the Pledge 'has helped billionaires present themselves as generous and public-spirited, but doesn't question inequalities and tax rules that led to such massive wealth in the first place.'",
-   "figures": {},
-   "when": "2021",
-   "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8147574/",
-   "status": "needs-check"
-  }
- ],
- "shelters": [
-  {
-   "mechanism": "daf",
-   "case": "Systemic: DAF Research Collaborative Annual DAF Report 2025 (successor to NPT's report), FY2024",
-   "finding": "Total DAF assets $326.45B (+27.5%); grants $64.89B (+19.0%); payout rate 25.3%. IPS Gilded Giving 2026 adds: four largest sponsors (NPT, Fidelity Charitable, DAFgiving360, Vanguard Charitable) held an average $6.84 in assets per $1 granted in 2025 (range $5.33 DAFgiving360 to $8.73 NPT); their assets grew ~64% faster than grants since 2017; DAFs have no legal payout requirement; giving to DAFs rose from 4% to 23% of all individual giving since 2010; DAFs and foundations together took 38% of individual giving in 2024.",
-   "figures": {
-    "daf_assets_2024_usd": "326.45 billion",
-    "daf_grants_2024_usd": "64.89 billion",
-    "payout_rate_pct": 25.3,
-    "assets_per_dollar_granted_big4_2025": 6.84,
-    "daf_share_of_individual_giving_2024_pct": 23
-   },
-   "url": "https://ips-dc.org/philanthropy-under-oligarchy/",
-   "status": "primary",
-   "inTop25": false,
-   "note": "DAF report figures from search summary; report page fetch returned empty: https://www.dafresearchcollaborative.org/annual-daf-report/2025 ; Chronicle 'DAF Assets Soar 30% to $326 Billion' https://www.philanthropy.com/news/daf-assets-soar-30-to-326-billion/ (timed out)."
-  },
-  {
-   "mechanism": "daf",
-   "case": "Jensen Huang — Jen-Hsun & Lori Huang Foundation (Bloomberg, June 27, 2024)",
-   "finding": "Bloomberg: the foundation held 69 million Nvidia shares by end-2022 (worth >$8B per FoundationMark) and 'has mostly given stock to a donor-advised fund at Schwab'; Huang 'logs 1-hour weeks' at it. Search summary of Bloomberg/other coverage: 84% of the foundation's grants went to the 'GeForce Fund' DAF at DAFgiving360 (Schwab Charitable). NYT (Dec 2024, 'How one of the world's richest men is avoiding $8 billion in taxes') reported the estate-tax avoidance; Seattle Times syndication and NYT URLs did not render/were blocked.",
-   "figures": {
-    "nvidia_shares_in_foundation": "69 million",
-    "value_usd": ">8 billion",
-    "share_of_grants_to_DAF_pct": 84
-   },
-   "url": "https://www.bloomberg.com/news/articles/2024-06-27/nvidia-ceo-jensen-huang-has-billions-at-foundation-where-he-works-1-hour-weeks",
-   "status": "primary",
-   "inTop25": true,
-   "note": "Bloomberg paywalled; only the deck and first two paragraphs read. 84% figure from search summary."
-  },
-  {
-   "mechanism": "daf",
-   "case": "Elon Musk (Fortune, March 2022 / March 2024)",
-   "finding": "Fortune: philanthropy experts warned Musk's foundation 'might in reality just serve to lower his personal tax bill... by employing a loophole known as donor-advised funds (DAFs).'",
-   "figures": {},
-   "url": "https://fortune.com/2024/03/11/elon-musk-tesla-billionaire-charity-donation-non-profit-foundation/",
-   "status": "secondary",
-   "inTop25": true
-  },
-  {
-   "mechanism": "llc",
-   "case": "Chan Zuckerberg Initiative LLC (Forbes, Kerry Dolan, Dec 4, 2015)",
-   "finding": "Zuckerberg: 'By using an LLC instead of a traditional foundation, we receive no tax benefit from transferring our shares to the Chan Zuckerberg Initiative, but we gain flexibility.' Forbes (citing trusts lawyer Susanna Poon): the LLC can lobby and make political donations, which foundations cannot; 'will not have to disclose what it pays its top five executives, something that charitable foundations are required to do in their annual 990 filings'; not subject to the 10% excess-business-holdings limit; Zuckerberg retains control of the shares. Same article names Pierre Omidyar's Omidyar Network as the precedent hybrid. Search summary notes CZI's science grantmaking runs through a linked 501(c)(3) foundation, a DAF and a 501(c)(4).",
-   "figures": {},
-   "url": "https://www.forbes.com/sites/kerryadolan/2015/12/04/mark-zuckerberg-explains-why-the-chan-zuckerberg-initiative-isnt-a-charitable-foundation/",
-   "status": "primary",
-   "inTop25": true
-  },
-  {
-   "mechanism": "llc",
-   "case": "Bezos Earth Fund (LLC) and Bezos Earth Fund Foundation (501(c)(3), EIN 93-1868994)",
-   "finding": "ProPublica Nonprofit Explorer (990-PF data): the Bezos Earth Fund Foundation received tax exemption Jan 2024. FY2023: revenue $0, expenses $13,865,842, charitable disbursements $0, net assets -$13.9M. FY2024: contributions $14.25M, expenses $24.49M, total assets $223,491, liabilities $24.49M, officer pay incl. Andrew Steer (President) $817,660; Jeff Bezos and Lauren Sanchez Bezos directors at $0. The 990-PF includes an 'Other Professional Fees Schedule'. Search summary (Capital Research Center/InfluenceWatch, not opened): the Earth Fund was 'not initially structured as a 501(c)(3)... but instead a limited liability company', which 'is not required to publicly disclose its grants', and 'over 99 percent of [the Foundation's 2023] expenditures went towards advising fees to Bezos Earth Fund LLC' — that recipient claim NOT verified in the filing itself. Bloomberg (Jan 8, 2025, headline only): 'Jeff Bezos' Earth Fund Starts Nonprofit Allowing Tax-Free Donations'.",
-   "figures": {
-    "fy2023_expenses_usd": "13,865,842",
-    "fy2023_grants_usd": "0",
-    "fy2024_expenses_usd": "24,489,890",
-    "fy2024_total_assets_usd": "223,491"
-   },
-   "url": "https://projects.propublica.org/nonprofits/organizations/931868994",
-   "status": "primary",
-   "inTop25": true,
-   "note": "Filing: https://projects.propublica.org/nonprofits/organizations/931868994/202533099349101443/full ; Bloomberg: https://www.bloomberg.com/news/articles/2025-01-08/bezos-earth-fund-starts-nonprofit-allowing-tax-free-donations (not opened)."
-  },
-  {
-   "mechanism": "related-party",
-   "case": "Musk Foundation (NYT investigation, March 10, 2024, via Fortune)",
-   "finding": "Fortune summarising NYT: 'approximately half of the tax-deductible donations made by the Musk Foundation in 2021 and 2022 benefited in some way the tycoon's business interests, partners, or family' — incl. Ad Astra school where 5 of ~12 students were his children; $100M to a charity run by his family-office head Jared Birchall that bought land next to a Boring Co. housing development; a Texas county hit by SpaceX debris. Gave $160M in 2022, '$193 million short' of the 5% requirement. Search summary of NYT: short $41M (2021), $234M (2022), $421M (2023), three years running.",
-   "figures": {
-    "foundation_assets_usd": "~7 billion",
-    "grants_2022_usd": "160 million",
-    "shortfall_2022_usd": "193 million",
-    "shortfall_2023_usd": "421 million (search summary)"
-   },
-   "url": "https://fortune.com/2024/03/11/elon-musk-tesla-billionaire-charity-donation-non-profit-foundation/",
-   "status": "secondary",
-   "inTop25": true,
-   "note": "NYT original blocked: https://www.nytimes.com/2024/03/10/us/elon-musk-charity.html"
-  },
-  {
-   "mechanism": "related-party",
-   "case": "Walton Family Foundation -> Crystal Bridges Museum of American Art (Bentonville; founded by Alice Walton, board chair)",
-   "finding": "Foundation's own release (Sept 23, 2011): in 2010 it granted $1,203,290,308 to Crystal Bridges — $800M endowment grants 'to support operations, art acquisitions and future capital improvement needs' and $403M 'for artwork, general operating expenses and construction' — versus 'just over $45 million' to all three of its other home-region initiatives combined that year. Executive director Buddy Philpot: grants to the museum 'were outside of our typical grant making in our home region'. Foundation states northwest Arkansas is of 'particular importance' 'because of strong historic and Walton family ties'. This documents family-founded-institution funding, not compensation to family; no adjudicated self-dealing found. Fast Company (Sept 2026, headline only): 'Billionaire urbanism: How Walmart heir Alice Walton engineered a small-town paradise'. ProPublica WFF Inc. EIN 13-3441466 available for officer pay (search summary: exec director Stephanie Cornell $782,636).",
-   "figures": {
-    "crystal_bridges_grants_2010_usd": "1,203,290,308",
-    "endowment_grants_usd": "800,000,000",
-    "other_home_region_2010_usd": "~45,000,000"
-   },
-   "url": "https://www.waltonfamilyfoundation.org/about-us/newsroom/walton-family-foundation-invests-over-1-2-billion-in-home-region-initiatives-in-2010",
-   "status": "primary",
-   "inTop25": true,
-   "note": "ProPublica WFF: https://projects.propublica.org/nonprofits/organizations/133441466 (not opened); Fast Company: https://www.fastcompany.com/91550093/alice-walton-crystal-bridges-expansion-bentonville (not opened)."
-  },
-  {
-   "mechanism": "related-party",
-   "case": "990-PF officer compensation to family among large foundations",
-   "finding": "NOT FOUND in opened sources within budget.",
-   "figures": {},
-   "url": "",
-   "status": "needs-check",
-   "inTop25": false
-  },
-  {
-   "mechanism": "payout-shortfall",
-   "case": "Systemic: Philanthropy Roundtable literature review (pro-foundation source) and IPS",
-   "finding": "Roundtable: Foundation Center 2012 study of 1,170 large foundations found 'around one-in-ten foundations had payout rates below the 5 percent minimum', attributed to carryover/asset growth; 2018 Journal of Wealth Management study of >12,000 foundations: median payout 5.14%; IRS 2018 fact sheet (>100,000 990-PFs): median 5.5%. Excess distributions carry forward five years. IPS 2026: median payout at the 144 foundations with >$1B endowments was 5.1% in 2024, 'treating that as a ceiling instead of a floor'; Lilly Endowment paid 3% in 2024, 3.4% in 2023, reaching 5% in 2025 'for the first time since 2009'; raising the minimum to 10% would move $66.3B in 2026. Penalty: 30% excise tax on undistributed income, plus 100% if not cured (IRS).",
-   "figures": {
-    "share_below_5pct_2007_09": "~10%",
-    "median_payout_12000_foundations_pct": 5.14,
-    "irs_2018_median_pct": 5.5,
-    "median_payout_billion_dollar_foundations_2024_pct": 5.1,
-    "lilly_payout_2024_pct": 3,
-    "lilly_payout_2023_pct": 3.4
-   },
-   "url": "https://www.philanthropyroundtable.org/resource/private-foundations-and-the-5-percent-payout-rule/",
-   "status": "secondary",
-   "inTop25": false,
-   "note": "IPS figures: https://ips-dc.org/philanthropy-under-oligarchy/ ; IRS penalty page: https://www.irs.gov/charities-non-profits/private-foundations/taxes-on-failure-to-distribute-income-private-foundations (not opened)."
-  },
-  {
-   "mechanism": "subsidy",
-   "case": "Tax Policy Center briefing book (updated Jan 2024)",
-   "finding": "'The charitable deduction provides higher-income taxpayers with a larger tax subsidy per dollar donated'; a 40% marginal-rate donor's $100 gift costs $60 after tax; average federal subsidy ~17% for all taxpayers in 2023; 'taxpayers in the top 1 percent have the lowest after-tax price of charitable giving'; revenue loss ~$51B in 2023, $289B over 2022-26. TPC does not state a single cents-per-dollar figure for appreciated stock. IPS states the combined subsidy for ultra-wealthy donors is 'up to 73 cents' (2026) / 'up to 74 cents' (2025) per dollar, citing a Catholic University law scholarship paper.",
-   "figures": {
-    "top_bracket_income_tax_subsidy_pct": "37-40 per dollar",
-    "average_subsidy_pct": 17,
-    "revenue_loss_2023_usd": "51 billion",
-    "ips_combined_subsidy_cents": "73-74"
-   },
-   "url": "https://taxpolicycenter.org/briefing-book/how-large-are-individual-income-tax-incentives-charitable-giving",
-   "status": "primary",
-   "inTop25": false,
-   "note": "IPS 74-cent source: https://scholarship.law.edu/cgi/viewcontent.cgi?article=2017&context=scholar (not opened)."
-  },
-  {
-   "mechanism": "self-dealing",
-   "case": "Donald J. Trump Foundation — NY Attorney General (2018-2019). OUTSIDE TOP 25.",
-   "finding": "NY AG press release Dec 10, 2019: Trump 'was forced to pay more than $2 million in court-ordered damages to eight different charities for illegally misusing charitable funds at the Trump Foundation for political purposes'; reimbursed $11,525 for 'sports paraphernalia and champagne purchased at a charity gala'; 'required to agree to 19 admissions, acknowledging his personal misuse of funds'; mandatory training for Donald Jr., Ivanka and Eric; foundation dissolved under court supervision (Dec 2018). Each charity received $476,140.41. The 2018 petition alleged 'repeated and willful self-dealing transactions' (search summary).",
-   "figures": {
-    "damages_usd": "2,000,000",
-    "total_distributed_usd": "3,809,123.30",
-    "charities": 8
-   },
-   "url": "https://ag.ny.gov/press-release/2019/donald-j-trump-pays-court-ordered-2-million-illegally-using-trump-foundation",
-   "status": "primary",
-   "inTop25": false,
-   "note": "Nov 7, 2019 order: https://ag.ny.gov/press-release/2019/ag-james-secures-court-order-against-donald-j-trump-trump-children-and-trump"
-  },
-  {
-   "mechanism": "other",
-   "case": "Intermediary warehousing — IPS Gilded Giving 2026",
-   "finding": "'The assets held in DAFs and foundations have far surpassed $2 trillion in 2026' (foundations $1.865T end-2025 per Fed Z.1; DAFs $328B end-2024): 'well over $2 trillion sidelined... but where the donors have already gotten their tax deduction.' DAF sponsors are 11 of the top 20 US charities by contributions. Living billionaires lead 48% of large foundations, up from 24% a decade ago (Candid/Inside Philanthropy).",
-   "figures": {
-    "foundation_assets_2025_usd": "1.865 trillion",
-    "daf_assets_2024_usd": "328 billion",
-    "daf_sponsors_in_top20_charities": 11
-   },
-   "url": "https://ips-dc.org/philanthropy-under-oligarchy/",
-   "status": "primary",
-   "inTop25": false
-  },
-  {
-   "mechanism": "other",
-   "case": "Buffett estate: gifts to family-run foundations",
-   "finding": "Buffett's remaining ~$127-150B in Berkshire shares is now committed entirely to four foundations chaired/run by his three children (Susan Thompson Buffett, Sherwood, Howard G. Buffett, NoVo), each already granting 'more than $500 million annually' (Nov 2025 letter). Buffett frames this as giving-while-living by 2034; IPS frames family-controlled foundations as 'dynastic'.",
-   "figures": {},
-   "url": "https://www.berkshirehathaway.com/news/nov1025.pdf",
-   "status": "primary",
-   "inTop25": true
-  }
- ],
- "notes": "Sources opened directly: Berkshire releases (Jun 2024, Nov 2025, Jul 2026), IPS Giving Pledge at 15 (Jul 2025), IPS Gilded Giving 2026 (Sep 2026), Fortune (Jul 2026, Mar 2024, Oct 2025, Dec 2025), NPR (May 2025), NY AG (Dec 2019), Forbes (Dec 2015), Tax Policy Center briefing book, Philanthropy Roundtable payout review, Bloomberg Huang (deck only). Blocked/unrenderable: nytimes.com, reuters.com, gatesnotes.com, seattletimes.com, cnbc.com, dafresearchcollaborative.org, philanthropy.com. Not found: any named signatory formally removed from the Pledge list (NYT 2026-03-15 'billionaire backlash' piece likely has names but is blocked); 990-PF officer compensation paid to donor family members at large foundations; independent journalistic investigation of Walton/Crystal Bridges as related-party (only the foundation's own release and 990 aggregator data). Also opened: Chronicle of Philanthropy 2025-07-30, ProPublica Bezos Earth Fund Foundation, Walton Family Foundation 2011 release. Statuses: 'needs-check' = seen only in a search-result summary or headline."
+  "backlash": [
+    {
+      "who": "Warren Buffett",
+      "what": "June 28, 2024 Berkshire release announcing annual gifts to the Gates Foundation Trust and four family foundations: 'My will provides that more than 99% of my estate is destined for philanthropic usage. The lifetime commitments expire upon my death.' Fortune (2024-06-28, cited by Fortune 2026) and Inside Philanthropy report that in an accompanying WSJ interview he said the Gates Foundation 'has no money coming after my death' and the remainder goes to a charitable trust overseen by his three children (WSJ interview itself not opened).",
+      "when": "2024-06",
+      "url": "https://www.berkshirehathaway.com/news/jun2824.pdf",
+      "status": "primary"
+    },
+    {
+      "who": "Warren Buffett",
+      "what": "Nov 10, 2025 Thanksgiving letter, announcing accelerated gifts to his children's foundations: 'Early on, I contemplated various grand philanthropic plans. Though I was stubborn, these did not prove feasible. During my many years, I've also watched ill-conceived wealth transfers by political hacks, dynastic choices and, yes, inept or quirky philanthropists.' Also: 'Ruling from the grave does not have a great record.' Fortune (2025-12-04) characterises this as Buffett appearing 'to distance himself from the Giving Pledge'. The letter does not mention the Giving Pledge by name.",
+      "when": "2025-11",
+      "url": "https://www.berkshirehathaway.com/news/nov1025.pdf",
+      "status": "primary"
+    },
+    {
+      "who": "Warren Buffett",
+      "what": "July 14, 2026 Berkshire release: 12,000,000 B shares donated only to the four family foundations; the Gates Foundation receives none for the first time since 2006. 'My goal is to dispose of all of my Berkshire shares within about eight years... my remaining shares will be donated to the four foundations one way or the other by December 31, 2034.'",
+      "when": "2026-07",
+      "url": "https://www.berkshirehathaway.com/news/jul1426.pdf",
+      "status": "primary"
+    },
+    {
+      "who": "Warren Buffett (Fortune write-up)",
+      "what": "Fortune: Buffett 'is quietly ending one of the biggest philanthropic relationships in history' after $48B to the Gates Foundation; WSJ reported he paused the mid-year gift pending a WilmerHale review of the foundation's Epstein ties; Buffett to CNBC March 2026 on the Gates Foundation: 'I'll wait and see what unfolds' and 'there was a lot I didn't know'; Gates Foundation statement: Buffett's gifts total 'more than $47 billion'.",
+      "when": "2026-07",
+      "url": "https://fortune.com/2026/07/14/warren-buffett-ends-48-billion-gates-foundation-donations-redirects-wealth-to-childrens-family-foundations/",
+      "status": "secondary"
+    },
+    {
+      "who": "Bill Gates",
+      "what": "May 8, 2025: announces the Gates Foundation will close Dec 31, 2045 and spend ~$200B; 'People will say a lot of things about me when I die, but I am determined that 'he died rich' will not be one of them' (Gates Notes blog, quoted by NPR). To NPR on Musk/USAID: 'this is one where I think he made a mistake'; NPR cites his NYT quote that 'the world's richest man has been involved in the deaths of the world's poorest children.' On the Pledge: 'I'm trying to set an example by giving 98% of the money I have.'",
+      "when": "2025-05",
+      "url": "https://www.npr.org/2025/05/08/nx-s1-5391316/bill-gates-foundation-ending-microsoft-philanthropy-billions",
+      "status": "secondary",
+      "note": "Gates Notes post itself would not render via fetch; NPR reproduces the quote and interview."
+    },
+    {
+      "who": "Bill Gates (Forbes on Musk)",
+      "what": "Forbes headline: 'Bill Gates Accuses Musk Of Killing Over A Million Children With USAID Cuts—Accelerates Charity Timeline'. Search summary reports Forbes estimates Musk's out-the-door lifetime giving at $620M through 2023, under 1% of his wealth.",
+      "when": "2025-05",
+      "url": "https://www.forbes.com/sites/tylerroush/2025/05/08/bill-gates-will-close-gates-foundation-in-2045-after-donating-99-of-his-fortune/",
+      "status": "needs-check",
+      "note": "Seen only in search result, not opened."
+    },
+    {
+      "who": "Elon Musk (via Peter Thiel)",
+      "what": "Thiel, in lectures reported by Reuters (Oct 9, 2025) and Fortune, says he warned Musk that Pledge money would go 'to left-wing nonprofits that will be chosen by Bill Gates'; Musk reportedly replied: 'What am I supposed to do—give it to my children? You know, it would be much worse to give it to Bill Gates.' Fortune notes Musk 'reportedly signed the pledge in 2012.' Search summary of NYT (2026-03-15, 'The Billionaire Backlash Against a Philanthropic Dream') says Thiel told the NYT the pledge has 'run out of energy' and that he has privately urged about a dozen signatories to reconsider.",
+      "when": "2025-10",
+      "url": "https://fortune.com/2025/10/13/billionaire-peter-thiel-warned-elon-musk-to-ditch-donating-to-the-giving-pledge-bill-gates-donation-left-wing-nonprofits/",
+      "status": "secondary",
+      "note": "Reuters and NYT URLs blocked from fetch: https://www.reuters.com/world/us/peter-thiel-talk-antichrist-says-he-told-elon-musk-not-give-wealth-charity-2025-10-09/ ; https://www.nytimes.com/2026/03/15/business/the-billionaire-backlash-against-a-philanthropic-dream.html"
+    },
+    {
+      "who": "Elon Musk (own remarks)",
+      "what": "TED interview April 2022: 'If you say philanthropy is a love of humanity, they [his companies] are philanthropy.' DealBook Nov 2023: 'What I care about is the reality of goodness, not the perception of it.' (both as quoted by Fortune, 2024-03-11).",
+      "when": "2022-04",
+      "url": "https://fortune.com/2024/03/11/elon-musk-tesla-billionaire-charity-donation-non-profit-foundation/",
+      "status": "secondary"
+    },
+    {
+      "who": "Melinda French Gates",
+      "what": "May 13, 2024: resigns as co-chair of the Gates Foundation effective June 7, 2024, with $12.5B from Bill Gates's personal wealth for her own philanthropy: 'the time is right for me to move forward into the next chapter of my philanthropy' (search summary; CNBC).",
+      "when": "2024-05",
+      "url": "https://www.cnbc.com/2024/05/13/melinda-french-gates-to-resign-from-gates-foundation-will-pursue-own-philanthropy-with-12point5-billion-grant.html",
+      "status": "needs-check",
+      "note": "Seen in search result only."
+    },
+    {
+      "who": "Melinda French Gates",
+      "what": "Wired interview (Dec 2025), quoted by Fortune: asked whether Pledge signatories have given enough: 'Have they given enough? No.' Also: 'Okay, have those people actually been giving money? Some of them, yes, some of them at massive scale.'",
+      "when": "2025-12",
+      "url": "https://fortune.com/2025/12/04/melinda-french-gates-rips-billionaire-class-giving-pledge/",
+      "status": "secondary"
+    },
+    {
+      "who": "Scott Bessent (US Treasury Secretary)",
+      "what": "Dec 3, 2025, per Fortune: called the Giving Pledge 'well intentioned' but 'very amorphous', said wealthy people signed out of fear the public would 'come at it with pitchforks', and that not many billionaires had delivered.",
+      "when": "2025-12",
+      "url": "https://fortune.com/2025/12/04/melinda-french-gates-rips-billionaire-class-giving-pledge/",
+      "status": "secondary"
+    },
+    {
+      "who": "Mark Zuckerberg / Jeff Bezos (non-signer)",
+      "what": "Quoted in IPS Gilded Giving 2026: Zuckerberg: 'the idea that you make money with a company and then find a way to do good with a philanthropy is a really outdated way of thinking about things.' Bezos: 'If I do my job right, the value to society and civilization from my for-profit companies will be much, much larger than the good that I do with my charitable giving.'",
+      "when": "2026-09",
+      "url": "https://ips-dc.org/philanthropy-under-oligarchy/",
+      "status": "secondary"
+    },
+    {
+      "who": "Signatories removed/left the list",
+      "what": "NOT FOUND as a documented list. IPS notes the Pledge 'does not serve as an oversight body, nor does it police its signatories.' Search summaries (Benzinga/Yahoo, Mar 2026, citing NYT) report signups fell from 113 families in the first five years to 72, then 43, with 4 in 2024 and 14 in 2025, and that 'some billionaires have been backing out' — no named departures found in opened sources.",
+      "when": "2026-03",
+      "url": "https://www.benzinga.com/markets/tech/26/03/51262181/the-giving-pledge-warren-buffett-bill-gates-launched-to-inspire-billionaire-philanthropy-is-losing-steam-signups-drop-from-113-to-just-14-in-2025",
+      "status": "needs-check"
+    }
+  ],
+  "pledgeAssessments": [
+    {
+      "source": "Institute for Policy Studies, 'The Giving Pledge at 15' (Collins, DeVaan, Flannery, Petegorsky)",
+      "finding": "'15 years on, the Giving Pledge is unfulfilled, unfulfillable, and not our ticket to a fairer, better future.' Only one living 2010 US pledger set (Laura and John Arnold) has fulfilled; 8 of 22 deceased pledgers fulfilled; only Chuck Feeney gave it all before death. 80% of original pledgers' giving went to private foundations.",
+      "figures": {
+        "total_signers": 256,
+        "us_signers": 194,
+        "us_signers_still_billionaires": 110,
+        "their_combined_wealth_usd": "1.7 trillion",
+        "original_2010_us_pledgers": 57,
+        "original_still_billionaires": 32,
+        "original_billionaires_combined_wealth_usd": "908 billion",
+        "net_worth_growth_since_2010_pct": 283,
+        "inflation_adjusted_growth_pct": 166,
+        "zuckerberg_chan_growth_pct": ">4000",
+        "original_pledgers_given_usd": "206 billion",
+        "to_private_foundations_usd": "164 billion (80%)",
+        "to_DAFs_usd": "~5 billion (likely undercount)",
+        "44_foundations_assets_2023_usd": "120 billion",
+        "median_foundation_payout_pct": 9.2,
+        "deceased_pledgers": 22,
+        "deceased_fulfilled": 8,
+        "living_fulfilled": "1 (Arnolds)",
+        "shortfall_if_all_living_fulfilled_today_usd": "367 billion",
+        "treasury_loss_if_deducted_usd": "up to 272 billion",
+        "public_subsidy_per_dollar": "up to 74 cents"
+      },
+      "when": "2025-07-30",
+      "url": "https://ips-dc.org/report-giving-pledge-at-15/",
+      "status": "primary",
+      "pdf": "https://ips-dc.org/wp-content/uploads/2025/07/report_giving_pledge_at_15.pdf",
+      "data": "https://inequality.org/wp-content/uploads/2025/07/Giving-Pledge-at-15-Data-Tables.xlsx"
+    },
+    {
+      "source": "Institute for Policy Studies, 'Gilded Giving 2020 / Giving Pledge at 10' (as summarised in search results; NPQ and Inside Philanthropy)",
+      "finding": "62 US pledgers who were billionaires in 2010 saw combined assets rise from $376B (2010) to $734B (2020); nine more than tripled, incl. Zuckerberg (+1,783%), Doerr (+416%), Benioff (+400%).",
+      "figures": {
+        "cohort": 62,
+        "wealth_2010_usd": "376 billion",
+        "wealth_2020_usd": "734 billion"
+      },
+      "when": "2020-08",
+      "url": "https://nonprofitquarterly.org/voices-from-the-field-giving-pledge-at-10-peril-and-possibility/",
+      "status": "needs-check",
+      "note": "Figures from search summary; the IPS 2020 report page not opened."
+    },
+    {
+      "source": "Institute for Policy Studies, 'Gilded Giving 2026: Philanthropy Under Oligarchy'",
+      "finding": "'The Giving Pledge has only added a handful of new signatories and is facing intense backlash from right-wing givers like Peter Thiel and Elon Musk.' Broader: 'philanthropy... has become part of that defense of extreme wealth.'",
+      "figures": {
+        "see_shelters": "payout and DAF figures recorded under shelters"
+      },
+      "when": "2026-09-15",
+      "url": "https://ips-dc.org/philanthropy-under-oligarchy/",
+      "status": "primary",
+      "pdf": "https://ips-dc.org/wp-content/uploads/2026/09/GG26-September-2026-FINAL_formatted1.pdf"
+    },
+    {
+      "source": "Fortune (Sydney Lake), 'Melinda French Gates rips into billionaire class, saying Giving Pledge has fallen short'",
+      "finding": "Aggregates: French Gates 'Have they given enough? No'; Bessent calls it a failure; Buffett's 'did not prove feasible' letter; cites IPS. Also: John and Laura Arnold gave $204M in 2024 (Forbes) with net worth ~$2.9B; MacKenzie Scott ~$20B in five years, still worth ~$40B.",
+      "figures": {},
+      "when": "2025-12-04",
+      "url": "https://fortune.com/2025/12/04/melinda-french-gates-rips-billionaire-class-giving-pledge/",
+      "status": "secondary"
+    },
+    {
+      "source": "Fortune (Jessica Coacci) on Thiel/Musk",
+      "finding": "'America's billionaires have only pledged or donated $185 billion of their $5.7 trillion combined wealth in the last decade' (Fortune, Sept 2025 analysis, linked).",
+      "figures": {
+        "pledged_or_donated_10yr_usd": "185 billion",
+        "combined_wealth_usd": "5.7 trillion"
+      },
+      "when": "2025-10-13",
+      "url": "https://fortune.com/2025/10/13/billionaire-peter-thiel-warned-elon-musk-to-ditch-donating-to-the-giving-pledge-bill-gates-donation-left-wing-nonprofits/",
+      "status": "secondary"
+    },
+    {
+      "source": "Chronicle of Philanthropy, 'Is the Giving Pledge Living Up to Its Potential?'",
+      "finding": "Chronicle (Maria Di Mento) on the IPS report: the Pledge 'has largely failed'; only 13% of US billionaires have signed; 'almost 80 percent of original signers' charitable gifts have gone toward their foundations, and about 2.5 percent... to donor-advised funds, providing tax reductions before any of their money reaches working charities.' Collins: 'their wealth is accelerating and growing faster than they're giving it away'; 'We're just going to see huge amounts of money parked in family-controlled foundations.' Giving Pledge spokeswoman: 'The Giving Pledge has helped create new norms of generosity... Each signatory pursues their philanthropy individually.' Names the 8 deceased fulfillers: Feeney, Jim & Virginia Stowers, Barron Hilton, Lorry Lokey, Herb & Marion Sandler, Victoria Sant, Ted & Vada Stanley, Boone Pickens. Forbes net worths cited: Gates ~$117B, French Gates ~$30B, Buffett ~$143B.",
+      "figures": {
+        "us_billionaires_signed_pct": 13,
+        "original_signers_gifts_to_foundations_pct": "~80",
+        "to_DAFs_pct": 2.5,
+        "original_signers_given_usd": "201 billion"
+      },
+      "when": "2025-07-30",
+      "url": "https://www.philanthropy.com/news/is-the-giving-pledge-living-up-to-its-potential/",
+      "status": "primary"
+    },
+    {
+      "source": "CNBC, 'The Giving Pledge was meant to turbocharge philanthropy. Few billionaires got on board.'",
+      "finding": "NOT OPENED (page returned empty). Search summary: 'After 15 years, the Giving Pledge yields mixed results.'",
+      "figures": {},
+      "when": "2025-08-07",
+      "url": "https://www.cnbc.com/2025/08/07/giving-pledge-buffett-gates-billionaires-philanthropy.html",
+      "status": "needs-check"
+    },
+    {
+      "source": "Academic: 'Billionaires in Global Philanthropy: a Decade of the Giving Pledge', Society (Springer), 2021 (PMC8147574)",
+      "finding": "Per Fortune's characterisation: studies show the Pledge 'has helped billionaires present themselves as generous and public-spirited, but doesn't question inequalities and tax rules that led to such massive wealth in the first place.'",
+      "figures": {},
+      "when": "2021",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8147574/",
+      "status": "needs-check"
+    }
+  ],
+  "shelters": [
+    {
+      "mechanism": "daf",
+      "case": "Systemic: DAF Research Collaborative Annual DAF Report 2025 (successor to NPT's report), FY2024",
+      "finding": "Total DAF assets $326.45B (+27.5%); grants $64.89B (+19.0%); payout rate 25.3%. IPS Gilded Giving 2026 adds: four largest sponsors (NPT, Fidelity Charitable, DAFgiving360, Vanguard Charitable) held an average $6.84 in assets per $1 granted in 2025 (range $5.33 DAFgiving360 to $8.73 NPT); their assets grew ~64% faster than grants since 2017; DAFs have no legal payout requirement; giving to DAFs rose from 4% to 23% of all individual giving since 2010; DAFs and foundations together took 38% of individual giving in 2024.",
+      "figures": {
+        "daf_assets_2024_usd": "326.45 billion",
+        "daf_grants_2024_usd": "64.89 billion",
+        "payout_rate_pct": 25.3,
+        "assets_per_dollar_granted_big4_2025": 6.84,
+        "daf_share_of_individual_giving_2024_pct": 23
+      },
+      "url": "https://ips-dc.org/philanthropy-under-oligarchy/",
+      "status": "primary",
+      "inTop25": false,
+      "note": "DAF report figures from search summary; report page fetch returned empty: https://www.dafresearchcollaborative.org/annual-daf-report/2025 ; Chronicle 'DAF Assets Soar 30% to $326 Billion' https://www.philanthropy.com/news/daf-assets-soar-30-to-326-billion/ (timed out)."
+    },
+    {
+      "mechanism": "daf",
+      "case": "Jensen Huang — Jen-Hsun & Lori Huang Foundation (Bloomberg, June 27, 2024)",
+      "finding": "Bloomberg: the foundation held 69 million Nvidia shares by end-2022 (worth >$8B per FoundationMark) and 'has mostly given stock to a donor-advised fund at Schwab'; Huang 'logs 1-hour weeks' at it. Search summary of Bloomberg/other coverage: 84% of the foundation's grants went to the 'GeForce Fund' DAF at DAFgiving360 (Schwab Charitable). NYT (Dec 2024, 'How one of the world's richest men is avoiding $8 billion in taxes') reported the estate-tax avoidance; Seattle Times syndication and NYT URLs did not render/were blocked.",
+      "figures": {
+        "nvidia_shares_in_foundation": "69 million",
+        "value_usd": ">8 billion"
+      },
+      "url": "https://www.bloomberg.com/news/articles/2024-06-27/nvidia-ceo-jensen-huang-has-billions-at-foundation-where-he-works-1-hour-weeks",
+      "status": "primary",
+      "inTop25": true,
+      "note": "Bloomberg paywalled; only the deck and first two paragraphs read. 84% figure from search summary. The 84% share of grants to the DAF was seen only in a search summary and is removed from figures until the source is read."
+    },
+    {
+      "mechanism": "daf",
+      "case": "Elon Musk (Fortune, March 2022 / March 2024)",
+      "finding": "Fortune: philanthropy experts warned Musk's foundation 'might in reality just serve to lower his personal tax bill... by employing a loophole known as donor-advised funds (DAFs).'",
+      "figures": {},
+      "url": "https://fortune.com/2024/03/11/elon-musk-tesla-billionaire-charity-donation-non-profit-foundation/",
+      "status": "secondary",
+      "inTop25": true
+    },
+    {
+      "mechanism": "llc",
+      "case": "Chan Zuckerberg Initiative LLC (Forbes, Kerry Dolan, Dec 4, 2015)",
+      "finding": "Zuckerberg: 'By using an LLC instead of a traditional foundation, we receive no tax benefit from transferring our shares to the Chan Zuckerberg Initiative, but we gain flexibility.' Forbes (citing trusts lawyer Susanna Poon): the LLC can lobby and make political donations, which foundations cannot; 'will not have to disclose what it pays its top five executives, something that charitable foundations are required to do in their annual 990 filings'; not subject to the 10% excess-business-holdings limit; Zuckerberg retains control of the shares. Same article names Pierre Omidyar's Omidyar Network as the precedent hybrid. Search summary notes CZI's science grantmaking runs through a linked 501(c)(3) foundation, a DAF and a 501(c)(4).",
+      "figures": {},
+      "url": "https://www.forbes.com/sites/kerryadolan/2015/12/04/mark-zuckerberg-explains-why-the-chan-zuckerberg-initiative-isnt-a-charitable-foundation/",
+      "status": "primary",
+      "inTop25": true
+    },
+    {
+      "mechanism": "llc",
+      "case": "Bezos Earth Fund (LLC) and Bezos Earth Fund Foundation (501(c)(3), EIN 93-1868994)",
+      "finding": "ProPublica Nonprofit Explorer (990-PF data): the Bezos Earth Fund Foundation received tax exemption Jan 2024. FY2023: revenue $0, expenses $13,865,842, charitable disbursements $0, net assets -$13.9M. FY2024: contributions $14.25M, expenses $24.49M, total assets $223,491, liabilities $24.49M, officer pay incl. Andrew Steer (President) $817,660; Jeff Bezos and Lauren Sanchez Bezos directors at $0. The 990-PF includes an 'Other Professional Fees Schedule'. Search summary (Capital Research Center/InfluenceWatch, not opened): the Earth Fund was 'not initially structured as a 501(c)(3)... but instead a limited liability company', which 'is not required to publicly disclose its grants', and 'over 99 percent of [the Foundation's 2023] expenditures went towards advising fees to Bezos Earth Fund LLC' — that recipient claim NOT verified in the filing itself. Bloomberg (Jan 8, 2025, headline only): 'Jeff Bezos' Earth Fund Starts Nonprofit Allowing Tax-Free Donations'.",
+      "figures": {
+        "fy2023_expenses_usd": "13,865,842",
+        "fy2023_grants_usd": "0",
+        "fy2024_expenses_usd": "24,489,890",
+        "fy2024_total_assets_usd": "223,491"
+      },
+      "url": "https://projects.propublica.org/nonprofits/organizations/931868994",
+      "status": "primary",
+      "inTop25": true,
+      "note": "Filing: https://projects.propublica.org/nonprofits/organizations/931868994/202533099349101443/full ; Bloomberg: https://www.bloomberg.com/news/articles/2025-01-08/bezos-earth-fund-starts-nonprofit-allowing-tax-free-donations (not opened)."
+    },
+    {
+      "mechanism": "related-party",
+      "case": "Musk Foundation (NYT investigation, March 10, 2024, via Fortune)",
+      "finding": "Fortune summarising NYT: 'approximately half of the tax-deductible donations made by the Musk Foundation in 2021 and 2022 benefited in some way the tycoon's business interests, partners, or family' — incl. Ad Astra school where 5 of ~12 students were his children; $100M to a charity run by his family-office head Jared Birchall that bought land next to a Boring Co. housing development; a Texas county hit by SpaceX debris. Gave $160M in 2022, '$193 million short' of the 5% requirement. Search summary of NYT: short $41M (2021), $234M (2022), $421M (2023), three years running.",
+      "figures": {
+        "foundation_assets_usd": "~7 billion",
+        "grants_2022_usd": "160 million",
+        "shortfall_2022_usd": "193 million",
+        "shortfall_2023_usd": "421 million (search summary)"
+      },
+      "url": "https://fortune.com/2024/03/11/elon-musk-tesla-billionaire-charity-donation-non-profit-foundation/",
+      "status": "secondary",
+      "inTop25": true,
+      "note": "NYT original blocked: https://www.nytimes.com/2024/03/10/us/elon-musk-charity.html"
+    },
+    {
+      "mechanism": "related-party",
+      "case": "Walton Family Foundation -> Crystal Bridges Museum of American Art (Bentonville; founded by Alice Walton, board chair)",
+      "finding": "Foundation's own release (Sept 23, 2011): in 2010 it granted $1,203,290,308 to Crystal Bridges — $800M endowment grants 'to support operations, art acquisitions and future capital improvement needs' and $403M 'for artwork, general operating expenses and construction' — versus 'just over $45 million' to all three of its other home-region initiatives combined that year. Executive director Buddy Philpot: grants to the museum 'were outside of our typical grant making in our home region'. Foundation states northwest Arkansas is of 'particular importance' 'because of strong historic and Walton family ties'. This documents family-founded-institution funding, not compensation to family; no adjudicated self-dealing found. Fast Company (Sept 2026, headline only): 'Billionaire urbanism: How Walmart heir Alice Walton engineered a small-town paradise'. ProPublica WFF Inc. EIN 13-3441466 available for officer pay (search summary: exec director Stephanie Cornell $782,636).",
+      "figures": {
+        "crystal_bridges_grants_2010_usd": "1,203,290,308",
+        "endowment_grants_usd": "800,000,000",
+        "other_home_region_2010_usd": "~45,000,000"
+      },
+      "url": "https://www.waltonfamilyfoundation.org/about-us/newsroom/walton-family-foundation-invests-over-1-2-billion-in-home-region-initiatives-in-2010",
+      "status": "primary",
+      "inTop25": true,
+      "note": "ProPublica WFF: https://projects.propublica.org/nonprofits/organizations/133441466 (not opened); Fast Company: https://www.fastcompany.com/91550093/alice-walton-crystal-bridges-expansion-bentonville (not opened)."
+    },
+    {
+      "mechanism": "related-party",
+      "case": "990-PF officer compensation to family among large foundations",
+      "finding": "NOT FOUND in opened sources within budget.",
+      "figures": {},
+      "url": "",
+      "status": "needs-check",
+      "inTop25": false
+    },
+    {
+      "mechanism": "payout-shortfall",
+      "case": "Systemic: Philanthropy Roundtable literature review (pro-foundation source) and IPS",
+      "finding": "Roundtable: Foundation Center 2012 study of 1,170 large foundations found 'around one-in-ten foundations had payout rates below the 5 percent minimum', attributed to carryover/asset growth; 2018 Journal of Wealth Management study of >12,000 foundations: median payout 5.14%; IRS 2018 fact sheet (>100,000 990-PFs): median 5.5%. Excess distributions carry forward five years. IPS 2026: median payout at the 144 foundations with >$1B endowments was 5.1% in 2024, 'treating that as a ceiling instead of a floor'; Lilly Endowment paid 3% in 2024, 3.4% in 2023, reaching 5% in 2025 'for the first time since 2009'; raising the minimum to 10% would move $66.3B in 2026. Penalty: 30% excise tax on undistributed income, plus 100% if not cured (IRS).",
+      "figures": {
+        "share_below_5pct_2007_09": "~10%",
+        "median_payout_12000_foundations_pct": 5.14,
+        "irs_2018_median_pct": 5.5,
+        "median_payout_billion_dollar_foundations_2024_pct": 5.1,
+        "lilly_payout_2024_pct": 3,
+        "lilly_payout_2023_pct": 3.4
+      },
+      "url": "https://www.philanthropyroundtable.org/resource/private-foundations-and-the-5-percent-payout-rule/",
+      "status": "secondary",
+      "inTop25": false,
+      "note": "IPS figures: https://ips-dc.org/philanthropy-under-oligarchy/ ; IRS penalty page: https://www.irs.gov/charities-non-profits/private-foundations/taxes-on-failure-to-distribute-income-private-foundations (not opened)."
+    },
+    {
+      "mechanism": "subsidy",
+      "case": "Tax Policy Center briefing book (updated Jan 2024)",
+      "finding": "'The charitable deduction provides higher-income taxpayers with a larger tax subsidy per dollar donated'; a 40% marginal-rate donor's $100 gift costs $60 after tax; average federal subsidy ~17% for all taxpayers in 2023; 'taxpayers in the top 1 percent have the lowest after-tax price of charitable giving'; revenue loss ~$51B in 2023, $289B over 2022-26. TPC does not state a single cents-per-dollar figure for appreciated stock. IPS states the combined subsidy for ultra-wealthy donors is 'up to 73 cents' (2026) / 'up to 74 cents' (2025) per dollar, citing a Catholic University law scholarship paper.",
+      "figures": {
+        "top_bracket_income_tax_subsidy_pct": "37-40 per dollar",
+        "average_subsidy_pct": 17,
+        "revenue_loss_2023_usd": "51 billion",
+        "ips_combined_subsidy_cents": "73-74"
+      },
+      "url": "https://taxpolicycenter.org/briefing-book/how-large-are-individual-income-tax-incentives-charitable-giving",
+      "status": "primary",
+      "inTop25": false,
+      "note": "IPS 74-cent source: https://scholarship.law.edu/cgi/viewcontent.cgi?article=2017&context=scholar (not opened)."
+    },
+    {
+      "mechanism": "self-dealing",
+      "case": "Donald J. Trump Foundation — NY Attorney General (2018-2019). OUTSIDE TOP 25.",
+      "finding": "NY AG press release Dec 10, 2019: Trump 'was forced to pay more than $2 million in court-ordered damages to eight different charities for illegally misusing charitable funds at the Trump Foundation for political purposes'; reimbursed $11,525 for 'sports paraphernalia and champagne purchased at a charity gala'; 'required to agree to 19 admissions, acknowledging his personal misuse of funds'; mandatory training for Donald Jr., Ivanka and Eric; foundation dissolved under court supervision (Dec 2018). Each charity received $476,140.41. The 2018 petition alleged 'repeated and willful self-dealing transactions' (search summary).",
+      "figures": {
+        "damages_usd": "2,000,000",
+        "total_distributed_usd": "3,809,123.30",
+        "charities": 8
+      },
+      "url": "https://ag.ny.gov/press-release/2019/donald-j-trump-pays-court-ordered-2-million-illegally-using-trump-foundation",
+      "status": "primary",
+      "inTop25": false,
+      "note": "Nov 7, 2019 order: https://ag.ny.gov/press-release/2019/ag-james-secures-court-order-against-donald-j-trump-trump-children-and-trump"
+    },
+    {
+      "mechanism": "other",
+      "case": "Intermediary warehousing — IPS Gilded Giving 2026",
+      "finding": "'The assets held in DAFs and foundations have far surpassed $2 trillion in 2026' (foundations $1.865T end-2025 per Fed Z.1; DAFs $328B end-2024): 'well over $2 trillion sidelined... but where the donors have already gotten their tax deduction.' DAF sponsors are 11 of the top 20 US charities by contributions. Living billionaires lead 48% of large foundations, up from 24% a decade ago (Candid/Inside Philanthropy).",
+      "figures": {
+        "foundation_assets_2025_usd": "1.865 trillion",
+        "daf_assets_2024_usd": "328 billion",
+        "daf_sponsors_in_top20_charities": 11
+      },
+      "url": "https://ips-dc.org/philanthropy-under-oligarchy/",
+      "status": "primary",
+      "inTop25": false
+    },
+    {
+      "mechanism": "other",
+      "case": "Buffett estate: gifts to family-run foundations",
+      "finding": "Buffett's remaining ~$127-150B in Berkshire shares is now committed entirely to four foundations chaired/run by his three children (Susan Thompson Buffett, Sherwood, Howard G. Buffett, NoVo), each already granting 'more than $500 million annually' (Nov 2025 letter). Buffett frames this as giving-while-living by 2034; IPS frames family-controlled foundations as 'dynastic'.",
+      "figures": {},
+      "url": "https://www.berkshirehathaway.com/news/nov1025.pdf",
+      "status": "primary",
+      "inTop25": true
+    }
+  ],
+  "notes": "Sources opened directly: Berkshire releases (Jun 2024, Nov 2025, Jul 2026), IPS Giving Pledge at 15 (Jul 2025), IPS Gilded Giving 2026 (Sep 2026), Fortune (Jul 2026, Mar 2024, Oct 2025, Dec 2025), NPR (May 2025), NY AG (Dec 2019), Forbes (Dec 2015), Tax Policy Center briefing book, Philanthropy Roundtable payout review, Bloomberg Huang (deck only). Blocked/unrenderable: nytimes.com, reuters.com, gatesnotes.com, seattletimes.com, cnbc.com, dafresearchcollaborative.org, philanthropy.com. Not found: any named signatory formally removed from the Pledge list (NYT 2026-03-15 'billionaire backlash' piece likely has names but is blocked); 990-PF officer compensation paid to donor family members at large foundations; independent journalistic investigation of Walton/Crystal Bridges as related-party (only the foundation's own release and 990 aggregator data). Also opened: Chronicle of Philanthropy 2025-07-30, ProPublica Bezos Earth Fund Foundation, Walton Family Foundation 2011 release. Statuses: 'needs-check' = seen only in a search-result summary or headline."
 }
