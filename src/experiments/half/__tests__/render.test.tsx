@@ -101,6 +101,8 @@ console.log('Scores');
   const g = scoreGap();
   ok(g.below.p.slug === 'steve-ballmer' && g.above.p.slug === 'michael-bloomberg', `the gap is ${g.below.p.name}–${g.above.p.name}`);
   ok(!rows.some((r) => r.share > g.below.share && r.share < g.above.share), 'nobody sits inside the gap');
+  /* The headline's claim: everyone is either at a fifth or more, or under a twentieth (ceilings included). */
+  ok(rows.every((r) => (!r.bound && r.share >= 0.2) || r.share < 0.05), 'every scored person is above a fifth or below a twentieth');
 }
 
 /* ---- the whole piece ------------------------------------------------ */
@@ -116,6 +118,7 @@ try {
     ok(page.includes(`${r1} percent`) || page.includes(`${p.foundation!.payoutRate}%`), `${p.name}'s payout rate is on the page`);
   }
   ok(page.includes('Have they given enough'), 'the French Gates quote is on the page');
+  ok(page.includes('Three have given away a fifth or more. Fourteen have given less than a twentieth.'), 'the score headline reads as intended');
   {
     const table = page.match(/<table[^>]*>[\s\S]*?<\/table>/)?.[0] ?? '';
     for (const p of PEOPLE.filter((x) => x.pledge.signed === true)) ok(table.includes(p.name), `${p.name} is in the signers table`);

@@ -13,7 +13,7 @@ import data from '../../data/half.json';
 import { SOURCES, byId } from '../../data/half-sources';
 import {
   WealthPack, Paired, Payout, Horizon, Mechanisms, Scores, Coverage,
-  PEOPLE, SUMMARY, CONTEXT, money, shareOf, pctLbl, scoreGap,
+  PEOPLE, SUMMARY, CONTEXT, money, shareOf, pctLbl, scoreGap, scoreRows,
 } from './figures';
 import s from './half.module.css';
 
@@ -68,6 +68,10 @@ const scored = Object.values(SUMMARY.scores).reduce((sum, n) => sum + n, 0);
 const unscored = SUMMARY.count - scored;
 /* The empty stretch in the score chart, found in the data rather than asserted. */
 const gap = scoreGap();
+/* The headline's two groups, counted — the thresholds are Forbes' own band edges. */
+const scoredRows = scoreRows();
+const topGivers = scoredRows.filter((r) => !r.bound && r.share >= 0.2).length;
+const cap = (w: string) => w.replace(/^\w/, (c) => c.toUpperCase());
 const now = Number(data.built.slice(0, 4));
 const muskHalf = now + (musk.derived.yearsToHalf ?? 0);
 
@@ -111,7 +115,7 @@ const CHAPTERS = [
   {
     id: 'scores',
     kicker: 'Forbes’ philanthropy score',
-    title: `Nobody has given between ${pctLbl(gap.below.share)} and ${pctLbl(gap.above.share)}.`,
+    title: `${cap(spell(topGivers))} have given away a fifth or more. ${cap(spell(scoredRows.length - topGivers))} have given less than a twentieth.`,
     body: <>Forbes grades giving from one, under 1 percent of a fortune given away, to five, 20 percent or more<Cite id="forbes-profiles" />. It scored the {spell(scored)} Americans; the {spell(unscored)} others have no score. Measured as share given, they split cleanly. {gap.above.p.name} and the two above him made giving a habit that kept pace with their fortunes; Buffett has given Berkshire shares every year since 2006<Cite id="berkshire-2024" />. Below {gap.below.p.name}, fortunes have outgrown giving: {musk.name}’s is up about {times(musk.derived.growthSincePledge!)} times since he signed the Pledge. The middle bands are empty because reaching them means giving faster than the fortune grows.</>,
     figure: <Scores />,
   },
