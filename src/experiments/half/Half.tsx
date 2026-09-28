@@ -7,6 +7,7 @@
  * data file, every claim pointing at a source, and no verdict written
  * anywhere. The filings say it.
  */
+import type { ReactNode } from 'react';
 import { useEffect, useRef, useState } from 'react';
 import data from '../../data/half.json';
 import { SOURCES, byId } from '../../data/half-sources';
@@ -210,22 +211,51 @@ function Intro() {
       <h1>Half</h1>
       <p className={s.standfirst}>
         In 2010, Bill Gates and Warren Buffett asked the world’s billionaires to give away at least half
-        their wealth, during their lives or in their wills. Sixteen years later, {spell(SUMMARY.pledgers)} {' '}
+        their wealth, during their lives or in their wills. Sixteen years later, {spell(SUMMARY.pledgers)}
         of the twenty-five richest people have signed. Together, the twenty-five are worth about
         {' '}{words(SUMMARY.totalWealth)}. Public filings reveal what some of their foundations distributed,
         how much remains inside them and, in many cases, how little the public record can tell us.
       </p>
-      <div className={s.numbers}>
-        <div><b>{SUMMARY.pledgers}</b><span>of the {SUMMARY.count} have signed</span></div>
-        <div><b>{money(SUMMARY.foundationPaidOut)}</b><span>paid out by their foundations in their latest filed year</span></div>
-        <div><b>{money(SUMMARY.carriedForward)}</b><span>reported as undistributed income carried forward</span></div>
-        <div><b>{SUMMARY.scores['1']}</b><span>scored one out of five by Forbes</span></div>
-      </div>
+      <dl className={s.numbers}>
+        <Figure n={String(SUMMARY.pledgers)} label={`of the ${SUMMARY.count} have signed the Pledge`}>
+          {/* twenty-five dots, the signers filled */}
+          {PEOPLE.map((p, i) => (
+            <circle key={p.slug} className={p.pledge.signed ? s.gOn : s.gOff} cx={6 + (i % 13) * 9} cy={i < 13 ? 5 : 15} r={3} />
+          ))}
+        </Figure>
+        <Figure n={money(SUMMARY.foundationPaidOut)} label={`paid out of ${money(SUMMARY.foundationAssets)} held in their foundations, latest filed year`}>
+          <rect className={s.gTrack} x={0} y={6} width={120} height={8} rx={1} />
+          <rect className={s.gFill} x={0} y={6} width={(120 * SUMMARY.foundationPaidOut) / SUMMARY.foundationAssets} height={8} rx={1} />
+        </Figure>
+        <Figure n={money(SUMMARY.carriedForward)} label="reported as undistributed income carried into the next year">
+          <rect className={s.gTrack} x={0} y={6} width={120} height={8} rx={1} />
+          <rect className={s.gWarn} x={0} y={6} width={(120 * SUMMARY.carriedForward) / SUMMARY.foundationPaidOut} height={8} rx={1} />
+        </Figure>
+        <Figure n={String(SUMMARY.scores['1'])} label="scored one out of five by Forbes; nobody scored three or four">
+          {/* the score distribution, one to five */}
+          {(['1', '2', '3', '4', '5'] as const).map((k, i) => {
+            const n = SUMMARY.scores[k];
+            const h = n ? 4 + (14 * n) / Math.max(...Object.values(SUMMARY.scores)) : 1.5;
+            return <rect key={k} className={k === '1' ? s.gFill : n ? s.gOff : s.gTrack} x={i * 24} y={20 - h} width={16} height={h} rx={1} />;
+          })}
+        </Figure>
+      </dl>
       <p className={s.credit}>
         Wealth as of {longDate(SUMMARY.listDate)}. Foundation figures come from IRS Form 990-PF and use
         fair-market asset values. The methodology and source record appear at the end.
       </p>
     </header>
+  );
+}
+
+/** A headline figure with a small glyph showing the proportion behind it. */
+function Figure({ n, label, children }: { n: string; label: string; children: ReactNode }) {
+  return (
+    <div>
+      <svg className={s.glyph} viewBox="0 0 120 20" aria-hidden="true">{children}</svg>
+      <dt>{n}</dt>
+      <dd>{label}</dd>
+    </div>
   );
 }
 

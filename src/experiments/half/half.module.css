@@ -23,7 +23,7 @@
 /* ---------------------------------------------------------------- intro */
 
 .intro {
-  max-width: 34rem;
+  max-width: 44rem;
   margin: 0 auto;
   padding: clamp(48px, 12vh, 140px) 20px clamp(32px, 8vh, 80px);
 }
@@ -541,7 +541,28 @@
 .cellOff { fill: var(--dim); }
 
 /* the big numbers used in the intro */
-.numbers { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 18px 24px; margin: 26px 0 0; }
-.numbers div { display: grid; gap: 4px; }
-.numbers b { font-size: clamp(1.6rem, 3.4vw, 2.3rem); line-height: 1; letter-spacing: -0.02em; color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
-.numbers span { font-size: 0.8rem; color: var(--mute); line-height: 1.45; }
+/* The headline figures: a four-up strip, each cell ruled above, with a
+   small glyph that shows the proportion the number is taken from. */
+.numbers {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 24px 28px;
+  margin: 34px 0 30px;
+}
+@media (max-width: 640px) { .numbers { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.numbers div {
+  display: grid;
+  grid-template-rows: auto auto 1fr;
+  align-content: start;
+  gap: 10px 0;
+  padding-top: 12px;
+  border-top: 1px solid rgb(232 232 224 / 18%);
+}
+.numbers dt { font-size: clamp(1.7rem, 3.4vw, 2.4rem); line-height: 1; letter-spacing: -0.02em; color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
+.numbers dd { margin: 0; font-size: 0.8rem; color: var(--mute); line-height: 1.45; text-wrap: pretty; }
+.glyph { display: block; width: 120px; height: 20px; overflow: visible; }
+.gOn { fill: var(--you); }
+.gOff { fill: rgb(232 232 224 / 28%); }
+.gTrack { fill: rgb(232 232 224 / 12%); }
+.gFill { fill: var(--you); }
+.gWarn { fill: var(--warn); }
