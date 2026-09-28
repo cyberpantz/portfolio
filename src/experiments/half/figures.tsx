@@ -1,7 +1,7 @@
 /**
  * Half — figures.
  *
- * Nine chapters, nine forms. Tilt's rule: if two chapters would look the
+ * One form per chapter. Tilt's rule: if two chapters would look the
  * same, one of them is not a chapter. Each drawing here is the one that
  * answers its question and no other — packed area for size, a shared
  * scale for wealth against giving, a threshold for the payout rule, a
@@ -221,32 +221,6 @@ export function Paired() {
   );
 }
 
-/* ----------------------------------------------------------- 3. the pledge */
-
-/** Twenty-five marks. Signed is filled, with the year. */
-export function Pledge() {
-  const COLS = 4, CELL = 180, ROW = 56, W = COLS * CELL;
-  const ROWS = Math.ceil(PEOPLE.length / COLS);
-  return (
-    <svg className={s.fig} viewBox={`0 0 ${W} ${ROWS * ROW}`} role="img"
-         aria-label={`${SUMMARY.pledgers} of the twenty-five have signed the Giving Pledge`}>
-      {PEOPLE.map((p, i) => {
-        const x = (i % COLS) * CELL, y = Math.floor(i / COLS) * ROW;
-        const on = p.pledge.signed === true;
-        return (
-          <g key={p.slug} transform={`translate(${x} ${y})`}>
-            <circle className={on ? s.dotOn : s.dotOff} cx={14} cy={20} r={9} />
-            <text className={s.lbl} x={32} y={17}>{short(p.name)}</text>
-            <text className={on ? s.sub : s.subOff} x={32} y={33}>
-              {on ? `signed ${p.pledge.year ?? ''}` : p.filesUS ? 'not signed' : 'not signed'}
-            </text>
-          </g>
-        );
-      })}
-    </svg>
-  );
-}
-
 /* ------------------------------------------------------------ 4. the 5% */
 
 /** Every verified foundation's payout rate on one axis, with the rule drawn. */
@@ -370,62 +344,6 @@ export function Mechanisms() {
         <defs><marker id="h-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#9d9d95" /></marker></defs>
       </svg>
     </div>
-  );
-}
-
-/* --------------------------------------------- 7. the men who invented it */
-
-/** Buffett and Gates, 2010 to July 2026, in their own words. */
-/** Break a line of text into tspans at roughly `width` characters. */
-function wrap(text: string, width: number): string[] {
-  const out: string[] = [];
-  let line = '';
-  for (const word of text.split(' ')) {
-    if ((line + ' ' + word).trim().length > width && line) { out.push(line); line = word; }
-    else line = (line + ' ' + word).trim();
-  }
-  if (line) out.push(line);
-  return out;
-}
-
-export function Founders() {
-  const items = CONTEXT.backlash
-    /* Their own statements only — a write-up of one is cited in the prose
-       instead, so the timeline is never quoting a paraphrase as a quote. */
-    .filter((b) => /^(Warren Buffett|Bill Gates)$/.test(b.who) && b.status !== 'needs-check')
-    .map((b) => ({ ...b, year: Number(b.when.slice(0, 4)), m: Number(b.when.slice(5, 7) || 6) }))
-    .sort((a, b) => a.year + a.m / 12 - (b.year + b.m / 12));
-  const W = 720, L = 20, R = 20, TOP = 30, ROW = 74;
-  const y0 = 2010, y1 = 2027;
-  const x = (yr: number, m = 6) => L + ((W - L - R) * (yr + m / 12 - y0)) / (y1 - y0);
-  return (
-    <svg className={s.fig} viewBox={`0 0 ${W} ${TOP + items.length * ROW + 30}`} role="img"
-         aria-label="Buffett and Gates on the Pledge, from its founding to July 2026">
-      <line className={s.axis} x1={L} x2={W - R} y1={TOP - 10} y2={TOP - 10} />
-      {[2010, 2015, 2020, 2025].map((yr) => <text key={yr} className={s.tick} x={x(yr, 0)} y={TOP - 16}>{yr}</text>)}
-      <g>
-        <circle className={s.dotOver} cx={x(2010, 8)} cy={TOP - 10} r={4} />
-        <text className={s.sub} x={x(2010, 8) + 8} y={TOP - 4}>The Pledge founded</text>
-      </g>
-      {items.map((b, i) => {
-        const yy = TOP + 16 + i * ROW;
-        /* The quoted span if the record carries one, else the statement's
-           opening — either way cut to two lines so it stays inside. */
-        /* Double quotes delimit; a curly apostrophe inside is part of it. */
-        const q = b.what.match(/[“"]([^”"]{20,220})[”"]/)?.[1] ?? b.what.match(/'([^']{20,220})'/)?.[1];
-        const lines = wrap(q ? `“${q}”` : b.what, 96).slice(0, 2);
-        return (
-          <g key={i}>
-            <line className={s.tickLine} x1={x(b.year, b.m)} x2={x(b.year, b.m)} y1={TOP - 10} y2={yy} />
-            <circle className={/Buffett/.test(b.who) ? s.dotUnder : s.dotOver} cx={x(b.year, b.m)} cy={yy} r={4.5} />
-            <text className={s.lbl} x={L} y={yy + 20}>{b.who} · {b.when}</text>
-            <text className={s.quote} x={L} y={yy + 36}>
-              {lines.map((ln, k) => <tspan key={k} x={L} dy={k ? 15 : 0}>{ln}{k === 1 && lines.length === 2 && !ln.endsWith('”') ? '…' : ''}</tspan>)}
-            </text>
-          </g>
-        );
-      })}
-    </svg>
   );
 }
 

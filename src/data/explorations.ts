@@ -56,7 +56,7 @@ export const EXPLORATIONS: Exploration[] = [
     type: 'Data',
     tags: ['Scrollytelling', 'SVG', 'React', 'Public filings'],
     url: '/explorations/half',
-    desc: 'The Giving Pledge asks the very rich for at least half. Nine charts compare the fortunes, promises, reported giving and public filings of the twenty-five richest people alive — including the gaps where no comparable public record exists.',
+    desc: 'The Giving Pledge asks the very rich for at least half. Charts compare the fortunes, promises, reported giving and public filings of the twenty-five richest people alive — including the gaps where no comparable public record exists.',
   },
   {
     id: 'cap',

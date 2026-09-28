@@ -1,7 +1,7 @@
 /**
  * Half — render, data and prose checks.
  *
- * Nine figures, and every one must draw from the file. The things that can
+ * Every figure must draw from the file. The things that can
  * be completely wrong while the types are fine: a chart that renders empty,
  * a rate on screen that is not the rate in the filing, a figure drawn from a
  * source nobody opened, a number typed into a sentence, and a foundation
@@ -11,7 +11,7 @@ import type { ReactElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import data from '../../../data/half.json';
 import { SOURCES, assertNoUnverifiedClaims } from '../../../data/half-sources';
-import { shareOf, WealthPack, Paired, Pledge, Payout, Horizon, Mechanisms, Founders, Scores, Coverage, PEOPLE, SUMMARY } from '../figures';
+import { shareOf, WealthPack, Paired, Payout, Horizon, Mechanisms, Scores, Coverage, PEOPLE, SUMMARY } from '../figures';
 import Half from '../Half';
 
 let fails = 0;
@@ -56,9 +56,9 @@ ok(SUMMARY.carriedForward > 0, 'something is carried forward');
 /* ---- every figure renders, and draws something --------------------- */
 console.log('Figures render');
 const CH: [string, ReactElement, number][] = [
-  ['wealth pack', <WealthPack />, 25], ['paired', <Paired />, 8], ['pledge', <Pledge />, 25],
+  ['wealth pack', <WealthPack />, 25], ['paired', <Paired />, 8],
   ['payout', <Payout />, 8], ['horizon', <Horizon />, 6], ['mechanisms', <Mechanisms />, 3],
-  ['founders', <Founders />, 4], ['scores', <Scores />, 5], ['coverage', <Coverage />, 25],
+  ['scores', <Scores />, 5], ['coverage', <Coverage />, 25],
 ];
 for (const [name, el, marks] of CH) {
   try {
@@ -99,6 +99,7 @@ try {
     ok(page.includes(`${r1} percent`) || page.includes(`${p.foundation!.payoutRate}%`), `${p.name}'s payout rate is on the page`);
   }
   ok(page.includes('Have they given enough'), 'the French Gates quote is on the page');
+  ok(/popovertarget="pledge-note"/i.test(page) && /id="pledge-note" popover="auto"/.test(page), 'the Pledge note is a native popover with a trigger');
   ok(!page.includes('undefined') && !page.includes('NaN'), 'no undefined or NaN leaked into the page');
 } catch (e) {
   fails++; console.error(`  FAIL  piece threw: ${(e as Error).message}`);

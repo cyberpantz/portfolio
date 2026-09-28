@@ -12,7 +12,7 @@ import { useEffect, useRef, useState } from 'react';
 import data from '../../data/half.json';
 import { SOURCES, byId } from '../../data/half-sources';
 import {
-  WealthPack, Paired, Pledge, Payout, Horizon, Mechanisms, Founders, Scores, Coverage,
+  WealthPack, Paired, Payout, Horizon, Mechanisms, Scores, Coverage,
   PEOPLE, SUMMARY, CONTEXT, money,
 } from './figures';
 import s from './half.module.css';
@@ -74,15 +74,8 @@ const CHAPTERS = [
     id: 'pile',
     kicker: 'The twenty-five',
     title: `Between them, ${words(SUMMARY.totalWealth)}.`,
-    body: <>The twenty-five richest people alive, as Forbes counted them on {longDate(SUMMARY.listDate)}<Cite id="forbes-list" />. Area is fortune. The teal circle is {musk.name}: at {words(musk.wealth)}<Cite id="forbes-profiles" />, he is worth more than the next three combined.</>,
+    body: <>The twenty-five richest people alive, as Forbes counted them on {longDate(SUMMARY.listDate)}<Cite id="forbes-list" />.</>,
     figure: <WealthPack />,
-  },
-  {
-    id: 'pledge',
-    kicker: 'The promise',
-    title: `${spell(SUMMARY.pledgers).replace(/^\w/, (c) => c.toUpperCase())} of the twenty-five have promised half.`,
-    body: <>The Pledge asks for at least half<Cite id="giving-pledge" />. About {SIGNED_PCT} percent of American billionaires have signed<Cite id="chronicle-pledge" />. The original American signers who remain billionaires are {f15.net_worth_growth_since_2010_pct} percent richer than when they signed; one living original signer has given half<Cite id="ips-15" />. {musk.name} signed in {musk.pledge.year} worth {words(musk.pledge.wealthAtSigning)}, and is now worth about {times(musk.derived.growthSincePledge!)} times that. Peter Thiel says he told him “it would be much worse to give it to Bill Gates”<Cite id="fortune-thiel" />.</>,
-    figure: <Pledge />,
   },
   {
     id: 'paired',
@@ -112,13 +105,6 @@ const CHAPTERS = [
     title: 'At last year’s rate, how long would half take?',
     body: <>Hold each fortune still, subtract what has been given, and repeat last year’s foundation payout every year. {gates.name} is nearly at half. {bloomberg.name} arrives in {now + (bloomberg.derived.yearsToHalf ?? 0)}; {musk.name}, in {muskHalf}. An illustration, not a forecast: it ignores investment returns. The axis is logarithmic because the dates are centuries apart.</>,
     figure: <Horizon />,
-  },
-  {
-    id: 'founders',
-    kicker: 'The founders',
-    title: 'Sixteen years on, both have changed course.',
-    body: <>Buffett and Gates launched the Pledge in 2010. In 2024 Buffett said his gifts to the Gates Foundation would end at his death<Cite id="berkshire-2024" />; in 2025 he wrote that his “grand philanthropic plans … did not prove feasible”<Cite id="berkshire-2025" />. In July 2026 his annual gift left Gates out for the first time in twenty years<Cite id="berkshire-2026" />, closing {words(48e9)} of contributions<Cite id="fortune-buffett-gates" />. Gates will close his foundation in 2045<Cite id="npr-gates-2045" />. Neither is leaving philanthropy; both are leaving the arrangement the Pledge was built on. Asked “Have they given enough?”, Melinda French Gates said: “No.”<Cite id="fortune-french-gates" /></>,
-    figure: <Founders />,
   },
   {
     id: 'scores',
@@ -225,7 +211,7 @@ function Intro() {
         foundations pay out — and how little the record shows about the rest.
       </p>
       <dl className={s.numbers}>
-        <Figure n={String(SUMMARY.pledgers)} label={`of the ${SUMMARY.count} have signed the Pledge`}>
+        <Figure n={String(SUMMARY.pledgers)} label={`of the ${SUMMARY.count} have signed the Pledge`} more={<PledgeNote />}>
           {/* twenty-five dots, the signers filled */}
           {PEOPLE.map((p, i) => (
             <circle key={p.slug} className={p.pledge.signed ? s.gOn : s.gOff} cx={6 + (i % 13) * 9} cy={i < 13 ? 5 : 15} r={3} />
@@ -257,13 +243,52 @@ function Intro() {
 }
 
 /** A headline figure with a small glyph showing the proportion behind it. */
-function Figure({ n, label, children }: { n: string; label: string; children: ReactNode }) {
+function Figure({ n, label, children, more }: { n: string; label: string; children: ReactNode; more?: ReactNode }) {
   return (
     <div>
       <svg className={s.glyph} viewBox="0 0 120 20" aria-hidden="true">{children}</svg>
       <dt>{n}</dt>
-      <dd>{label}</dd>
+      <dd>{label}{more}</dd>
     </div>
+  );
+}
+
+/**
+ * The Pledge, told once and on request. It is the occasion for the piece,
+ * not its subject, so it lives behind the figure it explains. A native
+ * popover: no script to open or close it, Escape and light-dismiss for free.
+ */
+function PledgeNote() {
+  return (
+    <>
+      <button type="button" className={s.more} popoverTarget="pledge-note">About the Pledge</button>
+      <div id="pledge-note" popover="auto" className={s.pop} role="dialog" aria-labelledby="pledge-note-h">
+        <p className={s.kicker}>The Giving Pledge</p>
+        <h2 id="pledge-note-h">A promise of half, sixteen years on.</h2>
+        <p>
+          Started in 2010 by Bill Gates and Warren Buffett, the Pledge asks the very rich to give away at least
+          half their wealth, in life or at death<Cite id="giving-pledge" />. About {SIGNED_PCT} percent of
+          American billionaires have signed<Cite id="chronicle-pledge" />. The original American signers who
+          remain billionaires are {f15.net_worth_growth_since_2010_pct} percent richer than when they signed;
+          one living original signer has given half<Cite id="ips-15" />.
+        </p>
+        <p>
+          {musk.name} signed in {musk.pledge.year} worth {words(musk.pledge.wealthAtSigning)}, and is now worth
+          about {times(musk.derived.growthSincePledge!)} times that. Peter Thiel says he told him “it would be
+          much worse to give it to Bill Gates”<Cite id="fortune-thiel" />.
+        </p>
+        <p>
+          Its founders have since changed course. In 2024 Buffett said his gifts to the Gates Foundation would
+          end at his death<Cite id="berkshire-2024" />; in 2025 he wrote that his “grand philanthropic plans …
+          did not prove feasible”<Cite id="berkshire-2025" />; in July 2026 his annual gift left Gates out for
+          the first time in twenty years<Cite id="berkshire-2026" />, closing {words(48e9)} of
+          contributions<Cite id="fortune-buffett-gates" />. Gates will close his foundation in
+          2045<Cite id="npr-gates-2045" />. Asked “Have they given enough?”, Melinda French Gates said:
+          “No.”<Cite id="fortune-french-gates" />
+        </p>
+        <button type="button" className={s.popClose} popoverTarget="pledge-note" popoverTargetAction="hide">Close</button>
+      </div>
+    </>
   );
 }
 
@@ -352,5 +377,5 @@ function Sources() {
 }
 
 /* Referenced so the build keeps them and the suite can render them alone. */
-export const FIGURES = { WealthPack, Paired, Pledge, Payout, Horizon, Mechanisms, Founders, Scores, Coverage };
+export const FIGURES = { WealthPack, Paired, Payout, Horizon, Mechanisms, Scores, Coverage };
 export { fmt };

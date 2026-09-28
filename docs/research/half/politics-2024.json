@@ -1,0 +1,303 @@
+{
+  "cycle": "2024",
+  "retrieved": "2026-09-27",
+  "method_note": "The OpenFEC JSON API and OpenSecrets could not be read with the fetch tool available (empty responses), so no per-donor FEC name search was possible. Large contributions were confirmed against the receiving committees' own itemised Schedule A filings on docquery.fec.gov (primary). Other items rely on reporting of FEC filings and are labelled that way. A total of 0 with status needs-check means 'nothing found', not 'confirmed zero'. Totals exclude spouses, ex-spouses, children and companies/corporate PACs.",
+  "people": [
+    {
+      "slug": "elon-musk",
+      "name": "Elon Musk",
+      "total": 283254986,
+      "status": "primary",
+      "side": "Republican",
+      "recipients": [
+        {"name": "America PAC (super PAC, C00879510)", "amount": 249754986.48, "source": "FEC Schedule A, America PAC year-end 2024 report (FEC-1872971): aggregate-to-date for ELON MUSK as of 12/31/2024, including memo-attributed contributions made through Europa 100 LLC and United States of America Inc"},
+        {"name": "RBG PAC (super PAC, C00891291)", "amount": 20500000, "source": "FEC Schedule A, RBG PAC post-general report (FEC-1858227): Elon Musk Revocable Trust, 10/24/2024"},
+        {"name": "Senate Leadership Fund (super PAC)", "amount": 10000000, "source": "FEC filings as reported by CBS News, 6 Dec 2024 (not opened in FEC directly)"},
+        {"name": "MAHA Alliance (super PAC)", "amount": 3000000, "source": "FEC filings as reported by CBS News, 6 Dec 2024 (not opened in FEC directly)"}
+      ],
+      "outside": [
+        {"what": "CNN's reading of year-end FEC filings puts his total 2024 political giving at 'more than $290 million'. The roughly $7m above the sum here was not itemised and is not included", "amount": 290000000, "status": "needs-check", "url": "https://www.cnn.com/2025/02/01/politics/elon-musk-2024-election-spending-millions"}
+      ],
+      "urls": [
+        "https://docquery.fec.gov/cgi-bin/forms/C00879510/1872971/sa/ALL",
+        "https://docquery.fec.gov/cgi-bin/forms/C00891291/1858227/sa/ALL",
+        "https://www.cbsnews.com/news/elon-musk-277-million-trump-republican-candidates-donations/",
+        "https://www.citizen.org/article/unmasking-musk/"
+      ],
+      "note": "Total = America PAC aggregate + RBG PAC (both read in FEC filings) + SLF and MAHA Alliance (CBS reading of FEC). America PAC aggregate includes ~$11.2m reported as memo items routed through Musk-linked entities (United States of America Inc, Europa 100 LLC) and attributed to Musk on 12/31/2024. Some of these look like in-kind or expense-related attributions rather than cash. Small hard-money contributions to candidates or party committees, if any, are not captured. All money went to pro-Trump / Republican vehicles."
+    },
+    {
+      "slug": "larry-page",
+      "name": "Larry Page",
+      "total": 0,
+      "status": "needs-check",
+      "side": "None",
+      "recipients": [],
+      "outside": [],
+      "urls": [
+        "https://docs.google.com/spreadsheets/d/1nsUJbTHDK4nnHqDLVkK9sk26ShoFWpi2bWLkK8W5LHE/edit?gid=1535161183",
+        "https://americansfortaxfairness.org/billionaire-clans-spend-nearly-2-billion-2024-elections/",
+        "https://finance.yahoo.com/news/heres-us-billionaires-employees-approaching-093000782.html"
+      ],
+      "note": "Nothing found. The FEC-derived billionaire-family sheet from Americans for Tax Fairness (an advocacy group) shows $0 in contributions of $5,000 or more for 1 Jan 2023 to 28 Oct 2024. SCMP (Oct 2024) says he made no large donations. Gifts under $5,000 and Nov-Dec 2024 were not checked. His foundation pays almost all its grants to donor-advised funds, so any political routing would be invisible."
+    },
+    {
+      "slug": "jeff-bezos",
+      "name": "Jeff Bezos",
+      "total": 0,
+      "status": "needs-check",
+      "side": "None",
+      "recipients": [],
+      "outside": [],
+      "urls": [
+        "https://docs.google.com/spreadsheets/d/1nsUJbTHDK4nnHqDLVkK9sk26ShoFWpi2bWLkK8W5LHE/edit?gid=1535161183",
+        "https://finance.yahoo.com/news/heres-us-billionaires-employees-approaching-093000782.html",
+        "https://www.forbes.com/sites/maryroeloffs/2024/12/12/jeff-bezos-amazon-planning-1-million-donation-to-trump-inauguration-matching-meta/"
+      ],
+      "note": "Nothing found for Jeff himself. The ATF sheet's 'Bezos' family row (~$7.1m) is mostly his parents Jacklyn and Miguel Bezos giving to the bipartisan veterans super PAC With Honor Fund II. Excluded. His own $10m to With Honor was in 2018, outside the cycle. Amazon's $1m to the Trump inaugural fund (Dec 2024) is corporate and not an election contribution. An unsupported search-summary claim of '$7 million to Biden-Harris' was rejected. Small gifts were not checked."
+    },
+    {
+      "slug": "michael-dell",
+      "name": "Michael Dell",
+      "total": 0,
+      "status": "needs-check",
+      "side": "None",
+      "recipients": [],
+      "outside": [],
+      "urls": [
+        "https://docs.google.com/spreadsheets/d/1nsUJbTHDK4nnHqDLVkK9sk26ShoFWpi2bWLkK8W5LHE/edit?gid=1535161183",
+        "https://www.texastribune.org/2025/12/02/michael-dell-susan-trump-accounts-donation/"
+      ],
+      "note": "Nothing found. ATF sheet shows $0 in gifts of $5,000 or more (Jan 2023 to Oct 2024). He may have made small gifts (up to $5,000 a year) to the Dell Technologies PAC (C00369751); this is unverified because docquery rate-limited. Dell PAC's own candidate gifts are corporate PAC money, not his. The $6.25bn 'Trump Accounts' pledge (Dec 2025) is charitable and out of cycle."
+    },
+    {
+      "slug": "sergey-brin",
+      "name": "Sergey Brin",
+      "total": 0,
+      "status": "needs-check",
+      "side": "None",
+      "recipients": [],
+      "outside": [
+        {"what": "Catalyst4 (Brin-funded 501(c)(4)) grant in 2023 to Sixteen Thirty Fund (left-leaning 501(c)(4)). The filing labels it an environmental grant, so it is not clearly election money. Sourced only to InfluenceWatch/Inside Philanthropy; do not chart", "amount": 4000000, "status": "needs-check", "url": "https://www.influencewatch.org/non-profit/catalyst4/"}
+      ],
+      "urls": [
+        "https://docs.google.com/spreadsheets/d/1nsUJbTHDK4nnHqDLVkK9sk26ShoFWpi2bWLkK8W5LHE/edit?gid=1535161183",
+        "https://www.influencewatch.org/person/sergey-brin/",
+        "https://fortune.com/2026/08/11/google-cofounder-sergey-brin-california-wealth-tax-opposition-100-million-dollars/"
+      ],
+      "note": "No 2023-24 federal contribution by Brin himself was found. ATF's 'Brin' family row (~$16.7m) is ex-wife Nicole Shanahan's RFK Jr. giving; the divorce was final Sept 2023, so it is excluded. His reported Republican turn falls outside this cycle: RNC gifts in 2025 and California ballot money in 2026. Small gifts not checked."
+    },
+    {
+      "slug": "mark-zuckerberg",
+      "name": "Mark Zuckerberg",
+      "total": 5000,
+      "status": "primary",
+      "side": "Mixed",
+      "recipients": [
+        {"name": "Meta Platforms, Inc. PAC (C00502906, bipartisan corporate PAC)", "amount": 5000, "source": "FEC filing FEC-1863144 (year-end 2024), Schedule A: Mark E. Zuckerberg, Menlo Park CA, 12/20/2024, $5,000"}
+      ],
+      "outside": [],
+      "urls": [
+        "https://docquery.fec.gov/cgi-bin/forms/C00502906/1863144/sa/ALL",
+        "https://fortune.com/2024/09/25/silicon-valley-political-donations-elon-musk-peter-thiel-reid-hoffman/",
+        "https://www.nbcnews.com/tech/social-media/meta-donates-1-million-trump-inauguration-fund-zuckerberg-mar-lago-mee-rcna184014"
+      ],
+      "note": "Fortune (Sept 2024, from FEC data) says he gives only through Meta's PAC, not directly to candidates. A 2023 Meta PAC gift is plausible because the limit resets each calendar year, but it is unverified: Jan-Oct 2023 reports were not checked, and he is absent from the Nov and Dec 2023 reports. The cycle total may therefore be $10,000. 'Mixed' reflects Meta PAC's bipartisan giving, not a personal lean. Excluded: Meta's $1m to the Trump inaugural fund (corporate); 2020 election-administration grants (out of cycle, non-political). Priscilla Chan not found in the checked reports."
+    },
+    {
+      "slug": "larry-ellison",
+      "name": "Larry Ellison",
+      "total": 2566.13,
+      "status": "primary",
+      "side": "Republican",
+      "recipients": [
+        {"name": "Opportunity Matters Fund, Inc. (C00750182, pro-Tim Scott super PAC)", "amount": 2566.13, "source": "FEC filing FEC-1720302 (mid-year 2023), Schedule A: Lawrence Ellison, Oracle Corporation, 03/23/2023, in-kind travel/lodging"}
+      ],
+      "outside": [
+        {"what": "About $45m to an undisclosed political nonprofit backing Trump's 2024 effort, per WSJ citing people familiar; not in FEC data", "amount": 45000000, "status": "secondary", "url": "https://www.wsj.com/politics/policy/how-a-45-million-donation-brought-larry-ellison-deeper-into-trumps-circle-b3e26c03"}
+      ],
+      "urls": [
+        "https://docquery.fec.gov/cgi-bin/forms/C00750182/1720302/sa/ALL",
+        "https://docquery.fec.gov/cgi-bin/forms/C00840546/1719418/sa/ALL",
+        "https://www.cnbc.com/2024/04/16/biden-fund-gets-money-from-son-of-gop-donor-larry-ellison.html",
+        "https://www.cnbc.com/2023/07/31/gop-billionaires-flood-tim-scott-pacs-as-desantis-campaign-stalls.html",
+        "https://fortune.com/2026/06/25/larry-ellison-donald-trump-45-million-donation-stargate-tiktok-paramount/"
+      ],
+      "note": "The widely cited ~$30-35m to Opportunity Matters Fund was given in 2021-22 (2022 cycle) and is excluded. In 2023 OMF Inc. moved $10m to OMF Action, which sent $10.8m to Trust in the Mission PAC (Scott's presidential super PAC). That is largely his 2022 money being transferred, not new giving. CNBC (Apr 2024): no federal donation by him so far in 2024. WSJ (2026): FEC shows nothing from him to Trump campaign/PACs. Son David Ellison's $929,600 to Biden Victory Fund excluded. OMF Inc.'s year-end 2023 and 2024 termination reports and small candidate gifts were not checked. Claims of '$50m+ to Preserve America PAC' come from unreliable sites and are disregarded."
+    },
+    {
+      "slug": "jensen-huang",
+      "name": "Jensen Huang",
+      "total": 0,
+      "status": "needs-check",
+      "side": "None",
+      "recipients": [],
+      "outside": [],
+      "urls": [
+        "https://finance.yahoo.com/news/warren-buffett-jensen-huang-stayed-113353158.html",
+        "https://www.insidephilanthropy.com/home/2021-10-20-nvidias-jensen-huang-has-a-21-billion-fortune-where-might-he-take-his-giving"
+      ],
+      "note": "No reporting or FEC trace found of any 2023-24 federal contribution by Jensen or Lori Huang. Proving zero requires an FEC name search, which was not possible. His 2025 Trump ties (Nvidia-related) are out of cycle and corporate."
+    },
+    {
+      "slug": "steve-ballmer",
+      "name": "Steve Ballmer",
+      "total": null,
+      "status": "needs-check",
+      "side": "Democratic",
+      "recipients": [],
+      "outside": [
+        {"what": "$100m+ to USAFacts (nonpartisan nonprofit) incl. 2024 'Just the Facts' campaign; Forbes calls it a twist on political giving but it is not campaign money", "amount": 0, "status": "secondary", "url": "https://www.forbes.com/sites/kylemullins/2024/10/20/how-steve-ballmer-has-spent-100-million-in-a-new-twist-on-political-giving/"}
+      ],
+      "urls": [
+        "https://www.forbes.com/sites/kylemullins/2024/10/20/how-steve-ballmer-has-spent-100-million-in-a-new-twist-on-political-giving/"
+      ],
+      "note": "Total left null (unknown, NOT zero). Forbes (Oct 2024, citing FEC) gives only a 2017-2024 window: ~$38,000 to five Democratic candidates and $40,000+ to the DCCC. His 2024-cycle amount is therefore somewhere between $0 and ~$78k, all Democratic. Wife Connie Ballmer gave ~$1.25m to pro-Harris groups this cycle (Forbes); excluded."
+    },
+    {
+      "slug": "warren-buffett",
+      "name": "Warren Buffett",
+      "total": 0,
+      "status": "secondary",
+      "side": "None",
+      "recipients": [],
+      "outside": [],
+      "urls": [
+        "https://fortune.com/2024/09/11/warren-buffett-omaha-election-politics/",
+        "https://www.bloomberg.com/features/2024-billionaire-donors-us-election/"
+      ],
+      "note": "Fortune (Sept 2024, citing FEC data): his last federal donation was Nov 2019 ($106,500 to the DCCC and $2,800 to Mark Kelly). Bloomberg says he has avoided donating to federal candidates. Berkshire stated in Oct 2024 that he does not endorse or support candidates. Not checked against FEC ourselves, and Oct-Dec 2024 not ruled out by FEC review. Beware false matches with 'Warren for Senate' (Elizabeth Warren)."
+    },
+    {
+      "slug": "rob-walton",
+      "name": "Rob Walton",
+      "total": 17600000,
+      "status": "secondary",
+      "side": "Republican",
+      "recipients": [
+        {"name": "Americans for Prosperity Action (C00687103)", "amount": 5000000, "source": "FEC filing FEC-1805180 (AFP Action, covering June 2024), Schedule A: 'Robert S. Walton', PO Box 1860 Bentonville AR, Retired, 06/17/2024, $5,000,000"},
+        {"name": "Big Sky Action Fund (C00840710), passed through to Conservative Values for Utah (pro-John Curtis)", "amount": 1000000, "source": "FEC filing FEC-1773450 (Apr Quarterly 2024), Schedule A: S. Robson Walton, Bentonville AR, 02/07/2024, $1,000,000"},
+        {"name": "America Leads Action (super PAC, House GOP)", "amount": 2000000, "source": "OpenSecrets (Oct 2025) via syndication; not checked in FEC"},
+        {"name": "Senate Leadership Fund (super PAC)", "amount": 2000000, "source": "OpenSecrets (Oct 2025); not checked in FEC"}
+      ],
+      "outside": [],
+      "urls": [
+        "https://docquery.fec.gov/cgi-bin/forms/C00687103/1805180/sa/ALL",
+        "https://docquery.fec.gov/cgi-bin/forms/C00840710/1773450/sa/ALL",
+        "https://www.opensecrets.org/news/2025/10/blitzing-washington-how-the-nfl-and-team-owners-spend-millions-to-influence-government/",
+        "https://frontofficesports.com/nfl-mlb-nba-owners-2024-election-trump-harris/"
+      ],
+      "note": "Total is OpenSecrets' full-cycle figure (Oct 2025, 'primarily to Republican candidates and organizations'); only $6m is FEC-confirmed here. Other published totals: Washington Post $20.5m (as quoted by Front Office Sports), USA Today $16.5m (to 1 Oct 2024). The AFP Action entry reads 'Robert S. Walton' and is attributed to Rob by matching PO box/occupation and OpenSecrets' attribution. An unverified claim of $10m to a Moreno/McCormick PAC was left out. Wife Melani Walton not researched; excluded."
+    },
+    {
+      "slug": "jim-walton",
+      "name": "Jim Walton",
+      "total": 5000000,
+      "status": "primary",
+      "side": "Republican",
+      "recipients": [
+        {"name": "Americans for Prosperity Action (C00687103)", "amount": 5000000, "source": "FEC filing FEC-1805180 (AFP Action, covering June 2024), Schedule A: Jim C. Walton, PO Box 1860 Bentonville AR, Arvest Bank, 06/17/2024, $5,000,000, aggregate $5,000,000"}
+      ],
+      "outside": [
+        {"what": "Wife Lynne Walton's own giving, reported as ~$12.5m to super PACs/outside groups (OpenSecrets via Arkansas Times snippet); excluded from total", "amount": 12500000, "status": "needs-check", "url": "https://arktimes.com/arkansas-blog/2024/11/04/5-of-the-top-50-political-donors-in-the-u-s-are-from-arkansas"}
+      ],
+      "urls": [
+        "https://docquery.fec.gov/cgi-bin/forms/C00687103/1805180/sa/ALL",
+        "https://united4respect.org/reports/walmart-political-spending-2024/"
+      ],
+      "note": "$5m is a confirmed floor. Smaller hard-money gifts to candidates and parties were not enumerated. Advocacy sources claim $10m to AFP Action; FEC shows one $5m gift, and the same filing has a separate $5m from Rob Walton, so the $10m appears to conflate the two brothers. AFP Action's pre-general, post-general and year-end 2024 reports were not opened. State ballot money in Arkansas (e.g. $500k on school vouchers) is excluded."
+    },
+    {
+      "slug": "alice-walton",
+      "name": "Alice Walton",
+      "total": 5000000,
+      "status": "primary",
+      "side": "Republican",
+      "recipients": [
+        {"name": "Americans for Prosperity Action (C00687103), then backing Nikki Haley in the GOP primary", "amount": 5000000, "source": "FEC filing FEC-1753366 (AFP Action year-end 2023), Schedule A: Alice L. Walton, Lowell AR, Crystal Bridges Museum of American Art, 12/04/2023, $5,000,000"}
+      ],
+      "outside": [
+        {"what": "Arkansas Times (citing OpenSecrets) reportedly says she gave 'more than $10 million' this cycle; seen only in search snippets, remainder unidentified", "amount": 10000000, "status": "needs-check", "url": "https://arktimes.com/arkansas-blog/2024/11/04/5-of-the-top-50-political-donors-in-the-u-s-are-from-arkansas"}
+      ],
+      "urls": [
+        "https://docquery.fec.gov/cgi-bin/forms/C00687103/1753366/sa/ALL",
+        "https://fortune.com/2024/02/01/america-billionaire-investors-favorite-candidates-2024-giving-haley-trump-rfk-jr/"
+      ],
+      "note": "$5m confirmed floor. The lead that she backed Harris is not supported: the Walmart heir who co-hosted a Harris fundraiser was Christy Walton. Her Democratic giving is from 2016, and 2025 NYC mayoral PAC gifts are out of cycle and local. 'Republican' rests on the confirmed AFP Action gift (anti-Trump primary effort for Haley)."
+    },
+    {
+      "slug": "bill-gates",
+      "name": "Bill Gates",
+      "total": 0,
+      "status": "needs-check",
+      "side": "Democratic",
+      "recipients": [],
+      "outside": [
+        {"what": "About $50m to Future Forward USA Action (pro-Harris 501(c)(4), donors undisclosed), per NYT 22 Oct 2024 citing people briefed; Gates did not deny it and said 'this election is different'", "amount": 50000000, "status": "secondary", "url": "https://www.geekwire.com/2024/bill-gates-reportedly-gives-50m-to-support-kamala-harris-presidential-campaign/"}
+      ],
+      "urls": [
+        "https://www.bloomberg.com/features/2024-billionaire-donors-us-election/",
+        "https://www.geekwire.com/2024/bill-gates-reportedly-gives-50m-to-support-kamala-harris-presidential-campaign/",
+        "https://docquery.fec.gov/cgi-bin/forms/C00669259/1894243/sa/ALL"
+      ],
+      "note": "No FEC-itemised contribution by Bill Gates found (not proof of none). Name traps: son Rory John Gates gave FF PAC $3,000,000 on 10/18/2024 (FEC-1894243), and a ~$6.6m multi-gift tally online is Rory's, not Bill's. Melinda French Gates gave ~$920k to Harris Victory Fund. Both excluded. 'Democratic' rests only on the reported $50m dark-money gift."
+    },
+    {
+      "slug": "michael-bloomberg",
+      "name": "Michael Bloomberg",
+      "total": 64000000,
+      "status": "secondary",
+      "side": "Democratic",
+      "recipients": [
+        {"name": "FF PAC / Future Forward PAC (C00669259)", "amount": 19000000, "source": "FEC filing FEC-1805245 (FF PAC, amended), Schedule A: Michael Bloomberg, New York NY, 05/30/2024, $19,000,000"},
+        {"name": "House Majority PAC (C00495028)", "amount": 10000000, "source": "NBC News reporting of HMP's FEC report, Aug 2024; not checked in FEC"},
+        {"name": "Biden Victory Fund (JFC)", "amount": 929600, "source": "Bloomberg News reporting; not checked in FEC"}
+      ],
+      "outside": [
+        {"what": "About $50m to Future Forward USA Action (501(c)(4)) in Oct 2024, per NYT (via Forbes); not in FEC data", "amount": 50000000, "status": "secondary", "url": "https://www.forbes.com/sites/saradorn/2024/10/28/michael-bloomberg-gives-harris-50-million-report-says/"}
+      ],
+      "urls": [
+        "https://docquery.fec.gov/cgi-bin/forms/C00669259/1805245/sa/ALL",
+        "https://www.forbes.com/sites/saradorn/2024/10/28/michael-bloomberg-gives-harris-50-million-report-says/",
+        "https://www.nbcnews.com/politics/2024-election/billionaires-timothy-mellon-mike-bloomberg-inject-massive-sums-2024-su-rcna167491",
+        "https://www.bloomberg.com/features/2024-billionaire-donors-us-election/",
+        "https://www.washingtonexaminer.com/news/3361316/elon-musk-top-2024-donors-worries-grow-political-influence/"
+      ],
+      "note": "Total $64m is OpenSecrets' final cycle figure as quoted by the Washington Examiner; the OpenSecrets page could not be opened, so treat it with care. It is consistent with the NYT's '$47m federally disclosed' before the October nonprofit gift. Only $19m is FEC-confirmed here, and ~$17m of the $64m has no identified recipient (possibly incl. Everytown for Gun Safety Victory Fund). The $50m 501(c)(4) gift is excluded from the total. Bloomberg News figures carry an ownership conflict."
+    },
+    {
+      "slug": "thomas-peterffy",
+      "name": "Thomas Peterffy",
+      "total": 4644660,
+      "status": "primary",
+      "side": "Republican",
+      "recipients": [
+        {"name": "Keystone Renewal PAC (C00849489, pro-McCormick super PAC)", "amount": 3800000, "source": "FEC filings: FEC-1752473 $300,000 (12/28/2023); FEC-1826107 $1,000,000 (07/15/2024) and $1,000,000 (08/29/2024); FEC-1890576 $500,000 (11/14/2024), 2024 aggregate $3,500,000"},
+        {"name": "Trump 47 Committee (JFC, C00867937)", "amount": 844660, "source": "New Yorker (Oct 2024) citing federal records: $500,000 (8/5/2024) + $344,660 (8/12/2024); Bloomberg News gives $844,600; not checked in FEC"}
+      ],
+      "outside": [],
+      "urls": [
+        "https://docquery.fec.gov/cgi-bin/forms/C00849489/1752473/sa/ALL",
+        "https://docquery.fec.gov/cgi-bin/forms/C00849489/1826107/sa/ALL",
+        "https://docquery.fec.gov/cgi-bin/forms/C00849489/1890576/sa/ALL",
+        "https://www.newyorker.com/magazine/2024/10/28/how-republican-billionaires-learned-to-love-trump-again",
+        "https://www.bloomberg.com/features/2024-billionaire-donors-us-election/"
+      ],
+      "note": "Status primary for the $3.8m Keystone portion; the total is a FLOOR. The New Yorker says federal records show 'some $7 million' to GOP politicians and party groups through summer 2024, before the Trump 47 gifts. That implies roughly $8-9m overall (needs-check), but the other recipients were not identified. He is not in the Senate Leadership Fund Q3 2024 filing. 2023 gifts to Youngkin's Spirit of Virginia PAC are state-level and excluded."
+    },
+    {
+      "slug": "julia-koch",
+      "name": "Julia Koch",
+      "total": 0,
+      "status": "needs-check",
+      "side": "None",
+      "recipients": [],
+      "outside": [],
+      "urls": [
+        "https://docquery.fec.gov/cgi-bin/forms/C00571703/1827952/sa/ALL",
+        "https://www.bloomberg.com/features/2024-billionaire-donors-us-election/"
+      ],
+      "note": "Nothing found for her personally; this is 'none found', not 'confirmed none'. She is absent from Bloomberg's billionaire-donor list, from reporting on SFA Fund/AFP Action/SLF donors, and from SLF's Q3 2024 filing. Koch Inc./Koch Industries corporate money is NOT hers: $40m to AFP Action, and $750k to SLF in Q3 2024 (FEC-1827952). Needs a direct FEC individual search ('Koch, Julia', New York/Palm Beach/Southampton) before publishing."
+    }
+  ]
+}
