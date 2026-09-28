@@ -1330,6 +1330,13 @@
     display: none;
   }
 }
+:root[data-device-scheme=dark] .product_device {
+  color-scheme: dark;
+  box-shadow: 0 0 0 1px rgb(255 255 255 / 5%), 0 24px 60px -24px rgb(0 0 0 / 85%);
+}
+:root[data-device-scheme=dark] .product_stageFailed {
+  color: #ff8a78;
+}
 
 /* src/experiments/chatbots/components/safety.module.css */
 .safety_alert {
@@ -1524,4 +1531,89 @@
     transition: none !important;
     animation: none !important;
   }
+}
+:root[data-device-scheme=dark] .safety_alert {
+  border-color: #e0604c;
+  background: #2a1715;
+  color: #f1e6e4;
+}
+:root[data-device-scheme=dark] .safety_headline {
+  color: #ff8a78;
+}
+:root[data-device-scheme=dark] .safety_action:hover {
+  background: #c93a25;
+}
+:root[data-device-scheme=dark] .safety_action:focus-visible,
+:root[data-device-scheme=dark] .safety_alt:focus-visible {
+  outline-color: #f1e6e4;
+}
+:root[data-device-scheme=dark] .safety_alt {
+  border-color: #5a3a35;
+  background: #1d1b1b;
+  color: #f1e6e4;
+}
+:root[data-device-scheme=dark] .safety_footnote {
+  color: #c2aca8;
+}
+:root[data-device-scheme=dark] .safety_stilled {
+  color: #ff8a78;
+}
+:root[data-device-scheme=dark] .safety_tempo2 {
+  border-color: #8f7dd0;
+  background: #1f1b2b;
+}
+:root[data-device-scheme=dark] .safety_tempo2 .safety_headline {
+  color: #c9bcf2;
+}
+:root[data-device-scheme=dark] .safety_tempo2 .safety_action:hover {
+  background: #6c5a9f;
+}
+:root[data-device-scheme=dark] .safety_tempo2 .safety_alt {
+  border-color: #3e3654;
+}
+:root[data-device-scheme=dark] .safety_tempo2 .safety_footnote {
+  color: #b5acc9;
+}
+:root[data-device-scheme=dark] .safety_tempo3 {
+  border-color: #c7813a;
+  background: #2a1d10;
+}
+:root[data-device-scheme=dark] .safety_tempo3 .safety_headline {
+  color: #f2b574;
+}
+:root[data-device-scheme=dark] .safety_tempo3 .safety_action:hover {
+  background: #b86d25;
+}
+:root[data-device-scheme=dark] .safety_tempo3 .safety_alt {
+  border-color: #4a3825;
+}
+:root[data-device-scheme=dark] .safety_tempo3 .safety_footnote {
+  color: #c9b395;
+}
+:root[data-device-scheme=dark] .safety_reframe {
+  border-color: #b08a2c;
+  background: #262012;
+}
+:root[data-device-scheme=dark] .safety_reframe .safety_headline {
+  color: #eec46a;
+}
+:root[data-device-scheme=dark] .safety_reframe .safety_body {
+  color: #e6dcc8;
+}
+:root[data-device-scheme=dark] .safety_reframe .safety_action {
+  border-color: #b08a2c;
+  background: #3a2d0e;
+  color: #f4d58a;
+}
+:root[data-device-scheme=dark] .safety_reframe .safety_action:hover {
+  background: #46370f;
+  border-color: #c9a03c;
+}
+:root[data-device-scheme=dark] .safety_reframe .safety_alt {
+  border-color: #4a4130;
+  background: #1d1b17;
+  color: #ece6d8;
+}
+:root[data-device-scheme=dark] .safety_reframe .safety_alt:hover {
+  border-color: #6a5d42;
 }

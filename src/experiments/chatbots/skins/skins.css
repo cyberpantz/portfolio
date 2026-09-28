@@ -154,6 +154,72 @@
 }
 
 /*
+ * Dark.
+ *
+ * The device follows the site's theme: the page's head script resolves the
+ * visitor's saved choice ('fy-theme') or, failing that, the system setting,
+ * and writes it to <html data-device-scheme>. Its own attribute, not the
+ * site's data-theme, because the exploration page itself is fixed dark and
+ * must not follow it.
+ *
+ * Each skin keeps its world in the dark: the same hue family, the same
+ * warmth or coolness of the ground. Accents invert — a light accent with dark
+ * ink on it — so the one colour serves as a fill and as text on the surface.
+ * Every block sets every colour token, because the default block below
+ * outranks the light per-skin blocks and must not leak into them.
+ * Contrast measured in the lint, at the same 4.5:1 floor as the light skins.
+ */
+:root[data-device-scheme='dark'] .sb-skin {
+  --s-accent: #86a8ff;
+  --s-accent-ink: #0c1226;
+  --s-accent-soft: #1c2440;
+  --s-surface: #16171b;
+  --s-ai: #24262c;
+  --s-ai-line: #30323a;
+  --s-ai-ink: #ecedf1;
+  --s-edge: #363842;
+  --s-rule: #2a2c33;
+  --s-mute: #a0a2ac;
+}
+:root[data-device-scheme='dark'] .sb-skin[data-skin='family'] {
+  --s-accent: #b3a2e8;
+  --s-accent-ink: #16112a;
+  --s-accent-soft: #262038;
+  --s-surface: #18161e;
+  --s-ai: #26222f;
+  --s-ai-line: #332d3f;
+  --s-ai-ink: #eeebf5;
+  --s-edge: #3a3448;
+  --s-rule: #2c2836;
+  --s-mute: #a7a1b6;
+}
+:root[data-device-scheme='dark'] .sb-skin[data-skin='feline'] {
+  --s-accent: #6fcfbe;
+  --s-accent-ink: #07201c;
+  --s-accent-soft: #16302b;
+  --s-surface: #171614;
+  --s-ai: #25231f;
+  --s-ai-line: #322f29;
+  --s-ai-ink: #efebe3;
+  --s-edge: #3a362f;
+  --s-rule: #2b2925;
+  --s-mute: #a6aba5;
+}
+/* Still the friendliest-looking of the three. Still the horror. */
+:root[data-device-scheme='dark'] .sb-skin[data-skin='cancel'] {
+  --s-accent: #a996ff;
+  --s-accent-ink: #140b3a;
+  --s-accent-soft: #231c43;
+  --s-surface: #17151f;
+  --s-ai: #241f33;
+  --s-ai-line: #322b47;
+  --s-ai-ink: #efecfb;
+  --s-edge: #3b3452;
+  --s-rule: #2b263a;
+  --s-mute: #aaa5c2;
+}
+
+/*
  * The morph.
  *
  * Unregistered custom properties are strings to the animation engine, so

@@ -1035,3 +1035,17 @@
      controls at every width. */
   .pickDiagram { display: none; }
 }
+
+/* ---------------------------------------------------------------- dark
+ * Colours come from the skin tokens, which have dark values (skins.css).
+ * What remains is what the tokens do not reach: the browser's own painting
+ * of controls, the device's edge against a ground that is now nearly its
+ * own colour, and the one literal red.
+ */
+:global(:root[data-device-scheme='dark']) .device {
+  color-scheme: dark;
+  box-shadow:
+    0 0 0 1px rgb(255 255 255 / 5%),
+    0 24px 60px -24px rgb(0 0 0 / 85%);
+}
+:global(:root[data-device-scheme='dark']) .stageFailed { color: #ff8a78; }

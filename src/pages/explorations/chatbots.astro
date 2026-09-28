@@ -8,6 +8,30 @@ import Chatbots from '../../experiments/chatbots/Chatbots';
   title="Chatbots — Frank Young"
   description="Chatbots, 2026 — three simulated conversations sharing one set of components: medical triage, a cat behaviour consultation, and a subscription you cannot cancel. Every response is written by hand, because the subject is the manner of the interface rather than a model behind it. Thinking, no-results, out-of-scope and safety states designed to the same finish as the happy path."
 >
+  {/*
+    The device follows the site's theme (the page around it stays dark).
+    Same resolution as V2Base — the visitor's saved 'fy-theme', else the
+    system setting — run before first paint so a dark device never flashes
+    white. Written to data-device-scheme, not data-theme, so it cannot
+    reach the page's own styles. With no saved choice it follows a live
+    change of the system setting.
+  */}
+  <script is:inline slot="head">
+    (function () {
+      var root = document.documentElement;
+      var mq = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
+      var stored = null;
+      try { stored = localStorage.getItem('fy-theme'); } catch (e) {}
+      function apply() {
+        var scheme = stored === 'light' || stored === 'dark' ? stored : mq && mq.matches ? 'dark' : 'light';
+        root.setAttribute('data-device-scheme', scheme);
+      }
+      apply();
+      if (mq && !stored) {
+        try { mq.addEventListener('change', apply); } catch (e) { mq.addListener && mq.addListener(apply); }
+      }
+    })();
+  </script>
   <ExpChrome name="Chatbots" kind="Interface" />
   <main id="main" class="exp-stage">
     <figure class="sb-stage">     

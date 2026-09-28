@@ -186,3 +186,39 @@
 @media (prefers-reduced-motion: reduce) {
   .alert, .alert * { transition: none !important; animation: none !important; }
 }
+
+/* ---------------------------------------------------------------- dark
+ * One dark palette, identical in every skin, for the same reason the light
+ * one is: an emergency must look like the same emergency wherever it
+ * appears. The action fills keep their light-mode colours (white on them
+ * already passes); the grounds darken and the text lightens around them.
+ * Contrast is in the lint.
+ */
+:global(:root[data-device-scheme='dark']) .alert { border-color: #e0604c; background: #2a1715; color: #f1e6e4; }
+:global(:root[data-device-scheme='dark']) .headline { color: #ff8a78; }
+:global(:root[data-device-scheme='dark']) .action:hover { background: #c93a25; }
+:global(:root[data-device-scheme='dark']) .action:focus-visible,
+:global(:root[data-device-scheme='dark']) .alt:focus-visible { outline-color: #f1e6e4; }
+:global(:root[data-device-scheme='dark']) .alt { border-color: #5a3a35; background: #1d1b1b; color: #f1e6e4; }
+:global(:root[data-device-scheme='dark']) .footnote { color: #c2aca8; }
+:global(:root[data-device-scheme='dark']) .stilled { color: #ff8a78; }
+
+:global(:root[data-device-scheme='dark']) .tempo2 { border-color: #8f7dd0; background: #1f1b2b; }
+:global(:root[data-device-scheme='dark']) .tempo2 .headline { color: #c9bcf2; }
+:global(:root[data-device-scheme='dark']) .tempo2 .action:hover { background: #6c5a9f; }
+:global(:root[data-device-scheme='dark']) .tempo2 .alt { border-color: #3e3654; }
+:global(:root[data-device-scheme='dark']) .tempo2 .footnote { color: #b5acc9; }
+
+:global(:root[data-device-scheme='dark']) .tempo3 { border-color: #c7813a; background: #2a1d10; }
+:global(:root[data-device-scheme='dark']) .tempo3 .headline { color: #f2b574; }
+:global(:root[data-device-scheme='dark']) .tempo3 .action:hover { background: #b86d25; }
+:global(:root[data-device-scheme='dark']) .tempo3 .alt { border-color: #4a3825; }
+:global(:root[data-device-scheme='dark']) .tempo3 .footnote { color: #c9b395; }
+
+:global(:root[data-device-scheme='dark']) .reframe { border-color: #b08a2c; background: #262012; }
+:global(:root[data-device-scheme='dark']) .reframe .headline { color: #eec46a; }
+:global(:root[data-device-scheme='dark']) .reframe .body { color: #e6dcc8; }
+:global(:root[data-device-scheme='dark']) .reframe .action { border-color: #b08a2c; background: #3a2d0e; color: #f4d58a; }
+:global(:root[data-device-scheme='dark']) .reframe .action:hover { background: #46370f; border-color: #c9a03c; }
+:global(:root[data-device-scheme='dark']) .reframe .alt { border-color: #4a4130; background: #1d1b17; color: #ece6d8; }
+:global(:root[data-device-scheme='dark']) .reframe .alt:hover { border-color: #6a5d42; }
