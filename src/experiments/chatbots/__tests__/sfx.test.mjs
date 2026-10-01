@@ -1,5 +1,5 @@
 /** The sound module with a fake AudioContext: missing files are silence, never errors. */
-import { createSfx } from '../sound/sfx.ts';
+import { createSfx, FILE_CUES } from '../sound/sfx.ts';
 
 let fails = 0;
 const ok = (c, m) => { if (!c) { fails++; console.error('  FAIL ' + m); } };
@@ -66,7 +66,7 @@ function fakeCtx({ decode = 'ok' } = {}) {
   await s.unlock();
   await Promise.all([s.preload(), s.preload()]);
   await s.preload();
-  ok(fetches === 18, `each cue is fetched once across repeated preloads (got ${fetches})`);
+  ok(fetches === FILE_CUES.length, `each cue is fetched once across repeated preloads (got ${fetches})`);
 }
 
 console.log(fails ? `\n${fails} FAILED` : '  all sound assertions pass');

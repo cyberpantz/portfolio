@@ -264,6 +264,11 @@ export function ownTime(b: Beat): number {
   return 0;
 }
 
+/** A node's last beat has no next beat to hold back, so the node itself waits it out. */
+export function settleDelay(beats: Beat[]): number {
+  return beats.length ? ownTime(beats[beats.length - 1]) : 0;
+}
+
 function gapBetween(prev: Beat, next: Beat | undefined): number {
   if (prev.t === 'say' && prev.hold != null) return prev.hold;
   if (prev.t === 'say' && next?.t === 'say') return GROUPED_GAP;
@@ -357,8 +362,13 @@ export function useDirector({ scenario, startAt, watch = false }: DirectorOption
     if (st.beat >= beats.length) {
       // Tempo-1 safety locks: nothing but the single action is reachable.
       const locked = beats.some((b) => b.t === 'safety' && b.tempo === 1);
-      dispatch({ a: 'settle', locked });
-      return;
+      const wait = settleDelay(beats);
+      if (!wait) {
+        dispatch({ a: 'settle', locked });
+        return;
+      }
+      sched.after(wait, () => dispatch({ a: 'settle', locked }));
+      return () => sched.flush();
     }
 
     /*

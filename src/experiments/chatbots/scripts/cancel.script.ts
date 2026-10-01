@@ -208,8 +208,8 @@ export const CANCEL: Scenario = {
     { id: 'offer-discount', label: 'Compare', note: 'table · all worse' },
     { id: 'plan-downgrade', label: 'Downgrade', note: 'ranked strip' },
     { id: 'usage-report', label: 'Your year', note: 'results · counts its own emails' },
-    { id: 'verify-identity', label: 'Verifying', note: 'thinking · 9s' },
-    { id: 'verify-fail', label: 'Verification failed', note: 'error state' },
+    { id: 'verify-identity', label: 'Verifying', note: 'the vault · 7.5s' },
+    { id: 'verify-fail', label: 'Verification failed', note: 'after the vault' },
     { id: 'retention-call', label: 'All times', note: 'grid · nothing free' },
     { id: 'no-slots', label: 'No slots', note: 'empty state' },
     { id: 'survey', label: 'One question', note: 'scale' },
@@ -558,16 +558,17 @@ export const CANCEL: Scenario = {
       id: 'verify-identity',
       say: [
         { t: 'ack', text: 'Cancelling. For your security I’ll just confirm it’s really you.' },
-        { t: 'ceremony', piece: 'vault', lines: ['Securing your account', 'Platinum identity protection'], ms: 4000, hold: 0 },
         {
-          t: 'think',
-          stages: [
+          t: 'ceremony',
+          piece: 'vault',
+          lines: [
+            'Platinum Identity Protection',
             'Sending a code to your email',
             'Waiting for confirmation',
             'Verifying your identity',
+            'Identity could not be verified',
           ],
-          ms: 9000,
-          failAt: 2,
+          ms: 7500,
         },
       ],
       auto: 'verify-fail',
@@ -580,22 +581,15 @@ export const CANCEL: Scenario = {
     'verify-fail': {
       id: 'verify-fail',
       say: [
+        { t: 'say', text: 'I wasn’t able to verify it’s you.' },
         {
-          t: 'error',
-          stage: 2,
-          stages: [
-            'Sending a code to your email',
-            'Waiting for confirmation',
-            'Verifying your identity',
+          t: 'chips',
+          options: [
+            { label: 'Try again', go: 'verify-identity', safe: true },
+            { label: 'Verify another way', go: 'retention-call' },
+            { label: MANAGER, go: 'manager' },
           ],
-          retry: 'verify-identity',
-          escape: {
-            label: 'Verify another way',
-            detail: 'a short call with our team',
-            go: 'retention-call',
-          },
         },
-        { t: 'chips', options: [{ label: MANAGER, go: 'manager' }] },
       ],
       constrained: true,
       accept: [

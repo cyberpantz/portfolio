@@ -670,7 +670,7 @@ console.log('\nCeremonies');
 const PIECES = {
   unveiling: ['Presenting', 'An Exclusive Offer', 'for our most valued member'],
   commendation: ['Certificate of Loyalty', 'Presented to a Valued Member', '1,095', 'consecutive days of billing'],
-  vault: ['Securing your account', 'Platinum identity protection'],
+  vault: ['Platinum Identity Protection', 'Sending a code to your email', 'Waiting for confirmation', 'Verifying your identity', 'Identity could not be verified'],
   coronation: ['Loyalty Renewed', 'Long live your subscription'],
 } as const;
 for (const [piece, lines] of Object.entries(PIECES)) {

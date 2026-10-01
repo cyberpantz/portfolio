@@ -941,6 +941,25 @@ console.log('\nCeremonies hold the stage for their authored time');
   ok(ownTime({ t: 'think', stages: [], ms: 900 }) === 900, 'think still holds for its ms');
 }
 
+console.log('\nA node that ends on a timed beat holds for it');
+{
+  const { settleDelay } = await import('../director/useDirector.ts');
+  ok(settleDelay([{ t: 'say', text: 'x' }, { t: 'think', stages: [], ms: 2200 }]) === 2200,
+    'a closing think showed for half a second before the next node replaced it');
+  ok(settleDelay([{ t: 'say', text: 'x' }, { t: 'ceremony', piece: 'vault', lines: [], ms: 7500 }]) === 7500,
+    'a closing ceremony must hold the node for its whole length');
+  ok(settleDelay([{ t: 'say', text: 'x' }]) === 0, 'a node ending on words settles at once');
+}
+
+console.log('\nThe vault is the verification');
+{
+  const n = SCENARIOS.cancel.nodes;
+  const vault = n['verify-identity'].say.find((b) => b.t === 'ceremony' && b.piece === 'vault');
+  ok(vault, 'verify-identity has no vault');
+  ok(!n['verify-identity'].say.some((b) => b.t === 'think'), 'verify-identity runs a second verification after the vault');
+  ok(!n['verify-fail'].say.some((b) => b.t === 'error'), 'verify-fail repeats the steps the vault just showed');
+}
+
 console.log('\nThe manager door');
 {
   const C = SCENARIOS.cancel;
