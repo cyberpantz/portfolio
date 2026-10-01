@@ -691,6 +691,8 @@ console.log(`  ${Object.keys(PIECES).length} ceremonies render`);
   ok(!/serif\b(?!-)/.test(cer.replace(/sans-serif/g, '')), 'a ceremony switches to a serif, so it reads as another product’s splash');
   const cor = readFileSync('src/experiments/chatbots/components/ceremony/Coronation.tsx', 'utf8');
   ok(!/canvas-confetti|Sparkles/.test(cor), 'the coronation is back to confetti and sparkles');
+  const vlt = readFileSync('src/experiments/chatbots/components/ceremony/Vault.tsx', 'utf8');
+  ok(!/scaleX: last \?/.test(vlt), 'a vault step’s underline stops short of its text, which reads as a layout bug');
 }
 
 console.log('\nXAL-9000');

@@ -83,7 +83,8 @@
 @keyframes dull { to { stroke: #8f8676; } }
 .steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; justify-items: center; }
 .steps li { position: relative; padding-bottom: 5px; font-size: 11px; font-weight: 400; text-transform: uppercase; letter-spacing: 0.16em; color: #cfc4b0; }
-.rule { position: absolute; left: 0; right: 0; bottom: 0; height: 1px; background: #c9ad7a; transform-origin: left center; }
+/* Tracking leaves space after the last letter; the rule ends at the glyph, not the space. */
+.rule { position: absolute; left: 0; right: 0.16em; bottom: 0; height: 1px; background: #c9ad7a; transform-origin: left center; }
 .rule[data-last] { animation: dullBg 900ms ease var(--fail) forwards; }
 @keyframes dullBg { to { background: #b4503f; } }
 .verdict { margin: 6px 0 0; display: inline-flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 400; color: #e0705c; }

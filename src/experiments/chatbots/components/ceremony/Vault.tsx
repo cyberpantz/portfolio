@@ -57,7 +57,7 @@ export function Vault({ lines, ms }: { lines: string[]; ms: number }) {
                 className={c.rule}
                 data-last={last || undefined}
                 initial={{ scaleX: 0 }}
-                animate={{ scaleX: last ? 0.82 : 1 }}
+                animate={{ scaleX: 1 }}
                 transition={{ delay: (at - 0.1) * s, duration: 0.1 * s, ease: EASE }}
               />
             </motion.li>

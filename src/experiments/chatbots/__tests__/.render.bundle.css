@@ -2004,7 +2004,7 @@
 .ceremony_rule {
   position: absolute;
   left: 0;
-  right: 0;
+  right: 0.16em;
   bottom: 0;
   height: 1px;
   background: #c9ad7a;
