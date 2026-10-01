@@ -1337,6 +1337,18 @@
 :root[data-device-scheme=dark] .product_stageFailed {
   color: #ff8a78;
 }
+.product_layers {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  pointer-events: none;
+}
+.product_layers > * {
+  pointer-events: auto;
+}
+.product_turn:empty {
+  display: none;
+}
 
 /* src/experiments/chatbots/components/safety.module.css */
 .safety_alert {

@@ -154,6 +154,8 @@ const GAP_AFTER: Record<Beat['t'], number> = {
   boundary: 360,
   safety: 0,
   error: 0,
+  ceremony: 0,
+  boss: 0,
 };
 const GROUPED_GAP = 180;
 
@@ -256,8 +258,10 @@ const NUDGE_HINT = 12_000;
 const NUDGE_OFFER = 25_000;
 
 /** How long a beat occupies the stage on its own account. */
-function ownTime(b: Beat): number {
-  return b.t === 'think' ? (b.ms ?? 1800) : 0;
+export function ownTime(b: Beat): number {
+  if (b.t === 'think') return b.ms ?? 1800;
+  if (b.t === 'ceremony') return b.hold ?? b.ms;
+  return 0;
 }
 
 function gapBetween(prev: Beat, next: Beat | undefined): number {

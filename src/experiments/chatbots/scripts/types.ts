@@ -87,6 +87,23 @@ export type PickSpec = {
   columns?: string[];
 };
 
+export type CeremonyPiece = 'unveiling' | 'commendation' | 'vault' | 'coronation';
+
+export type BossLevel = {
+  name: string;
+  card: string;
+  greeting: string;
+  /** `at` is a size fraction, 0–1. The highest one reached is shown. */
+  taunts: { at: number; text: string }[];
+  /** Presses per second that bursts him in `seconds`. Below ~70% of it never does. */
+  rate: number;
+  seconds: number;
+};
+
+export type BossPhase = 'entrance' | 'fighting' | 'burst' | 'respawn' | 'glitch' | 'failed' | 'fled';
+export type IndexPhase = 'level2' | 'failed';
+export type BossStart = 'entrance' | IndexPhase;
+
 /**
  * One assistant action. Carries content and timing only — never colour,
  * spacing or class names.
@@ -220,6 +237,29 @@ export type Beat =
       message?: string;
       retry: NodeId;
       escape: Alternative;
+    }
+  | {
+      t: 'ceremony';
+      piece: CeremonyPiece;
+      lines: string[];
+      ms: number;
+      /** Director waits this long before the next beat. Defaults to ms; 0 plays the next beat underneath. */
+      hold?: number;
+    }
+  | {
+      t: 'boss';
+      title: string;
+      epithet: string;
+      levels: BossLevel[];
+      press: string;
+      respawn: string;
+      victory: string;
+      idle: string;
+      leave: string;
+      failure: { message: string; button: string };
+      marker: string;
+      done: NodeId;
+      fled: NodeId;
     };
 
 /* --------------------------------------------------------------- nodes */
@@ -417,5 +457,5 @@ export type Scenario = {
    * Enforced in verify.mjs over every inbound edge of every node.
    */
   topics?: string[];
-  index: { id: NodeId; label: string; note: string }[];
+  index: { id: NodeId; label: string; note: string; phase?: IndexPhase }[];
 };

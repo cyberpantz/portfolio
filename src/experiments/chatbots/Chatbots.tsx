@@ -6,6 +6,7 @@ import { OutcomeBadge } from './components/OutcomeBadge';
 import { BeatView } from './components/BeatView';
 import { Composer, type ComposerHandle } from './components/Composer';
 import { Splash } from './components/Splash';
+import { LayerHost } from './components/Layer';
 import { Rig, type Mode } from './apparatus/Rig';
 import { Tray } from './apparatus/Tray';
 import a from './apparatus/apparatus.module.css';
@@ -65,6 +66,7 @@ export default function Chatbots({
   const log = useRef<HTMLDivElement>(null);
   const atBottom = useRef(true);
   const [unread, setUnread] = useState(0);
+  const [layerHost, setLayerHost] = useState<HTMLDivElement | null>(null);
 
   const locked = d.phase === 'locked';
   const constrained = d.phase === 'waiting' && !!d.node.constrained;
@@ -152,6 +154,7 @@ export default function Chatbots({
 
   const device = (
     <div className={`${s.device} sb-skin sb-morph`} data-skin={skin}>
+      <LayerHost.Provider value={layerHost}>
       {splash ? (
         <Splash key={skin} data={splash} onDone={endSplash} />
       ) : (<>
@@ -288,6 +291,8 @@ export default function Chatbots({
         onStashChange={setHasStash}
       />
       </>)}
+      </LayerHost.Provider>
+      <div ref={setLayerHost} className={s.layers} />
     </div>
   );
 

@@ -1049,3 +1049,9 @@
     0 24px 60px -24px rgb(0 0 0 / 85%);
 }
 :global(:root[data-device-scheme='dark']) .stageFailed { color: #ff8a78; }
+
+/* Ceremonies and the boss portal in here. Empty, it must not eat clicks. */
+.layers { position: absolute; inset: 0; z-index: 30; pointer-events: none; }
+.layers > * { pointer-events: auto; }
+/* A ceremony's turn is empty once its layer has portalled out. */
+.turn:empty { display: none; }

@@ -930,5 +930,13 @@ console.log('\nThe assistant does not answer instantly');
   console.log(`  ${ms}ms before the first beat, user turns only, jittered`);
 }
 
+console.log('\nCeremonies hold the stage for their authored time');
+{
+  const { ownTime } = await import('../director/useDirector.ts');
+  ok(ownTime({ t: 'ceremony', piece: 'vault', lines: [], ms: 4000 }) === 4000, 'ceremony without hold holds for ms');
+  ok(ownTime({ t: 'ceremony', piece: 'vault', lines: [], ms: 4000, hold: 0 }) === 0, 'hold: 0 lets the next beat play underneath');
+  ok(ownTime({ t: 'think', stages: [], ms: 900 }) === 900, 'think still holds for its ms');
+}
+
 console.log(fails ? `\n${fails} FAILED\n` : '\nAll checks passed\n');
 process.exit(fails ? 1 : 0);

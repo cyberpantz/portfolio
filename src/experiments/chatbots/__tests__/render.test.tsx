@@ -74,11 +74,17 @@ const UNUSED: Beat[] = [
     axes: ['Wait', 'Cost'],
     rows: [{ label: 'Telehealth', cells: ['12 min', '$0'] }],
   },
+  { t: 'ceremony', piece: 'unveiling', lines: ['Presenting', 'An Exclusive Offer'], ms: 2500 },
+  {
+    t: 'boss', title: 'T', epithet: 'E', press: 'Cancel', respawn: 'R', victory: 'V', idle: 'I',
+    leave: 'L', marker: 'Escalated', failure: { message: 'M', button: 'OK' }, done: 'open', fled: 'open',
+    levels: [{ name: 'XAL-9000', card: 'C', greeting: 'G', taunts: [], rate: 5, seconds: 5 }],
+  },
 ];
 for (const beat of UNUSED) {
   try {
     const html = renderToStaticMarkup(<BeatView beat={beat} grouped={false} h={h} />);
-    ok(html.length > 0, `unused beat "${beat.t}" rendered empty`);
+    ok(html.length > 0 || beat.t === 'ceremony', `unused beat "${beat.t}" rendered empty`);
   } catch (e) {
     fails++;
     console.error(`  FAIL  unused beat "${beat.t}" threw: ${(e as Error).message}`);

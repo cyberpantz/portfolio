@@ -1,4 +1,4 @@
-import type { Beat, Chip } from '../scripts/types';
+import type { Beat, Chip, IndexPhase } from '../scripts/types';
 import { Thinking } from './Thinking';
 import { Reframe, Safety } from './Safety';
 import {
@@ -47,6 +47,8 @@ export type BeatHandlers = {
   picked?: { at: string; day: 'today' | 'tomorrow' };
   /** Grid cell chosen: carries the machine time as well as the label. */
   time?: (at: string, label: string, day: string, go: string) => void;
+  /** The state browser opening the boss at a later phase. */
+  bossPhase?: IndexPhase;
 };
 
 export function BeatView({
@@ -196,6 +198,12 @@ export function BeatView({
           onEscape={() => h.go(beat.escape.go ?? 'phones')}
         />
       );
+
+    case 'ceremony':
+      return null;
+
+    case 'boss':
+      return <div className={s.ack}>{beat.marker}</div>;
 
     default: {
       const _exhaustive: never = beat;
