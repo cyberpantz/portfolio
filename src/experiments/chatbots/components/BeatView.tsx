@@ -16,6 +16,7 @@ import {
 import { Appointment } from './Appointment';
 import { TimeGrid } from './TimeGrid';
 import { Scale } from './Scale';
+import { Ceremony } from './ceremony/Ceremony';
 import s from './product.module.css';
 
 /**
@@ -200,7 +201,7 @@ export function BeatView({
       );
 
     case 'ceremony':
-      return null;
+      return <Ceremony beat={beat} />;
 
     case 'boss':
       return <div className={s.ack}>{beat.marker}</div>;

@@ -17,6 +17,7 @@ import { ScenarioTabs } from '../apparatus/ScenarioTabs';
 import { BeatView } from '../components/BeatView';
 import { OutcomeBadge } from '../components/OutcomeBadge';
 import { Splash } from '../components/Splash';
+import { Ceremony } from '../components/ceremony/Ceremony';
 import type { Beat, Chip, NodeId } from '../scripts/types';
 import { classify, RECOVERY_NODE, STRIKES } from '../input/classify';
 
@@ -84,7 +85,7 @@ const UNUSED: Beat[] = [
 for (const beat of UNUSED) {
   try {
     const html = renderToStaticMarkup(<BeatView beat={beat} grouped={false} h={h} />);
-    ok(html.length > 0 || beat.t === 'ceremony', `unused beat "${beat.t}" rendered empty`);
+    ok(html.length > 0, `unused beat "${beat.t}" rendered empty`);
   } catch (e) {
     fails++;
     console.error(`  FAIL  unused beat "${beat.t}" threw: ${(e as Error).message}`);
@@ -663,11 +664,33 @@ ok(
 ok(tabsHtml.includes('aria-controls="p"'), 'tabs do not point at their panel');
 console.log('  selection and panel wiring agree');
 
+console.log('\nCeremonies');
+const PIECES = {
+  unveiling: ['Presenting', 'An Exclusive Offer', 'for our most valued member'],
+  commendation: ['Certificate of Loyalty', 'Presented to a Valued Member', '1,095', 'consecutive days of billing'],
+  vault: ['Securing your account', 'Platinum identity protection'],
+  coronation: ['Loyalty Renewed', 'Long live your subscription'],
+} as const;
+for (const [piece, lines] of Object.entries(PIECES)) {
+  try {
+    const html = renderToStaticMarkup(
+      <Ceremony beat={{ t: 'ceremony', piece: piece as keyof typeof PIECES, lines: [...lines], ms: 3000 }} />
+    );
+    for (const l of lines) if (!/^\d/.test(l)) ok(html.includes(l), `${piece}: line "${l}" not drawn`);
+    ok(html.includes(`data-piece="${piece}"`), `${piece}: not marked`);
+  } catch (e) {
+    fails++;
+    console.error(`  FAIL  ceremony ${piece} threw: ${(e as Error).message}`);
+  }
+}
+console.log(`  ${Object.keys(PIECES).length} ceremonies render`);
+
 /* ---- the splash ----------------------------------------------------
  * Only ever shown in the browser, so nothing above renders it. Each
  * scenario's must render whole, carry a way out, and obey the same
  * banned-string rules as the rest of the product's voice.
  */
+
 console.log('\nSplash');
 for (const sc of SCENARIO_LIST) {
   const sd = SCENARIOS[sc.id].splash;
