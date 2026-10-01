@@ -7,6 +7,8 @@ import { BeatView } from './components/BeatView';
 import { Composer, type ComposerHandle } from './components/Composer';
 import { Splash } from './components/Splash';
 import { LayerHost } from './components/Layer';
+import { sfx } from './sound/sfx';
+import { SoundToggle } from './apparatus/SoundToggle';
 import { Rig, type Mode } from './apparatus/Rig';
 import { Tray } from './apparatus/Tray';
 import a from './apparatus/apparatus.module.css';
@@ -151,9 +153,10 @@ export default function Chatbots({
   };
 
   const fill = (line: Line) => composer.current?.fill(line.text);
+  const wake = skin === 'cancel' ? () => void sfx().unlock().then(() => sfx().preload()) : undefined;
 
   const device = (
-    <div className={`${s.device} sb-skin sb-morph`} data-skin={skin}>
+    <div className={`${s.device} sb-skin sb-morph`} data-skin={skin} onPointerDown={wake} onKeyDown={wake}>
       <LayerHost.Provider value={layerHost}>
       {splash ? (
         <Splash key={skin} data={splash} onDone={endSplash} />
@@ -329,6 +332,7 @@ export default function Chatbots({
         d.restart();
       }}
       device={device}
+      extra={skin === 'cancel' ? <SoundToggle /> : undefined}
       tray={
         <Tray
           /* The tray fills the composer and sends. Neither happens in the

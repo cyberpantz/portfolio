@@ -46,6 +46,7 @@ export function Rig({
   device,
   tray,
   index,
+  extra,
 }: {
   title: string;
   wallLabel: string;
@@ -58,6 +59,7 @@ export function Rig({
   device: ReactNode;
   tray: ReactNode;
   index: ReactNode;
+  extra?: ReactNode;
 }) {
   return (
     <section className={a.rig} aria-label={`${title} demo`}>
@@ -133,6 +135,7 @@ export function Rig({
           <button type="button" className={a.tab} onClick={onRestart}>
             Start over
           </button>
+          {extra}
         </div>
 
         {mode === 'index' && index}
