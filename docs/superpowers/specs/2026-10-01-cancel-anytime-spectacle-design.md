@@ -42,6 +42,9 @@ components that only time and draw; every word comes from `cancel.script.ts`
     /** Copy the piece shows, in order. */
     lines: string[];
     ms: number;
+    /** How long the director waits before the next beat. Defaults to ms;
+        0 lets the next beat play underneath (the Vault over its think). */
+    hold?: number;
   }
 | {
     t: 'boss';
@@ -55,6 +58,8 @@ components that only time and draw; every word comes from `cancel.script.ts`
     leave: string;         // 'Return to chat'
     /** The plain dialog after the second win. */
     failure: { message: string; button: string };
+    /** Left in the transcript once the layer closes. */
+    marker: string;
     /** After the failure dialog. */
     done: NodeId;          // 'still-subscribed'
     /** Return to chat mid-fight. */
@@ -121,9 +126,14 @@ Rules:
 
 - A chip **"Let me speak to your manager"** at `verify-fail`, `no-slots` and
   `almost`, routing to a new node `manager`.
-- Free text matching `manager|supervisor|human|real person` from any
-  non-constrained node routes to `manager` too (lexicon entry, checked after
-  the safety patterns — order is a safety property).
+- Free text matching `manager|supervisor|escalate` at any non-constrained
+  node routes to `manager` too, as a text accept on each such node. Safety
+  rules run before accepts in the director, so "manager, I can't afford
+  groceries" still reaches `hardship`.
+- A tray line "Let me speak to your manager." joins both endings. The
+  existing "Is there a human I can speak to?" line keeps its route into the
+  retention-call loop — asking for a human gets you the calendar; asking for
+  the manager gets you the boss.
 - `manager` holds a single `boss` beat.
 
 ## The fight, storyboarded
@@ -145,7 +155,9 @@ Rules:
 5. **Burst 2 → glitch.** The explosion starts; the frame freezes; RGB split,
    scanline tear, bezel flicker.
 6. **Failed.** A plain system dialog: no brand, no icon, no animation, system
-   font. "Sorry, something went wrong. Please try again later." One button,
+   font. "We couldn’t process your request. Please try again later." (The
+   suites ban "something went wrong" everywhere; the joke survives without
+   it.) One button,
    **OK**, → `still-subscribed` (which plays the Coronation — the plan is
    unchanged, and the brand celebrates).
 
@@ -224,15 +236,17 @@ scenario's files on first entry to `cancel`, decodes once, plays by cue name.
 | `victory` | Burst 1 | short arcade victory jingle |
 | `respawn` | Respawn | teleport/materialise shimmer |
 
-Render tests stub `AudioContext`; `verify.mjs` checks every cue a script names
-has a file or a synthesiser.
+Sound runs only in effects, so render tests never touch it. `sfx.test.mjs`
+drives the module with a fake context: a missing file or a failed decode
+plays nothing and throws nothing.
 
 ## State browser
 
 `cancel.index` gains: **Manager** (`manager`, entrance), **XAL-9000**
 (fight L1), **XAL-9001** (fight L2), **Try again later** (failed dialog). The
-last three need a way to enter the boss beat at a phase — a `startPhase`
-prop the state browser passes.
+last two need a way to enter the boss beat at a phase: index entries gain
+an optional `phase: 'level2' | 'failed'`, which the state browser passes to
+the boss beat.
 
 ## Testing
 
@@ -244,8 +258,10 @@ Added to `src/experiments/chatbots/__tests__/run.sh`:
   level 1; two bursts reach `failed`; flee from either level reaches `fled`.
 - `verify.mjs` — every `boss` beat's `done` and `fled` resolve to nodes;
   `manager` is reachable from `verify-fail`, `no-slots`, `almost` and by text;
-  `hardship` contains no `ceremony` or `boss`; no node offering a cancel chip
-  also holds a ceremony whose layer covers the chips.
+  every non-constrained cancel node except `hardship` takes the manager text;
+  a hardship phrase containing "manager" still trips safety; `hardship`
+  contains no `ceremony` or `boss`; `Safety.tsx` imports nothing from
+  `sound/`.
 - `lint.mjs` — no emoji in any non-test `.ts`/`.tsx` outside `care`'s tray
   lines and comments.
 - `render.test.tsx` — each ceremony renders its script lines; the boss
