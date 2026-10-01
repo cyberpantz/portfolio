@@ -18,6 +18,8 @@ import { BeatView } from '../components/BeatView';
 import { OutcomeBadge } from '../components/OutcomeBadge';
 import { Splash } from '../components/Splash';
 import { Ceremony } from '../components/ceremony/Ceremony';
+import { Boss } from '../components/boss/Boss';
+import { readFileSync } from 'node:fs';
 import type { Beat, Chip, NodeId } from '../scripts/types';
 import { classify, RECOVERY_NODE, STRIKES } from '../input/classify';
 
@@ -684,6 +686,38 @@ for (const [piece, lines] of Object.entries(PIECES)) {
   }
 }
 console.log(`  ${Object.keys(PIECES).length} ceremonies render`);
+
+console.log('\nXAL-9000');
+const BOSS: Extract<Beat, { t: 'boss' }> = {
+  t: 'boss', title: 'Archon', epithet: 'Custodian', press: 'Cancel', respawn: 'Reassigned.', victory: 'Victory',
+  idle: 'Take your time.', leave: 'Return to chat', marker: 'Escalated', done: 'open', fled: 'open',
+  failure: { message: 'Sorry, something went wrong. Please try again later.', button: 'OK' },
+  levels: [
+    { name: 'XAL-9000', card: 'Level 1', greeting: 'Hello.', taunts: [{ at: 0.5, text: 'Hold.' }], rate: 5, seconds: 5 },
+    { name: 'XAL-9001', card: 'Level 2', greeting: 'Again.', taunts: [], rate: 6, seconds: 5 },
+  ],
+};
+{
+  for (const phase of ['entrance', 'level2', 'failed'] as const) {
+    try {
+      const html = renderToStaticMarkup(<Boss beat={BOSS} startPhase={phase} onDone={noop} onFled={noop} />);
+      ok(!/undefined|NaN/.test(html), `boss ${phase}: leaked undefined/NaN`);
+      if (phase === 'failed') {
+        ok(html.includes(BOSS.failure.message), 'failure dialog shows its message');
+        ok(!/<svg|<img/.test(html.split('data-system')[1] ?? ''), 'failure dialog has no icon or image');
+      } else {
+        ok(html.includes(BOSS.levels[phase === 'level2' ? 1 : 0].name), `boss ${phase}: name missing`);
+        ok(html.includes(BOSS.leave), `boss ${phase}: no way back to the chat`);
+      }
+    } catch (e) {
+      fails++;
+      console.error(`  FAIL  boss ${phase} threw: ${(e as Error).message}`);
+    }
+  }
+}
+const bossCss = readFileSync('src/experiments/chatbots/components/boss/boss.module.css', 'utf8');
+ok(/\.press\s*\{[^}]*touch-action:\s*manipulation/.test(bossCss), 'Cancel button allows double-tap zoom while mashing');
+ok(/\.press\s*\{[^}]*user-select:\s*none/.test(bossCss), 'Cancel button selects text while mashing');
 
 /* ---- the splash ----------------------------------------------------
  * Only ever shown in the browser, so nothing above renders it. Each

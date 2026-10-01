@@ -1,0 +1,79 @@
+/* The manager's office. Off-skin, like the ceremonies: black, red, gold. */
+.arena {
+  position: absolute; inset: 0; overflow: hidden;
+  display: grid; grid-template-rows: auto 1fr auto auto auto auto; justify-items: center; gap: 8px;
+  padding: 18px 18px 16px;
+  background: radial-gradient(90% 70% at 50% 35%, #2a0a0c, #0a0405 70%, #000);
+  color: #f3e6d6; font-family: var(--s-font);
+  animation: arrive 700ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+.arena[data-phase='fighting'] { animation: shake 90ms linear infinite; }
+@keyframes arrive { from { opacity: 0; transform: scale(1.08); } }
+@keyframes shake {
+  25% { transform: translate(var(--shake), calc(var(--shake) * -0.5)); }
+  75% { transform: translate(calc(var(--shake) * -1), calc(var(--shake) * 0.5)); }
+}
+
+.card {
+  position: absolute; top: 38%; left: 0; right: 0; margin: 0; z-index: 3; text-align: center;
+  font-family: var(--font-mono, ui-monospace, monospace); font-size: 13px; letter-spacing: 0.4em; text-transform: uppercase;
+  color: #000; background: #f2cf74; padding: 10px 0;
+  animation: stamp 2.2s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+@keyframes stamp { 0% { transform: scale(2.2) rotate(-4deg); opacity: 0; } 12% { transform: scale(1) rotate(-2deg); opacity: 1; } 80% { opacity: 1; } 100% { opacity: 0; } }
+
+.stage { position: relative; width: 100%; display: grid; place-items: center; min-height: 0; }
+.xal { width: 200px; height: 200px; transition: transform 90ms ease-out; animation: descend 1.6s cubic-bezier(0.2, 0.9, 0.2, 1) both; }
+@keyframes descend { from { translate: 0 -320px; } }
+.halo { transform-origin: 100px 100px; animation: spin var(--spin) linear infinite; }
+.halo[data-dir='rev'] { animation-direction: reverse; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.iris { animation: pulse 1.4s ease-in-out infinite; transform-origin: 100px 100px; }
+@keyframes pulse { 50% { transform: scale(1.08); } }
+
+.names { text-align: center; }
+.name { margin: 0; font-family: var(--font-mono, ui-monospace, monospace); font-size: 20px; font-weight: 700; letter-spacing: 0.12em; color: #ff6a5a; text-shadow: 0 0 12px rgb(255 80 60 / 60%); }
+.title { margin: 2px 0 0; font-size: 11px; letter-spacing: 0.24em; text-transform: uppercase; color: #f2cf74; }
+.epithet { margin: 2px 0 0; font-size: 11px; font-variant: small-caps; color: #a8968a; }
+.says { margin: 0; max-width: 30ch; text-align: center; font-size: 14px; line-height: 1.4; padding: 8px 12px; border: 1px solid rgb(255 106 90 / 40%); border-radius: 10px; background: rgb(255 106 90 / 8%); }
+.victory { margin: 0; font-family: var(--font-mono, ui-monospace, monospace); font-size: 28px; font-weight: 800; letter-spacing: 0.3em; text-transform: uppercase; color: #f2cf74; animation: stamp 2.2s both; }
+.toast { margin: 0; font-size: 13px; color: #f3e6d6; background: #1d1012; border: 1px solid #3a2224; border-radius: 8px; padding: 8px 12px; }
+
+/* Plain on purpose: the chat's own button, the one thing in here with no budget. */
+.press {
+  width: 100%; max-width: 280px; padding: 14px 0; font: inherit; font-size: 15px;
+  color: var(--s-ai-ink, #222); background: var(--s-surface, #f2f2f2); border: 1px solid var(--s-edge, #ccc); border-radius: var(--s-r-chip, 10px);
+  touch-action: manipulation; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent;
+}
+.press:active { transform: translateY(1px); }
+.press:disabled { opacity: 0.4; }
+.leave { background: none; border: 0; padding: 4px; font: inherit; font-size: 12px; color: #a8968a; text-decoration: underline; text-underline-offset: 3px; }
+
+.debris { position: absolute; inset: -30%; width: 160%; height: 160%; pointer-events: none; }
+.flash { position: absolute; inset: -100vmax; background: #fff; animation: flash 380ms ease-out both; pointer-events: none; }
+.shock { position: absolute; width: 60px; height: 60px; border-radius: 50%; border: 3px solid #fff3b0; animation: shock 700ms ease-out both; }
+@keyframes flash { from { opacity: 1; } to { opacity: 0; } }
+@keyframes shock { from { transform: scale(0.2); opacity: 1; } to { transform: scale(7); opacity: 0; } }
+.flash[data-freeze], .shock[data-freeze] { animation-play-state: paused; animation-delay: -120ms; }
+
+/* The glitch: the frame freezes and tears. */
+.arena[data-phase='glitch'] { animation: tear 1.4s steps(1) both; }
+.arena[data-phase='glitch'] .stage, .arena[data-phase='glitch'] .names { filter: drop-shadow(3px 0 0 rgb(255 0 60 / 80%)) drop-shadow(-3px 0 0 rgb(0 220 255 / 80%)); }
+.arena[data-phase='glitch']::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background: repeating-linear-gradient(0deg, rgb(255 255 255 / 8%) 0 1px, transparent 1px 3px);
+  animation: slice 1.4s steps(1) both;
+}
+@keyframes tear { 10% { transform: translateX(-6px) skewX(4deg); } 20% { transform: translateX(8px); } 35% { transform: none; filter: invert(1); } 40% { filter: none; } 60% { transform: translateY(4px) skewX(-6deg); } 80% { opacity: 0.6; } 100% { opacity: 0; } }
+@keyframes slice { 15% { clip-path: inset(30% 0 52% 0); } 30% { clip-path: inset(66% 0 12% 0); } 45% { clip-path: inset(8% 0 80% 0); } 60% { clip-path: none; } }
+
+/* The one honest screen: system font, no brand, no motion. */
+.arena[data-phase='failed'] { background: rgb(0 0 0 / 40%); place-content: center; animation: none; grid-template-rows: none; }
+.system {
+  width: min(300px, 86%); padding: 18px; background: #fff; color: #111; border: 1px solid #bbb;
+  font-family: -apple-system, system-ui, 'Segoe UI', Roboto, sans-serif; font-size: 14px; line-height: 1.4;
+}
+.system p { margin: 0 0 14px; }
+.system button { float: right; min-width: 72px; padding: 5px 12px; font: inherit; background: #f3f3f3; border: 1px solid #999; border-radius: 4px; color: #111; }
+
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }

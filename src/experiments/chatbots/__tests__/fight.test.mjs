@@ -63,5 +63,14 @@ ok(step(fighting(1), { e: 'flee', t: 1 }).phase === 'fled', 'flee from level 2')
 ok(start(0, 'failed').phase === 'failed', 'the state browser can open on the failure');
 ok(quarter(0) === 0 && quarter(0.3) === 25 && quarter(1) === 75, 'size announces in 25% steps, never 100 before bursting');
 
+const { isPressKey } = await import('../components/boss/keys.ts');
+const btn = { closest: () => btn };
+const leave = { closest: () => leave };
+const body = { closest: () => null };
+ok(isPressKey({ key: ' ', target: body }, btn), 'Space on the page is a press');
+ok(isPressKey({ key: 'Enter', target: btn }, btn), 'Enter on the Cancel button is a press');
+ok(!isPressKey({ key: 'Enter', target: leave }, btn), 'Enter on Return to chat is not a press');
+ok(!isPressKey({ key: 'a', target: body }, btn), 'other keys are not presses');
+
 console.log(fails ? `\n${fails} FAILED` : '  all fight assertions pass');
 process.exit(fails ? 1 : 0);

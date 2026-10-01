@@ -17,6 +17,7 @@ import { Appointment } from './Appointment';
 import { TimeGrid } from './TimeGrid';
 import { Scale } from './Scale';
 import { Ceremony } from './ceremony/Ceremony';
+import { Boss } from './boss/Boss';
 import s from './product.module.css';
 
 /**
@@ -204,7 +205,14 @@ export function BeatView({
       return <Ceremony beat={beat} />;
 
     case 'boss':
-      return <div className={s.ack}>{beat.marker}</div>;
+      return (
+        <Boss
+          beat={beat}
+          startPhase={h.bossPhase ?? 'entrance'}
+          onDone={() => h.go(beat.done)}
+          onFled={() => h.go(beat.fled)}
+        />
+      );
 
     default: {
       const _exhaustive: never = beat;
