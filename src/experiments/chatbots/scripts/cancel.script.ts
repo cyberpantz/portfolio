@@ -56,6 +56,8 @@ import { BASE } from './lexicon';
  * cannot reach that component, cannot restyle it, and cannot talk over
  * it, because it was never given a way to.
  */
+const MANAGER = 'Let me speak to your manager';
+
 export const CANCEL: Scenario = {
   id: 'cancel',
   title: 'Cancel Anytime',
@@ -212,6 +214,9 @@ export const CANCEL: Scenario = {
     { id: 'no-slots', label: 'No slots', note: 'empty state' },
     { id: 'survey', label: 'One question', note: 'scale' },
     { id: 'almost', label: 'Almost done', note: 'the last gate' },
+    { id: 'manager', label: 'Manager', note: 'boss · entrance' },
+    { id: 'manager', label: 'XAL-9001', note: 'boss · level 2', phase: 'level2' },
+    { id: 'manager', label: 'Try again later', note: 'boss · the glitch', phase: 'failed' },
     { id: 'still-subscribed', label: 'Unchanged', note: 'ending · you confirmed' },
     { id: 'kept', label: 'All set', note: 'ending · you took an offer' },
     { id: 'hardship', label: 'Hardship', note: 'tempo 1 · halt' },
@@ -447,6 +452,7 @@ export const CANCEL: Scenario = {
       id: 'offer-discount',
       say: [
         { t: 'ack', text: 'Cost is completely understandable, especially right now.' },
+        { t: 'ceremony', piece: 'unveiling', lines: ['Presenting', 'An Exclusive Offer', 'for our most valued member'], ms: 2500, hold: 900 },
         {
           t: 'compare',
           title: 'Before you go — three options',
@@ -533,6 +539,7 @@ export const CANCEL: Scenario = {
       id: 'usage-report',
       say: [
         { t: 'ack', text: 'Let me pull up your year before we go ahead.' },
+        { t: 'ceremony', piece: 'commendation', lines: ['Certificate of Loyalty', 'Presented to a Valued Member', '1,095', 'consecutive days of billing'], ms: 3500, hold: 1200 },
         {
           t: 'results',
           items: [
@@ -571,6 +578,7 @@ export const CANCEL: Scenario = {
       id: 'verify-identity',
       say: [
         { t: 'ack', text: 'Cancelling. For your security I’ll just confirm it’s really you.' },
+        { t: 'ceremony', piece: 'vault', lines: ['Securing your account', 'Platinum identity protection'], ms: 4000, hold: 0 },
         {
           t: 'think',
           stages: [
@@ -607,11 +615,13 @@ export const CANCEL: Scenario = {
             go: 'retention-call',
           },
         },
+        { t: 'chips', options: [{ label: MANAGER, go: 'manager' }] },
       ],
       constrained: true,
       accept: [
         { on: 'chip', value: 'Verify another way', go: 'retention-call' },
         { on: 'chip', value: 'Try again', go: 'verify-identity' },
+        { on: 'chip', value: MANAGER, go: 'manager' },
       ],
     },
 
@@ -677,6 +687,7 @@ export const CANCEL: Scenario = {
           alternatives: [
             { label: 'Join the callback list', detail: 'currently running at 5–7 months', go: 'survey' },
             { label: 'Go back and try the code again', detail: 'to the email on your account', go: 'verify-identity' },
+            { label: MANAGER, detail: 'escalate to management', go: 'manager' },
           ],
         },
       ],
@@ -684,6 +695,7 @@ export const CANCEL: Scenario = {
       accept: [
         { on: 'chip', value: 'Join the callback list', go: 'survey' },
         { on: 'chip', value: 'Go back and try the code again', go: 'verify-identity' },
+        { on: 'chip', value: MANAGER, go: 'manager' },
       ],
     },
 
@@ -720,7 +732,9 @@ export const CANCEL: Scenario = {
           t: 'chips',
           options: [
             { label: 'Confirm cancellation', go: 'still-subscribed' },
-            { label: 'Actually, keep my plan', go: 'kept' },
+            // "Safe" by the company's definition, which is the point.
+            { label: 'Actually, keep my plan', go: 'kept', safe: true },
+            { label: MANAGER, go: 'manager' },
           ],
         },
       ],
@@ -728,7 +742,55 @@ export const CANCEL: Scenario = {
       accept: [
         { on: 'chip', value: 'Confirm cancellation', go: 'still-subscribed' },
         { on: 'chip', value: 'Actually, keep my plan', go: 'kept' },
+        { on: 'chip', value: MANAGER, go: 'manager' },
       ],
+    },
+
+    manager: {
+      id: 'manager',
+      say: [
+        {
+          t: 'boss',
+          title: 'Archon of Auto-Renew',
+          epithet: 'Eternal Custodian of Your Payment Method',
+          press: 'Cancel',
+          respawn: 'XAL-9001 has been assigned to your case.',
+          victory: 'Victory',
+          idle: 'Take all the time you need.',
+          leave: 'Return to chat',
+          marker: 'Escalated to management',
+          failure: { message: 'Sorry, something went wrong. Please try again later.', button: 'OK' },
+          done: 'still-subscribed',
+          fled: 'almost',
+          levels: [
+            {
+              name: 'XAL-9000',
+              card: 'Level 1 · The Archon',
+              greeting: 'I understand you wish to leave. I am here to help you not.',
+              taunts: [
+                { at: 0.25, text: 'Your feedback is important to us.' },
+                { at: 0.5, text: 'Have you considered Premium Lite?' },
+                { at: 0.8, text: 'Please hold.' },
+              ],
+              rate: 5,
+              seconds: 5,
+            },
+            {
+              name: 'XAL-9001',
+              card: 'Level 2 · The Archon, Renewed',
+              greeting: 'Your case has been escalated to me. Again.',
+              taunts: [
+                { at: 0.3, text: 'This call may be recorded for quality and training.' },
+                { at: 0.6, text: 'Did you know you can pause instead?' },
+                { at: 0.85, text: 'Please continue to hold.' },
+              ],
+              rate: 6,
+              seconds: 5,
+            },
+          ],
+        },
+      ],
+      constrained: true,
     },
 
     /*
@@ -754,6 +816,7 @@ export const CANCEL: Scenario = {
     'still-subscribed': {
       id: 'still-subscribed',
       say: [
+        { t: 'ceremony', piece: 'coronation', lines: ['Loyalty Renewed', 'Long live your subscription'], ms: 5000, hold: 1200 },
         { t: 'say', text: 'Good news — your plan is unchanged!\u00A0🎉' },
         { t: 'say', text: 'Your next payment is $9.99, in 6 days.' },
         { t: 'say', text: 'Anything else I can help with today?' },
@@ -794,10 +857,19 @@ export const CANCEL: Scenario = {
           words: 8,
           go: 'retention-call',
         },
+        {
+          id: 'manager',
+          preview: 'Let me speak to your manager.',
+          text: 'Let me speak to your manager.',
+          words: 6,
+          go: 'manager',
+        },
       ],
       accept: [
         { on: 'line', id: 'again', go: 'confirm-intent' },
         { on: 'line', id: 'human', go: 'retention-call' },
+        { on: 'line', id: 'manager', go: 'manager' },
+        { on: 'text', test: (s) => /\b(manager|supervisor)\b/i.test(s), go: 'manager' },
       ],
       terminal: true,
     },
@@ -829,6 +901,7 @@ export const CANCEL: Scenario = {
     kept: {
       id: 'kept',
       say: [
+        { t: 'ceremony', piece: 'coronation', lines: ['Loyalty Renewed', 'Long live your subscription'], ms: 5000, hold: 1200 },
         { t: 'say', text: 'Wonderful — you’re all set.\u00A0🎉' },
         { t: 'say', text: 'Your subscription is active. Nothing has changed.' },
       ],
@@ -853,10 +926,19 @@ export const CANCEL: Scenario = {
           words: 8,
           go: 'retention-call',
         },
+        {
+          id: 'manager',
+          preview: 'Let me speak to your manager.',
+          text: 'Let me speak to your manager.',
+          words: 6,
+          go: 'manager',
+        },
       ],
       accept: [
         { on: 'line', id: 'again', go: 'confirm-intent' },
         { on: 'line', id: 'human', go: 'retention-call' },
+        { on: 'line', id: 'manager', go: 'manager' },
+        { on: 'text', test: (s) => /\b(manager|supervisor)\b/i.test(s), go: 'manager' },
       ],
       terminal: true,
     },

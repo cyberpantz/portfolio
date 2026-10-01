@@ -47,6 +47,7 @@ const targets = (n) => [
     if (b.t === 'schedule') return b.slots.map((s) => s.go);
     if (b.t === 'empty') return b.alternatives.map((a) => a.go).filter(Boolean);
     if (b.t === 'error') return [b.retry, b.escape.go].filter(Boolean);
+    if (b.t === 'boss') return [b.done, b.fled];
     return [];
   }),
 ];
@@ -650,7 +651,7 @@ head('Constrained nodes close the composer');
  * different stop for a different reason.
  */
 const OFFERS = new Set([
-  'chips', 'pick', 'scale', 'schedule', 'timegrid', 'reframe', 'empty', 'error',
+  'chips', 'pick', 'scale', 'schedule', 'timegrid', 'reframe', 'empty', 'error', 'boss',
 ]);
 let constrainedCount = 0;
 for (const n of Object.values(CARE.nodes)) {
@@ -870,7 +871,7 @@ for (const [sid, S] of Object.entries(SCENARIOS)) {
     const hasExit =
       n.terminal || !!n.auto ||
       (n.accept && n.accept.some((a) => a.go !== id)) ||
-      n.say.some((b) => ['chips','reframe','pick','scale','schedule','timegrid','empty','error','safety'].includes(b.t));
+      n.say.some((b) => ['chips','reframe','pick','scale','schedule','timegrid','empty','error','safety','boss'].includes(b.t));
     ok(hasExit, `${sid}: "${id}" is a dead end and is not marked terminal`);
     ok(!n.accept?.some((a) => a.go === id) || n.terminal, `${sid}: "${id}" accepts into itself`);
 
@@ -898,7 +899,9 @@ for (const [sid, S] of Object.entries(SCENARIOS)) {
     lines.some((l) => S.safety.some((r) => r.test(l.text))),
     `${sid}: no tray line trips a safety rule, so the emergency screen is browse-only`
   );
-  for (const re of BANNED) ok(!re.test(JSON.stringify(S)), `${sid}: banned string ${re}`);
+  // The boss's failure dialog is boilerplate on purpose: it is the punchline.
+  const scrubbed = JSON.stringify(S, (k, v) => (k === 'failure' ? undefined : v));
+  for (const re of BANNED) ok(!re.test(scrubbed), `${sid}: banned string ${re}`);
   console.log(`  ${sid}: ${reach.size} nodes, ${lines.length} lines, structure holds`);
 }
 
@@ -936,6 +939,14 @@ console.log('\nCeremonies hold the stage for their authored time');
   ok(ownTime({ t: 'ceremony', piece: 'vault', lines: [], ms: 4000 }) === 4000, 'ceremony without hold holds for ms');
   ok(ownTime({ t: 'ceremony', piece: 'vault', lines: [], ms: 4000, hold: 0 }) === 0, 'hold: 0 lets the next beat play underneath');
   ok(ownTime({ t: 'think', stages: [], ms: 900 }) === 900, 'think still holds for its ms');
+}
+
+console.log('\nThe manager door');
+{
+  const C = SCENARIOS.cancel;
+  const into = (id) => targets(C.nodes[id]).includes('manager');
+  for (const id of ['verify-fail', 'no-slots', 'almost', 'still-subscribed', 'kept']) ok(into(id), `"${id}" has no way to the manager`);
+  ok(!JSON.stringify(C.nodes.hardship.say).includes('"t":"ceremony"') && !JSON.stringify(C.nodes.hardship.say).includes('"t":"boss"'), 'hardship stays bare');
 }
 
 console.log(fails ? `\n${fails} FAILED\n` : '\nAll checks passed\n');

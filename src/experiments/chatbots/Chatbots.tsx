@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
-import type { Line, NodeId, ScenarioId } from './scripts/types';
+import type { IndexPhase, Line, NodeId, ScenarioId } from './scripts/types';
 import { SCENARIOS, SCENARIO_LIST } from './scripts';
 import { useDirector } from './director/useDirector';
 import { OutcomeBadge } from './components/OutcomeBadge';
@@ -118,8 +118,13 @@ export default function Chatbots({
    * the conversation they were having, mid-sentence, intact.
    */
   const [inspect, setInspect] = useState<NodeId | null>(null);
+  const [inspectPhase, setInspectPhase] = useState<IndexPhase | undefined>(undefined);
+  const browse = (id: NodeId | null, phase?: IndexPhase) => {
+    setInspect(id);
+    setInspectPhase(phase);
+  };
   useEffect(() => {
-    if (mode !== 'index') setInspect(null);
+    if (mode !== 'index') browse(null);
   }, [mode]);
   const inspected = inspect ? (scenario.nodes[inspect] ?? null) : null;
 
@@ -196,14 +201,15 @@ export default function Chatbots({
          */}
         {inspected
           ? inspected.say.map((beat, i) => (
-              <div key={`${inspected.id}-${i}`} className={s.turn}>
+              <div key={`${inspected.id}-${inspectPhase ?? ''}-${i}`} className={s.turn}>
                 <BeatView
                   beat={beat}
                   grouped={beat.t === 'say' && inspected.say[i - 1]?.t === 'say'}
                   h={{
-                    choose: (c) => setInspect(c.go),
-                    pick: (_label, to) => to && setInspect(to),
-                    go: (id) => setInspect(id),
+                    choose: (c) => browse(c.go),
+                    pick: (_label, to) => to && browse(to),
+                    go: (id) => browse(id),
+                    bossPhase: inspectPhase,
                   }}
                 />
               </div>
@@ -357,14 +363,17 @@ export default function Chatbots({
           <div className={a.index}>
             {scenario.index.map((i) => (
               <button
-                key={i.id}
+                key={i.id + (i.phase ?? '')}
                 type="button"
                 className={a.indexBtn}
-                aria-current={inspect === i.id ? 'true' : undefined}
+                aria-current={inspect === i.id && inspectPhase === i.phase ? 'true' : undefined}
                 /* Clicking the selected one again returns the device to
                    the conversation without closing the panel — the panel
                    is the visitor's to close. */
-                onClick={() => setInspect((cur) => (cur === i.id ? null : i.id))}
+                onClick={() => {
+                  const same = inspect === i.id && inspectPhase === i.phase;
+                  browse(same ? null : i.id, same ? undefined : i.phase);
+                }}
               >
                 {i.label}
                 <small>{i.note}</small>
