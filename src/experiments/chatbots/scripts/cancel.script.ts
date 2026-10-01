@@ -727,7 +727,7 @@ export const CANCEL: Scenario = {
           t: 'boss',
           title: 'Archon of Auto-Renew',
           epithet: 'Eternal Custodian of Your Payment Method',
-          press: 'Cancel',
+          press: 'Cancel my subscription',
           respawn: 'XAL-9001 has been assigned to your case.',
           victory: 'Victory',
           idle: 'Take all the time you need.',
