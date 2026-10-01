@@ -2270,8 +2270,49 @@
   -webkit-user-select: none;
   -webkit-tap-highlight-color: transparent;
 }
-.boss_press:active {
-  transform: translateY(1px);
+.boss_press {
+  transition:
+    transform 120ms ease,
+    box-shadow 160ms ease,
+    border-color 160ms ease,
+    letter-spacing 160ms ease;
+}
+@media (hover: hover) {
+  .boss_press:not(:disabled):hover {
+    transform: translateY(-2px);
+    border-color: #ff6a5a;
+    letter-spacing: 0.04em;
+    animation: boss_armed 1.1s ease-in-out infinite;
+  }
+}
+.boss_press:not(:disabled):focus-visible {
+  outline: none;
+  transform: translateY(-2px);
+  border-color: #ff6a5a;
+  animation: boss_armed 1.1s ease-in-out infinite;
+}
+@keyframes boss_armed {
+  0%, 100% {
+    box-shadow:
+      0 0 0 1px rgb(255 106 90 / 50%),
+      0 0 14px 2px rgb(255 80 60 / 35%),
+      0 6px 0 -1px #5a1a14;
+  }
+  50% {
+    box-shadow:
+      0 0 0 1px rgb(255 106 90 / 85%),
+      0 0 26px 6px rgb(255 80 60 / 55%),
+      0 6px 0 -1px #5a1a14;
+  }
+}
+.boss_press:not(:disabled):active {
+  transform: translateY(3px);
+  animation: none;
+  box-shadow:
+    0 0 0 2px #fff3e0,
+    0 0 30px 8px rgb(255 120 90 / 70%),
+    0 1px 0 0 #5a1a14;
+  transition-duration: 30ms;
 }
 .boss_press:disabled {
   opacity: 0.4;
