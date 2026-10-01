@@ -107,6 +107,22 @@ for (const f of walk(ROOT).filter((p) => /\.(tsx?|css)$/.test(p) && !p.includes(
 }
 console.log('  clean');
 
+/* — no emoji in the product; Lucide instead ---------------------------- */
+console.log('\nNo emoji');
+{
+  // care's tray line is what a visitor types, and its recovery state exists to read it.
+  const ALLOWED = ['🦴🔥😭'];
+  const GLYPH = /\p{Extended_Pictographic}|[✓▶↓]/u;
+  for (const f of walk(ROOT).filter((p) => /\.(tsx?|css)$/.test(p) && !p.includes('__tests__'))) {
+    // ™ © ® count as pictographs to Unicode; the wordmark needs ™.
+    let src = strip(readFileSync(f, 'utf8')).replace(/[©®™]/g, '');
+    for (const a of ALLOWED) src = src.split(a).join('');
+    const m = src.match(GLYPH);
+    if (m) fail(`${f.split('/').pop()} contains "${m[0]}" — use a Lucide icon`);
+  }
+  console.log('  clean');
+}
+
 /* 5 — no control waits for a hover to admit it is one ----------------
  *
  * `.pickBtn` was `border: 1px solid transparent; background: none`, and

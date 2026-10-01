@@ -113,7 +113,7 @@ export type BossStart = 'entrance' | IndexPhase;
  * a discriminated union.
  */
 export type Beat =
-  | { t: 'say'; text: string; hold?: number }
+  | { t: 'say'; text: string; hold?: number; icon?: 'party' }
   | { t: 'ack'; text: string }
   | {
       t: 'think';

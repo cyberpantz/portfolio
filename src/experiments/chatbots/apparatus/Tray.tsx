@@ -1,3 +1,4 @@
+import { Undo2 } from 'lucide-react';
 import type { Line } from '../scripts/types';
 import a from './apparatus.module.css';
 
@@ -101,7 +102,7 @@ export function Tray({
        */}
       {hasStash && (
         <button type="button" className={a.line} onClick={onRestore}>
-          <span>↩ Put my draft back</span>
+          <span><Undo2 size={12} aria-hidden /> Put my draft back</span>
         </button>
       )}
 

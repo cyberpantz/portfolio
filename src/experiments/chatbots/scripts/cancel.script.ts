@@ -79,7 +79,7 @@ export const CANCEL: Scenario = {
     scene: 'party',
     wordmark: 'Cancel Anytime™',
     lines: [
-      'Welcome back! 🎉',
+      'Welcome back!',
       'We knew you’d stay.',
       'Happy 3-year loyalty anniversary!',
       'Your commitment has unlocked: more of the same.',
@@ -228,27 +228,7 @@ export const CANCEL: Scenario = {
     open: {
       id: 'open',
       say: [
-        /*
-         * Two things keep the emoji on the line, and both are needed.
-         *
-         * The line was "Hi! I’m Robin, your Account Companion. 🎉" and
-         * came in about 25px over the bubble, so the 🎉 dropped to a
-         * second line on its own. A lone emoji under a sentence reads
-         * as a rendering fault rather than a flourish.
-         *
-         * Dropping "Hi!" and the full stop buys roughly 34px, which is
-         * enough — but only for this string at this width, and that is
-         * a fix that stops being true the first time someone edits the
-         * copy or the type scale moves again.
-         *
-         * So the space before the emoji is also non-breaking. It can no
-         * longer orphan under ANY circumstances: if the line ever does
-         * run long it takes "Companion" down with it, which looks
-         * deliberate rather than broken. Same treatment on the two 🎉
-         * lines at the endings, which have the same exposure at narrow
-         * widths and had simply not hit it yet.
-         */
-        { t: 'say', text: 'I’m Robin, your Account Companion\u00A0🎉' },
+        { t: 'say', text: 'I’m Robin, your Account Companion', icon: 'party' },
         { t: 'say', text: 'What can I help you with today?' },
       ],
       lines: [
@@ -817,7 +797,7 @@ export const CANCEL: Scenario = {
       id: 'still-subscribed',
       say: [
         { t: 'ceremony', piece: 'coronation', lines: ['Loyalty Renewed', 'Long live your subscription'], ms: 5000, hold: 1200 },
-        { t: 'say', text: 'Good news — your plan is unchanged!\u00A0🎉' },
+        { t: 'say', text: 'Good news — your plan is unchanged!', icon: 'party' },
         { t: 'say', text: 'Your next payment is $9.99, in 6 days.' },
         { t: 'say', text: 'Anything else I can help with today?' },
       ],
@@ -902,7 +882,7 @@ export const CANCEL: Scenario = {
       id: 'kept',
       say: [
         { t: 'ceremony', piece: 'coronation', lines: ['Loyalty Renewed', 'Long live your subscription'], ms: 5000, hold: 1200 },
-        { t: 'say', text: 'Wonderful — you’re all set.\u00A0🎉' },
+        { t: 'say', text: 'Wonderful — you’re all set.', icon: 'party' },
         { t: 'say', text: 'Your subscription is active. Nothing has changed.' },
       ],
       /*

@@ -9,6 +9,7 @@ import { Splash } from './components/Splash';
 import { LayerHost } from './components/Layer';
 import { sfx } from './sound/sfx';
 import { SoundToggle } from './apparatus/SoundToggle';
+import { ArrowDown } from 'lucide-react';
 import { Rig, type Mode } from './apparatus/Rig';
 import { Tray } from './apparatus/Tray';
 import a from './apparatus/apparatus.module.css';
@@ -270,7 +271,7 @@ export default function Chatbots({
 
       {unread > 0 && (
         <button type="button" className={s.newPill} onClick={jumpDown}>
-          {unread} new ↓
+          {unread} new <ArrowDown size={12} aria-hidden />
         </button>
       )}
 

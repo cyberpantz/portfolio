@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import type { Splash as SplashData } from '../scripts/types';
+import { PartyPopper } from 'lucide-react';
 import sp from './splash.module.css';
 
 /**
@@ -148,7 +149,7 @@ function Scene({ scene }: { scene: SplashData['scene'] }) {
           }}
         />
       ))}
-      <span className={sp.popper}>🎉</span>
+      <span className={sp.popper}><PartyPopper size="1em" aria-hidden /></span>
     </div>
   );
 }

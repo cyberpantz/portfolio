@@ -18,7 +18,10 @@ import { TimeGrid } from './TimeGrid';
 import { Scale } from './Scale';
 import { Ceremony } from './ceremony/Ceremony';
 import { Boss } from './boss/Boss';
+import { PartyPopper } from 'lucide-react';
 import s from './product.module.css';
+
+const SAY_ICONS = { party: PartyPopper } as const;
 
 /**
  * One beat → one component.
@@ -63,12 +66,25 @@ export function BeatView({
   h: BeatHandlers;
 }) {
   switch (beat.t) {
-    case 'say':
+    case 'say': {
+      const Icon = beat.icon ? SAY_ICONS[beat.icon] : null;
+      const cut = beat.text.lastIndexOf(' ') + 1;
       return (
         <div className={[s.ai, grouped ? s.grouped : ''].filter(Boolean).join(' ')} data-bubble>
-          {beat.text}
+          {Icon ? (
+            <>
+              {beat.text.slice(0, cut)}
+              {/* The icon must not wrap onto a line of its own. */}
+              <span className={s.nowrap}>
+                {beat.text.slice(cut)}{'\u00A0'}<Icon size="1em" className={s.sayIcon} aria-hidden />
+              </span>
+            </>
+          ) : (
+            beat.text
+          )}
         </div>
       );
+    }
 
     case 'ack':
       return <div className={s.ack}>{beat.text}</div>;

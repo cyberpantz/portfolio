@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import type { ScenarioId } from '../scripts/types';
+import { Play } from 'lucide-react';
 import a from './apparatus.module.css';
 
 /**
@@ -130,7 +131,7 @@ export function Rig({
             aria-pressed={mode === 'watch'}
             onClick={() => onMode(mode === 'watch' ? 'play' : 'watch')}
           >
-            {mode === 'watch' ? 'Stop watching' : '▶ Watch it play'}
+            {mode === 'watch' ? 'Stop watching' : <><Play size={12} aria-hidden /> Watch it play</>}
           </button>
           <button type="button" className={a.tab} onClick={onRestart}>
             Start over

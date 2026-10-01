@@ -1,4 +1,5 @@
 import { useEffect, useId, useRef, useState } from 'react';
+import { Check } from 'lucide-react';
 import type { ScenarioId } from '../scripts/types';
 import a from './apparatus.module.css';
 
@@ -179,7 +180,7 @@ export function ScenarioMenu({
               onClick={() => commit(i)}
             >
               <span className={a.menuTick} aria-hidden="true">
-                {o.id === value ? '✓' : ''}
+                {o.id === value ? <Check size={14} aria-hidden /> : null}
               </span>
               {o.label}
             </li>
