@@ -2019,15 +2019,25 @@
 }
 @keyframes ceremony_dullBg {
   to {
-    background: #8f8676;
+    background: #b4503f;
   }
 }
 .ceremony_verdict {
-  margin: 4px 0 0;
+  margin: 6px 0 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   font-family: var(--font-serif, Georgia, serif);
   font-style: italic;
   font-size: 16px;
-  color: #efe6d6;
+  color: #e0705c;
+}
+.ceremony_verdictMark {
+  display: inline-flex;
+  color: #e0705c;
+}
+.ceremony_verdictMark svg {
+  display: block;
 }
 .ceremony_canvas {
   position: absolute;

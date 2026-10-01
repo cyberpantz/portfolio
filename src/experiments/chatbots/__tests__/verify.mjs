@@ -958,6 +958,10 @@ console.log('\nThe vault is the verification');
   ok(vault, 'verify-identity has no vault');
   ok(!n['verify-identity'].say.some((b) => b.t === 'think'), 'verify-identity runs a second verification after the vault');
   ok(!n['verify-fail'].say.some((b) => b.t === 'error'), 'verify-fail repeats the steps the vault just showed');
+  const { VAULT } = await import('../components/ceremony/cues.ts');
+  const end = vault ? vault.ms / 1000 : 0;
+  ok(VAULT && VAULT.verdict - VAULT.steps[VAULT.steps.length - 1] >= 0.8, 'the verdict lands with no pause after the hand stops');
+  ok(VAULT && end - 0.38 - VAULT.verdict >= 2, 'the verdict is not held for a couple of beats before the vault fades');
 }
 
 console.log('\nThe manager door');

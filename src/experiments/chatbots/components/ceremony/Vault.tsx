@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
-import { VAULT_STEPS } from './cues';
+import { CircleX } from 'lucide-react';
+import { VAULT } from './cues';
 import c from './ceremony.module.css';
 
 const EASE = [0.65, 0, 0.25, 1] as const;
@@ -11,10 +12,10 @@ export function Vault({ lines, ms }: { lines: string[]; ms: number }) {
   const failure = rest[rest.length - 1];
   const steps = rest.slice(0, -1);
   const s = ms / 1000;
-  const [a, b, f] = VAULT_STEPS;
+  const [a, b, f] = VAULT.steps.map((t) => t / s);
 
   return (
-    <div className={c.vault} style={{ ['--fail' as string]: `${f * ms}ms` }}>
+    <div className={c.vault} style={{ ['--fail' as string]: `${VAULT.steps[2] * 1000}ms` }}>
       <motion.p className={c.maison} initial={{ opacity: 0, letterSpacing: '0.42em' }} animate={{ opacity: 1, letterSpacing: '0.28em' }} transition={{ duration: 1.4, ease: EASE }}>
         {title}
       </motion.p>
@@ -47,7 +48,7 @@ export function Vault({ lines, ms }: { lines: string[]; ms: number }) {
 
       <ol className={c.steps}>
         {steps.map((step, i) => {
-          const at = VAULT_STEPS[i];
+          const at = VAULT.steps[i] / s;
           const last = i === steps.length - 1;
           return (
             <motion.li key={step} initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: (at - 0.12) * s, duration: 0.6, ease: EASE }}>
@@ -64,9 +65,14 @@ export function Vault({ lines, ms }: { lines: string[]; ms: number }) {
         })}
       </ol>
 
-      <motion.p className={c.verdict} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: (f + 0.07) * s, duration: 0.9, ease: EASE }}>
-        {failure}
-      </motion.p>
+      <p className={c.verdict} role="alert">
+        <motion.span className={c.verdictMark} initial={{ scale: 0.4, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ delay: VAULT.verdict, duration: 0.45, ease: [0.2, 0.9, 0.3, 1.2] }}>
+          <CircleX size={16} strokeWidth={1.5} aria-hidden />
+        </motion.span>
+        <motion.span initial={{ opacity: 0, x: -6, clipPath: 'inset(0 100% 0 0)' }} animate={{ opacity: 1, x: 0, clipPath: 'inset(0 0% 0 0)' }} transition={{ delay: VAULT.verdict + 0.12, duration: 0.7, ease: EASE }}>
+          {failure}
+        </motion.span>
+      </p>
     </div>
   );
 }

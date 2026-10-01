@@ -28,7 +28,7 @@ export function Ceremony({ beat, played = false }: { beat: Extract<Beat, { t: 'c
 
   useEffect(() => {
     if (!open) return;
-    stops.current = playCues(beat.piece, beat.ms);
+    stops.current = playCues(beat.piece);
     const done = window.setTimeout(() => setOpen(false), beat.ms);
     const key = (e: KeyboardEvent) => e.key === 'Escape' && setOpen(false);
     window.addEventListener('keydown', key);
