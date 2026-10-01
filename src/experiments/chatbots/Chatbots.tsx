@@ -70,6 +70,12 @@ export default function Chatbots({
   const atBottom = useRef(true);
   const [unread, setUnread] = useState(0);
   const [layerHost, setLayerHost] = useState<HTMLDivElement | null>(null);
+  /*
+   * Turns already on screen. Leaving the state browser remounts the whole
+   * transcript, and a takeover that remounts would replay — and a replayed
+   * boss can route a finished conversation back to the last gate.
+   */
+  const shown = useRef(new WeakSet<object>());
 
   const locked = d.phase === 'locked';
   const constrained = d.phase === 'waiting' && !!d.node.constrained;
@@ -128,6 +134,9 @@ export default function Chatbots({
     if (mode !== 'index') browse(null);
   }, [mode]);
   const inspected = inspect ? (scenario.nodes[inspect] ?? null) : null;
+  useEffect(() => {
+    if (!inspected) for (const t of d.turns) shown.current.add(t);
+  });
 
   /* ---- the brand's intro, once per scenario per browser ------------
    *
@@ -242,6 +251,7 @@ export default function Chatbots({
                   time: d.pickTime,
                   picked: d.picked ?? undefined,
                   go: d.go,
+                  played: shown.current.has(t),
                   pulse: d.nudge === 'hint',
                   chosen:
                     d.turns[i + 1]?.who === 'user'

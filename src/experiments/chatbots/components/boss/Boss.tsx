@@ -16,15 +16,17 @@ import c from './boss.module.css';
 type BossBeat = Extract<Beat, { t: 'boss' }>;
 const now = () => (typeof performance !== 'undefined' ? performance.now() : 0);
 
-export function Boss({ beat, startPhase = 'entrance', onDone, onFled }: {
+export function Boss({ beat, startPhase = 'entrance', played = false, onDone, onFled }: {
   beat: BossBeat;
   startPhase?: BossStart;
+  /** Already fought in this conversation: render as history, never re-arm. */
+  played?: boolean;
   onDone: () => void;
   onFled: () => void;
 }) {
   const reducer = useMemo(() => fight(beat.levels), [beat.levels]);
   const [s, dispatch] = useReducer(reducer, undefined, () => start(now(), startPhase));
-  const [closed, setClosed] = useState(false);
+  const [closed, setClosed] = useState(played);
   const pressEl = useRef<HTMLButtonElement>(null);
   const loop = useRef<(() => void) | null>(null);
   // The key listener is bound once; it reads the phase through this, never through a stale `s`.
@@ -51,6 +53,7 @@ export function Boss({ beat, startPhase = 'entrance', onDone, onFled }: {
   useEffect(() => () => sfx().stopAll(), []);
 
   useEffect(() => {
+    if (closed) return;
     const a = sfx();
     if (s.phase === 'entrance') { a.play('klaxon'); a.play('descend', { at: 0.6 }); }
     if (s.phase === 'fighting') loop.current ??= a.play('boss-loop', { loop: true, gain: 0.5 });

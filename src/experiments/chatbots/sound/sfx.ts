@@ -40,6 +40,8 @@ export function createSfx(d: Deps): Sfx {
   let synth: Synth | null = null;
   let on = d.store?.get() !== '0';
   const buffers = new Map<FileCue, AudioBuffer>();
+  /* Every gesture asks for a preload; a missing file must be asked for once. */
+  const tried = new Set<FileCue>();
   const active = new Set<Playing & { src: AudioBufferSourceNode }>();
 
   const live = () => (on && ctx && master ? ctx : null);
@@ -50,7 +52,8 @@ export function createSfx(d: Deps): Sfx {
   };
 
   async function load(cue: FileCue) {
-    if (!ctx || buffers.has(cue)) return;
+    if (!ctx || tried.has(cue)) return;
+    tried.add(cue);
     try {
       const data = await d.fetchFile(BASE + cue + '.mp3');
       if (data) buffers.set(cue, await ctx.decodeAudioData(data));

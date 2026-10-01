@@ -58,5 +58,16 @@ function fakeCtx({ decode = 'ok' } = {}) {
   ok(s.play('klaxon') === null && stored === '0', 'off means silent, and the choice is stored');
 }
 
+// Every gesture asks for a preload; a missing file is fetched once, not once per tap.
+{
+  const ctx = fakeCtx();
+  let fetches = 0;
+  const s = createSfx({ makeContext: () => ctx, fetchFile: async () => { fetches++; return null; } });
+  await s.unlock();
+  await Promise.all([s.preload(), s.preload()]);
+  await s.preload();
+  ok(fetches === 18, `each cue is fetched once across repeated preloads (got ${fetches})`);
+}
+
 console.log(fails ? `\n${fails} FAILED` : '  all sound assertions pass');
 process.exit(fails ? 1 : 0);

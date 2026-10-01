@@ -54,6 +54,8 @@ export type BeatHandlers = {
   time?: (at: string, label: string, day: string, go: string) => void;
   /** The state browser opening the boss at a later phase. */
   bossPhase?: IndexPhase;
+  /** This turn has already been on screen: takeovers render as history. */
+  played?: boolean;
 };
 
 export function BeatView({
@@ -218,13 +220,14 @@ export function BeatView({
       );
 
     case 'ceremony':
-      return <Ceremony beat={beat} />;
+      return <Ceremony beat={beat} played={h.played} />;
 
     case 'boss':
       return (
         <Boss
           beat={beat}
           startPhase={h.bossPhase ?? 'entrance'}
+          played={h.played}
           onDone={() => h.go(beat.done)}
           onFled={() => h.go(beat.fled)}
         />

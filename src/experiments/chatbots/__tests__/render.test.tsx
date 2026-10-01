@@ -719,6 +719,14 @@ const bossCss = readFileSync('src/experiments/chatbots/components/boss/boss.modu
 ok(/\.press\s*\{[^}]*touch-action:\s*manipulation/.test(bossCss), 'Cancel button allows double-tap zoom while mashing');
 ok(/\.press\s*\{[^}]*user-select:\s*none/.test(bossCss), 'Cancel button selects text while mashing');
 const css = (f: string) => readFileSync(`src/experiments/chatbots/${f}`, 'utf8');
+// A takeover already seen in this conversation is history: it must not replay when the transcript remounts.
+{
+  const hist = renderToStaticMarkup(<Boss beat={BOSS} played onDone={noop} onFled={noop} />);
+  ok(hist.includes(BOSS.marker) && !hist.includes(BOSS.leave), 'a boss already fought replays when the transcript remounts');
+  const cer = renderToStaticMarkup(<Ceremony beat={{ t: 'ceremony', piece: 'vault', lines: ['Securing'], ms: 4000 }} played />);
+  ok(!cer.includes('data-piece'), 'a ceremony already shown replays when the transcript remounts');
+}
+ok(/\.arena\s*\{[^}]*touch-action:\s*manipulation/.test(bossCss), 'a mash that misses Cancel double-tap zooms the arena');
 ok(/\.device:has\(> \.layers > \*\)\s*\{[^}]*min-height/.test(css('components/product.module.css')),
   'a takeover over a one-line transcript is squashed: the device needs the splash’s height while a layer is open');
 ok(!/\[data-phase='fighting'\]\s*\{[^}]*animation:/.test(bossCss),

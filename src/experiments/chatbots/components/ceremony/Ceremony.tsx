@@ -21,11 +21,13 @@ const PIECES: Record<CeremonyPiece, (p: P) => ReactElement> = {
   coronation: Coronation,
 };
 
-export function Ceremony({ beat }: { beat: Extract<Beat, { t: 'ceremony' }> }) {
-  const [open, setOpen] = useState(true);
+/** `played`: already shown in this conversation, so the transcript remounting must not replay it. */
+export function Ceremony({ beat, played = false }: { beat: Extract<Beat, { t: 'ceremony' }>; played?: boolean }) {
+  const [open, setOpen] = useState(!played);
   const stops = useRef<(() => void)[]>([]);
 
   useEffect(() => {
+    if (!open) return;
     stops.current = playCues(beat.piece);
     const done = window.setTimeout(() => setOpen(false), beat.ms);
     const key = (e: KeyboardEvent) => e.key === 'Escape' && setOpen(false);
