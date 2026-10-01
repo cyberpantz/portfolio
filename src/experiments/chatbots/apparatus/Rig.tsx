@@ -64,7 +64,10 @@ export function Rig({
 }) {
   return (
     <section className={a.rig} aria-label={`${title} demo`}>
-      <ScenarioTabs value={skin} options={SKINS} onChange={onSkin} panelId={PANEL} />
+      <div className={a.tabsRow}>
+        <ScenarioTabs value={skin} options={SKINS} onChange={onSkin} panelId={PANEL} />
+        {extra}
+      </div>
 
       <div id={PANEL} role="tabpanel" aria-labelledby={`sb-tab-${skin}`}>
         <div className={a.wall}>
@@ -136,7 +139,6 @@ export function Rig({
           <button type="button" className={a.tab} onClick={onRestart}>
             Start over
           </button>
-          {extra}
         </div>
 
         {mode === 'index' && index}

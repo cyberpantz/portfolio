@@ -14,8 +14,9 @@ export function SoundToggle() {
     if (next) void sfx().unlock();
   };
   return (
-    <button type="button" className={a.tab} aria-pressed={on} onClick={flip}>
-      {on ? <Volume2 size={14} aria-hidden /> : <VolumeX size={14} aria-hidden />} Sound
+    /* Icon only: a fourth labelled button wraps the mode bar at the rig's 430px. */
+    <button type="button" className={`${a.tab} ${a.iconTab}`} aria-pressed={on} aria-label="Sound" title="Sound" onClick={flip}>
+      {on ? <Volume2 size={15} aria-hidden /> : <VolumeX size={15} aria-hidden />}
     </button>
   );
 }

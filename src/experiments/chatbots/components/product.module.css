@@ -1059,8 +1059,12 @@
 /* Ceremonies and the boss portal in here. Empty, it must not eat clicks. */
 .layers { position: absolute; inset: 0; z-index: 30; pointer-events: none; }
 .layers > * { pointer-events: auto; }
+/* A takeover needs the room the splash has, even over a one-line transcript. */
+.device:has(> .layers > *) { min-height: clamp(440px, 66vh, 600px); }
 /* A ceremony's turn is empty once its layer has portalled out. */
 .turn:empty { display: none; }
 
 .nowrap { white-space: nowrap; }
 .sayIcon { vertical-align: -0.12em; color: var(--s-accent, currentColor); }
+.newPill > svg, .sayIcon { display: inline-block; }
+.newPill > svg { vertical-align: -0.15em; margin-left: 2px; }

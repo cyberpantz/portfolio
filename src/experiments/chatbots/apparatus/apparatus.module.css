@@ -503,3 +503,10 @@
 @media (max-width: 420px) {
   .index { grid-template-columns: 1fr 1fr; }
 }
+
+/* The site resets svg to display:block; an icon beside a label has to sit in the line. */
+.tab > svg, .line svg { display: inline-block; vertical-align: -0.15em; margin-right: 4px; }
+.tab.iconTab > svg { margin-right: 0; }
+/* The mode bar fills at 430px; the sound toggle sits with the tabs instead. */
+.tabsRow { display: flex; align-items: center; gap: 12px; }
+.tabsRow > :first-child { flex: 1; min-width: 0; }

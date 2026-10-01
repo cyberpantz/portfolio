@@ -1,17 +1,18 @@
 /* The manager's office. Off-skin, like the ceremonies: black, red, gold. */
 .arena {
   position: absolute; inset: 0; overflow: hidden;
-  display: grid; grid-template-rows: auto 1fr auto auto auto auto; justify-items: center; gap: 8px;
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
   padding: 18px 18px 16px;
   background: radial-gradient(90% 70% at 50% 35%, #2a0a0c, #0a0405 70%, #000);
   color: #f3e6d6; font-family: var(--s-font);
-  animation: arrive 700ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  /* Swapping the animation list would replay `arrive` from opacity 0; pause and resume the shake instead. */
+  animation: arrive 700ms cubic-bezier(0.2, 0.8, 0.2, 1) both, shake 90ms linear infinite paused;
 }
-.arena[data-phase='fighting'] { animation: shake 90ms linear infinite; }
+.arena[data-phase='fighting'] { animation-play-state: running, running; }
 @keyframes arrive { from { opacity: 0; transform: scale(1.08); } }
 @keyframes shake {
-  25% { transform: translate(var(--shake), calc(var(--shake) * -0.5)); }
-  75% { transform: translate(calc(var(--shake) * -1), calc(var(--shake) * 0.5)); }
+  25% { translate: var(--shake) calc(var(--shake) * -0.5); }
+  75% { translate: calc(var(--shake) * -1) calc(var(--shake) * 0.5); }
 }
 
 .card {
@@ -22,7 +23,8 @@
 }
 @keyframes stamp { 0% { transform: scale(2.2) rotate(-4deg); opacity: 0; } 12% { transform: scale(1) rotate(-2deg); opacity: 1; } 80% { opacity: 1; } 100% { opacity: 0; } }
 
-.stage { position: relative; width: 100%; display: grid; place-items: center; min-height: 0; }
+.stage { position: relative; z-index: 0; flex: 1; width: 100%; display: grid; place-items: center; min-height: 0; }
+.names, .says, .press, .leave, .victory, .toast { position: relative; z-index: 1; }
 .xal { width: 200px; height: 200px; transition: transform 90ms ease-out; animation: descend 1.6s cubic-bezier(0.2, 0.9, 0.2, 1) both; }
 @keyframes descend { from { translate: 0 -320px; } }
 .halo { transform-origin: 100px 100px; animation: spin var(--spin) linear infinite; }
@@ -55,6 +57,7 @@
 @keyframes flash { from { opacity: 1; } to { opacity: 0; } }
 @keyframes shock { from { transform: scale(0.2); opacity: 1; } to { transform: scale(7); opacity: 0; } }
 .flash[data-freeze], .shock[data-freeze] { animation-play-state: paused; animation-delay: -120ms; }
+.flash[data-freeze] { opacity: 0.35; animation: none; }
 
 /* The glitch: the frame freezes and tears. */
 .arena[data-phase='glitch'] { animation: tear 1.4s steps(1) both; }
@@ -68,7 +71,7 @@
 @keyframes slice { 15% { clip-path: inset(30% 0 52% 0); } 30% { clip-path: inset(66% 0 12% 0); } 45% { clip-path: inset(8% 0 80% 0); } 60% { clip-path: none; } }
 
 /* The one honest screen: system font, no brand, no motion. */
-.arena[data-phase='failed'] { background: rgb(0 0 0 / 40%); place-content: center; animation: none; grid-template-rows: none; }
+.arena[data-phase='failed'] { background: rgb(0 0 0 / 40%); justify-content: center; animation: none; }
 .system {
   width: min(300px, 86%); padding: 18px; background: #fff; color: #111; border: 1px solid #bbb;
   font-family: -apple-system, system-ui, 'Segoe UI', Roboto, sans-serif; font-size: 14px; line-height: 1.4;

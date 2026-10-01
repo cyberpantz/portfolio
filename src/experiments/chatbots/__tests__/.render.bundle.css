@@ -483,6 +483,24 @@
     grid-template-columns: 1fr 1fr;
   }
 }
+.apparatus_tab > svg,
+.apparatus_line svg {
+  display: inline-block;
+  vertical-align: -0.15em;
+  margin-right: 4px;
+}
+.apparatus_tab.apparatus_iconTab > svg {
+  margin-right: 0;
+}
+.apparatus_tabsRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.apparatus_tabsRow > :first-child {
+  flex: 1;
+  min-width: 0;
+}
 
 /* src/experiments/chatbots/components/product.module.css */
 .product_device {
@@ -1351,6 +1369,9 @@
 .product_layers > * {
   pointer-events: auto;
 }
+.product_device:has(> .product_layers > *) {
+  min-height: clamp(440px, 66vh, 600px);
+}
 .product_turn:empty {
   display: none;
 }
@@ -1360,6 +1381,14 @@
 .product_sayIcon {
   vertical-align: -0.12em;
   color: var(--s-accent, currentColor);
+}
+.product_newPill > svg,
+.product_sayIcon {
+  display: inline-block;
+}
+.product_newPill > svg {
+  vertical-align: -0.15em;
+  margin-left: 2px;
 }
 
 /* src/experiments/chatbots/components/safety.module.css */
@@ -1661,8 +1690,19 @@
   user-select: none;
 }
 .ceremony_layer[data-piece=vault] {
-  background: rgb(4 8 14 / 62%);
-  backdrop-filter: blur(2px);
+  background:
+    radial-gradient(
+      90% 70% at 50% 40%,
+      rgb(10 18 30 / 80%),
+      rgb(2 4 8 / 92%));
+  backdrop-filter: blur(3px);
+}
+.ceremony_layer[data-piece=coronation] {
+  background:
+    radial-gradient(
+      120% 90% at 50% 30%,
+      #1d1206,
+      #000 85%);
 }
 .ceremony_layer[data-piece=unveiling] {
   animation: ceremony_layerOut 600ms ease-in 1900ms both;
@@ -1721,6 +1761,32 @@
   font-size: 13px;
   color: #cdbb94;
 }
+.ceremony_titles .ceremony_gilt,
+.ceremony_vault .ceremony_gilt {
+  background-image:
+    linear-gradient(
+      100deg,
+      #c99a42 0%,
+      #fff6c8 22%,
+      #e7c06a 40%,
+      #fffbe6 58%,
+      #d4a650 80%);
+}
+.ceremony_titles .ceremony_gilt,
+.ceremony_titles .ceremony_eyebrow {
+  filter: drop-shadow(0 2px 8px rgb(0 0 0 / 95%));
+}
+.ceremony_titles::before {
+  content: "";
+  position: absolute;
+  inset: -40px -20px;
+  z-index: -1;
+  background:
+    radial-gradient(
+      closest-side,
+      rgb(0 0 0 / 75%),
+      transparent);
+}
 .ceremony_curtain {
   position: absolute;
   top: 0;
@@ -1772,8 +1838,8 @@
   height: 140%;
   background:
     radial-gradient(
-      28% 22% at 50% 52%,
-      rgb(255 240 200 / 36%),
+      30% 24% at 50% 52%,
+      rgb(255 214 140 / 22%),
       transparent 70%);
   pointer-events: none;
 }
@@ -1783,7 +1849,7 @@
   justify-items: center;
   gap: 8px;
   width: min(320px, 82%);
-  padding: 30px 22px 34px;
+  padding: 30px 22px 80px;
   transform-origin: top center;
   background:
     linear-gradient(
@@ -1825,8 +1891,8 @@
 }
 .ceremony_seal {
   position: absolute;
-  right: 14px;
-  bottom: 12px;
+  left: calc(50% - 28px);
+  bottom: 14px;
   width: 56px;
   height: 56px;
   display: grid;
@@ -1858,13 +1924,37 @@
   }
 }
 .ceremony_rings {
-  width: 220px;
-  height: 220px;
+  width: 200px;
+  height: 200px;
   filter: drop-shadow(0 0 8px rgb(217 168 78 / 60%));
+}
+.ceremony_ring {
+  transform-box: view-box;
+  transform-origin: 100px 100px;
+  animation: ceremony_spin var(--dur) linear infinite;
+}
+.ceremony_ring[data-dir=rev] {
+  animation-direction: reverse;
+}
+@keyframes ceremony_spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.ceremony_bolt {
+  transform-box: view-box;
+  transform-origin: 100px 100px;
+  transform: rotate(var(--from));
+  animation: ceremony_bolt 250ms cubic-bezier(0.6, 0, 0.3, 1.4) var(--at) forwards;
+}
+@keyframes ceremony_bolt {
+  to {
+    transform: rotate(calc(var(--from) + 90deg));
+  }
 }
 .ceremony_shield {
   position: absolute;
-  top: 90px;
+  top: 80px;
 }
 .ceremony_status {
   margin: 0;
@@ -1927,15 +2017,22 @@
       #a8792a);
   clip-path: polygon(0 0, 100% 0, 94% 50%, 100% 100%, 0 100%, 6% 50%);
 }
+.ceremony_titles .ceremony_gilt {
+  background: none;
+  color: #f8e6b0;
+  filter: none;
+  text-shadow: 0 0 18px rgb(255 200 110 / 55%), 0 2px 6px #000;
+  animation: none;
+}
 
 /* src/experiments/chatbots/components/boss/boss.module.css */
 .boss_arena {
   position: absolute;
   inset: 0;
   overflow: hidden;
-  display: grid;
-  grid-template-rows: auto 1fr auto auto auto auto;
-  justify-items: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   gap: 8px;
   padding: 18px 18px 16px;
   background:
@@ -1946,10 +2043,10 @@
       #000);
   color: #f3e6d6;
   font-family: var(--s-font);
-  animation: boss_arrive 700ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  animation: boss_arrive 700ms cubic-bezier(0.2, 0.8, 0.2, 1) both, boss_shake 90ms linear infinite paused;
 }
 .boss_arena[data-phase=fighting] {
-  animation: boss_shake 90ms linear infinite;
+  animation-play-state: running, running;
 }
 @keyframes boss_arrive {
   from {
@@ -1959,10 +2056,10 @@
 }
 @keyframes boss_shake {
   25% {
-    transform: translate(var(--shake), calc(var(--shake) * -0.5));
+    translate: var(--shake) calc(var(--shake) * -0.5);
   }
   75% {
-    transform: translate(calc(var(--shake) * -1), calc(var(--shake) * 0.5));
+    translate: calc(var(--shake) * -1) calc(var(--shake) * 0.5);
   }
 }
 .boss_card {
@@ -2000,10 +2097,21 @@
 }
 .boss_stage {
   position: relative;
+  z-index: 0;
+  flex: 1;
   width: 100%;
   display: grid;
   place-items: center;
   min-height: 0;
+}
+.boss_names,
+.boss_says,
+.boss_press,
+.boss_leave,
+.boss_victory,
+.boss_toast {
+  position: relative;
+  z-index: 1;
 }
 .boss_xal {
   width: 200px;
@@ -2168,6 +2276,10 @@
   animation-play-state: paused;
   animation-delay: -120ms;
 }
+.boss_flash[data-freeze] {
+  opacity: 0.35;
+  animation: none;
+}
 .boss_arena[data-phase=glitch] {
   animation: boss_tear 1.4s steps(1) both;
 }
@@ -2227,9 +2339,8 @@
 }
 .boss_arena[data-phase=failed] {
   background: rgb(0 0 0 / 40%);
-  place-content: center;
+  justify-content: center;
   animation: none;
-  grid-template-rows: none;
 }
 .boss_system {
   width: min(300px, 86%);

@@ -718,6 +718,13 @@ const BOSS: Extract<Beat, { t: 'boss' }> = {
 const bossCss = readFileSync('src/experiments/chatbots/components/boss/boss.module.css', 'utf8');
 ok(/\.press\s*\{[^}]*touch-action:\s*manipulation/.test(bossCss), 'Cancel button allows double-tap zoom while mashing');
 ok(/\.press\s*\{[^}]*user-select:\s*none/.test(bossCss), 'Cancel button selects text while mashing');
+const css = (f: string) => readFileSync(`src/experiments/chatbots/${f}`, 'utf8');
+ok(/\.device:has\(> \.layers > \*\)\s*\{[^}]*min-height/.test(css('components/product.module.css')),
+  'a takeover over a one-line transcript is squashed: the device needs the splash’s height while a layer is open');
+ok(!/\[data-phase='fighting'\]\s*\{[^}]*animation:/.test(bossCss),
+  'swapping the arena’s animation list replays its fade-in, so the chat shows through at the burst');
+ok(/\.tab > svg[^{]*\{[^}]*display:\s*inline-block/.test(css('apparatus/apparatus.module.css')),
+  'the site resets svg to block, so a rig icon wraps above its label');
 
 /* ---- the splash ----------------------------------------------------
  * Only ever shown in the browser, so nothing above renders it. Each

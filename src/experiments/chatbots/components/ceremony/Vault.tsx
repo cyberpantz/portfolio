@@ -15,14 +15,12 @@ export function Vault({ lines }: { lines: string[]; ms: number }) {
       <div className={c.laser} aria-hidden />
       <svg viewBox="0 0 200 200" className={c.rings} aria-hidden>
         {RINGS.map((g, i) => (
-          <motion.circle key={i} cx="100" cy="100" r={g.r} fill="none" stroke="url(#sb-gold)" strokeWidth="2" strokeDasharray={g.dash}
-            style={{ originX: '100px', originY: '100px' }}
-            animate={{ rotate: 360 * g.dir }} transition={{ repeat: Infinity, duration: g.dur, ease: 'linear' }} />
+          <circle key={i} className={c.ring} data-dir={g.dir < 0 ? 'rev' : undefined} style={{ ['--dur' as string]: `${g.dur}s` }}
+            cx="100" cy="100" r={g.r} fill="none" stroke="url(#sb-gold)" strokeWidth="2" strokeDasharray={g.dash} />
         ))}
         {[1.6, 2.2, 2.8].map((at, i) => (
-          <motion.rect key={i} x="96" y="40" width="8" height="22" rx="2" fill="url(#sb-gold)"
-            style={{ originX: '100px', originY: '100px', rotate: i * 120 }}
-            animate={{ rotate: i * 120 + 90 }} transition={{ delay: at, duration: 0.25, ease: [0.6, 0, 0.3, 1.4] }} />
+          <rect key={i} className={c.bolt} style={{ ['--from' as string]: `${i * 120}deg`, ['--at' as string]: `${at}s` }}
+            x="96" y="40" width="8" height="22" rx="2" fill="url(#sb-gold)" />
         ))}
       </svg>
       <motion.span className={c.shield} initial={{ scale: 0, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ delay: 3.0, type: 'spring', stiffness: 260, damping: 12 }}>
