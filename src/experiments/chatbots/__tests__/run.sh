@@ -9,6 +9,7 @@ cd "$ROOT"
 node "$DIR/lint.mjs"
 node --experimental-strip-types --import "$DIR/register.mjs" "$DIR/verify.mjs"
 node --experimental-strip-types --import "$DIR/register.mjs" "$DIR/calendar.test.mjs"
+node --experimental-strip-types --import "$DIR/register.mjs" "$DIR/fight.test.mjs"
 
 ${ESBUILD:-npx esbuild} "$DIR/render.test.tsx" --bundle --platform=node --format=cjs \
   --jsx=automatic --target=node20 --loader:.css=empty \
