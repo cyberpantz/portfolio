@@ -7,15 +7,15 @@
   animation: layerOut 380ms ease-in calc(var(--ms) - 380ms) both;
   cursor: pointer; user-select: none;
 }
-.layer[data-piece='vault'] { background: radial-gradient(110% 80% at 50% 38%, #221b13, #0e0b08 75%); }
-.layer[data-piece='coronation'] { background: radial-gradient(120% 90% at 50% 30%, #1d1206, #000 85%); }
+.layer[data-piece='vault'], .layer[data-piece='coronation'] { background: radial-gradient(110% 80% at 50% 38%, #221b13, #0e0b08 75%); }
+.layer[data-piece='coronation'] { animation: layerOut 700ms ease-in calc(var(--ms) - 700ms) both; }
 .layer[data-piece='unveiling'] { animation: layerOut 600ms ease-in 1900ms both; }
 @keyframes layerOut { to { opacity: 0; visibility: hidden; } }
 
 .titles, .vault, .throne, .stage { position: relative; display: grid; justify-items: center; gap: 10px; text-align: center; padding: 0 28px; }
 .eyebrow { margin: 0; font-size: 11px; text-transform: uppercase; letter-spacing: 0.32em; color: #d9b977; }
 .gilt {
-  margin: 0; font-family: var(--font-serif, Georgia, serif); font-size: 30px; line-height: 1.1; font-weight: 600;
+  margin: 0; font-size: 30px; line-height: 1.1; font-weight: 300; letter-spacing: -0.01em;
   background: linear-gradient(100deg, #7a5418 0%, #fff3b0 22%, #d9a84e 40%, #fff3b0 58%, #8a6421 80%);
   background-size: 220% 100%; -webkit-background-clip: text; background-clip: text; color: transparent;
   animation: foil 2.4s linear infinite;
@@ -59,7 +59,7 @@
 }
 .cert .eyebrow { color: #8a6421; }
 .cert .sub { color: #6b5428; }
-.figure { margin: 4px 0 0; font-family: var(--font-serif, Georgia, serif); font-size: 40px; font-weight: 700; color: #5a3f10; }
+.figure { margin: 4px 0 0; font-size: 44px; font-weight: 300; font-variant-numeric: tabular-nums; color: #5a3f10; }
 .odo { display: inline-flex; line-height: 1.1em; height: 1.1em; }
 .odoCol { display: inline-block; height: 1.1em; overflow: hidden; }
 .odoReel { display: flex; flex-direction: column; }
@@ -69,7 +69,7 @@
 
 /* Vault — a maison's watch movement: umber, ivory, one champagne hairline. */
 .vault { gap: 18px; }
-.maison { margin: 0; font-family: var(--font-serif, Georgia, serif); font-size: 13px; font-weight: 400; font-variant: all-small-caps; letter-spacing: 0.28em; color: #e9dfcc; }
+.maison { margin: 0; text-transform: uppercase; font-size: 11px; font-weight: 500; letter-spacing: 0.3em; color: #e9dfcc; }
 .dial { position: relative; width: 168px; height: 168px; }
 .dial svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
 .dialRing, .dialInner { fill: none; stroke: #c9ad7a; stroke-width: 0.75; animation: dull 900ms ease var(--fail) forwards; }
@@ -82,23 +82,20 @@
 @keyframes spin { to { transform: rotate(360deg); } }
 @keyframes dull { to { stroke: #8f8676; } }
 .steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; justify-items: center; }
-.steps li { position: relative; padding-bottom: 5px; font-family: var(--font-serif, Georgia, serif); font-size: 13px; font-variant: all-small-caps; letter-spacing: 0.14em; color: #cfc4b0; }
+.steps li { position: relative; padding-bottom: 5px; font-size: 11px; font-weight: 400; text-transform: uppercase; letter-spacing: 0.16em; color: #cfc4b0; }
 .rule { position: absolute; left: 0; right: 0; bottom: 0; height: 1px; background: #c9ad7a; transform-origin: left center; }
 .rule[data-last] { animation: dullBg 900ms ease var(--fail) forwards; }
 @keyframes dullBg { to { background: #b4503f; } }
-.verdict { margin: 6px 0 0; display: inline-flex; align-items: center; gap: 8px; font-family: var(--font-serif, Georgia, serif); font-style: italic; font-size: 16px; color: #e0705c; }
+.verdict { margin: 6px 0 0; display: inline-flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 400; color: #e0705c; }
 .verdictMark { display: inline-flex; color: #e0705c; }
 .verdictMark svg { display: block; }
 
-/* Coronation */
-.canvas { position: absolute; inset: -40% -30%; width: 160%; height: 180%; pointer-events: none; }
-.crown { filter: drop-shadow(0 0 18px rgb(255 220 140 / 60%)); }
-.ribbon {
-  margin: 6px 0 0; display: inline-flex; align-items: center; gap: 10px;
-  padding: 8px 22px; transform-origin: center;
-  font-family: var(--font-serif, Georgia, serif); font-size: 22px; font-weight: 600; color: #2a1a02;
-  background: linear-gradient(180deg, #fff3b0, #d9a84e 60%, #a8792a);
-  clip-path: polygon(0 0, 100% 0, 94% 50%, 100% 100%, 0 100%, 6% 50%);
-}
+/* Coronation — one hairline crown, one glint, one rule. */
+.crownArt { width: 92px; height: 92px; overflow: visible; }
+.crownLine { fill: none; stroke: #c9ad7a; stroke-width: 0.45; stroke-linecap: round; stroke-linejoin: round; }
+.crownGlint { fill: none; stroke: #fff4dc; stroke-width: 0.7; stroke-linecap: round; filter: drop-shadow(0 0 1.5px rgb(255 236 200 / 80%)); }
+.hairline { display: block; width: 120px; height: 1px; margin: 6px 0 2px; background: #c9ad7a; transform-origin: center; }
+.banner { margin: 0; font-size: 12px; font-weight: 500; letter-spacing: 0.32em; text-transform: uppercase; color: #efe6d6; }
+
 /* Over the dark scrim the foil gradient muddies; the headline glows instead. */
 .titles .gilt { background: none; color: #f8e6b0; filter: none; text-shadow: 0 0 18px rgb(255 200 110 / 55%), 0 2px 6px #000; animation: none; }

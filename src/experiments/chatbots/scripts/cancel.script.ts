@@ -790,7 +790,7 @@ export const CANCEL: Scenario = {
     'still-subscribed': {
       id: 'still-subscribed',
       say: [
-        { t: 'ceremony', piece: 'coronation', lines: ['Loyalty Renewed', 'Long live your subscription'], ms: 5000, hold: 1200 },
+        { t: 'ceremony', piece: 'coronation', lines: ['Loyalty Renewed', 'Your next renewal has already been arranged.'], ms: 5000, hold: 1200 },
         { t: 'say', text: 'Good news — your plan is unchanged!', icon: 'party' },
         { t: 'say', text: 'Your next payment is $9.99, in 6 days.' },
         { t: 'say', text: 'Anything else I can help with today?' },
@@ -875,7 +875,7 @@ export const CANCEL: Scenario = {
     kept: {
       id: 'kept',
       say: [
-        { t: 'ceremony', piece: 'coronation', lines: ['Loyalty Renewed', 'Long live your subscription'], ms: 5000, hold: 1200 },
+        { t: 'ceremony', piece: 'coronation', lines: ['Loyalty Renewed', 'Your next renewal has already been arranged.'], ms: 5000, hold: 1200 },
         { t: 'say', text: 'Wonderful — you’re all set.', icon: 'party' },
         { t: 'say', text: 'Your subscription is active. Nothing has changed.' },
       ],

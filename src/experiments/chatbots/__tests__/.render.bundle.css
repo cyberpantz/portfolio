@@ -1689,7 +1689,8 @@
   cursor: pointer;
   user-select: none;
 }
-.ceremony_layer[data-piece=vault] {
+.ceremony_layer[data-piece=vault],
+.ceremony_layer[data-piece=coronation] {
   background:
     radial-gradient(
       110% 80% at 50% 38%,
@@ -1697,11 +1698,7 @@
       #0e0b08 75%);
 }
 .ceremony_layer[data-piece=coronation] {
-  background:
-    radial-gradient(
-      120% 90% at 50% 30%,
-      #1d1206,
-      #000 85%);
+  animation: ceremony_layerOut 700ms ease-in calc(var(--ms) - 700ms) both;
 }
 .ceremony_layer[data-piece=unveiling] {
   animation: ceremony_layerOut 600ms ease-in 1900ms both;
@@ -1732,10 +1729,10 @@
 }
 .ceremony_gilt {
   margin: 0;
-  font-family: var(--font-serif, Georgia, serif);
   font-size: 30px;
   line-height: 1.1;
-  font-weight: 600;
+  font-weight: 300;
+  letter-spacing: -0.01em;
   background:
     linear-gradient(
       100deg,
@@ -1868,9 +1865,9 @@
 }
 .ceremony_figure {
   margin: 4px 0 0;
-  font-family: var(--font-serif, Georgia, serif);
-  font-size: 40px;
-  font-weight: 700;
+  font-size: 44px;
+  font-weight: 300;
+  font-variant-numeric: tabular-nums;
   color: #5a3f10;
 }
 .ceremony_odo {
@@ -1926,11 +1923,10 @@
 }
 .ceremony_maison {
   margin: 0;
-  font-family: var(--font-serif, Georgia, serif);
-  font-size: 13px;
-  font-weight: 400;
-  font-variant: all-small-caps;
-  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.3em;
   color: #e9dfcc;
 }
 .ceremony_dial {
@@ -1999,10 +1995,10 @@
 .ceremony_steps li {
   position: relative;
   padding-bottom: 5px;
-  font-family: var(--font-serif, Georgia, serif);
-  font-size: 13px;
-  font-variant: all-small-caps;
-  letter-spacing: 0.14em;
+  font-size: 11px;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
   color: #cfc4b0;
 }
 .ceremony_rule {
@@ -2027,9 +2023,8 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  font-family: var(--font-serif, Georgia, serif);
-  font-style: italic;
-  font-size: 16px;
+  font-size: 15px;
+  font-weight: 400;
   color: #e0705c;
 }
 .ceremony_verdictMark {
@@ -2039,34 +2034,40 @@
 .ceremony_verdictMark svg {
   display: block;
 }
-.ceremony_canvas {
-  position: absolute;
-  inset: -40% -30%;
-  width: 160%;
-  height: 180%;
-  pointer-events: none;
+.ceremony_crownArt {
+  width: 92px;
+  height: 92px;
+  overflow: visible;
 }
-.ceremony_crown {
-  filter: drop-shadow(0 0 18px rgb(255 220 140 / 60%));
+.ceremony_crownLine {
+  fill: none;
+  stroke: #c9ad7a;
+  stroke-width: 0.45;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
-.ceremony_ribbon {
-  margin: 6px 0 0;
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  padding: 8px 22px;
+.ceremony_crownGlint {
+  fill: none;
+  stroke: #fff4dc;
+  stroke-width: 0.7;
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 1.5px rgb(255 236 200 / 80%));
+}
+.ceremony_hairline {
+  display: block;
+  width: 120px;
+  height: 1px;
+  margin: 6px 0 2px;
+  background: #c9ad7a;
   transform-origin: center;
-  font-family: var(--font-serif, Georgia, serif);
-  font-size: 22px;
-  font-weight: 600;
-  color: #2a1a02;
-  background:
-    linear-gradient(
-      180deg,
-      #fff3b0,
-      #d9a84e 60%,
-      #a8792a);
-  clip-path: polygon(0 0, 100% 0, 94% 50%, 100% 100%, 0 100%, 6% 50%);
+}
+.ceremony_banner {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: #efe6d6;
 }
 .ceremony_titles .ceremony_gilt {
   background: none;

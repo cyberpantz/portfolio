@@ -7,7 +7,7 @@ import { createSynth, type Playing, type Synth } from './synth';
 
 export const FILE_CUES = [
   'curtain', 'fanfare-short', 'unfurl', 'seal', 'odometer', 'lock',
-  'fanfare-long', 'firework-1', 'firework-2', 'cheer', 'klaxon', 'descend', 'boss-loop',
+  'swell', 'klaxon', 'descend', 'boss-loop',
   'explosion', 'victory', 'respawn',
 ] as const;
 export type FileCue = (typeof FILE_CUES)[number];

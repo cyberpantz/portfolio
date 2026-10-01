@@ -14,10 +14,7 @@ export const CEREMONY_CUES: Record<CeremonyPiece, Cue[]> = {
     { cue: 'lock', at: VAULT.steps[1], gain: 0.55 },
     { cue: 'lock', at: VAULT.steps[2], gain: 0.3 },
   ],
-  coronation: [
-    { cue: 'fanfare-long', at: 0 }, { cue: 'firework-1', at: 1.2 }, { cue: 'cheer', at: 1.4, gain: 0.5 },
-    { cue: 'firework-2', at: 1.9 }, { cue: 'firework-1', at: 2.6, gain: 0.7 },
-  ],
+  coronation: [{ cue: 'swell', at: 0.2, gain: 0.7 }],
 };
 
 export function playCues(piece: CeremonyPiece): (() => void)[] {

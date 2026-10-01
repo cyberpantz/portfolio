@@ -671,7 +671,7 @@ const PIECES = {
   unveiling: ['Presenting', 'An Exclusive Offer', 'for our most valued member'],
   commendation: ['Certificate of Loyalty', 'Presented to a Valued Member', '1,095', 'consecutive days of billing'],
   vault: ['Platinum Identity Protection', 'Sending a code to your email', 'Waiting for confirmation', 'Verifying your identity', 'Identity could not be verified'],
-  coronation: ['Loyalty Renewed', 'Long live your subscription'],
+  coronation: ['Loyalty Renewed', 'Your next renewal has already been arranged.'],
 } as const;
 for (const [piece, lines] of Object.entries(PIECES)) {
   try {
@@ -686,6 +686,12 @@ for (const [piece, lines] of Object.entries(PIECES)) {
   }
 }
 console.log(`  ${Object.keys(PIECES).length} ceremonies render`);
+{
+  const cer = readFileSync('src/experiments/chatbots/components/ceremony/ceremony.module.css', 'utf8');
+  ok(!/serif\b(?!-)/.test(cer.replace(/sans-serif/g, '')), 'a ceremony switches to a serif, so it reads as another product’s splash');
+  const cor = readFileSync('src/experiments/chatbots/components/ceremony/Coronation.tsx', 'utf8');
+  ok(!/canvas-confetti|Sparkles/.test(cor), 'the coronation is back to confetti and sparkles');
+}
 
 console.log('\nXAL-9000');
 const BOSS: Extract<Beat, { t: 'boss' }> = {
