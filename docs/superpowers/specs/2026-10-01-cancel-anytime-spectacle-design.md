@@ -186,6 +186,23 @@ scenario's files on first entry to `cancel`, decodes once, plays by cue name.
   (an oscillator pitched by `size`), the glitch (a stutter-and-bitcrush of
   whatever is playing at the freeze), and the error dialog's chime. These need
   to track live state, which a file cannot.
+- **The bar for synthesis: nothing may sound like an oscillator.** Each is
+  layered and shaped:
+  - *press* — a band-passed noise transient (~4ms) over a short pitched body
+    with a fast pitch drop; pitch and filter jittered ±5% per press so a mash
+    never machine-guns one sample; a soft limiter so 6/s stays clean.
+  - *charge* — three detuned saws plus a sine sub, through a resonant lowpass
+    whose cutoff and pitch follow `size`, with slow LFO tremolo that speeds
+    up with size; a convolution reverb (generated impulse) for room.
+  - *glitch* — the master bus is tapped into a ring buffer; at the freeze the
+    last ~120ms is replayed in shrinking, reversed slices through a
+    bitcrusher, then hard-cut to silence. It glitches the actual soundtrack,
+    not a stock glitch sound.
+  - *chime* — a two-operator FM bell, one note, dry. Deliberately small and
+    generic after everything before it.
+- **Every cue is swappable.** Synth and file cues share one interface; if a
+  synthesised cue disappoints, dropping `<cue>.mp3` into the folder replaces
+  it with no code change.
 
 | Cue | Where | File |
 |---|---|---|
