@@ -48,6 +48,7 @@
   width: 100%; max-width: 280px; padding: 14px 0; font: inherit; font-size: 15px;
   color: var(--s-ai-ink, #222); background: var(--s-surface, #f2f2f2); border: 1px solid var(--s-edge, #ccc); border-radius: var(--s-r-chip, 10px);
   touch-action: manipulation; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent;
+  cursor: pointer;
 }
 .press { transition: transform 120ms ease, box-shadow 160ms ease, border-color 160ms ease, letter-spacing 160ms ease; }
 /* Armed: lifted, edged in his red, breathing. Pointer-only, so it cannot stick after a tap. */
@@ -61,8 +62,8 @@
 }
 /* The hit: pushed down onto its base, with a white flash at the edge. */
 .press:not(:disabled):active { transform: translateY(3px); animation: none; box-shadow: 0 0 0 2px #fff3e0, 0 0 30px 8px rgb(255 120 90 / 70%), 0 1px 0 0 #5a1a14; transition-duration: 30ms; }
-.press:disabled { opacity: 0.4; }
-.leave { background: none; border: 0; padding: 4px; font: inherit; font-size: 12px; color: #a8968a; text-decoration: underline; text-underline-offset: 3px; }
+.press:disabled { opacity: 0.4; cursor: default; }
+.leave { cursor: pointer; background: none; border: 0; padding: 4px; font: inherit; font-size: 12px; color: #a8968a; text-decoration: underline; text-underline-offset: 3px; }
 
 .debris { position: absolute; inset: -30%; width: 160%; height: 160%; pointer-events: none; }
 .flash { position: absolute; inset: -100vmax; background: #fff; animation: flash 380ms ease-out both; pointer-events: none; }

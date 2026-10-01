@@ -2269,6 +2269,7 @@
   user-select: none;
   -webkit-user-select: none;
   -webkit-tap-highlight-color: transparent;
+  cursor: pointer;
 }
 .boss_press {
   transition:
@@ -2316,8 +2317,10 @@
 }
 .boss_press:disabled {
   opacity: 0.4;
+  cursor: default;
 }
 .boss_leave {
+  cursor: pointer;
   background: none;
   border: 0;
   padding: 4px;

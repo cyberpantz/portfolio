@@ -729,6 +729,7 @@ const css = (f: string) => readFileSync(`src/experiments/chatbots/${f}`, 'utf8')
 ok(/\.arena\s*\{[^}]*touch-action:\s*manipulation/.test(bossCss), 'a mash that misses Cancel double-tap zooms the arena');
 ok(/@media \(hover: hover\)[\s\S]*?\.press:(hover|not\(:disabled\):hover)/.test(bossCss), 'the Cancel button has no hover state, or one that sticks on touch screens');
 ok(/\.press(:not\(:disabled\))?:focus-visible/.test(bossCss), 'the Cancel button shows nothing when reached by keyboard');
+for (const sel of ['press', 'leave']) ok(new RegExp(`\\.${sel}\\s*\\{[^}]*cursor:\\s*pointer`).test(bossCss), `.${sel} does not show a pointer`);
 ok(/\.press:(active|not\(:disabled\):active)\s*\{[^}]*translate/.test(bossCss), 'a press does not visibly push the Cancel button down');
 ok(/\.device:has\(> \.layers > \*\)\s*\{[^}]*min-height/.test(css('components/product.module.css')),
   'a takeover over a one-line transcript is squashed: the device needs the splash’s height while a layer is open');
